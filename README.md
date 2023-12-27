@@ -6,7 +6,7 @@ It provides classes to load LLM models, embedding models, and vector databases t
 
 ## Prerequisites
 
-Before you begin, your python version is >= 3.9. Creating a virtual python environment with conda is before installing the package.
+Before you begin, make sure your python version is >= 3.9. Creating a virtual python environment with conda is highly recommended before installing the package.
 
 ## Installing LLMPlus
 
