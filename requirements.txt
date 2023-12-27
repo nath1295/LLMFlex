@@ -1,0 +1,7 @@
+click
+transformers>=4.35.0
+sentence-transformers
+langchain
+faiss-cpu
+pandas
+gradio>=4.11.0 

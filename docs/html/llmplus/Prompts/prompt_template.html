@@ -1,0 +1,794 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmplus.Prompts.prompt_template API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmplus.Prompts.prompt_template</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from __future__ import annotations
+from typing import List, Dict, Any, Optional, Literal
+
+DEFAULT_SYSTEM_MESSAGE = &#34;&#34;&#34;This is a conversation between a human user and a helpful AI assistant.&#34;&#34;&#34;
+
+class PromptTemplate:
+    &#34;&#34;&#34;Class for storing prompt format presets.
+    &#34;&#34;&#34;
+    def __init__(
+            self,
+            system_prefix: str,
+            system_suffix: str,
+            human_prefix: str,
+            human_suffix: str,
+            ai_prefix: str,
+            ai_suffix: str,
+            wrapper: List[str],
+            stop: Optional[List[str]] = None
+    ) -&gt; None:
+        &#34;&#34;&#34;Initialising the chat prompt class.
+
+        Args:
+            system_prefix (str): System message prefix.
+            system_suffix (str): System message suffix.
+            human_prefix (str): User message prefix.
+            human_suffix (str): User message suffix.
+            ai_prefix (str): Chatbot message prefix.
+            ai_suffix (str): Chatbot message suffix.
+            wrapper (List[str]): Wrapper for start and end of conversation history.
+            stop (Optional[List[str]], optional): List of stop strings for the llm. If None is given, the human_prefix will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._system_prefix = system_prefix
+        self._system_suffix = system_suffix
+        self._human_prefix = human_prefix
+        self._human_suffix = human_suffix
+        self._ai_prefix = ai_prefix
+        self._ai_suffix = ai_suffix
+        self._wrapper = wrapper
+        self._stop = stop
+
+    @property
+    def system_prefix(self) -&gt; str:
+        return self._system_prefix
+    
+    @property
+    def system_suffix(self) -&gt; str:
+        return self._system_suffix
+    
+    @property
+    def human_prefix(self) -&gt; str:
+        return self._human_prefix
+    
+    @property
+    def human_suffix(self) -&gt; str:
+        return self._human_suffix
+    
+    @property
+    def ai_prefix(self) -&gt; str:
+        return self._ai_prefix
+    
+    @property
+    def ai_suffix(self) -&gt; str:
+        return self._ai_suffix
+    
+    @property
+    def wrapper(self) -&gt; List[str]:
+        return self._wrapper
+
+    @property
+    def stop(self) -&gt; List[str]:
+        return self._stop if isinstance(self._stop, list) else [self.human_prefix, f&#39;{self.ai_suffix}{self.human_prefix}&#39;]
+    
+    def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
+        &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
+
+        Args:
+            history (List[List[str]]): List of conversation history. 
+            use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
+
+        Returns:
+            str: Full string of conversation history.
+        &#34;&#34;&#34;
+        body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
+        body = &#39;&#39;.join(body)
+        if use_wrapper:
+            body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+            body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        return body
+    
+    def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+        &#34;&#34;&#34;Creating the full chat prompt.
+
+        Args:
+            user (str): Latest user input.
+            system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+            history (List[List[str]], optional): List of conversation history. Defaults to [].
+
+        Returns:
+            str: The full prompt.
+        &#34;&#34;&#34;
+        head = f&#39;{self.system_prefix}{system}{self.system_suffix}&#39;
+        body = self.format_history(history=history, use_wrapper=False)
+        tail = f&#39;{self.human_prefix}{user}{self.human_suffix}{self.ai_prefix}&#39;
+        prompt = head + body + tail
+        return prompt
+    
+    @classmethod
+    def from_dict(cls, format_dict: Dict[str, Any]) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Initialise the prompt template from a dictionary.
+
+        Args:
+            format_dict (Dict[str, Any]): Dictionary of the prompt format.
+
+        Returns:
+            PromptTemplate: The initialised PromptTemplate instance.
+        &#34;&#34;&#34;
+        return cls(**format_dict)
+    
+    @classmethod
+    def from_json(cls, file_dir: str) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Initialise the prompt template from a json file.
+
+        Args:
+            file_dir (str): json file path of the prompt format.
+
+        Returns:
+            PromptTemplatet: The initialised PromptTemplate instance.
+        &#34;&#34;&#34;
+        from ..utils import read_json
+        return cls.from_dict(read_json(file_dir=file_dir))
+    
+    @classmethod
+    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Initialise the prompt template from a preset.
+
+        Args:
+            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;]): Format of the prompt.
+
+        Returns:
+            PromptTemplate: The initialised PromptTemplate instance.
+        &#34;&#34;&#34;
+        return cls.from_dict(presets[style])
+    
+    def to_dict(self, return_raw_stop: bool = True) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Export the class as a dictionary.
+
+        Args:
+            return_raw_stop (bool, optional): Whether to return the stop list or the raw input stop value of the PromptTemplate instance.
+
+        Returns:
+            Dict[str, Any]: Prompt format as a dictionary.
+        &#34;&#34;&#34;
+        return dict(
+            system_prefix = self.system_prefix,
+            system_suffix = self.system_suffix,
+            human_prefix = self.human_prefix,
+            human_suffix = self.human_suffix,
+            ai_prefix = self.ai_prefix,
+            ai_suffix = self.ai_suffix,
+            stop = self._stop if return_raw_stop else self.stop
+        )
+    
+presets = {
+    &#39;Default Chat&#39; : {
+        &#39;system_prefix&#39;: &#39;SYSTEM:\n&#39;,
+        &#39;system_suffix&#39;: &#39;\n\nCurrent conversation:\n&#39;,
+        &#39;human_prefix&#39;: &#39;USER: &#39;,
+        &#39;human_suffix&#39;: &#39;\n&#39;,
+        &#39;ai_prefix&#39;: &#39;ASSISTANT: &#39;,
+        &#39;ai_suffix&#39;: &#39;\n&#39;,
+        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
+        &#39;stop&#39;: None
+    },
+    &#39;Llama 2 Chat&#39; : {
+        &#39;system_prefix&#39;: &#39;&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\n&#39;,
+        &#39;system_suffix&#39;: &#39;\n&lt;&lt;/SYS&gt;&gt;\n&#39;,
+        &#39;human_prefix&#39;: &#39;&#39;,
+        &#39;human_suffix&#39;: &#39; [/INST] &#39;,
+        &#39;ai_prefix&#39;: &#39;&#39;,
+        &#39;ai_suffix&#39;: &#39; &lt;/s&gt;&lt;s&gt;[INST] &#39;,
+        &#39;wrapper&#39;: [&#39;&lt;s&gt;[INST] &#39;, &#39; &lt;/s&gt;&#39;],
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
+    },
+    &#39;Vicuna 1.1 Chat&#39; : {
+        &#39;system_prefix&#39;: &#39;&#39;,
+        &#39;system_suffix&#39;: &#39;\n\n&#39;,
+        &#39;human_prefix&#39;: &#39;USER: &#39;,
+        &#39;human_suffix&#39;: &#39;\n&#39;,
+        &#39;ai_prefix&#39;: &#39;ASSISTANT: &#39;,
+        &#39;ai_suffix&#39;: &#39;\n&#39;,
+        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
+        &#39;stop&#39;: None
+    },
+    &#39;ChatML Chat&#39; : {
+        &#39;system_prefix&#39;: &#39;&lt;|im_start|&gt;system\n&#39;,
+        &#39;system_suffix&#39;: &#39;&lt;|im_end|&gt;\n&#39;,
+        &#39;human_prefix&#39;: &#39;&lt;|im_start|&gt;user\n&#39;,
+        &#39;human_suffix&#39;: &#39;&lt;|im_end|&gt;\n&#39;,
+        &#39;ai_prefix&#39;: &#39;&lt;|im_start|&gt;assistant\n&#39;,
+        &#39;ai_suffix&#39;: &#39;&lt;|im_end|&gt;\n&#39;,
+        &#39;wrapper&#39;: [&#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&#39;],
+        &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;]
+    },
+}</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate"><code class="flex name class">
+<span>class <span class="ident">PromptTemplate</span></span>
+<span>(</span><span>system_prefix: str, system_suffix: str, human_prefix: str, human_suffix: str, ai_prefix: str, ai_suffix: str, wrapper: List[str], stop: Optional[List[str]] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class for storing prompt format presets.</p>
+<p>Initialising the chat prompt class.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>system_prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>System message prefix.</dd>
+<dt><strong><code>system_suffix</code></strong> :&ensp;<code>str</code></dt>
+<dd>System message suffix.</dd>
+<dt><strong><code>human_prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>User message prefix.</dd>
+<dt><strong><code>human_suffix</code></strong> :&ensp;<code>str</code></dt>
+<dd>User message suffix.</dd>
+<dt><strong><code>ai_prefix</code></strong> :&ensp;<code>str</code></dt>
+<dd>Chatbot message prefix.</dd>
+<dt><strong><code>ai_suffix</code></strong> :&ensp;<code>str</code></dt>
+<dd>Chatbot message suffix.</dd>
+<dt><strong><code>wrapper</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>Wrapper for start and end of conversation history.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>List of stop strings for the llm. If None is given, the human_prefix will be used. Defaults to None.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PromptTemplate:
+    &#34;&#34;&#34;Class for storing prompt format presets.
+    &#34;&#34;&#34;
+    def __init__(
+            self,
+            system_prefix: str,
+            system_suffix: str,
+            human_prefix: str,
+            human_suffix: str,
+            ai_prefix: str,
+            ai_suffix: str,
+            wrapper: List[str],
+            stop: Optional[List[str]] = None
+    ) -&gt; None:
+        &#34;&#34;&#34;Initialising the chat prompt class.
+
+        Args:
+            system_prefix (str): System message prefix.
+            system_suffix (str): System message suffix.
+            human_prefix (str): User message prefix.
+            human_suffix (str): User message suffix.
+            ai_prefix (str): Chatbot message prefix.
+            ai_suffix (str): Chatbot message suffix.
+            wrapper (List[str]): Wrapper for start and end of conversation history.
+            stop (Optional[List[str]], optional): List of stop strings for the llm. If None is given, the human_prefix will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._system_prefix = system_prefix
+        self._system_suffix = system_suffix
+        self._human_prefix = human_prefix
+        self._human_suffix = human_suffix
+        self._ai_prefix = ai_prefix
+        self._ai_suffix = ai_suffix
+        self._wrapper = wrapper
+        self._stop = stop
+
+    @property
+    def system_prefix(self) -&gt; str:
+        return self._system_prefix
+    
+    @property
+    def system_suffix(self) -&gt; str:
+        return self._system_suffix
+    
+    @property
+    def human_prefix(self) -&gt; str:
+        return self._human_prefix
+    
+    @property
+    def human_suffix(self) -&gt; str:
+        return self._human_suffix
+    
+    @property
+    def ai_prefix(self) -&gt; str:
+        return self._ai_prefix
+    
+    @property
+    def ai_suffix(self) -&gt; str:
+        return self._ai_suffix
+    
+    @property
+    def wrapper(self) -&gt; List[str]:
+        return self._wrapper
+
+    @property
+    def stop(self) -&gt; List[str]:
+        return self._stop if isinstance(self._stop, list) else [self.human_prefix, f&#39;{self.ai_suffix}{self.human_prefix}&#39;]
+    
+    def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
+        &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
+
+        Args:
+            history (List[List[str]]): List of conversation history. 
+            use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
+
+        Returns:
+            str: Full string of conversation history.
+        &#34;&#34;&#34;
+        body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
+        body = &#39;&#39;.join(body)
+        if use_wrapper:
+            body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+            body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        return body
+    
+    def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+        &#34;&#34;&#34;Creating the full chat prompt.
+
+        Args:
+            user (str): Latest user input.
+            system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+            history (List[List[str]], optional): List of conversation history. Defaults to [].
+
+        Returns:
+            str: The full prompt.
+        &#34;&#34;&#34;
+        head = f&#39;{self.system_prefix}{system}{self.system_suffix}&#39;
+        body = self.format_history(history=history, use_wrapper=False)
+        tail = f&#39;{self.human_prefix}{user}{self.human_suffix}{self.ai_prefix}&#39;
+        prompt = head + body + tail
+        return prompt
+    
+    @classmethod
+    def from_dict(cls, format_dict: Dict[str, Any]) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Initialise the prompt template from a dictionary.
+
+        Args:
+            format_dict (Dict[str, Any]): Dictionary of the prompt format.
+
+        Returns:
+            PromptTemplate: The initialised PromptTemplate instance.
+        &#34;&#34;&#34;
+        return cls(**format_dict)
+    
+    @classmethod
+    def from_json(cls, file_dir: str) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Initialise the prompt template from a json file.
+
+        Args:
+            file_dir (str): json file path of the prompt format.
+
+        Returns:
+            PromptTemplatet: The initialised PromptTemplate instance.
+        &#34;&#34;&#34;
+        from ..utils import read_json
+        return cls.from_dict(read_json(file_dir=file_dir))
+    
+    @classmethod
+    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Initialise the prompt template from a preset.
+
+        Args:
+            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;]): Format of the prompt.
+
+        Returns:
+            PromptTemplate: The initialised PromptTemplate instance.
+        &#34;&#34;&#34;
+        return cls.from_dict(presets[style])
+    
+    def to_dict(self, return_raw_stop: bool = True) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Export the class as a dictionary.
+
+        Args:
+            return_raw_stop (bool, optional): Whether to return the stop list or the raw input stop value of the PromptTemplate instance.
+
+        Returns:
+            Dict[str, Any]: Prompt format as a dictionary.
+        &#34;&#34;&#34;
+        return dict(
+            system_prefix = self.system_prefix,
+            system_suffix = self.system_suffix,
+            human_prefix = self.human_prefix,
+            human_suffix = self.human_suffix,
+            ai_prefix = self.ai_prefix,
+            ai_suffix = self.ai_suffix,
+            stop = self._stop if return_raw_stop else self.stop
+        )</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_dict"><code class="name flex">
+<span>def <span class="ident">from_dict</span></span>(<span>format_dict: Dict[str, Any]) ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialise the prompt template from a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>format_dict</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>Dictionary of the prompt format.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
+<dd>The initialised PromptTemplate instance.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_dict(cls, format_dict: Dict[str, Any]) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Initialise the prompt template from a dictionary.
+
+    Args:
+        format_dict (Dict[str, Any]): Dictionary of the prompt format.
+
+    Returns:
+        PromptTemplate: The initialised PromptTemplate instance.
+    &#34;&#34;&#34;
+    return cls(**format_dict)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_json"><code class="name flex">
+<span>def <span class="ident">from_json</span></span>(<span>file_dir: str) ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialise the prompt template from a json file.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>json file path of the prompt format.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PromptTemplatet</code></dt>
+<dd>The initialised PromptTemplate instance.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_json(cls, file_dir: str) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Initialise the prompt template from a json file.
+
+    Args:
+        file_dir (str): json file path of the prompt format.
+
+    Returns:
+        PromptTemplatet: The initialised PromptTemplate instance.
+    &#34;&#34;&#34;
+    from ..utils import read_json
+    return cls.from_dict(read_json(file_dir=file_dir))</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_preset"><code class="name flex">
+<span>def <span class="ident">from_preset</span></span>(<span>style: "Literal['Default Chat', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat']") ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialise the prompt template from a preset.</p>
+<h2 id="args">Args</h2>
+<p>style (Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]): Format of the prompt.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
+<dd>The initialised PromptTemplate instance.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Initialise the prompt template from a preset.
+
+    Args:
+        style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;]): Format of the prompt.
+
+    Returns:
+        PromptTemplate: The initialised PromptTemplate instance.
+    &#34;&#34;&#34;
+    return cls.from_dict(presets[style])</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.ai_prefix"><code class="name">var <span class="ident">ai_prefix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ai_prefix(self) -&gt; str:
+    return self._ai_prefix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.ai_suffix"><code class="name">var <span class="ident">ai_suffix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ai_suffix(self) -&gt; str:
+    return self._ai_suffix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.human_prefix"><code class="name">var <span class="ident">human_prefix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def human_prefix(self) -&gt; str:
+    return self._human_prefix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.human_suffix"><code class="name">var <span class="ident">human_suffix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def human_suffix(self) -&gt; str:
+    return self._human_suffix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.stop"><code class="name">var <span class="ident">stop</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def stop(self) -&gt; List[str]:
+    return self._stop if isinstance(self._stop, list) else [self.human_prefix, f&#39;{self.ai_suffix}{self.human_prefix}&#39;]</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.system_prefix"><code class="name">var <span class="ident">system_prefix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def system_prefix(self) -&gt; str:
+    return self._system_prefix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.system_suffix"><code class="name">var <span class="ident">system_suffix</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def system_suffix(self) -&gt; str:
+    return self._system_suffix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.wrapper"><code class="name">var <span class="ident">wrapper</span> : List[str]</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def wrapper(self) -&gt; List[str]:
+    return self._wrapper</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.create_chat_prompt"><code class="name flex">
+<span>def <span class="ident">create_chat_prompt</span></span>(<span>self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: List[List[str]] = []) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creating the full chat prompt.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user</code></strong> :&ensp;<code>str</code></dt>
+<dd>Latest user input.</dd>
+<dt><strong><code>system</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>System message. Defaults to DEFAULT_SYSTEM_MESSAGE.</dd>
+<dt><strong><code>history</code></strong> :&ensp;<code>List[List[str]]</code>, optional</dt>
+<dd>List of conversation history. Defaults to [].</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The full prompt.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+    &#34;&#34;&#34;Creating the full chat prompt.
+
+    Args:
+        user (str): Latest user input.
+        system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+        history (List[List[str]], optional): List of conversation history. Defaults to [].
+
+    Returns:
+        str: The full prompt.
+    &#34;&#34;&#34;
+    head = f&#39;{self.system_prefix}{system}{self.system_suffix}&#39;
+    body = self.format_history(history=history, use_wrapper=False)
+    tail = f&#39;{self.human_prefix}{user}{self.human_suffix}{self.ai_prefix}&#39;
+    prompt = head + body + tail
+    return prompt</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.format_history"><code class="name flex">
+<span>def <span class="ident">format_history</span></span>(<span>self, history: List[List[str]], use_wrapper: bool = True) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Formatting a list of conversation history into a full string of conversation history.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>history</code></strong> :&ensp;<code>List[List[str]]</code></dt>
+<dd>List of conversation history. </dd>
+<dt><strong><code>use_wrapper</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to format the conversation history with the wrappers. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Full string of conversation history.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
+    &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
+
+    Args:
+        history (List[List[str]]): List of conversation history. 
+        use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
+
+    Returns:
+        str: Full string of conversation history.
+    &#34;&#34;&#34;
+    body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
+    body = &#39;&#39;.join(body)
+    if use_wrapper:
+        body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+        body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+    return body</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.to_dict"><code class="name flex">
+<span>def <span class="ident">to_dict</span></span>(<span>self, return_raw_stop: bool = True) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Export the class as a dictionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>return_raw_stop</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the stop list or the raw input stop value of the PromptTemplate instance.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>Prompt format as a dictionary.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def to_dict(self, return_raw_stop: bool = True) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Export the class as a dictionary.
+
+    Args:
+        return_raw_stop (bool, optional): Whether to return the stop list or the raw input stop value of the PromptTemplate instance.
+
+    Returns:
+        Dict[str, Any]: Prompt format as a dictionary.
+    &#34;&#34;&#34;
+    return dict(
+        system_prefix = self.system_prefix,
+        system_suffix = self.system_suffix,
+        human_prefix = self.human_prefix,
+        human_suffix = self.human_suffix,
+        ai_prefix = self.ai_prefix,
+        ai_suffix = self.ai_suffix,
+        stop = self._stop if return_raw_stop else self.stop
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmplus.Prompts" href="index.html">llmplus.Prompts</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></h4>
+<ul class="two-column">
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.ai_prefix" href="#llmplus.Prompts.prompt_template.PromptTemplate.ai_prefix">ai_prefix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.ai_suffix" href="#llmplus.Prompts.prompt_template.PromptTemplate.ai_suffix">ai_suffix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.create_chat_prompt" href="#llmplus.Prompts.prompt_template.PromptTemplate.create_chat_prompt">create_chat_prompt</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.format_history" href="#llmplus.Prompts.prompt_template.PromptTemplate.format_history">format_history</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.from_dict" href="#llmplus.Prompts.prompt_template.PromptTemplate.from_dict">from_dict</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.from_json" href="#llmplus.Prompts.prompt_template.PromptTemplate.from_json">from_json</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.from_preset" href="#llmplus.Prompts.prompt_template.PromptTemplate.from_preset">from_preset</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.human_prefix" href="#llmplus.Prompts.prompt_template.PromptTemplate.human_prefix">human_prefix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.human_suffix" href="#llmplus.Prompts.prompt_template.PromptTemplate.human_suffix">human_suffix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.stop" href="#llmplus.Prompts.prompt_template.PromptTemplate.stop">stop</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.system_prefix" href="#llmplus.Prompts.prompt_template.PromptTemplate.system_prefix">system_prefix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.system_suffix" href="#llmplus.Prompts.prompt_template.PromptTemplate.system_suffix">system_suffix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.to_dict" href="#llmplus.Prompts.prompt_template.PromptTemplate.to_dict">to_dict</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.wrapper" href="#llmplus.Prompts.prompt_template.PromptTemplate.wrapper">wrapper</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

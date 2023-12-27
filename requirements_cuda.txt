@@ -1,0 +1,4 @@
+accelerate>=0.25.0
+autoawq>=0.1.7
+optimum>=1.16.1
+auto-gptq>=0.6.0
