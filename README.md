@@ -13,7 +13,7 @@ Before you begin, your python version is >= 3.9. Creating a virtual python envir
 You can install LLMPlus with pip easily.
 
 ```
-pip install git+https://github.com/
+pip install git+https://github.com/nath1295/LLMPlus.git
 ```
 
 ## Using LLMPlus
