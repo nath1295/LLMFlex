@@ -4,4 +4,4 @@ from .Data.sqlite_database import SQLiteDatabase
 from .Data.vector_database import VectorDatabase
 
 
-__version__ = '0.0.0'
+__version__ = '0.0.1'
