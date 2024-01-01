@@ -22,11 +22,12 @@ Classes
 
     ### Static methods
 
-    `from_dict(format_dict: Dict[str, Any]) ‑> llmplus.Prompts.prompt_template.PromptTemplate`
+    `from_dict(format_dict: Dict[str, Any], template_name: Optional[str] = None) ‑> llmplus.Prompts.prompt_template.PromptTemplate`
     :   Initialise the prompt template from a dictionary.
         
         Args:
             format_dict (Dict[str, Any]): Dictionary of the prompt format.
+            template_name (Optional[str], optional): Name of the template. Defaults to None.
         
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -40,11 +41,11 @@ Classes
         Returns:
             PromptTemplatet: The initialised PromptTemplate instance.
 
-    `from_preset(style: "Literal['Default Chat', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat']") ‑> llmplus.Prompts.prompt_template.PromptTemplate`
+    `from_preset(style: "Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat']") ‑> llmplus.Prompts.prompt_template.PromptTemplate`
     :   Initialise the prompt template from a preset.
         
         Args:
-            style (Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]): Format of the prompt.
+            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]): Format of the prompt.
         
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -71,6 +72,12 @@ Classes
 
     `system_suffix: str`
     :
+
+    `template_name: str`
+    :   Name of the template.
+        
+        Returns:
+            str: Name of the template.
 
     `wrapper: List[str]`
     :

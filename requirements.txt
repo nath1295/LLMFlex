@@ -4,4 +4,7 @@ sentence-transformers
 langchain
 faiss-cpu
 pandas
-gradio>=4.11.0 
+gradio>=4.11.0
+duckduckgo-search
+markdownify
+fake-useragent

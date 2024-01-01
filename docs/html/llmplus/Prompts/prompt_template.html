@@ -98,6 +98,15 @@ class PromptTemplate:
     def stop(self) -&gt; List[str]:
         return self._stop if isinstance(self._stop, list) else [self.human_prefix, f&#39;{self.ai_suffix}{self.human_prefix}&#39;]
     
+    @property
+    def template_name(self) -&gt; str:
+        &#34;&#34;&#34;Name of the template.
+
+        Returns:
+            str: Name of the template.
+        &#34;&#34;&#34;
+        return self.__dict__.get(&#39;_template_name&#39;, &#39;Unititled template&#39;)
+
     def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
         &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
 
@@ -133,16 +142,20 @@ class PromptTemplate:
         return prompt
     
     @classmethod
-    def from_dict(cls, format_dict: Dict[str, Any]) -&gt; PromptTemplate:
+    def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a dictionary.
 
         Args:
             format_dict (Dict[str, Any]): Dictionary of the prompt format.
+            template_name (Optional[str], optional): Name of the template. Defaults to None.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
-        return cls(**format_dict)
+        template = cls(**format_dict)
+        if ((template_name is not None) &amp; (template_name not in presets.keys())):
+            template._template_name = template_name
+        return template
     
     @classmethod
     def from_json(cls, file_dir: str) -&gt; PromptTemplate:
@@ -155,19 +168,19 @@ class PromptTemplate:
             PromptTemplatet: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
         from ..utils import read_json
-        return cls.from_dict(read_json(file_dir=file_dir))
+        return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]) -&gt; PromptTemplate:
+    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;]): Format of the prompt.
+            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;, &amp;#39;Zephyr Chat&amp;#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
-        return cls.from_dict(presets[style])
+        return cls.from_dict(presets[style], template_name=style)
     
     def to_dict(self, return_raw_stop: bool = True) -&gt; Dict[str, Any]:
         &#34;&#34;&#34;Export the class as a dictionary.
@@ -192,6 +205,16 @@ presets = {
     &#39;Default Chat&#39; : {
         &#39;system_prefix&#39;: &#39;SYSTEM:\n&#39;,
         &#39;system_suffix&#39;: &#39;\n\nCurrent conversation:\n&#39;,
+        &#39;human_prefix&#39;: &#39;USER: &#39;,
+        &#39;human_suffix&#39;: &#39;\n&#39;,
+        &#39;ai_prefix&#39;: &#39;ASSISTANT: &#39;,
+        &#39;ai_suffix&#39;: &#39;\n&#39;,
+        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
+        &#39;stop&#39;: None
+    },
+    &#39;Default Instruct&#39; : {
+        &#39;system_prefix&#39;: &#39;SYSTEM:\n&#39;,
+        &#39;system_suffix&#39;: &#39;\n\n&#39;,
         &#39;human_prefix&#39;: &#39;USER: &#39;,
         &#39;human_suffix&#39;: &#39;\n&#39;,
         &#39;ai_prefix&#39;: &#39;ASSISTANT: &#39;,
@@ -228,6 +251,16 @@ presets = {
         &#39;ai_suffix&#39;: &#39;&lt;|im_end|&gt;\n&#39;,
         &#39;wrapper&#39;: [&#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&#39;],
         &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;]
+    },
+    &#39;Zephyr Chat&#39; : {
+        &#39;system_prefix&#39;: &#39;&lt;|system|&gt;\n&#39;,
+        &#39;system_suffix&#39;: &#39;&lt;/s&gt;\n&#39;,
+        &#39;human_prefix&#39;: &#39;&lt;|user|&gt;\n&#39;,
+        &#39;human_suffix&#39;: &#39;&lt;/s&gt;\n&#39;,
+        &#39;ai_prefix&#39;: &#39;&lt;|assistant|&gt;\n&#39;,
+        &#39;ai_suffix&#39;: &#39;&lt;/s&gt;\n&#39;,
+        &#39;wrapper&#39;: [&#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&#39;],
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;\n&#39;, &#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&lt;|user|&gt;\n&#39;]
     },
 }</code></pre>
 </details>
@@ -338,6 +371,15 @@ presets = {
     def stop(self) -&gt; List[str]:
         return self._stop if isinstance(self._stop, list) else [self.human_prefix, f&#39;{self.ai_suffix}{self.human_prefix}&#39;]
     
+    @property
+    def template_name(self) -&gt; str:
+        &#34;&#34;&#34;Name of the template.
+
+        Returns:
+            str: Name of the template.
+        &#34;&#34;&#34;
+        return self.__dict__.get(&#39;_template_name&#39;, &#39;Unititled template&#39;)
+
     def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
         &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
 
@@ -373,16 +415,20 @@ presets = {
         return prompt
     
     @classmethod
-    def from_dict(cls, format_dict: Dict[str, Any]) -&gt; PromptTemplate:
+    def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a dictionary.
 
         Args:
             format_dict (Dict[str, Any]): Dictionary of the prompt format.
+            template_name (Optional[str], optional): Name of the template. Defaults to None.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
-        return cls(**format_dict)
+        template = cls(**format_dict)
+        if ((template_name is not None) &amp; (template_name not in presets.keys())):
+            template._template_name = template_name
+        return template
     
     @classmethod
     def from_json(cls, file_dir: str) -&gt; PromptTemplate:
@@ -395,19 +441,19 @@ presets = {
             PromptTemplatet: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
         from ..utils import read_json
-        return cls.from_dict(read_json(file_dir=file_dir))
+        return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]) -&gt; PromptTemplate:
+    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;]): Format of the prompt.
+            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;, &amp;#39;Zephyr Chat&amp;#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
-        return cls.from_dict(presets[style])
+        return cls.from_dict(presets[style], template_name=style)
     
     def to_dict(self, return_raw_stop: bool = True) -&gt; Dict[str, Any]:
         &#34;&#34;&#34;Export the class as a dictionary.
@@ -431,7 +477,7 @@ presets = {
 <h3>Static methods</h3>
 <dl>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_dict"><code class="name flex">
-<span>def <span class="ident">from_dict</span></span>(<span>format_dict: Dict[str, Any]) ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+<span>def <span class="ident">from_dict</span></span>(<span>format_dict: Dict[str, Any], template_name: Optional[str] = None) ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the prompt template from a dictionary.</p>
@@ -439,6 +485,8 @@ presets = {
 <dl>
 <dt><strong><code>format_dict</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
 <dd>Dictionary of the prompt format.</dd>
+<dt><strong><code>template_name</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Name of the template. Defaults to None.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -450,16 +498,20 @@ presets = {
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def from_dict(cls, format_dict: Dict[str, Any]) -&gt; PromptTemplate:
+def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -&gt; PromptTemplate:
     &#34;&#34;&#34;Initialise the prompt template from a dictionary.
 
     Args:
         format_dict (Dict[str, Any]): Dictionary of the prompt format.
+        template_name (Optional[str], optional): Name of the template. Defaults to None.
 
     Returns:
         PromptTemplate: The initialised PromptTemplate instance.
     &#34;&#34;&#34;
-    return cls(**format_dict)</code></pre>
+    template = cls(**format_dict)
+    if ((template_name is not None) &amp; (template_name not in presets.keys())):
+        template._template_name = template_name
+    return template</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_json"><code class="name flex">
@@ -492,16 +544,16 @@ def from_json(cls, file_dir: str) -&gt; PromptTemplate:
         PromptTemplatet: The initialised PromptTemplate instance.
     &#34;&#34;&#34;
     from ..utils import read_json
-    return cls.from_dict(read_json(file_dir=file_dir))</code></pre>
+    return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_preset"><code class="name flex">
-<span>def <span class="ident">from_preset</span></span>(<span>style: "Literal['Default Chat', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat']") ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+<span>def <span class="ident">from_preset</span></span>(<span>style: "Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat']") ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the prompt template from a preset.</p>
 <h2 id="args">Args</h2>
-<p>style (Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]): Format of the prompt.</p>
+<p>style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]): Format of the prompt.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code><a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
@@ -512,16 +564,16 @@ def from_json(cls, file_dir: str) -&gt; PromptTemplate:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]) -&gt; PromptTemplate:
+def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]) -&gt; PromptTemplate:
     &#34;&#34;&#34;Initialise the prompt template from a preset.
 
     Args:
-        style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;]): Format of the prompt.
+        style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;, &amp;#39;Zephyr Chat&amp;#39;]): Format of the prompt.
 
     Returns:
         PromptTemplate: The initialised PromptTemplate instance.
     &#34;&#34;&#34;
-    return cls.from_dict(presets[style])</code></pre>
+    return cls.from_dict(presets[style], template_name=style)</code></pre>
 </details>
 </dd>
 </dl>
@@ -609,6 +661,28 @@ def system_prefix(self) -&gt; str:
 <pre><code class="python">@property
 def system_suffix(self) -&gt; str:
     return self._system_suffix</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.template_name"><code class="name">var <span class="ident">template_name</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Name of the template.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Name of the template.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def template_name(self) -&gt; str:
+    &#34;&#34;&#34;Name of the template.
+
+    Returns:
+        str: Name of the template.
+    &#34;&#34;&#34;
+    return self.__dict__.get(&#39;_template_name&#39;, &#39;Unititled template&#39;)</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.wrapper"><code class="name">var <span class="ident">wrapper</span> : List[str]</code></dt>
@@ -778,6 +852,7 @@ def wrapper(self) -&gt; List[str]:
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.stop" href="#llmplus.Prompts.prompt_template.PromptTemplate.stop">stop</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.system_prefix" href="#llmplus.Prompts.prompt_template.PromptTemplate.system_prefix">system_prefix</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.system_suffix" href="#llmplus.Prompts.prompt_template.PromptTemplate.system_suffix">system_suffix</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.template_name" href="#llmplus.Prompts.prompt_template.PromptTemplate.template_name">template_name</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.to_dict" href="#llmplus.Prompts.prompt_template.PromptTemplate.to_dict">to_dict</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.wrapper" href="#llmplus.Prompts.prompt_template.PromptTemplate.wrapper">wrapper</a></code></li>
 </ul>

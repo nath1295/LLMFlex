@@ -14,7 +14,6 @@ class ChatInterface:
         self.memory = LongShortTermChatMemory(title='Untitled 0', embeddings=self.embeddings, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
         self.template = PromptTemplate.from_preset('Default Chat')
-        self.prompt_preset = 'Default Chat'
         self.llm = self.model(stop=self.template.stop + ['###'])
         self.short_limit = 600
         self.long_limit = 500
@@ -134,7 +133,7 @@ class ChatInterface:
     def get_prompt_settings(self) -> str:
         settings = [
             'Current prompt settings:',
-            f'Preset: {self.prompt_preset}'
+            f'Preset: {self.template.template_name}'
         ]
         return '\n'.join(settings)
     
@@ -170,7 +169,6 @@ class ChatInterface:
             template (str): Preset name from the dropdown menu.
         """
         from ..Prompts.prompt_template import PromptTemplate
-        self.prompt_preset = template
         self.template = PromptTemplate.from_preset(template)
         return self.get_prompt_settings()
 

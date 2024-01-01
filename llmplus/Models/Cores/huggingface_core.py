@@ -151,7 +151,7 @@ class HuggingfaceLLM(LLM):
         """
         import warnings
         warnings.filterwarnings('ignore')
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, stop_newline_version=False, tokenizer_type='transformers') if stop is not None else self.stop
+        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type='transformers') if stop is not None else self.stop
         stream = kwargs.get('stream', False)
         gen_config = self.generation_config.copy()
         gen_config['stopping_criteria'] = StoppingCriteriaList([KeywordsStoppingCriteria(stop, self.core.tokenizer)])

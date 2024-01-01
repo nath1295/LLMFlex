@@ -70,6 +70,15 @@ class PromptTemplate:
     def stop(self) -> List[str]:
         return self._stop if isinstance(self._stop, list) else [self.human_prefix, f'{self.ai_suffix}{self.human_prefix}']
     
+    @property
+    def template_name(self) -> str:
+        """Name of the template.
+
+        Returns:
+            str: Name of the template.
+        """
+        return self.__dict__.get('_template_name', 'Unititled template')
+
     def format_history(self, history: List[List[str]], use_wrapper: bool = True) -> str:
         """Formatting a list of conversation history into a full string of conversation history.
 
@@ -105,16 +114,20 @@ class PromptTemplate:
         return prompt
     
     @classmethod
-    def from_dict(cls, format_dict: Dict[str, Any]) -> PromptTemplate:
+    def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -> PromptTemplate:
         """Initialise the prompt template from a dictionary.
 
         Args:
             format_dict (Dict[str, Any]): Dictionary of the prompt format.
+            template_name (Optional[str], optional): Name of the template. Defaults to None.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         """
-        return cls(**format_dict)
+        template = cls(**format_dict)
+        if ((template_name is not None) & (template_name not in presets.keys())):
+            template._template_name = template_name
+        return template
     
     @classmethod
     def from_json(cls, file_dir: str) -> PromptTemplate:
@@ -127,19 +140,19 @@ class PromptTemplate:
             PromptTemplatet: The initialised PromptTemplate instance.
         """
         from ..utils import read_json
-        return cls.from_dict(read_json(file_dir=file_dir))
+        return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal['Default Chat', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat']) -> PromptTemplate:
+    def from_preset(cls, style: Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat']) -> PromptTemplate:
         """Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&#39;Default Chat&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;]): Format of the prompt.
+            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         """
-        return cls.from_dict(presets[style])
+        return cls.from_dict(presets[style], template_name=style)
     
     def to_dict(self, return_raw_stop: bool = True) -> Dict[str, Any]:
         """Export the class as a dictionary.
@@ -164,6 +177,16 @@ presets = {
     'Default Chat' : {
         'system_prefix': 'SYSTEM:\n',
         'system_suffix': '\n\nCurrent conversation:\n',
+        'human_prefix': 'USER: ',
+        'human_suffix': '\n',
+        'ai_prefix': 'ASSISTANT: ',
+        'ai_suffix': '\n',
+        'wrapper': ['USER: ', '\n'],
+        'stop': None
+    },
+    'Default Instruct' : {
+        'system_prefix': 'SYSTEM:\n',
+        'system_suffix': '\n\n',
         'human_prefix': 'USER: ',
         'human_suffix': '\n',
         'ai_prefix': 'ASSISTANT: ',
@@ -200,5 +223,15 @@ presets = {
         'ai_suffix': '<|im_end|>\n',
         'wrapper': ['<|im_start|>user\n', '<|im_end|>\n'],
         'stop': ['<|im_start|>', '<|im_end|>', '<|im_start|>user\n', '<|im_end|>\n<|im_start|>user\n']
+    },
+    'Zephyr Chat' : {
+        'system_prefix': '<|system|>\n',
+        'system_suffix': '</s>\n',
+        'human_prefix': '<|user|>\n',
+        'human_suffix': '</s>\n',
+        'ai_prefix': '<|assistant|>\n',
+        'ai_suffix': '</s>\n',
+        'wrapper': ['<|user|>\n', '</s>\n'],
+        'stop': ['</s>', '</s>\n', '<|user|>\n', '</s>\n<|user|>\n']
     },
 }

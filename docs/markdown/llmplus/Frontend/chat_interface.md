@@ -59,7 +59,7 @@ Classes
             title (str): Title used for this trigger.
         
         Returns:
-            Tuple[Any]: New title textbox, Chats dropdown menu, and the Chatbot box.
+            Tuple[Any]: New title textbox, Chats dropdown menu, the Chatbot box, and the system textbox.
 
     `change_memory_setting(self, system: str, long_limit: int, short_limit: int, sim_score: float) ‑> str`
     :   Changing the system message and memory settings.

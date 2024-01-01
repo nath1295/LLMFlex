@@ -53,7 +53,7 @@ def get_version() -> str:
     with open(filedir, 'r') as f:
         text = f.read()
     import re
-    re_version = re.compile(r'__version__[\s]*=[\s]*["\'](\d{1,3}\.\d{1,3}\.\d{1,3})["\']')
+    re_version = re.compile(r'__version__[\s]*=[\s]*["\'](\d{1,3}\.\d{1,3}\..+)["\']')
     version = re_version.findall(text)[0]
     return version
 
