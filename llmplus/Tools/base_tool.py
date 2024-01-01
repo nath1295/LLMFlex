@@ -5,11 +5,12 @@ from typing import List, Iterator, Optional, Union
 class BaseTool:
     """This is a base class for callables for LLMs.
     """
-    def __init__(self, name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.') -> None:
+    def __init__(self, name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True) -> None:
         """Initialising the tool.
         """
         self._name = name
         self._description = description
+        self._verbose = verbose
 
     @property
     def name(self) -> str:
@@ -48,3 +49,12 @@ class BaseTool:
         if ((history is not None) & (prompt_template is None)):
             raise ValueError('Prompt template need to be provided to process chat history.')
         return 'Base tool output.'
+    
+    def print(self, text: str, **kwargs) -> None:
+        """Print the given text if verbose is True.
+
+        Args:
+            text (str): Text to print.
+        """
+        if self._verbose:
+            print(text, **kwargs)

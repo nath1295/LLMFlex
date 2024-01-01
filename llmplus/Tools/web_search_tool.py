@@ -38,11 +38,12 @@ def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -> List
         results = list(map(lambda x: x['href'], results))
     return results
 
-def parse_url(url: str) -> str:
+def parse_url(url: str, timeout: int = 10) -> str:
     """Parse the given URL as markdown.
 
     Args:
         url (str): URL to parse.
+        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
 
     Returns:
         str: Content of the URL as markdown.
@@ -52,7 +53,7 @@ def parse_url(url: str) -> str:
     from markdownify import markdownify
     
     ua = UserAgent()
-    response = requests.get(url, headers={'User-Agent': ua.random})
+    response = requests.get(url, headers={'User-Agent': ua.random}, timeout=timeout)
     if response.status_code != 200:
         return ''
     else:
@@ -63,7 +64,8 @@ class WebSearchTool(BaseTool):
     """This is the tool class for doing web search.
     """
     def __init__(self, embeddings: BaseEmbeddingsToolkit, 
-                 name: str = 'web_search', description: str = WEB_SEARCH_TOOL_DESCRIPTION, search_engine: Literal['duckduckgo'] = 'duckduckgo') -> None:
+                 name: str = 'web_search', description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
+                 search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True) -> None:
         """Initialise teh web search tool.
 
         Args:
@@ -71,10 +73,13 @@ class WebSearchTool(BaseTool):
             name (str, optional): Name of the tool. Defaults to 'web_search'.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
             search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.
+            verbose: Whether to print logs while running the tool. Defaults to True.
         """
-        super().__init__(name, description)
+        super().__init__(name, description, verbose)
+        from ..Data.vector_database import VectorDatabase
         self.search_engine = search_engine
         self.embeddings = embeddings
+        self.vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
 
     def search(self, query: str, n: int = 5, urls_only: bool = True, **kwargs) -> List[Union[str, Dict[str, Any]]]:
         """Search with the given query.
@@ -131,30 +136,32 @@ class WebSearchTool(BaseTool):
             try:
                 import json
                 query = json.loads(query)['Search query']
-                print(f'Search query: {query}')
+                self.print(f'Search query: {query}')
             except:
-                print(f'Generation of query failed, fall back to use the raw tool_input "{tool_input}".')
+                self.print(f'Generation of query failed, fall back to use the raw tool_input "{tool_input}".')
                 query = tool_input
 
         from ..Models.Cores.text_splitter import LLMTextSplitter
         from ..Models.Cores.utils import add_newline_char_to_stopwords
-        from ..Data.vector_database import VectorDatabase
         from langchain.schema.document import Document
 
         text_splitter = LLMTextSplitter(model=llm)
         results = self.search(query=query, urls_only=False, **kwargs)
         urls = list(map(lambda x: x['href'], results))
         contents = list(map(parse_url, urls))
+        self.print('Parsing contents completed.')
         docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
         docs = text_splitter.split_documents(documents=docs)
         index = list(map(lambda x: x.page_content, docs))
         data = list(map(lambda x: x.metadata, docs))
-        vectordb = VectorDatabase.from_data(index=index, embeddings=self.embeddings, data=data, split_text=False)
+        self.print(f'Splitting contents completed. Number of documents: {len(index)}')
+        self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
+        self.print('Storing contents completed.')
 
         if return_type == 'vectordb':
-            return vectordb
+            return self.vectordb
         
-        chunks = vectordb.search(query=query, top_k=3, index_only=False)
+        chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
         if return_type == 'chunks':
             return chunks
         

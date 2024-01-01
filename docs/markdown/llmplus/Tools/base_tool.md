@@ -4,7 +4,7 @@ Module llmplus.Tools.base_tool
 Classes
 -------
 
-`BaseTool(name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.')`
+`BaseTool(name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True)`
 :   This is a base class for callables for LLMs.
         
     
@@ -29,6 +29,12 @@ Classes
             str: Name of the tool.
 
     ### Methods
+
+    `print(self, text: str, **kwargs) ‑> None`
+    :   Print the given text if verbose is True.
+        
+        Args:
+            text (str): Text to print.
 
     `run(self, tool_input: str, llm: llmplus.Models.Cores.base_core.BaseLLM, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, **kwargs) ‑> Union[str, Iterator[str]]`
     :   Run the tool and return the output as a string.

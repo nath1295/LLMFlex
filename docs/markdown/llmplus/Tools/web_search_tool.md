@@ -17,11 +17,12 @@ Functions
         List[Union[str, Dict[str, Any]]]: List of search results.
 
     
-`parse_url(url: str) ‑> str`
+`parse_url(url: str, timeout: int = 10) ‑> str`
 :   Parse the given URL as markdown.
     
     Args:
         url (str): URL to parse.
+        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
     
     Returns:
         str: Content of the URL as markdown.
@@ -29,7 +30,7 @@ Functions
 Classes
 -------
 
-`WebSearchTool(embeddings: llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit, name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo')`
+`WebSearchTool(embeddings: llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit, name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)`
 :   This is the tool class for doing web search.
         
     
@@ -40,6 +41,7 @@ Classes
         name (str, optional): Name of the tool. Defaults to 'web_search'.
         description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
         search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.
+        verbose: Whether to print logs while running the tool. Defaults to True.
 
     ### Ancestors (in MRO)
 

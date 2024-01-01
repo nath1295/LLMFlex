@@ -66,11 +66,12 @@ def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; L
         results = list(map(lambda x: x[&#39;href&#39;], results))
     return results
 
-def parse_url(url: str) -&gt; str:
+def parse_url(url: str, timeout: int = 10) -&gt; str:
     &#34;&#34;&#34;Parse the given URL as markdown.
 
     Args:
         url (str): URL to parse.
+        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
 
     Returns:
         str: Content of the URL as markdown.
@@ -80,7 +81,7 @@ def parse_url(url: str) -&gt; str:
     from markdownify import markdownify
     
     ua = UserAgent()
-    response = requests.get(url, headers={&#39;User-Agent&#39;: ua.random})
+    response = requests.get(url, headers={&#39;User-Agent&#39;: ua.random}, timeout=timeout)
     if response.status_code != 200:
         return &#39;&#39;
     else:
@@ -91,7 +92,8 @@ class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
     &#34;&#34;&#34;
     def __init__(self, embeddings: BaseEmbeddingsToolkit, 
-                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;) -&gt; None:
+                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
+                 search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialise teh web search tool.
 
         Args:
@@ -99,10 +101,13 @@ class WebSearchTool(BaseTool):
             name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
             search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
+            verbose: Whether to print logs while running the tool. Defaults to True.
         &#34;&#34;&#34;
-        super().__init__(name, description)
+        super().__init__(name, description, verbose)
+        from ..Data.vector_database import VectorDatabase
         self.search_engine = search_engine
         self.embeddings = embeddings
+        self.vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
 
     def search(self, query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
         &#34;&#34;&#34;Search with the given query.
@@ -159,30 +164,32 @@ class WebSearchTool(BaseTool):
             try:
                 import json
                 query = json.loads(query)[&#39;Search query&#39;]
-                print(f&#39;Search query: {query}&#39;)
+                self.print(f&#39;Search query: {query}&#39;)
             except:
-                print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
+                self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
                 query = tool_input
 
         from ..Models.Cores.text_splitter import LLMTextSplitter
         from ..Models.Cores.utils import add_newline_char_to_stopwords
-        from ..Data.vector_database import VectorDatabase
         from langchain.schema.document import Document
 
         text_splitter = LLMTextSplitter(model=llm)
         results = self.search(query=query, urls_only=False, **kwargs)
         urls = list(map(lambda x: x[&#39;href&#39;], results))
         contents = list(map(parse_url, urls))
+        self.print(&#39;Parsing contents completed.&#39;)
         docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
         docs = text_splitter.split_documents(documents=docs)
         index = list(map(lambda x: x.page_content, docs))
         data = list(map(lambda x: x.metadata, docs))
-        vectordb = VectorDatabase.from_data(index=index, embeddings=self.embeddings, data=data, split_text=False)
+        self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
+        self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
+        self.print(&#39;Storing contents completed.&#39;)
 
         if return_type == &#39;vectordb&#39;:
-            return vectordb
+            return self.vectordb
         
-        chunks = vectordb.search(query=query, top_k=3, index_only=False)
+        chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
         if return_type == &#39;chunks&#39;:
             return chunks
         
@@ -251,7 +258,7 @@ class WebSearchTool(BaseTool):
 </details>
 </dd>
 <dt id="llmplus.Tools.web_search_tool.parse_url"><code class="name flex">
-<span>def <span class="ident">parse_url</span></span>(<span>url: str) ‑> str</span>
+<span>def <span class="ident">parse_url</span></span>(<span>url: str, timeout: int = 10) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parse the given URL as markdown.</p>
@@ -259,6 +266,8 @@ class WebSearchTool(BaseTool):
 <dl>
 <dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
 <dd>URL to parse.</dd>
+<dt><strong><code>timeout</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Number of seconds before request time out. Defaults to 10.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -269,11 +278,12 @@ class WebSearchTool(BaseTool):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def parse_url(url: str) -&gt; str:
+<pre><code class="python">def parse_url(url: str, timeout: int = 10) -&gt; str:
     &#34;&#34;&#34;Parse the given URL as markdown.
 
     Args:
         url (str): URL to parse.
+        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
 
     Returns:
         str: Content of the URL as markdown.
@@ -283,7 +293,7 @@ class WebSearchTool(BaseTool):
     from markdownify import markdownify
     
     ua = UserAgent()
-    response = requests.get(url, headers={&#39;User-Agent&#39;: ua.random})
+    response = requests.get(url, headers={&#39;User-Agent&#39;: ua.random}, timeout=timeout)
     if response.status_code != 200:
         return &#39;&#39;
     else:
@@ -298,7 +308,7 @@ class WebSearchTool(BaseTool):
 <dl>
 <dt id="llmplus.Tools.web_search_tool.WebSearchTool"><code class="flex name class">
 <span>class <span class="ident">WebSearchTool</span></span>
-<span>(</span><span>embeddings: <a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>, name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo')</span>
+<span>(</span><span>embeddings: <a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>, name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the tool class for doing web search.</p>
@@ -311,8 +321,10 @@ class WebSearchTool(BaseTool):
 <dd>Name of the tool. Defaults to 'web_search'.</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.</dd>
-</dl>
-<p>search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.</p></div>
+<dt>search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.</dt>
+<dt><strong><code>verbose</code></strong></dt>
+<dd>Whether to print logs while running the tool. Defaults to True.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -321,7 +333,8 @@ class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
     &#34;&#34;&#34;
     def __init__(self, embeddings: BaseEmbeddingsToolkit, 
-                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;) -&gt; None:
+                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
+                 search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialise teh web search tool.
 
         Args:
@@ -329,10 +342,13 @@ class WebSearchTool(BaseTool):
             name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
             search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
+            verbose: Whether to print logs while running the tool. Defaults to True.
         &#34;&#34;&#34;
-        super().__init__(name, description)
+        super().__init__(name, description, verbose)
+        from ..Data.vector_database import VectorDatabase
         self.search_engine = search_engine
         self.embeddings = embeddings
+        self.vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
 
     def search(self, query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
         &#34;&#34;&#34;Search with the given query.
@@ -389,30 +405,32 @@ class WebSearchTool(BaseTool):
             try:
                 import json
                 query = json.loads(query)[&#39;Search query&#39;]
-                print(f&#39;Search query: {query}&#39;)
+                self.print(f&#39;Search query: {query}&#39;)
             except:
-                print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
+                self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
                 query = tool_input
 
         from ..Models.Cores.text_splitter import LLMTextSplitter
         from ..Models.Cores.utils import add_newline_char_to_stopwords
-        from ..Data.vector_database import VectorDatabase
         from langchain.schema.document import Document
 
         text_splitter = LLMTextSplitter(model=llm)
         results = self.search(query=query, urls_only=False, **kwargs)
         urls = list(map(lambda x: x[&#39;href&#39;], results))
         contents = list(map(parse_url, urls))
+        self.print(&#39;Parsing contents completed.&#39;)
         docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
         docs = text_splitter.split_documents(documents=docs)
         index = list(map(lambda x: x.page_content, docs))
         data = list(map(lambda x: x.metadata, docs))
-        vectordb = VectorDatabase.from_data(index=index, embeddings=self.embeddings, data=data, split_text=False)
+        self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
+        self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
+        self.print(&#39;Storing contents completed.&#39;)
 
         if return_type == &#39;vectordb&#39;:
-            return vectordb
+            return self.vectordb
         
-        chunks = vectordb.search(query=query, top_k=3, index_only=False)
+        chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
         if return_type == &#39;chunks&#39;:
             return chunks
         
@@ -500,30 +518,32 @@ class WebSearchTool(BaseTool):
         try:
             import json
             query = json.loads(query)[&#39;Search query&#39;]
-            print(f&#39;Search query: {query}&#39;)
+            self.print(f&#39;Search query: {query}&#39;)
         except:
-            print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
+            self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
             query = tool_input
 
     from ..Models.Cores.text_splitter import LLMTextSplitter
     from ..Models.Cores.utils import add_newline_char_to_stopwords
-    from ..Data.vector_database import VectorDatabase
     from langchain.schema.document import Document
 
     text_splitter = LLMTextSplitter(model=llm)
     results = self.search(query=query, urls_only=False, **kwargs)
     urls = list(map(lambda x: x[&#39;href&#39;], results))
     contents = list(map(parse_url, urls))
+    self.print(&#39;Parsing contents completed.&#39;)
     docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
     docs = text_splitter.split_documents(documents=docs)
     index = list(map(lambda x: x.page_content, docs))
     data = list(map(lambda x: x.metadata, docs))
-    vectordb = VectorDatabase.from_data(index=index, embeddings=self.embeddings, data=data, split_text=False)
+    self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
+    self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
+    self.print(&#39;Storing contents completed.&#39;)
 
     if return_type == &#39;vectordb&#39;:
-        return vectordb
+        return self.vectordb
     
-    chunks = vectordb.search(query=query, top_k=3, index_only=False)
+    chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
     if return_type == &#39;chunks&#39;:
         return chunks
     
@@ -585,6 +605,7 @@ class WebSearchTool(BaseTool):
 <ul class="hlist">
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.description" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.description">description</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.name" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.name">name</a></code></li>
+<li><code><a title="llmplus.Tools.base_tool.BaseTool.print" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.print">print</a></code></li>
 </ul>
 </li>
 </ul>
