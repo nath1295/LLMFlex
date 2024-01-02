@@ -125,7 +125,7 @@ class PromptTemplate:
             PromptTemplate: The initialised PromptTemplate instance.
         """
         template = cls(**format_dict)
-        if ((template_name is not None) & (template_name not in presets.keys())):
+        if template_name is not None:
             template._template_name = template_name
         return template
     
