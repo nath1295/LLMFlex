@@ -22,6 +22,7 @@ class OpenAICore(BaseCore):
         """
         from openai import OpenAI
         self._core_type = 'OpenAICore'
+        api_key = 'NOAPIKEY' if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else ('gpt-3.5-turbo' if 'gpt-3.5-turbo' in models else models[0])
@@ -83,7 +84,7 @@ class OpenAILLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         """
-        tokenizer_type = 'openai' if self.core._is_openai else 'transformers'
+        tokenizer_type = 'openai' if core._is_openai else 'transformers'
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, tokenizer_type)
 
         generation_config = dict(
@@ -128,7 +129,6 @@ class OpenAILLM(LLM):
         gen_config['stop'] = stop
         if stream:
             def generate():
-                self.core._model.completions.create()
                 for i in self.core._model.completions.create(
                     model=self.core.model_id,
                     prompt=prompt,
