@@ -1,5 +1,37 @@
 import click
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict, Any
+
+def args_from_string(arg_string: str) -> Dict[str, Any]:
+    """Parsing kwargs from a string.
+
+    Args:
+        arg_string (str): String of arguments.
+
+    Returns:
+        Dict[str, Any]: kwargs.
+    """
+    import ast
+    args = {}
+    buf = ""
+    stack = []
+    for ch in arg_string:
+        if ch in ['{', '[']:
+            stack.append(ch)
+        elif ch in ['}', ']']:
+            stack.pop()
+        elif ch == ',' and not stack:
+            key, value = map(str.strip, buf.split('=', 1))
+            args[key] = ast.literal_eval(value)
+            buf = ""
+            continue
+        buf += ch
+
+    # Handling the last key-value pair (or the only pair if no comma is present)
+    if buf:
+        key, value = map(str.strip, buf.split('=', 1))
+        args[key] = ast.literal_eval(value)
+
+    return args
 
 @click.group()
 def cli() -> None:
@@ -26,17 +58,19 @@ def config() -> None:
 @click.option('--mobile', is_flag=True, help='Whether to launch the mobile interface or not.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
 @click.option('--share', is_flag=True, help='Whether to create a public link or not.')
+@click.option('--extra', default='', help='Extra arugments for loading the model.')
 def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
               embeddings: str = 'thenlper/gte-large', 
               model_type: str = 'auto',
               mobile: bool = False, auth: Optional[Tuple[str, str]] = None,
-              share: bool = False) -> None:
+              share: bool = False,
+              extra: str = "") -> None:
     """Launch the Gradio Chat GUI.
     """
     from . import HuggingfaceEmbeddingsToolkit, LlmFactory
     from .Frontend.chat_interface import ChatInterface
-
-    model = LlmFactory(model_id=model_id, model_type=model_type)
+    model_id = None if model_id == 'None' else model_id
+    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extra))
     embeddings = HuggingfaceEmbeddingsToolkit(model_id=embeddings)
     app = ChatInterface(model=model, embeddings=embeddings)
     app.launch(mobile=mobile, auth=auth, share=share)
