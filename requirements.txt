@@ -10,3 +10,4 @@ markdownify
 fake-useragent
 openai>=1.4
 tiktoken
+protobuf

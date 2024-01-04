@@ -49,7 +49,7 @@ class OpenAICore(BaseCore):
         """
         if self._is_openai:
             return self._tokenizer.encode(text)
-        return self.tokenizer(text=text)
+        return self.tokenizer(text=text)['input_ids']
     
     def decode(self, token_ids: List[int]) -> str:
         """Untokenize a list of tokens.
