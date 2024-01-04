@@ -153,7 +153,7 @@ class PromptTemplate:
             PromptTemplate: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
         template = cls(**format_dict)
-        if ((template_name is not None) &amp; (template_name not in presets.keys())):
+        if template_name is not None:
             template._template_name = template_name
         return template
     
@@ -209,7 +209,7 @@ presets = {
         &#39;human_suffix&#39;: &#39;\n&#39;,
         &#39;ai_prefix&#39;: &#39;ASSISTANT: &#39;,
         &#39;ai_suffix&#39;: &#39;\n&#39;,
-        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
+        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\nUSER: &#39;, &#39;USER:&#39;],
         &#39;stop&#39;: None
     },
     &#39;Default Instruct&#39; : {
@@ -426,7 +426,7 @@ presets = {
             PromptTemplate: The initialised PromptTemplate instance.
         &#34;&#34;&#34;
         template = cls(**format_dict)
-        if ((template_name is not None) &amp; (template_name not in presets.keys())):
+        if template_name is not None:
             template._template_name = template_name
         return template
     
@@ -509,7 +509,7 @@ def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = N
         PromptTemplate: The initialised PromptTemplate instance.
     &#34;&#34;&#34;
     template = cls(**format_dict)
-    if ((template_name is not None) &amp; (template_name not in presets.keys())):
+    if template_name is not None:
         template._template_name = template_name
     return template</code></pre>
 </details>

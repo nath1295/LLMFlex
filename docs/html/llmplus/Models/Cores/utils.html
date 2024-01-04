@@ -46,14 +46,14 @@ def add_newline_char_to_stopwords(stop: List[str]) -&gt; List[str]:
     return new
 
 def get_stop_words(stop: Optional[List[str]], tokenizer: Any, 
-                   add_newline_version: bool = True, tokenizer_type: Literal[&#39;transformers&#39;, &#39;llamacpp&#39;] = &#39;transformers&#39;) -&gt; List[str]:
+                   add_newline_version: bool = True, tokenizer_type: Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;] = &#39;transformers&#39;) -&gt; List[str]:
     &#34;&#34;&#34;Adding necessary stop words such as EOS token and multiple newline characters.
 
     Args:
         stop (Optional[List[str]]): List of stop words, if None is given, an empty list will be assumed.
         tokenizer (Any): Tokenizer to get the EOS token.
         add_newline_version (bool, optional): Whether to use add_newline_char_to_stopwords function. Defaults to True.
-        tokenizer_type (Literal[&amp;#39;transformers&amp;#39;, &amp;#39;llamacpp&amp;#39;], optional): Type of tokenizer. Defaults to &#39;transformers&#39;.
+        tokenizer_type (Literal[&amp;#39;transformers&amp;#39;, &amp;#39;llamacpp&amp;#39;, &amp;#39;openai&amp;#39;], optional): Type of tokenizer. Defaults to &#39;transformers&#39;.
 
     Returns:
         List[str]: Updated list of stop words.
@@ -63,6 +63,8 @@ def get_stop_words(stop: Optional[List[str]], tokenizer: Any,
         eos_token = tokenizer.eos_token
     elif tokenizer_type == &#39;llamacpp&#39;:
         eos_token = tokenizer.detokenize(tokens=[tokenizer.token_eos()]).decode()
+    elif tokenizer_type == &#39;openai&#39;:
+        eos_token = tokenizer.decode(tokens=[tokenizer.eot_token])
 
     if ((eos_token is not None) &amp; (eos_token not in stop)):
         stop.append(eos_token)
@@ -197,7 +199,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
 </details>
 </dd>
 <dt id="llmplus.Models.Cores.utils.get_stop_words"><code class="name flex">
-<span>def <span class="ident">get_stop_words</span></span>(<span>stop: Optional[List[str]], tokenizer: Any, add_newline_version: bool = True, tokenizer_type: Literal['transformers', 'llamacpp'] = 'transformers') ‑> List[str]</span>
+<span>def <span class="ident">get_stop_words</span></span>(<span>stop: Optional[List[str]], tokenizer: Any, add_newline_version: bool = True, tokenizer_type: Literal['transformers', 'llamacpp', 'openai'] = 'transformers') ‑> List[str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Adding necessary stop words such as EOS token and multiple newline characters.</p>
@@ -210,7 +212,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
 <dt><strong><code>add_newline_version</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Whether to use add_newline_char_to_stopwords function. Defaults to True.</dd>
 </dl>
-<p>tokenizer_type (Literal[&#39;transformers&#39;, &#39;llamacpp&#39;], optional): Type of tokenizer. Defaults to 'transformers'.</p>
+<p>tokenizer_type (Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;], optional): Type of tokenizer. Defaults to 'transformers'.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>List[str]</code></dt>
@@ -221,14 +223,14 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_stop_words(stop: Optional[List[str]], tokenizer: Any, 
-                   add_newline_version: bool = True, tokenizer_type: Literal[&#39;transformers&#39;, &#39;llamacpp&#39;] = &#39;transformers&#39;) -&gt; List[str]:
+                   add_newline_version: bool = True, tokenizer_type: Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;] = &#39;transformers&#39;) -&gt; List[str]:
     &#34;&#34;&#34;Adding necessary stop words such as EOS token and multiple newline characters.
 
     Args:
         stop (Optional[List[str]]): List of stop words, if None is given, an empty list will be assumed.
         tokenizer (Any): Tokenizer to get the EOS token.
         add_newline_version (bool, optional): Whether to use add_newline_char_to_stopwords function. Defaults to True.
-        tokenizer_type (Literal[&amp;#39;transformers&amp;#39;, &amp;#39;llamacpp&amp;#39;], optional): Type of tokenizer. Defaults to &#39;transformers&#39;.
+        tokenizer_type (Literal[&amp;#39;transformers&amp;#39;, &amp;#39;llamacpp&amp;#39;, &amp;#39;openai&amp;#39;], optional): Type of tokenizer. Defaults to &#39;transformers&#39;.
 
     Returns:
         List[str]: Updated list of stop words.
@@ -238,6 +240,8 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
         eos_token = tokenizer.eos_token
     elif tokenizer_type == &#39;llamacpp&#39;:
         eos_token = tokenizer.detokenize(tokens=[tokenizer.token_eos()]).decode()
+    elif tokenizer_type == &#39;openai&#39;:
+        eos_token = tokenizer.decode(tokens=[tokenizer.eot_token])
 
     if ((eos_token is not None) &amp; (eos_token not in stop)):
         stop.append(eos_token)

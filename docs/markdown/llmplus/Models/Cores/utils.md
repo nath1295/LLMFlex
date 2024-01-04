@@ -27,14 +27,14 @@ Functions
         Tuple[str, str]: Curated output of the model, potential root of stop words.
 
     
-`get_stop_words(stop: Optional[List[str]], tokenizer: Any, add_newline_version: bool = True, tokenizer_type: Literal['transformers', 'llamacpp'] = 'transformers') ‑> List[str]`
+`get_stop_words(stop: Optional[List[str]], tokenizer: Any, add_newline_version: bool = True, tokenizer_type: Literal['transformers', 'llamacpp', 'openai'] = 'transformers') ‑> List[str]`
 :   Adding necessary stop words such as EOS token and multiple newline characters.
     
     Args:
         stop (Optional[List[str]]): List of stop words, if None is given, an empty list will be assumed.
         tokenizer (Any): Tokenizer to get the EOS token.
         add_newline_version (bool, optional): Whether to use add_newline_char_to_stopwords function. Defaults to True.
-        tokenizer_type (Literal[&#39;transformers&#39;, &#39;llamacpp&#39;], optional): Type of tokenizer. Defaults to 'transformers'.
+        tokenizer_type (Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;], optional): Type of tokenizer. Defaults to 'transformers'.
     
     Returns:
         List[str]: Updated list of stop words.

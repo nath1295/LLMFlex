@@ -181,7 +181,7 @@ presets = {
         'human_suffix': '\n',
         'ai_prefix': 'ASSISTANT: ',
         'ai_suffix': '\n',
-        'wrapper': ['USER: ', '\n'],
+        'wrapper': ['USER: ', '\nUSER: ', 'USER:'],
         'stop': None
     },
     'Default Instruct' : {

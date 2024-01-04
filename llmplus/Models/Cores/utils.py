@@ -18,14 +18,14 @@ def add_newline_char_to_stopwords(stop: List[str]) -> List[str]:
     return new
 
 def get_stop_words(stop: Optional[List[str]], tokenizer: Any, 
-                   add_newline_version: bool = True, tokenizer_type: Literal['transformers', 'llamacpp'] = 'transformers') -> List[str]:
+                   add_newline_version: bool = True, tokenizer_type: Literal['transformers', 'llamacpp', 'openai'] = 'transformers') -> List[str]:
     """Adding necessary stop words such as EOS token and multiple newline characters.
 
     Args:
         stop (Optional[List[str]]): List of stop words, if None is given, an empty list will be assumed.
         tokenizer (Any): Tokenizer to get the EOS token.
         add_newline_version (bool, optional): Whether to use add_newline_char_to_stopwords function. Defaults to True.
-        tokenizer_type (Literal[&#39;transformers&#39;, &#39;llamacpp&#39;], optional): Type of tokenizer. Defaults to 'transformers'.
+        tokenizer_type (Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;], optional): Type of tokenizer. Defaults to 'transformers'.
 
     Returns:
         List[str]: Updated list of stop words.
@@ -35,6 +35,8 @@ def get_stop_words(stop: Optional[List[str]], tokenizer: Any,
         eos_token = tokenizer.eos_token
     elif tokenizer_type == 'llamacpp':
         eos_token = tokenizer.detokenize(tokens=[tokenizer.token_eos()]).decode()
+    elif tokenizer_type == 'openai':
+        eos_token = tokenizer.decode(tokens=[tokenizer.eot_token])
 
     if ((eos_token is not None) & (eos_token not in stop)):
         stop.append(eos_token)
