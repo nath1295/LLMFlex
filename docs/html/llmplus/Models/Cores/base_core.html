@@ -91,7 +91,7 @@ class BaseCore:
         Returns:
             List[int]: List of token ids.
         &#34;&#34;&#34;
-        return self.tokenizer(text=text)
+        return self.tokenizer(text=text)[&#39;input_ids&#39;]
     
     def decode(self, token_ids: List[int]) -&gt; str:
         &#34;&#34;&#34;Untokenize a list of tokens.
@@ -316,7 +316,7 @@ class BaseLLM(LLM):
         Returns:
             List[int]: List of token ids.
         &#34;&#34;&#34;
-        return self.tokenizer(text=text)
+        return self.tokenizer(text=text)[&#39;input_ids&#39;]
     
     def decode(self, token_ids: List[int]) -&gt; str:
         &#34;&#34;&#34;Untokenize a list of tokens.
@@ -494,7 +494,7 @@ def tokenizer(self) -&gt; Any:
     Returns:
         List[int]: List of token ids.
     &#34;&#34;&#34;
-    return self.tokenizer(text=text)</code></pre>
+    return self.tokenizer(text=text)[&#39;input_ids&#39;]</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Models.Cores.base_core.BaseCore.unload"><code class="name flex">

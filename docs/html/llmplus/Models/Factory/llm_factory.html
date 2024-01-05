@@ -67,7 +67,12 @@ class LlmFactory:
             self._core = HuggingfaceCore(model_id=self.model_id, model_type=self.model_type, **kwargs)
         elif self.model_type == &#39;openai&#39;:
             from ..Cores.openai_core import OpenAICore
-            self._core = OpenAICore(model_id=model_id **kwargs)
+            api_key = kwargs.get(&#39;api_key&#39;, None)
+            base_url = kwargs.get(&#39;base_url&#39;, None)
+            tokenizer_id = kwargs.get(&#39;tokenizer_id&#39;, None)
+            tokenizer_kwargs = kwargs.get(&#39;tokenizer_kwargs&#39;, dict())
+            self._core = OpenAICore(base_url=base_url, api_key=api_key, model_id=model_id, tokenizer_id=tokenizer_id, tokenizer_kwargs=tokenizer_kwargs)
+            self._model_id = self.core.model_id
         elif self.model_type == &#39;debug&#39;:
             self._core = BaseCore(model_id=self.model_id, **kwargs)
         else:
@@ -244,7 +249,12 @@ class LlmFactory:
             self._core = HuggingfaceCore(model_id=self.model_id, model_type=self.model_type, **kwargs)
         elif self.model_type == &#39;openai&#39;:
             from ..Cores.openai_core import OpenAICore
-            self._core = OpenAICore(model_id=model_id **kwargs)
+            api_key = kwargs.get(&#39;api_key&#39;, None)
+            base_url = kwargs.get(&#39;base_url&#39;, None)
+            tokenizer_id = kwargs.get(&#39;tokenizer_id&#39;, None)
+            tokenizer_kwargs = kwargs.get(&#39;tokenizer_kwargs&#39;, dict())
+            self._core = OpenAICore(base_url=base_url, api_key=api_key, model_id=model_id, tokenizer_id=tokenizer_id, tokenizer_kwargs=tokenizer_kwargs)
+            self._model_id = self.core.model_id
         elif self.model_type == &#39;debug&#39;:
             self._core = BaseCore(model_id=self.model_id, **kwargs)
         else:

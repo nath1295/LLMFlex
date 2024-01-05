@@ -75,5 +75,28 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
     app = ChatInterface(model=model, embeddings=embeddings)
     app.launch(mobile=mobile, auth=auth, share=share)
 
+@cli.command()
+@click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')
+@click.option('--model_file', default=None, help='Model quant file to use. Defaults to None.')
+@click.option('--context_size', default=4096, help='Context size of the model. Defaults to 4096.')
+@click.option('--port', default=5001, help='Port to use. Defaults to 5001.')
+@click.option('--kobold_dir', default='', help='Directory of the KoboldCPP. Defaults to the current directory.')
+def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = '') -> None:
+    """Serve a llm with GGUF format from HuggingFace.
+    """
+    from . import LlmFactory
+    from .Models.Factory.llm_factory import detect_model_type
+    import os
+
+    model = LlmFactory(model_id=model_id, model_file=model_file, model_type='gguf')
+    model_path = model.core.model.model_path
+    model.core.unload()
+    kobold_dir = os.path.join(kobold_dir, 'koboldcpp.py')
+    if not os.path.exists(kobold_dir):
+        raise FileNotFoundError(f'Cannot find the script "{kobold_dir}".')
+    os.system(f'python {kobold_dir} {model_path} --smartcontext --contextsize {context_size} --port {port}')
+    
+    
+
 if __name__=='__main__':
     cli()

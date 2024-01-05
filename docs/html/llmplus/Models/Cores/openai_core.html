@@ -50,6 +50,7 @@ class OpenAICore(BaseCore):
         &#34;&#34;&#34;
         from openai import OpenAI
         self._core_type = &#39;OpenAICore&#39;
+        api_key = &#39;NOAPIKEY&#39; if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
@@ -76,7 +77,7 @@ class OpenAICore(BaseCore):
         &#34;&#34;&#34;
         if self._is_openai:
             return self._tokenizer.encode(text)
-        return self.tokenizer(text=text)
+        return self.tokenizer(text=text)[&#39;input_ids&#39;]
     
     def decode(self, token_ids: List[int]) -&gt; str:
         &#34;&#34;&#34;Untokenize a list of tokens.
@@ -111,7 +112,7 @@ class OpenAILLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         &#34;&#34;&#34;
-        tokenizer_type = &#39;openai&#39; if self.core._is_openai else &#39;transformers&#39;
+        tokenizer_type = &#39;openai&#39; if core._is_openai else &#39;transformers&#39;
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, tokenizer_type)
 
         generation_config = dict(
@@ -156,7 +157,6 @@ class OpenAILLM(LLM):
         gen_config[&#39;stop&#39;] = stop
         if stream:
             def generate():
-                self.core._model.completions.create()
                 for i in self.core._model.completions.create(
                     model=self.core.model_id,
                     prompt=prompt,
@@ -274,6 +274,7 @@ class OpenAILLM(LLM):
         &#34;&#34;&#34;
         from openai import OpenAI
         self._core_type = &#39;OpenAICore&#39;
+        api_key = &#39;NOAPIKEY&#39; if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
@@ -300,7 +301,7 @@ class OpenAILLM(LLM):
         &#34;&#34;&#34;
         if self._is_openai:
             return self._tokenizer.encode(text)
-        return self.tokenizer(text=text)
+        return self.tokenizer(text=text)[&#39;input_ids&#39;]
     
     def decode(self, token_ids: List[int]) -&gt; str:
         &#34;&#34;&#34;Untokenize a list of tokens.
@@ -384,7 +385,7 @@ class OpenAILLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         &#34;&#34;&#34;
-        tokenizer_type = &#39;openai&#39; if self.core._is_openai else &#39;transformers&#39;
+        tokenizer_type = &#39;openai&#39; if core._is_openai else &#39;transformers&#39;
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, tokenizer_type)
 
         generation_config = dict(
@@ -429,7 +430,6 @@ class OpenAILLM(LLM):
         gen_config[&#39;stop&#39;] = stop
         if stream:
             def generate():
-                self.core._model.completions.create()
                 for i in self.core._model.completions.create(
                     model=self.core.model_id,
                     prompt=prompt,
