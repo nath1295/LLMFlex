@@ -143,11 +143,11 @@ class PromptTemplate:
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat']) -> PromptTemplate:
+    def from_preset(cls, style: Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat', 'OpenChat']) -> PromptTemplate:
         """Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]): Format of the prompt.
+            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -233,5 +233,15 @@ presets = {
         'ai_suffix': '</s>\n',
         'wrapper': ['<|user|>\n', '</s>\n'],
         'stop': ['</s>', '</s>\n', '<|user|>\n', '</s>\n<|user|>\n']
+    },
+    'OpenChat' : {
+        'system_prefix': 'GPT4 Correct System: ',
+        'system_suffix': '<|end_of_turn|>',
+        'human_prefix': 'GPT4 Correct User: ',
+        'human_suffix': '<|end_of_turn|>',
+        'ai_prefix': 'GPT4 Correct Assistant: ',
+        'ai_suffix': '<|end_of_turn|>',
+        'wrapper': ['GPT4 Correct User: ', '<|end_of_turn|>'],
+        'stop': ['</s>', '<|end_of_turn|>', '<|end_of_turn|>GPT4 Correct Assistant: ']
     },
 }

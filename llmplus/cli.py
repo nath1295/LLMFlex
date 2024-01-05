@@ -80,21 +80,44 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
 @click.option('--model_file', default=None, help='Model quant file to use. Defaults to None.')
 @click.option('--context_size', default=4096, help='Context size of the model. Defaults to 4096.')
 @click.option('--port', default=5001, help='Port to use. Defaults to 5001.')
-@click.option('--kobold_dir', default='', help='Directory of the KoboldCPP. Defaults to the current directory.')
+@click.option('--kobold_dir', default=None, help='Directory of the KoboldCPP. Defaults to "koboldcpp" under home directory.')
 def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = '') -> None:
     """Serve a llm with GGUF format from HuggingFace.
     """
     from . import LlmFactory
-    from .Models.Factory.llm_factory import detect_model_type
+    from huggingface_hub import model_info, hf_hub_download
+    from .utils import get_config
     import os
 
-    model = LlmFactory(model_id=model_id, model_file=model_file, model_type='gguf')
-    model_path = model.core.model.model_path
-    model.core.unload()
+    repo = model_info(repo_id=model_id)
+    files = list(map(lambda x: x.rfilename, repo.siblings))
+    model_files = list(filter(lambda x: x.endswith('.gguf'), files))
+    if len(model_files) == 0:
+        raise FileNotFoundError(f'No GGUF model files found in this repository "{model_id}".')
+    if model_file in model_files:
+        pass
+    elif model_file is None:
+        trial = ['q2', 'q3', 'q4']
+        stop = False
+        for t in trial:
+            for f in model_files:
+                if t in f.lower():
+                    model_file = f
+                    stop = True
+                    break
+            if stop:
+                break
+        if stop == False:
+            model_file = model_files[0]
+    else:
+        raise FileNotFoundError(f'File "{model_file}" not found in repository "{model_id}".')
+
+    model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
+    kobold_dir = get_config()['hf_home'] if kobold_dir is None else kobold_dir
     kobold_dir = os.path.join(kobold_dir, 'koboldcpp.py')
     if not os.path.exists(kobold_dir):
         raise FileNotFoundError(f'Cannot find the script "{kobold_dir}".')
-    os.system(f'python {kobold_dir} {model_path} --smartcontext --contextsize {context_size} --port {port}')
+    os.system(f'python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port}')
     
     
 
