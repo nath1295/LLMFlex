@@ -30,6 +30,7 @@ class OpenAICore(BaseCore):
         if tokenizer_id is not None:
             from ...utils import get_config
             os.environ['HF_HOME'] = get_config()['hf_home']
+            os.environ['TOKENIZERS_PARALLELISM'] = 'true'
             from transformers import AutoTokenizer
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
         elif self._is_openai:
