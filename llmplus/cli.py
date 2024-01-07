@@ -58,19 +58,19 @@ def config() -> None:
 @click.option('--mobile', is_flag=True, help='Whether to launch the mobile interface or not.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
 @click.option('--share', is_flag=True, help='Whether to create a public link or not.')
-@click.option('--extra', default='', help='Extra arugments for loading the model.')
+@click.option('--extras', default='', help='Extra arugments for loading the model.')
 def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
               embeddings: str = 'thenlper/gte-large', 
               model_type: str = 'auto',
               mobile: bool = False, auth: Optional[Tuple[str, str]] = None,
               share: bool = False,
-              extra: str = "") -> None:
+              extras: str = "") -> None:
     """Launch the Gradio Chat GUI.
     """
     from . import HuggingfaceEmbeddingsToolkit, LlmFactory
     from .Frontend.chat_interface import ChatInterface
     model_id = None if model_id == 'None' else model_id
-    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extra))
+    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extras))
     embeddings = HuggingfaceEmbeddingsToolkit(model_id=embeddings)
     app = ChatInterface(model=model, embeddings=embeddings)
     app.launch(mobile=mobile, auth=auth, share=share)
@@ -81,7 +81,8 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
 @click.option('--context_size', default=4096, help='Context size of the model. Defaults to 4096.')
 @click.option('--port', default=5001, help='Port to use. Defaults to 5001.')
 @click.option('--kobold_dir', default=None, help='Directory of the KoboldCPP. Defaults to "koboldcpp" under home directory.')
-def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = '') -> None:
+@click.option('--extras', default='', help='Extra arugments for KoblodCPP.')
+def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = '', extras: str = '') -> None:
     """Serve a llm with GGUF format from HuggingFace.
     """
     from . import LlmFactory
@@ -117,7 +118,7 @@ def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4
     kobold_dir = os.path.join(kobold_dir, 'koboldcpp', 'koboldcpp.py')
     if not os.path.exists(kobold_dir):
         raise FileNotFoundError(f'Cannot find the script "{kobold_dir}".')
-    os.system(f'python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port}')
+    os.system(f'python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port} {extras}')
     
     
 

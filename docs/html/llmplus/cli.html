@@ -86,19 +86,19 @@ def config() -&gt; None:
 @click.option(&#39;--mobile&#39;, is_flag=True, help=&#39;Whether to launch the mobile interface or not.&#39;)
 @click.option(&#39;--auth&#39;, type=(str, str), default=None, help=&#39;User name and password for authentication.&#39;)
 @click.option(&#39;--share&#39;, is_flag=True, help=&#39;Whether to create a public link or not.&#39;)
-@click.option(&#39;--extra&#39;, default=&#39;&#39;, help=&#39;Extra arugments for loading the model.&#39;)
+@click.option(&#39;--extras&#39;, default=&#39;&#39;, help=&#39;Extra arugments for loading the model.&#39;)
 def interface(model_id: str = &#39;TheBloke/OpenHermes-2.5-Mistral-7B-GGUF&#39;, 
               embeddings: str = &#39;thenlper/gte-large&#39;, 
               model_type: str = &#39;auto&#39;,
               mobile: bool = False, auth: Optional[Tuple[str, str]] = None,
               share: bool = False,
-              extra: str = &#34;&#34;) -&gt; None:
+              extras: str = &#34;&#34;) -&gt; None:
     &#34;&#34;&#34;Launch the Gradio Chat GUI.
     &#34;&#34;&#34;
     from . import HuggingfaceEmbeddingsToolkit, LlmFactory
     from .Frontend.chat_interface import ChatInterface
     model_id = None if model_id == &#39;None&#39; else model_id
-    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extra))
+    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extras))
     embeddings = HuggingfaceEmbeddingsToolkit(model_id=embeddings)
     app = ChatInterface(model=model, embeddings=embeddings)
     app.launch(mobile=mobile, auth=auth, share=share)
@@ -109,7 +109,8 @@ def interface(model_id: str = &#39;TheBloke/OpenHermes-2.5-Mistral-7B-GGUF&#39;,
 @click.option(&#39;--context_size&#39;, default=4096, help=&#39;Context size of the model. Defaults to 4096.&#39;)
 @click.option(&#39;--port&#39;, default=5001, help=&#39;Port to use. Defaults to 5001.&#39;)
 @click.option(&#39;--kobold_dir&#39;, default=None, help=&#39;Directory of the KoboldCPP. Defaults to &#34;koboldcpp&#34; under home directory.&#39;)
-def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = &#39;&#39;) -&gt; None:
+@click.option(&#39;--extras&#39;, default=&#39;&#39;, help=&#39;Extra arugments for KoblodCPP.&#39;)
+def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = &#39;&#39;, extras: str = &#39;&#39;) -&gt; None:
     &#34;&#34;&#34;Serve a llm with GGUF format from HuggingFace.
     &#34;&#34;&#34;
     from . import LlmFactory
@@ -145,7 +146,7 @@ def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4
     kobold_dir = os.path.join(kobold_dir, &#39;koboldcpp&#39;, &#39;koboldcpp.py&#39;)
     if not os.path.exists(kobold_dir):
         raise FileNotFoundError(f&#39;Cannot find the script &#34;{kobold_dir}&#34;.&#39;)
-    os.system(f&#39;python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port}&#39;)
+    os.system(f&#39;python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port} {extras}&#39;)
     
     
 
