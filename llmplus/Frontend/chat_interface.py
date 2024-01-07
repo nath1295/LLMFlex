@@ -237,6 +237,7 @@ class ChatInterface:
                 mem = LongShortTermChatMemory(title=title, embeddings=self.embeddings, from_exist=False)
                 shutil.rmtree(mem.chat_dir)
         system = self.memory.info.get('system', DEFAULT_SYSTEM_MESSAGE)
+        self.system = system
         # Things to return: new, title dropdown, chatbot, system
         return gr.Textbox(value=''), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True)
 

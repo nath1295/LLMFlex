@@ -1,81 +1,33 @@
-Module llmplus.Models.Cores.base_core
-=====================================
+Module llmplus.Models.Cores.openai_core
+=======================================
 
 Classes
 -------
 
-`BaseCore(model_id: str = 'gpt2', **kwargs)`
-:   Base class of Core object to store the llm model and tokenizer.
+`OpenAICore(base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = {})`
+:   Core class for llm models using openai api interface.
         
     
-    Initialising the core instance.
-    
-    Args:
-        model_id (str, optional): Model id (from Huggingface) to use. Defaults to 'gpt2'.
-
-    ### Descendants
-
-    * llmplus.Models.Cores.huggingface_core.HuggingfaceCore
-    * llmplus.Models.Cores.llamacpp_core.LlamaCppCore
-    * llmplus.Models.Cores.openai_core.OpenAICore
-
-    ### Instance variables
-
-    `core_type: str`
-    :   Type of core.
-        
-        Returns:
-            str: Type of core.
-
-    `model: Any`
-    :   Model for llms.
-        
-        Returns:
-            Any: Model for llms.
-
-    `model_id: str`
-    :   Model ID.
-        
-        Returns:
-            str: Model ID.
-
-    `tokenizer: Any`
-    :   Tokenizer of the model.
-        
-        Returns:
-            Any: Tokenizer of the model.
-
-    ### Methods
-
-    `decode(self, token_ids: List[int]) ‑> str`
-    :   Untokenize a list of tokens.
-        
-        Args:
-            token_ids (List[int]): Token ids to untokenize. 
-        
-        Returns:
-            str: Untokenized string.
-
-    `encode(self, text: str) ‑> List[int]`
-    :   Tokenize the given text.
-        
-        Args:
-            text (str): Text to tokenize.
-        
-        Returns:
-            List[int]: List of token ids.
-
-    `unload(self) ‑> None`
-    :   Unload the model from ram.
-
-`BaseLLM(core: llmplus.Models.Cores.base_core.BaseCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)`
-:   Base LLM class for llmplus, using the LLM class from langchain.
-        
-    
-    Initialising the LLM.
+    Initialising the llm core.
     
     Args:
-        core (BaseCore): The BaseCore core.
+        base_url (Optional[str], optional): URL for the model api endpoint, if None is given, it will use the default URL for OpenAI api. Defaults to None.
+        api_key (Optional[str], optional): If using OpenAI api, API key should be provided. Defaults to None.
+        model_id (Optional[str], optional): If using OpenAI api or using an api with multiple models, please provide the model to use. Otherwise 'gpt-3.5-turbo' or the first available model will be used by default. Defaults to None.
+        tokenizer_id (Optional[str], optional): If not using OpenAI api, repo_id to get the tokenizer from HuggingFace must be provided. Defaults to None.
+        tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
+
+    ### Ancestors (in MRO)
+
+    * llmplus.Models.Cores.base_core.BaseCore
+
+`OpenAILLM(core: llmplus.Models.Cores.openai_core.OpenAICore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)`
+:   Custom implementation of streaming for models from OpenAI api. Used in the Llm factory to get new llm from the model.
+    
+    Initialising the llm.
+    
+    Args:
+        core (OpenAICor): The OpenAICore core.
         temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
         max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
         top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -99,7 +51,7 @@ Classes
 
     ### Class variables
 
-    `core: llmplus.Models.Cores.base_core.BaseCore`
+    `core: llmplus.Models.Cores.openai_core.OpenAICore`
     :
 
     `generation_config: Dict[str, Any]`

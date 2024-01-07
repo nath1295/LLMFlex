@@ -6,7 +6,7 @@ from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
 from .base_core import BaseCore
-from .utils import get_stop_words, find_roots
+from .utils import get_stop_words, textgen_iterator
 from typing import Optional, List, Dict, Any, Union, Iterator, Literal
 
 class KeywordsStoppingCriteria(StoppingCriteria):
@@ -158,7 +158,8 @@ class HuggingfaceLLM(LLM):
 
         if stream:
             from threading import Thread
-            gen_config['streamer'] = self.state['streamer']
+            from transformers import TextIteratorStreamer
+            gen_config['streamer'] = TextIteratorStreamer(tokenizer=self.core.tokenizer, skip_prompt=True)
             
             def pipe(prompt):
                 tokens = self.core.tokenizer(
@@ -170,26 +171,11 @@ class HuggingfaceLLM(LLM):
             trd = Thread(target=pipe, args=[prompt])
             def generate():
                 trd.start()
-                text, output, root = '', '', ''
-                cont = True
-                stop_len = list(map(len, stop))
-                for i in self.state['streamer']:
-                    temp = text + root + i
-                    text, root = find_roots(temp, stop, stop_len)
-                    if root in stop:
-                        cont = False
-                    token = text.removeprefix(output)
-                    output += token
-                    if cont:
-                        yield token
-                    else:
-                        yield ''
+                for i in gen_config['streamer']:
+                    yield i
                 trd.join()
-                if root not in stop:
-                    yield root
-                else:
-                    yield ''
-            return generate()
+                yield ''
+            return textgen_iterator(generate(), stop=stop)
         
         else:
             from langchain.llms.utils import enforce_stop_tokens

@@ -41,11 +41,11 @@ Classes
         Returns:
             PromptTemplatet: The initialised PromptTemplate instance.
 
-    `from_preset(style: "Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat']") ‑> llmplus.Prompts.prompt_template.PromptTemplate`
+    `from_preset(style: "Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat', 'OpenChat']") ‑> llmplus.Prompts.prompt_template.PromptTemplate`
     :   Initialise the prompt template from a preset.
         
         Args:
-            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;]): Format of the prompt.
+            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]): Format of the prompt.
         
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.

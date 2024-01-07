@@ -63,7 +63,7 @@ class BaseCore:
         Returns:
             List[int]: List of token ids.
         """
-        return self.tokenizer(text=text)
+        return self.tokenizer(text=text)['input_ids']
     
     def decode(self, token_ids: List[int]) -> str:
         """Untokenize a list of tokens.

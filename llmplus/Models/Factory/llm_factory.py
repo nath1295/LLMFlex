@@ -22,12 +22,12 @@ def detect_model_type(model_id: str) -> str:
 
 class LlmFactory:
 
-    def __init__(self, model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'debug'] = 'auto', **kwargs) -> None:
+    def __init__(self, model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'debug'] = 'auto', **kwargs) -> None:
         """Initiate the model core to create LLMs.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.
-            model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.
+            model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.
         """
         self._model_id = model_id
         self._model_type = detect_model_type(model_id=model_id) if model_type=='auto' else model_type
@@ -37,6 +37,14 @@ class LlmFactory:
         elif self.model_type in ['default', 'awq', 'gptq']:
             from ..Cores.huggingface_core import HuggingfaceCore
             self._core = HuggingfaceCore(model_id=self.model_id, model_type=self.model_type, **kwargs)
+        elif self.model_type == 'openai':
+            from ..Cores.openai_core import OpenAICore
+            api_key = kwargs.get('api_key', None)
+            base_url = kwargs.get('base_url', None)
+            tokenizer_id = kwargs.get('tokenizer_id', None)
+            tokenizer_kwargs = kwargs.get('tokenizer_kwargs', dict())
+            self._core = OpenAICore(base_url=base_url, api_key=api_key, model_id=model_id, tokenizer_id=tokenizer_id, tokenizer_kwargs=tokenizer_kwargs)
+            self._model_id = self.core.model_id
         elif self.model_type == 'debug':
             self._core = BaseCore(model_id=self.model_id, **kwargs)
         else:
@@ -115,6 +123,10 @@ class LlmFactory:
         elif self.model_type in ['default', 'awq', 'gptq']:
             from ..Cores.huggingface_core import HuggingfaceLLM
             return HuggingfaceLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
+        elif self.model_type == 'openai':
+            from ..Cores.openai_core import OpenAILLM
+            return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
                                  top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
         elif self.model_type =='debug':
             return BaseLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 

@@ -8,3 +8,6 @@ gradio>=4.11.0
 duckduckgo-search
 markdownify
 fake-useragent
+openai>=1.4
+tiktoken
+protobuf

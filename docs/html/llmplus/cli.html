@@ -27,7 +27,39 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import click
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict, Any
+
+def args_from_string(arg_string: str) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Parsing kwargs from a string.
+
+    Args:
+        arg_string (str): String of arguments.
+
+    Returns:
+        Dict[str, Any]: kwargs.
+    &#34;&#34;&#34;
+    import ast
+    args = {}
+    buf = &#34;&#34;
+    stack = []
+    for ch in arg_string:
+        if ch in [&#39;{&#39;, &#39;[&#39;]:
+            stack.append(ch)
+        elif ch in [&#39;}&#39;, &#39;]&#39;]:
+            stack.pop()
+        elif ch == &#39;,&#39; and not stack:
+            key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
+            args[key] = ast.literal_eval(value)
+            buf = &#34;&#34;
+            continue
+        buf += ch
+
+    # Handling the last key-value pair (or the only pair if no comma is present)
+    if buf:
+        key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
+        args[key] = ast.literal_eval(value)
+
+    return args
 
 @click.group()
 def cli() -&gt; None:
@@ -54,20 +86,69 @@ def config() -&gt; None:
 @click.option(&#39;--mobile&#39;, is_flag=True, help=&#39;Whether to launch the mobile interface or not.&#39;)
 @click.option(&#39;--auth&#39;, type=(str, str), default=None, help=&#39;User name and password for authentication.&#39;)
 @click.option(&#39;--share&#39;, is_flag=True, help=&#39;Whether to create a public link or not.&#39;)
+@click.option(&#39;--extras&#39;, default=&#39;&#39;, help=&#39;Extra arugments for loading the model.&#39;)
 def interface(model_id: str = &#39;TheBloke/OpenHermes-2.5-Mistral-7B-GGUF&#39;, 
               embeddings: str = &#39;thenlper/gte-large&#39;, 
               model_type: str = &#39;auto&#39;,
               mobile: bool = False, auth: Optional[Tuple[str, str]] = None,
-              share: bool = False) -&gt; None:
+              share: bool = False,
+              extras: str = &#34;&#34;) -&gt; None:
     &#34;&#34;&#34;Launch the Gradio Chat GUI.
     &#34;&#34;&#34;
     from . import HuggingfaceEmbeddingsToolkit, LlmFactory
     from .Frontend.chat_interface import ChatInterface
-
-    model = LlmFactory(model_id=model_id, model_type=model_type)
+    model_id = None if model_id == &#39;None&#39; else model_id
+    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extras))
     embeddings = HuggingfaceEmbeddingsToolkit(model_id=embeddings)
     app = ChatInterface(model=model, embeddings=embeddings)
     app.launch(mobile=mobile, auth=auth, share=share)
+
+@cli.command()
+@click.option(&#39;--model_id&#39;, default=&#39;TheBloke/OpenHermes-2.5-Mistral-7B-GGUF&#39;, help=&#39;LLM model ID to use.&#39;)
+@click.option(&#39;--model_file&#39;, default=None, help=&#39;Model quant file to use. Defaults to None.&#39;)
+@click.option(&#39;--context_size&#39;, default=4096, help=&#39;Context size of the model. Defaults to 4096.&#39;)
+@click.option(&#39;--port&#39;, default=5001, help=&#39;Port to use. Defaults to 5001.&#39;)
+@click.option(&#39;--kobold_dir&#39;, default=None, help=&#39;Directory of the KoboldCPP. Defaults to &#34;koboldcpp&#34; under home directory.&#39;)
+@click.option(&#39;--extras&#39;, default=&#39;&#39;, help=&#39;Extra arugments for KoblodCPP.&#39;)
+def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = &#39;&#39;, extras: str = &#39;&#39;) -&gt; None:
+    &#34;&#34;&#34;Serve a llm with GGUF format from HuggingFace.
+    &#34;&#34;&#34;
+    from . import LlmFactory
+    from huggingface_hub import model_info, hf_hub_download
+    from .utils import get_config
+    import os
+
+    repo = model_info(repo_id=model_id)
+    files = list(map(lambda x: x.rfilename, repo.siblings))
+    model_files = list(filter(lambda x: x.endswith(&#39;.gguf&#39;), files))
+    if len(model_files) == 0:
+        raise FileNotFoundError(f&#39;No GGUF model files found in this repository &#34;{model_id}&#34;.&#39;)
+    if model_file in model_files:
+        pass
+    elif model_file is None:
+        trial = [&#39;q2&#39;, &#39;q3&#39;, &#39;q4&#39;]
+        stop = False
+        for t in trial:
+            for f in model_files:
+                if t in f.lower():
+                    model_file = f
+                    stop = True
+                    break
+            if stop:
+                break
+        if stop == False:
+            model_file = model_files[0]
+    else:
+        raise FileNotFoundError(f&#39;File &#34;{model_file}&#34; not found in repository &#34;{model_id}&#34;.&#39;)
+
+    model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
+    kobold_dir = get_config()[&#39;llmplus_home&#39;] if kobold_dir is None else kobold_dir
+    kobold_dir = os.path.join(kobold_dir, &#39;koboldcpp&#39;, &#39;koboldcpp.py&#39;)
+    if not os.path.exists(kobold_dir):
+        raise FileNotFoundError(f&#39;Cannot find the script &#34;{kobold_dir}&#34;.&#39;)
+    os.system(f&#39;python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port} {extras}&#39;)
+    
+    
 
 if __name__==&#39;__main__&#39;:
     cli()</code></pre>
@@ -78,6 +159,61 @@ if __name__==&#39;__main__&#39;:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmplus.cli.args_from_string"><code class="name flex">
+<span>def <span class="ident">args_from_string</span></span>(<span>arg_string: str) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parsing kwargs from a string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>arg_string</code></strong> :&ensp;<code>str</code></dt>
+<dd>String of arguments.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>kwargs.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def args_from_string(arg_string: str) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Parsing kwargs from a string.
+
+    Args:
+        arg_string (str): String of arguments.
+
+    Returns:
+        Dict[str, Any]: kwargs.
+    &#34;&#34;&#34;
+    import ast
+    args = {}
+    buf = &#34;&#34;
+    stack = []
+    for ch in arg_string:
+        if ch in [&#39;{&#39;, &#39;[&#39;]:
+            stack.append(ch)
+        elif ch in [&#39;}&#39;, &#39;]&#39;]:
+            stack.pop()
+        elif ch == &#39;,&#39; and not stack:
+            key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
+            args[key] = ast.literal_eval(value)
+            buf = &#34;&#34;
+            continue
+        buf += ch
+
+    # Handling the last key-value pair (or the only pair if no comma is present)
+    if buf:
+        key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
+        args[key] = ast.literal_eval(value)
+
+    return args</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -91,6 +227,11 @@ if __name__==&#39;__main__&#39;:
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="llmplus" href="index.html">llmplus</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmplus.cli.args_from_string" href="#llmplus.cli.args_from_string">args_from_string</a></code></li>
 </ul>
 </li>
 </ul>

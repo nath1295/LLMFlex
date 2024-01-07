@@ -17,12 +17,12 @@ Functions
 Classes
 -------
 
-`LlmFactory(model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'debug'] = 'auto', **kwargs)`
+`LlmFactory(model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'debug'] = 'auto', **kwargs)`
 :   Initiate the model core to create LLMs.
     
     Args:
         model_id (str): Model id (from Huggingface) to use.
-        model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.
+        model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.
 
     ### Instance variables
 
