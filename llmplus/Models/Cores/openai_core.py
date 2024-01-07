@@ -121,6 +121,7 @@ class OpenAILLM(LLM):
             Iterator[str]: The next generated token.
         """
         import warnings
+        from .utils import textgen_iterator
         warnings.filterwarnings('ignore')
         tokenizer_type = 'openai' if self.core._is_openai else 'transformers'
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=tokenizer_type) if stop is not None else self.stop
@@ -140,7 +141,7 @@ class OpenAILLM(LLM):
                     stream=True
                 ):
                     yield i.choices[0].text
-            return generate()
+            return textgen_iterator(generate(), stop=stop)
         else:
             return self.core._model.completions.create(
                 model=self.core.model_id,

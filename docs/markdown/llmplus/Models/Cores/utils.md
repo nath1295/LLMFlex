@@ -21,7 +21,7 @@ Functions
     Args:
         text (str): Output of the model.
         stop (List[str]): List of stop words.
-        stop_len (List[int]): List of the lengths of te stop words.
+        stop_len (List[int]): List of the lengths of the stop words.
     
     Returns:
         Tuple[str, str]: Curated output of the model, potential root of stop words.
@@ -38,3 +38,14 @@ Functions
     
     Returns:
         List[str]: Updated list of stop words.
+
+    
+`textgen_iterator(text_generator: Iterator[str], stop: List[str]) ‑> Iterator[str]`
+:   Make a text generator stop before spitting out the stop words.
+    
+    Args:
+        text_generator (Iterator[str]): Text generator to transform.
+        stop (List[str]): Stop words.
+    
+    Yields:
+        Iterator[str]: Text generator with stop words applied.

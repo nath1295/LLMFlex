@@ -141,8 +141,8 @@ def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4
         raise FileNotFoundError(f&#39;File &#34;{model_file}&#34; not found in repository &#34;{model_id}&#34;.&#39;)
 
     model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
-    kobold_dir = get_config()[&#39;hf_home&#39;] if kobold_dir is None else kobold_dir
-    kobold_dir = os.path.join(kobold_dir, &#39;koboldcpp.py&#39;)
+    kobold_dir = get_config()[&#39;llmplus_home&#39;] if kobold_dir is None else kobold_dir
+    kobold_dir = os.path.join(kobold_dir, &#39;koboldcpp&#39;, &#39;koboldcpp.py&#39;)
     if not os.path.exists(kobold_dir):
         raise FileNotFoundError(f&#39;Cannot find the script &#34;{kobold_dir}&#34;.&#39;)
     os.system(f&#39;python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port}&#39;)

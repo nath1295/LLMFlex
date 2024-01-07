@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List, Optional, Any, Literal, Tuple
+<pre><code class="python">from typing import List, Optional, Any, Literal, Tuple, Iterator
 
 def add_newline_char_to_stopwords(stop: List[str]) -&gt; List[str]:
     &#34;&#34;&#34;Create a duplicate of the stop words and add a new line character as a prefix to each of them if their prefixes are not new line characters.
@@ -84,7 +84,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
     Args:
         text (str): Output of the model.
         stop (List[str]): List of stop words.
-        stop_len (List[int]): List of the lengths of te stop words.
+        stop_len (List[int]): List of the lengths of the stop words.
 
     Returns:
         Tuple[str, str]: Curated output of the model, potential root of stop words.
@@ -102,6 +102,35 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
             break
     text  = text[:-len(root)] if root else text
     return text, root
+
+def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -&gt; Iterator[str]:
+    &#34;&#34;&#34;Make a text generator stop before spitting out the stop words.
+
+    Args:
+        text_generator (Iterator[str]): Text generator to transform.
+        stop (List[str]): Stop words.
+
+    Yields:
+        Iterator[str]: Text generator with stop words applied.
+    &#34;&#34;&#34;
+    text, output, root = &#39;&#39;, &#39;&#39;, &#39;&#39;
+    cont = True
+    stop_len = list(map(len, stop))
+    for i in text_generator:
+        temp = text + root + i
+        text, root = find_roots(temp, stop, stop_len)
+        if root in stop:
+            cont = False
+        token = text.removeprefix(output)
+        output += token
+        if cont:
+            yield token
+        else:
+            yield &#39;&#39;
+    if root not in stop:
+        yield root
+    else:
+        yield &#39;&#39;
     </code></pre>
 </details>
 </section>
@@ -161,7 +190,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
 <dt><strong><code>stop</code></strong> :&ensp;<code>List[str]</code></dt>
 <dd>List of stop words.</dd>
 <dt><strong><code>stop_len</code></strong> :&ensp;<code>List[int]</code></dt>
-<dd>List of the lengths of te stop words.</dd>
+<dd>List of the lengths of the stop words.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -178,7 +207,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
     Args:
         text (str): Output of the model.
         stop (List[str]): List of stop words.
-        stop_len (List[int]): List of the lengths of te stop words.
+        stop_len (List[int]): List of the lengths of the stop words.
 
     Returns:
         Tuple[str, str]: Curated output of the model, potential root of stop words.
@@ -256,6 +285,57 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
         return list(set(stop))</code></pre>
 </details>
 </dd>
+<dt id="llmplus.Models.Cores.utils.textgen_iterator"><code class="name flex">
+<span>def <span class="ident">textgen_iterator</span></span>(<span>text_generator: Iterator[str], stop: List[str]) ‑> Iterator[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Make a text generator stop before spitting out the stop words.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text_generator</code></strong> :&ensp;<code>Iterator[str]</code></dt>
+<dd>Text generator to transform.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>Stop words.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Iterator[str]</code></dt>
+<dd>Text generator with stop words applied.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -&gt; Iterator[str]:
+    &#34;&#34;&#34;Make a text generator stop before spitting out the stop words.
+
+    Args:
+        text_generator (Iterator[str]): Text generator to transform.
+        stop (List[str]): Stop words.
+
+    Yields:
+        Iterator[str]: Text generator with stop words applied.
+    &#34;&#34;&#34;
+    text, output, root = &#39;&#39;, &#39;&#39;, &#39;&#39;
+    cont = True
+    stop_len = list(map(len, stop))
+    for i in text_generator:
+        temp = text + root + i
+        text, root = find_roots(temp, stop, stop_len)
+        if root in stop:
+            cont = False
+        token = text.removeprefix(output)
+        output += token
+        if cont:
+            yield token
+        else:
+            yield &#39;&#39;
+    if root not in stop:
+        yield root
+    else:
+        yield &#39;&#39;</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -277,6 +357,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
 <li><code><a title="llmplus.Models.Cores.utils.add_newline_char_to_stopwords" href="#llmplus.Models.Cores.utils.add_newline_char_to_stopwords">add_newline_char_to_stopwords</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.find_roots" href="#llmplus.Models.Cores.utils.find_roots">find_roots</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.get_stop_words" href="#llmplus.Models.Cores.utils.get_stop_words">get_stop_words</a></code></li>
+<li><code><a title="llmplus.Models.Cores.utils.textgen_iterator" href="#llmplus.Models.Cores.utils.textgen_iterator">textgen_iterator</a></code></li>
 </ul>
 </li>
 </ul>

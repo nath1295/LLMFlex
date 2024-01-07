@@ -1,4 +1,4 @@
-from typing import List, Optional, Any, Literal, Tuple
+from typing import List, Optional, Any, Literal, Tuple, Iterator
 
 def add_newline_char_to_stopwords(stop: List[str]) -> List[str]:
     """Create a duplicate of the stop words and add a new line character as a prefix to each of them if their prefixes are not new line characters.
@@ -56,7 +56,7 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -> Tuple[str, st
     Args:
         text (str): Output of the model.
         stop (List[str]): List of stop words.
-        stop_len (List[int]): List of the lengths of te stop words.
+        stop_len (List[int]): List of the lengths of the stop words.
 
     Returns:
         Tuple[str, str]: Curated output of the model, potential root of stop words.
@@ -74,6 +74,35 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -> Tuple[str, st
             break
     text  = text[:-len(root)] if root else text
     return text, root
+
+def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -> Iterator[str]:
+    """Make a text generator stop before spitting out the stop words.
+
+    Args:
+        text_generator (Iterator[str]): Text generator to transform.
+        stop (List[str]): Stop words.
+
+    Yields:
+        Iterator[str]: Text generator with stop words applied.
+    """
+    text, output, root = '', '', ''
+    cont = True
+    stop_len = list(map(len, stop))
+    for i in text_generator:
+        temp = text + root + i
+        text, root = find_roots(temp, stop, stop_len)
+        if root in stop:
+            cont = False
+        token = text.removeprefix(output)
+        output += token
+        if cont:
+            yield token
+        else:
+            yield ''
+    if root not in stop:
+        yield root
+    else:
+        yield ''
     
 
 
