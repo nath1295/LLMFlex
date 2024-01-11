@@ -26,11 +26,11 @@ Classes
 
     ### Instance variables
 
-    `core: llmplus.Models.Cores.base_core.BaseCore`
+    `core: Type[llmplus.Models.Cores.base_core.BaseCore]`
     :   Core model of the llm factory.
         
         Returns:
-            BaseCore: Core model of the llm factory.
+            Type[BaseCore]: Core model of the llm factory.
 
     `model_id: str`
     :   Model id (from Huggingface).
@@ -46,7 +46,7 @@ Classes
 
     ### Methods
 
-    `call(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, newline=True, **kwargs: Dict[str, Any]) ‑> llmplus.Models.Cores.base_core.BaseLLM`
+    `call(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, newline=True, **kwargs: Dict[str, Any]) ‑> Type[llmplus.Models.Cores.base_core.BaseLLM]`
     :   Calling the object will create a langchain format llm with the generation configurations passed from the arguments. 
         
         Args:

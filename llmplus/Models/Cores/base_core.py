@@ -1,7 +1,7 @@
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
-from typing import Any, List, Dict, Optional, Union, Iterator
+from typing import Any, List, Dict, Optional, Union, Iterator, Type
 
 class BaseCore:
     """Base class of Core object to store the llm model and tokenizer.
@@ -83,38 +83,21 @@ class BaseCore:
         del self._tokenizer
         self._tokenizer = None
     
-
 class BaseLLM(LLM):
     """Base LLM class for llmplus, using the LLM class from langchain.
     """
-    core: BaseCore
+    core: Type[BaseCore]
     generation_config: Dict[str, Any]
     stop: List[str]
 
-    def __init__(self, core: BaseCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -> None:
+    def __init__(self, core: Type[BaseCore], generation_config: Dict[str, Any], stop: List[str]) -> None:
         """Initialising the LLM.
 
         Args:
-            core (BaseCore): The BaseCore core.
-            temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
-            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
-            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
-            top_k (int, optional): While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.
-            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
-            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            core (Type[BaseCore]): The LLM model core.
+            generation_config (Dict[str, Any]): Generation configuration.
+            stop (List[str]): List of strings to stop the generation of the llm.
         """
-        from .utils import get_stop_words
-        generation_config = dict(
-            temperature = temperature,
-            max_new_tokens = max_new_tokens,
-            top_p  = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version)
         super().__init__(core=core, generation_config=generation_config, stop=stop)
         self.core = core
         self.generation_config = generation_config
@@ -191,6 +174,50 @@ class BaseLLM(LLM):
             List[int]: List of token ids.
         """
         return self.core.encode(text=text)
+    
+    def _llm_type(self) -> str:
+        """LLM type.
+
+        Returns:
+            str: LLM type.
+        """
+        return 'BaseLLM'
+
+class DebugLLM(BaseLLM):
+    """Base LLM class for llmplus, using the LLM class from langchain.
+    """
+    core: BaseCore
+    generation_config: Dict[str, Any]
+    stop: List[str]
+
+    def __init__(self, core: BaseCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -> None:
+        """Initialising the LLM.
+
+        Args:
+            core (BaseCore): The BaseCore core.
+            temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+        """
+        from .utils import get_stop_words
+        generation_config = dict(
+            temperature = temperature,
+            max_new_tokens = max_new_tokens,
+            top_p  = top_p,
+            top_k = top_k,
+            repetition_penalty = repetition_penalty
+        )
+
+        stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version)
+        super().__init__(core=core, generation_config=generation_config, stop=stop)
+        self.core = core
+        self.generation_config = generation_config
+        self.stop = stop
     
     def _llm_type(self) -> str:
         """LLM type.

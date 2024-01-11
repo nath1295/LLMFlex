@@ -4,7 +4,7 @@ Module llmplus.Frontend.chat_interface
 Classes
 -------
 
-`ChatInterface(model: llmplus.Models.Factory.llm_factory.LlmFactory, embeddings: llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit)`
+`ChatInterface(model: llmplus.Models.Factory.llm_factory.LlmFactory, embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit])`
 :   
 
     ### Instance variables

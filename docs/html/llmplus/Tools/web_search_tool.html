@@ -30,7 +30,7 @@
 from ..Prompts.prompt_template import PromptTemplate
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from .base_tool import BaseTool
-from typing import Iterator, List, Dict, Any, Optional, Union, Literal, Callable
+from typing import Iterator, List, Dict, Any, Optional, Union, Literal, Type
 
 WEB_SEARCH_TOOL_DESCRIPTION = &#34;&#34;&#34;This tool is for doing searches on the internet for facts or most updated information via a search engine.
 Input of this tool should be a search query. 
@@ -91,13 +91,13 @@ def parse_url(url: str, timeout: int = 10) -&gt; str:
 class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
     &#34;&#34;&#34;
-    def __init__(self, embeddings: BaseEmbeddingsToolkit, 
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
                  name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
                  search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialise teh web search tool.
 
         Args:
-            embeddings (BaseEmbeddingsToolkit): Embeddings to use for creating template
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
             name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
             search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
@@ -126,14 +126,14 @@ class WebSearchTool(BaseTool):
             return [f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;]
         
 
-    def run(self, tool_input: str, llm: BaseLLM = None, stream: bool = False, 
+    def run(self, tool_input: str, llm: Type[BaseLLM] = None, stream: bool = False, 
             history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
             generate_query: bool = True, return_type: Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;] = &#39;response&#39;, **kwargs) -&gt; Union[str, Iterator[str], List[Dict[str, Any]], Any]:
         &#34;&#34;&#34;Run the web search tool. Any keyword arguments will be passed to the search method.
 
         Args:
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
-            llm (BaseLLM, optional): It will be used to create the search query and generate output if `generate_query=True`. 
+            llm (Type[BaseLLM], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
             history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
@@ -308,14 +308,14 @@ class WebSearchTool(BaseTool):
 <dl>
 <dt id="llmplus.Tools.web_search_tool.WebSearchTool"><code class="flex name class">
 <span>class <span class="ident">WebSearchTool</span></span>
-<span>(</span><span>embeddings: <a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>, name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)</span>
+<span>(</span><span>embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the tool class for doing web search.</p>
 <p>Initialise teh web search tool.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddingsToolkit</code></dt>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>Type[BaseEmbeddingsToolkit]</code></dt>
 <dd>Embeddings to use for creating template</dd>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>Name of the tool. Defaults to 'web_search'.</dd>
@@ -332,13 +332,13 @@ class WebSearchTool(BaseTool):
 <pre><code class="python">class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
     &#34;&#34;&#34;
-    def __init__(self, embeddings: BaseEmbeddingsToolkit, 
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
                  name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
                  search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialise teh web search tool.
 
         Args:
-            embeddings (BaseEmbeddingsToolkit): Embeddings to use for creating template
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
             name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
             search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
@@ -367,14 +367,14 @@ class WebSearchTool(BaseTool):
             return [f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;]
         
 
-    def run(self, tool_input: str, llm: BaseLLM = None, stream: bool = False, 
+    def run(self, tool_input: str, llm: Type[BaseLLM] = None, stream: bool = False, 
             history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
             generate_query: bool = True, return_type: Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;] = &#39;response&#39;, **kwargs) -&gt; Union[str, Iterator[str], List[Dict[str, Any]], Any]:
         &#34;&#34;&#34;Run the web search tool. Any keyword arguments will be passed to the search method.
 
         Args:
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
-            llm (BaseLLM, optional): It will be used to create the search query and generate output if `generate_query=True`. 
+            llm (Type[BaseLLM], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
             history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
@@ -451,7 +451,7 @@ class WebSearchTool(BaseTool):
 <h3>Methods</h3>
 <dl>
 <dt id="llmplus.Tools.web_search_tool.WebSearchTool.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: <a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a> = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]</span>
+<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Run the web search tool. Any keyword arguments will be passed to the search method.</p>
@@ -459,7 +459,7 @@ class WebSearchTool(BaseTool):
 <dl>
 <dt><strong><code>tool_input</code></strong> :&ensp;<code>str</code></dt>
 <dd>Input of the tool, usually the latest user input in the chatbot conversation.</dd>
-<dt><strong><code>llm</code></strong> :&ensp;<code>BaseLLM</code>, optional</dt>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code>, optional</dt>
 <dd>It will be used to create the search query and generate output if <code>generate_query=True</code>. </dd>
 <dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>If an llm is provided and <code>stream=True</code>, A generator of the output will be returned. Defaults to False.</dd>
@@ -480,14 +480,14 @@ class WebSearchTool(BaseTool):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run(self, tool_input: str, llm: BaseLLM = None, stream: bool = False, 
+<pre><code class="python">def run(self, tool_input: str, llm: Type[BaseLLM] = None, stream: bool = False, 
         history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
         generate_query: bool = True, return_type: Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;] = &#39;response&#39;, **kwargs) -&gt; Union[str, Iterator[str], List[Dict[str, Any]], Any]:
     &#34;&#34;&#34;Run the web search tool. Any keyword arguments will be passed to the search method.
 
     Args:
         tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
-        llm (BaseLLM, optional): It will be used to create the search query and generate output if `generate_query=True`. 
+        llm (Type[BaseLLM], optional): It will be used to create the search query and generate output if `generate_query=True`. 
         stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
         history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
         prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.

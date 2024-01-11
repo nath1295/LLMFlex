@@ -28,7 +28,7 @@
 </summary>
 <pre><code class="python">from ..Prompts.prompt_template import PromptTemplate
 from ..Models.Cores.base_core import BaseLLM
-from typing import List, Iterator, Optional, Union
+from typing import List, Iterator, Optional, Union, Type
 
 class BaseTool:
     &#34;&#34;&#34;This is a base class for callables for LLMs.
@@ -60,13 +60,13 @@ class BaseTool:
         newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
         return newlines.sub(&#39; &#39;, self._description)
     
-    def run(self, tool_input: str, llm: BaseLLM, stream: bool = False, 
+    def run(self, tool_input: str, llm: Type[BaseLLM], stream: bool = False, 
             history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
         &#34;&#34;&#34;Run the tool and return the output as a string.
 
         Args:
             tool_input (str): String input for to run the tool.
-            llm (BaseLLM): LLM to generate the output.
+            llm (Type[BaseLLM]): LLM to generate the output.
             stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
             history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
@@ -138,13 +138,13 @@ class BaseTool:
         newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
         return newlines.sub(&#39; &#39;, self._description)
     
-    def run(self, tool_input: str, llm: BaseLLM, stream: bool = False, 
+    def run(self, tool_input: str, llm: Type[BaseLLM], stream: bool = False, 
             history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
         &#34;&#34;&#34;Run the tool and return the output as a string.
 
         Args:
             tool_input (str): String input for to run the tool.
-            llm (BaseLLM): LLM to generate the output.
+            llm (Type[BaseLLM]): LLM to generate the output.
             stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
             history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
@@ -245,7 +245,7 @@ def name(self) -&gt; str:
 </details>
 </dd>
 <dt id="llmplus.Tools.base_tool.BaseTool.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: <a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, **kwargs) ‑> Union[str, Iterator[str]]</span>
+<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, **kwargs) ‑> Union[str, Iterator[str]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Run the tool and return the output as a string.</p>
@@ -253,7 +253,7 @@ def name(self) -&gt; str:
 <dl>
 <dt><strong><code>tool_input</code></strong> :&ensp;<code>str</code></dt>
 <dd>String input for to run the tool.</dd>
-<dt><strong><code>llm</code></strong> :&ensp;<code>BaseLLM</code></dt>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
 <dd>LLM to generate the output.</dd>
 <dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.</dd>
@@ -271,13 +271,13 @@ def name(self) -&gt; str:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run(self, tool_input: str, llm: BaseLLM, stream: bool = False, 
+<pre><code class="python">def run(self, tool_input: str, llm: Type[BaseLLM], stream: bool = False, 
         history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
     &#34;&#34;&#34;Run the tool and return the output as a string.
 
     Args:
         tool_input (str): String input for to run the tool.
-        llm (BaseLLM): LLM to generate the output.
+        llm (Type[BaseLLM]): LLM to generate the output.
         stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
         history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
         prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.

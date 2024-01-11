@@ -1,12 +1,12 @@
-from typing import Callable, List
+from typing import List
 from langchain.text_splitter import TextSplitter
 from .base_core import BaseLLM
 from ..Factory.llm_factory import LlmFactory
-from typing import Union
+from typing import Union, Type
 
 class LLMTextSplitter(TextSplitter):
 
-    def __init__(self, model: Union[LlmFactory, BaseLLM],
+    def __init__(self, model: Union[LlmFactory, Type[BaseLLM]],
                  chunk_size: int = 400, chunk_overlap: int = 40) -> None:
         
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
