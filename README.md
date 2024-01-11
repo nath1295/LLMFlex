@@ -66,3 +66,7 @@ llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embedding
 ```
 You will see a gradio frontend, use it to chat with the LLM model.  
 ![Gradio GUI](imgs/chat_gui.png)
+
+## License
+
+This project is licensed under the terms of the MIT license.
