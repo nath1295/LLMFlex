@@ -5,13 +5,13 @@ Functions
 ---------
 
     
-`create_long_short_prompt(user: str, prompt_template: llmplus.Prompts.prompt_template.PromptTemplate, llm: llmplus.Models.Cores.base_core.BaseLLM, memory: llmplus.Memory.long_short_memory.LongShortTermChatMemory, system: str = 'This is a conversation between a human user and a helpful AI assistant.', short_token_limit: int = 200, long_token_limit: int = 200, score_threshold: float = 0.5) ‑> str`
+`create_long_short_prompt(user: str, prompt_template: llmplus.Prompts.prompt_template.PromptTemplate, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], memory: llmplus.Memory.long_short_memory.LongShortTermChatMemory, system: str = 'This is a conversation between a human user and a helpful AI assistant.', short_token_limit: int = 200, long_token_limit: int = 200, score_threshold: float = 0.5) ‑> str`
 :   Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
     
     Args:
         user (str): User newest message.
         prompt_template (PromptTemplate): Prompt template to use.
-        llm (BaseLLM): LLM for counting tokens.
+        llm (Type[BaseLLM]): LLM for counting tokens.
         memory (LongShortTermChatMemory): The memory class with long short term functionalities.
         system (str, optional): System message for the conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
         short_token_limit (int, optional): Maximum number of tokens for short term memory. Defaults to 200.
@@ -24,7 +24,7 @@ Functions
 Classes
 -------
 
-`LongShortTermChatMemory(title: str, embeddings: llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit, from_exist: bool = True)`
+`LongShortTermChatMemory(title: str, embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], from_exist: bool = True)`
 :   Base class for chat memory.
         
     
@@ -40,11 +40,11 @@ Classes
 
     ### Instance variables
 
-    `embeddings: llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit`
+    `embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit]`
     :   Embeddings toolkit.
         
         Returns:
-            BaseEmbeddingsToolkit: Embeddings toolkit.
+            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
 
     `vectordb: llmplus.Data.vector_database.VectorDatabase`
     :   Vector database for saving the chat history.
@@ -54,13 +54,13 @@ Classes
 
     ### Methods
 
-    `get_long_term_memory(self, query: str, short_term_memory: List[List[str]], llm: llmplus.Models.Cores.base_core.BaseLLM, token_limit: int = 400, score_threshold: float = 0.2) ‑> List[List[str]]`
+    `get_long_term_memory(self, query: str, short_term_memory: List[List[str]], llm: Type[llmplus.Models.Cores.base_core.BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) ‑> List[List[str]]`
     :   Retriving the long term memory with the given query. Usually used together with get_token_memory.
         
         Args:
             query (str): Search query for the vector database. Usually the latest user input.
             short_term_memory (List[List[str]]): List of interactions in the short term memory to skip in the long term memory.
-            llm (BaseLLM): LLM to count tokens.
+            llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
             score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
         

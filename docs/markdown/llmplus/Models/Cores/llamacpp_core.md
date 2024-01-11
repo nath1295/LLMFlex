@@ -1,17 +1,31 @@
 Module llmplus.Models.Cores.llamacpp_core
 =========================================
 
+Functions
+---------
+
+    
+`get_model_dir(model_id: str, model_file: Optional[str] = None) ‑> str`
+:   Download the model file from Huggingface and get the local directory.
+    
+    Args:
+        model_id (str): Model's HuggingFace ID.
+        model_file (Optional[str], optional): Specific model quant file. If None, will choose the smallest quant automatically. Defaults to None.
+    
+    Returns:
+        str: Local directory of the model file.
+
 Classes
 -------
 
-`LlamaCppCore(model_id: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs)`
+`LlamaCppCore(model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs)`
 :   This is the core class of loading model in gguf format.
         
     
     Initialising the core.
     
     Args:
-        model_id (str): Model id (from Huggingface) to use.
+        model_id (str): Model id (from Huggingface) or model file path to use.
         model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
         context_length (int, optional): Context length of the model. Defaults to 4096.
 
@@ -36,6 +50,7 @@ Classes
 
     ### Ancestors (in MRO)
 
+    * llmplus.Models.Cores.base_core.BaseLLM
     * langchain_core.language_models.llms.LLM
     * langchain_core.language_models.llms.BaseLLM
     * langchain_core.language_models.base.BaseLanguageModel
@@ -57,34 +72,3 @@ Classes
 
     `stop: List[str]`
     :
-
-    ### Methods
-
-    `get_num_tokens(self, text: str) ‑> int`
-    :   Get the number of tokens given the text string.
-        
-        Args:
-            text (str): Text
-        
-        Returns:
-            int: Number of tokens
-
-    `get_token_ids(self, text: str) ‑> List[int]`
-    :   Get the token ids of the given text.
-        
-        Args:
-            text (str): Text
-        
-        Returns:
-            List[int]: List of token ids.
-
-    `stream(self, input: str, config: Optional[langchain_core.runnables.config.RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]`
-    :   Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-        
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-        
-        Yields:
-            Iterator[str]: The next generated token.

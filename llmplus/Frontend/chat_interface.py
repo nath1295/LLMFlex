@@ -1,19 +1,19 @@
 import os
 from ..Models.Factory.llm_factory import LlmFactory
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from typing import Dict, Any, Union, List, Tuple
+from typing import Dict, Any, Union, List, Tuple, Type
 
 
 class ChatInterface:
 
-    def __init__(self, model: LlmFactory, embeddings: BaseEmbeddingsToolkit) -> None:
+    def __init__(self, model: LlmFactory, embeddings: Type[BaseEmbeddingsToolkit]) -> None:
         from ..Memory.long_short_memory import LongShortTermChatMemory
         from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE, PromptTemplate
         self.model = model
         self.embeddings = embeddings
         self.memory = LongShortTermChatMemory(title='Untitled 0', embeddings=self.embeddings, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
-        self.template = PromptTemplate.from_preset('Default Chat')
+        self.template = PromptTemplate.from_preset('Default')
         self.llm = self.model(stop=self.template.stop + ['###'])
         self.short_limit = 600
         self.long_limit = 500
@@ -90,7 +90,7 @@ class ChatInterface:
             sys_log = dict(obj='text', args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),
 
             # format settings
-            templates = dict(obj='dropdown', args=dict(choices=self.presets, value='Default Chat', show_label=False, interactive=True, container=False)),
+            templates = dict(obj='dropdown', args=dict(choices=self.presets, value='Default', show_label=False, interactive=True, container=False)),
             format_save = dict(obj='btn', args=dict(value='Save', min_width=20, variant='secondary', size='sm', scale=2, interactive=True)),
             format_log = dict(obj='text', args=dict(show_label=False, value=self.get_prompt_settings(), lines=2, container=False)),
 

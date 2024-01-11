@@ -32,12 +32,12 @@ Functions
         str: Return the given text if it passes all the checkes.
 
     
-`texts_to_documents(texts: List[str], embeddings: BaseEmbeddingsToolkit, data: Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]] = None, split_text: bool = True) ‑> List[langchain_core.documents.base.Document]`
+`texts_to_documents(texts: List[str], embeddings: Type[BaseEmbeddingsToolkit], data: Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]] = None, split_text: bool = True) ‑> List[langchain_core.documents.base.Document]`
 :   Create splitted documents from the list of text strings.
     
     Args:
         texts (List[str]): List of strings to split into documents.
-        embeddings (BaseEmbeddingsToolkit): Embedding toolkits used to split the documents.
+        embeddings (Type[BaseEmbeddingsToolkit]): Embedding toolkits used to split the documents.
         data (Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]], optional): Metadata for each text strings. Defaults to None.
         split_text (bool, optional): Whether to split text if the given text is too long. Defaults to True.
     
@@ -47,26 +47,26 @@ Functions
 Classes
 -------
 
-`VectorDatabase(embeddings: BaseEmbeddingsToolkit, vectordb_dir: Optional[str] = None, name: Optional[str] = None, save_raw: bool = False)`
+`VectorDatabase(embeddings: Type[BaseEmbeddingsToolkit], vectordb_dir: Optional[str] = None, name: Optional[str] = None, save_raw: bool = False)`
 :   Vector database class, suitable for storing text data as embeddings for similarity searches and other classes that requires numerical respresentations of texts.
         
     
     Initialising basic information of the vector database.
     
     Args:
-        embeddings (BaseEmbeddingsToolkit): Embeddings toolkits used in the vector database.
+        embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
         vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
         name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
         save_raw (bool, optional): Whether to save raw text data and metadata as a separate json file. Defaults to False.
 
     ### Static methods
 
-    `from_data(index: List[str], embeddings: BaseEmbeddingsToolkit, data: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = {}, name: Optional[str] = None, vectordb_dir: Optional[str] = None, save_raw: bool = False, split_text: bool = True) ‑> llmplus.Data.vector_database.VectorDatabase`
+    `from_data(index: List[str], embeddings: Type[BaseEmbeddingsToolkit], data: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = {}, name: Optional[str] = None, vectordb_dir: Optional[str] = None, save_raw: bool = False, split_text: bool = True) ‑> llmplus.Data.vector_database.VectorDatabase`
     :   Initialise the vector database with list of texts.
         
         Args:
             index (List[str]): List of texts to initialise the database.
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkits used in the vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
             data (Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]], optional): Metadata for the list of texts. Defaults to dict().
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
@@ -76,11 +76,11 @@ Classes
         Returns:
             VectorDatabase: The intialised vector database.
 
-    `from_empty(embeddings: BaseEmbeddingsToolkit, name: Optional[str] = None, vectordb_dir: Optional[str] = None, save_raw: bool = False) ‑> llmplus.Data.vector_database.VectorDatabase`
+    `from_empty(embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, save_raw: bool = False) ‑> llmplus.Data.vector_database.VectorDatabase`
     :   Initialise an empty vector database.
         
         Args:
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkits used in the vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
             save_raw (bool, optional): Whether to save raw text data and metadata as a separate json file. Defaults to False.
@@ -88,12 +88,12 @@ Classes
         Returns:
             VectorDatabase: The intialised vector database.
 
-    `from_exist(name: str, embeddings: BaseEmbeddingsToolkit, vectordb_dir: Optional[str] = None) ‑> llmplus.Data.vector_database.VectorDatabase`
+    `from_exist(name: str, embeddings: Type[BaseEmbeddingsToolkit], vectordb_dir: Optional[str] = None) ‑> llmplus.Data.vector_database.VectorDatabase`
     :   Initialise the vector database from existing files.
         
         Args:
             name (str): Name of the existing vector database.
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkit used in this vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit used in this vector database.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database. If None is given, the default_vectordb_dir will be used. Defaults to None.
         
         Returns:
@@ -107,11 +107,11 @@ Classes
         Returns:
             List[Dict[str, Any]]: Raw data of the vector database.
 
-    `embeddings: llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit`
+    `embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit]`
     :   Embeddings toolkit used in the vector database.
         
         Returns:
-            BaseEmbeddingsToolkit: Embeddings toolkit used in the vector database.
+            Type[BaseEmbeddingsToolkit]: Embeddings toolkit used in the vector database.
 
     `info: Dict[str, Any]`
     :   Information of the vector database.

@@ -124,7 +124,7 @@ class PromptTemplate:
             body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
         return body
     
-    def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
         &#34;&#34;&#34;Creating the full chat prompt.
 
         Args:
@@ -171,11 +171,11 @@ class PromptTemplate:
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]) -&gt; PromptTemplate:
+    def from_preset(cls, style: Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna1.1&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;, &amp;#39;Zephyr Chat&amp;#39;, &amp;#39;OpenChat&amp;#39;]): Format of the prompt.
+            style (Literal[&amp;#39;Default&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama2&amp;#39;, &amp;#39;Vicuna1.1&amp;#39;, &amp;#39;ChatML&amp;#39;, &amp;#39;Zephyr&amp;#39;, &amp;#39;OpenChat&amp;#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -202,7 +202,7 @@ class PromptTemplate:
         )
     
 presets = {
-    &#39;Default Chat&#39; : {
+    &#39;Default&#39; : {
         &#39;system_prefix&#39;: &#39;SYSTEM:\n&#39;,
         &#39;system_suffix&#39;: &#39;\n\nCurrent conversation:\n&#39;,
         &#39;human_prefix&#39;: &#39;USER: &#39;,
@@ -222,7 +222,7 @@ presets = {
         &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
         &#39;stop&#39;: None
     },
-    &#39;Llama 2 Chat&#39; : {
+    &#39;Llama2&#39; : {
         &#39;system_prefix&#39;: &#39;&lt;s&gt;[INST] &lt;&lt;SYS&gt;&gt;\n&#39;,
         &#39;system_suffix&#39;: &#39;\n&lt;&lt;/SYS&gt;&gt;\n&#39;,
         &#39;human_prefix&#39;: &#39;&#39;,
@@ -232,7 +232,7 @@ presets = {
         &#39;wrapper&#39;: [&#39;&lt;s&gt;[INST] &#39;, &#39; &lt;/s&gt;&#39;],
         &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
     },
-    &#39;Vicuna 1.1 Chat&#39; : {
+    &#39;Vicuna1.1&#39; : {
         &#39;system_prefix&#39;: &#39;&#39;,
         &#39;system_suffix&#39;: &#39;\n\n&#39;,
         &#39;human_prefix&#39;: &#39;USER: &#39;,
@@ -242,7 +242,7 @@ presets = {
         &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
         &#39;stop&#39;: None
     },
-    &#39;ChatML Chat&#39; : {
+    &#39;ChatML&#39; : {
         &#39;system_prefix&#39;: &#39;&lt;|im_start|&gt;system\n&#39;,
         &#39;system_suffix&#39;: &#39;&lt;|im_end|&gt;\n&#39;,
         &#39;human_prefix&#39;: &#39;&lt;|im_start|&gt;user\n&#39;,
@@ -252,7 +252,7 @@ presets = {
         &#39;wrapper&#39;: [&#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&#39;],
         &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;]
     },
-    &#39;Zephyr Chat&#39; : {
+    &#39;Zephyr&#39; : {
         &#39;system_prefix&#39;: &#39;&lt;|system|&gt;\n&#39;,
         &#39;system_suffix&#39;: &#39;&lt;/s&gt;\n&#39;,
         &#39;human_prefix&#39;: &#39;&lt;|user|&gt;\n&#39;,
@@ -407,7 +407,7 @@ presets = {
             body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
         return body
     
-    def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
         &#34;&#34;&#34;Creating the full chat prompt.
 
         Args:
@@ -454,11 +454,11 @@ presets = {
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]) -&gt; PromptTemplate:
+    def from_preset(cls, style: Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna1.1&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;, &amp;#39;Zephyr Chat&amp;#39;, &amp;#39;OpenChat&amp;#39;]): Format of the prompt.
+            style (Literal[&amp;#39;Default&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama2&amp;#39;, &amp;#39;Vicuna1.1&amp;#39;, &amp;#39;ChatML&amp;#39;, &amp;#39;Zephyr&amp;#39;, &amp;#39;OpenChat&amp;#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -558,12 +558,12 @@ def from_json(cls, file_dir: str) -&gt; PromptTemplate:
 </details>
 </dd>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.from_preset"><code class="name flex">
-<span>def <span class="ident">from_preset</span></span>(<span>style: "Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat', 'OpenChat']") ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+<span>def <span class="ident">from_preset</span></span>(<span>style: "Literal['Default', 'Default Instruct', 'Llama2', 'Vicuna1.1', 'ChatML', 'Zephyr', 'OpenChat']") ‑> <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the prompt template from a preset.</p>
 <h2 id="args">Args</h2>
-<p>style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]): Format of the prompt.</p>
+<p>style (Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna1.1&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]): Format of the prompt.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code><a title="llmplus.Prompts.prompt_template.PromptTemplate" href="#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
@@ -574,11 +574,11 @@ def from_json(cls, file_dir: str) -&gt; PromptTemplate:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def from_preset(cls, style: Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]) -&gt; PromptTemplate:
+def from_preset(cls, style: Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna1.1&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]) -&gt; PromptTemplate:
     &#34;&#34;&#34;Initialise the prompt template from a preset.
 
     Args:
-        style (Literal[&amp;#39;Default Chat&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama 2 Chat&amp;#39;, &amp;#39;Vicuna 1.1 Chat&amp;#39;, &amp;#39;ChatML Chat&amp;#39;, &amp;#39;Zephyr Chat&amp;#39;, &amp;#39;OpenChat&amp;#39;]): Format of the prompt.
+        style (Literal[&amp;#39;Default&amp;#39;, &amp;#39;Default Instruct&amp;#39;, &amp;#39;Llama2&amp;#39;, &amp;#39;Vicuna1.1&amp;#39;, &amp;#39;ChatML&amp;#39;, &amp;#39;Zephyr&amp;#39;, &amp;#39;OpenChat&amp;#39;]): Format of the prompt.
 
     Returns:
         PromptTemplate: The initialised PromptTemplate instance.
@@ -710,8 +710,8 @@ def wrapper(self) -&gt; List[str]:
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="llmplus.Prompts.prompt_template.PromptTemplate.create_chat_prompt"><code class="name flex">
-<span>def <span class="ident">create_chat_prompt</span></span>(<span>self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: List[List[str]] = []) ‑> str</span>
+<dt id="llmplus.Prompts.prompt_template.PromptTemplate.create_prompt"><code class="name flex">
+<span>def <span class="ident">create_prompt</span></span>(<span>self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: List[List[str]] = []) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creating the full chat prompt.</p>
@@ -733,7 +733,7 @@ def wrapper(self) -&gt; List[str]:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+<pre><code class="python">def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
     &#34;&#34;&#34;Creating the full chat prompt.
 
     Args:
@@ -852,7 +852,7 @@ def wrapper(self) -&gt; List[str]:
 <ul class="two-column">
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.ai_prefix" href="#llmplus.Prompts.prompt_template.PromptTemplate.ai_prefix">ai_prefix</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.ai_suffix" href="#llmplus.Prompts.prompt_template.PromptTemplate.ai_suffix">ai_suffix</a></code></li>
-<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.create_chat_prompt" href="#llmplus.Prompts.prompt_template.PromptTemplate.create_chat_prompt">create_chat_prompt</a></code></li>
+<li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.create_prompt" href="#llmplus.Prompts.prompt_template.PromptTemplate.create_prompt">create_prompt</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.format_history" href="#llmplus.Prompts.prompt_template.PromptTemplate.format_history">format_history</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.from_dict" href="#llmplus.Prompts.prompt_template.PromptTemplate.from_dict">from_dict</a></code></li>
 <li><code><a title="llmplus.Prompts.prompt_template.PromptTemplate.from_json" href="#llmplus.Prompts.prompt_template.PromptTemplate.from_json">from_json</a></code></li>

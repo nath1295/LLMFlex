@@ -1,6 +1,4 @@
 import os
-from ..utils import get_config
-os.environ['SENTENCE_TRANSFORMERS_HOME'] = get_config()['st_home']
 from .base_embeddings import BaseEmbeddingsToolkit
 from typing import Dict, Any
 
@@ -18,6 +16,10 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for the tokenizer. Defaults to dict().
         """
+        from ..utils import get_config
+        os.environ['SENTENCE_TRANSFORMERS_HOME'] = get_config()['st_home']
+        os.environ['HF_HOME'] = get_config()['hf_home']
+        os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from langchain.embeddings import HuggingFaceEmbeddings
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         from transformers import AutoTokenizer

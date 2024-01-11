@@ -26,15 +26,15 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import Callable, List
+<pre><code class="python">from typing import List
 from langchain.text_splitter import TextSplitter
 from .base_core import BaseLLM
 from ..Factory.llm_factory import LlmFactory
-from typing import Union
+from typing import Union, Type
 
 class LLMTextSplitter(TextSplitter):
 
-    def __init__(self, model: Union[LlmFactory, BaseLLM],
+    def __init__(self, model: Union[LlmFactory, Type[BaseLLM]],
                  chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
         
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
@@ -70,7 +70,7 @@ class LLMTextSplitter(TextSplitter):
 <dl>
 <dt id="llmplus.Models.Cores.text_splitter.LLMTextSplitter"><code class="flex name class">
 <span>class <span class="ident">LLMTextSplitter</span></span>
-<span>(</span><span>model: Union[<a title="llmplus.Models.Factory.llm_factory.LlmFactory" href="../Factory/llm_factory.html#llmplus.Models.Factory.llm_factory.LlmFactory">LlmFactory</a>, <a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], chunk_size: int = 400, chunk_overlap: int = 40)</span>
+<span>(</span><span>model: Union[<a title="llmplus.Models.Factory.llm_factory.LlmFactory" href="../Factory/llm_factory.html#llmplus.Models.Factory.llm_factory.LlmFactory">LlmFactory</a>, Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]], chunk_size: int = 400, chunk_overlap: int = 40)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Interface for splitting text into chunks.</p>
@@ -97,7 +97,7 @@ every document</dd>
 </summary>
 <pre><code class="python">class LLMTextSplitter(TextSplitter):
 
-    def __init__(self, model: Union[LlmFactory, BaseLLM],
+    def __init__(self, model: Union[LlmFactory, Type[BaseLLM]],
                  chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
         
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)

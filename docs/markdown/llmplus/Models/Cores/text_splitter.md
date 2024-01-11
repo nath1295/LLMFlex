@@ -4,7 +4,7 @@ Module llmplus.Models.Cores.text_splitter
 Classes
 -------
 
-`LLMTextSplitter(model: Union[llmplus.Models.Factory.llm_factory.LlmFactory, llmplus.Models.Cores.base_core.BaseLLM], chunk_size: int = 400, chunk_overlap: int = 40)`
+`LLMTextSplitter(model: Union[llmplus.Models.Factory.llm_factory.LlmFactory, Type[llmplus.Models.Cores.base_core.BaseLLM]], chunk_size: int = 400, chunk_overlap: int = 40)`
 :   Interface for splitting text into chunks.
     
     Create a new TextSplitter.

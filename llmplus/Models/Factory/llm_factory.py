@@ -1,5 +1,5 @@
 from ..Cores.base_core import BaseCore, BaseLLM
-from typing import Literal, Optional, Dict, List, Any
+from typing import Literal, Optional, Dict, List, Any, Type
 
 def detect_model_type(model_id: str) -> str:
     """This function attempts to get the model format type with the model id.
@@ -33,10 +33,10 @@ class LlmFactory:
         self._model_type = detect_model_type(model_id=model_id) if model_type=='auto' else model_type
         if self.model_type == 'gguf':
             from ..Cores.llamacpp_core import LlamaCppCore
-            self._core = LlamaCppCore(model_id=self.model_id, **kwargs)
+            self._core = LlamaCppCore(self.model_id, **kwargs)
         elif self.model_type in ['default', 'awq', 'gptq']:
             from ..Cores.huggingface_core import HuggingfaceCore
-            self._core = HuggingfaceCore(model_id=self.model_id, model_type=self.model_type, **kwargs)
+            self._core = HuggingfaceCore(self.model_id, model_type=self.model_type, **kwargs)
         elif self.model_type == 'openai':
             from ..Cores.openai_core import OpenAICore
             api_key = kwargs.get('api_key', None)
@@ -70,11 +70,11 @@ class LlmFactory:
         return self._model_type 
     
     @property
-    def core(self) -> BaseCore:
+    def core(self) -> Type[BaseCore]:
         """Core model of the llm factory.
 
         Returns:
-            BaseCore: Core model of the llm factory.
+            Type[BaseCore]: Core model of the llm factory.
         """
         return self._core
     
@@ -93,7 +93,7 @@ class LlmFactory:
             newline (bool, optional): Whether to add a newline character to the beginning of the "stop" list provided. Defaults to True.
 
         Returns:
-            BaseLLM: An LLM.
+            Type[BaseLLM]: An LLM.
         """
         return self.call(temperature=temperature, max_new_tokens=max_new_tokens,
                           top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty,
@@ -101,7 +101,7 @@ class LlmFactory:
     
     def call(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95,
                 top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, 
-                newline=True, **kwargs: Dict[str, Any]) -> BaseLLM:
+                newline=True, **kwargs: Dict[str, Any]) -> Type[BaseLLM]:
         """Calling the object will create a langchain format llm with the generation configurations passed from the arguments. 
 
         Args:
@@ -129,7 +129,8 @@ class LlmFactory:
             return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
                                  top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
         elif self.model_type =='debug':
-            return BaseLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+            from ..Cores.base_core import DebugLLM
+            return DebugLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
                                  top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
         else:
             raise ValueError(f'Model type "{self.model_type}" not supported.')

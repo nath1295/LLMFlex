@@ -1,9 +1,6 @@
 import os
-from .base_core import BaseCore
-from langchain.llms.base import LLM
+from .base_core import BaseCore, BaseLLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.schema.runnable import RunnableConfig
-from .utils import get_stop_words
 from typing import List, Any, Optional, Dict, Union, Iterator
 
 class OpenAICore(BaseCore):
@@ -65,7 +62,7 @@ class OpenAICore(BaseCore):
             return self._tokenizer.decode(token_ids)
         return self.tokenizer.decode(token_ids=token_ids, skip_special_tokens=True)
     
-class OpenAILLM(LLM):
+class OpenAILLM(BaseLLM):
     '''Custom implementation of streaming for models from OpenAI api. Used in the Llm factory to get new llm from the model.'''
     core: OpenAICore
     generation_config: Dict[str, Any]
@@ -85,6 +82,7 @@ class OpenAILLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         """
+        from .utils import get_stop_words
         tokenizer_type = 'openai' if core._is_openai else 'transformers'
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, tokenizer_type)
 
@@ -122,7 +120,7 @@ class OpenAILLM(LLM):
             Iterator[str]: The next generated token.
         """
         import warnings
-        from .utils import textgen_iterator
+        from .utils import get_stop_words, textgen_iterator
         warnings.filterwarnings('ignore')
         tokenizer_type = 'openai' if self.core._is_openai else 'transformers'
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=tokenizer_type) if stop is not None else self.stop
@@ -153,42 +151,6 @@ class OpenAILLM(LLM):
                 max_tokens=gen_config['max_new_tokens'],
                 stop=stop
             ).choices[0].text
-
-    def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -> Iterator[str]:
-        """Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        """
-        return self._call(prompt=input, stop=stop, stream=True)
-    
-    def get_num_tokens(self, text: str) -> int:
-        """Get the number of tokens given the text string.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            int: Number of tokens
-        """
-        return len(self.get_token_ids(text))
-    
-    def get_token_ids(self, text: str) -> List[int]:
-        """Get the token ids of the given text.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            List[int]: List of token ids.
-        """
-        return self.core.encode(text=text)
-    
 
     def _llm_type(self) -> str:
         """LLM type.

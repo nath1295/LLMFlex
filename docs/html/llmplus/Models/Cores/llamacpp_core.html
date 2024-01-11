@@ -27,53 +27,64 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import os
-from ...utils import get_config, is_cuda, os_name
-os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
-from huggingface_hub import model_info, hf_hub_download
-from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.schema.runnable import RunnableConfig
-from .base_core import BaseCore
-from .utils import get_stop_words
+from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator
+
+def get_model_dir(model_id: str, model_file: Optional[str] = None) -&gt; str:
+    &#34;&#34;&#34;Download the model file from Huggingface and get the local directory.
+
+    Args:
+        model_id (str): Model&#39;s HuggingFace ID.
+        model_file (Optional[str], optional): Specific model quant file. If None, will choose the smallest quant automatically. Defaults to None.
+
+    Returns:
+        str: Local directory of the model file.
+    &#34;&#34;&#34;
+    from huggingface_hub import model_info, hf_hub_download
+    from ...utils import get_config
+    os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+    repo = model_info(repo_id=model_id)
+    files = list(map(lambda x: x.rfilename, repo.siblings))
+    model_files = list(filter(lambda x: x.endswith(&#39;.gguf&#39;), files))
+    if len(model_files) == 0:
+        raise FileNotFoundError(f&#39;No GGUF model files found in this repository &#34;{model_id}&#34;.&#39;)
+    if model_file in model_files:
+        pass
+    elif model_file is None:
+        trial = [&#39;q2&#39;, &#39;q3&#39;, &#39;q4&#39;]
+        stop = False
+        for t in trial:
+            for f in model_files:
+                if t in f.lower():
+                    model_file = f
+                    stop = True
+                    break
+            if stop:
+                break
+        if stop == False:
+            model_file = model_files[0]
+    else:
+        raise FileNotFoundError(f&#39;File &#34;{model_file}&#34; not found in repository &#34;{model_id}&#34;.&#39;)
+    model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
+    return model_dir
 
 class LlamaCppCore(BaseCore):
     &#34;&#34;&#34;This is the core class of loading model in gguf format.
     &#34;&#34;&#34;
-    def __init__(self, model_id: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs) -&gt; None:
+    def __init__(self, model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialising the core.
 
         Args:
-            model_id (str): Model id (from Huggingface) to use.
+            model_id (str): Model id (from Huggingface) or model file path to use.
             model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
             context_length (int, optional): Context length of the model. Defaults to 4096.
         &#34;&#34;&#34;
-        self._model_id = model_id
+        from ...utils import is_cuda, os_name
+        self._model_id = os.path.basename(model_id_or_path).removesuffix(&#39;.gguf&#39;).removesuffix(&#39;.GGUF&#39;) if model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         self._core_type = &#39;LlamaCppCore&#39;
-        repo = model_info(repo_id=model_id)
-        files = list(map(lambda x: x.rfilename, repo.siblings))
-        model_files = list(filter(lambda x: x.endswith(&#39;.gguf&#39;), files))
-        if len(model_files) == 0:
-            raise FileNotFoundError(f&#39;No GGUF model files found in this repository &#34;{model_id}&#34;.&#39;)
-        if model_file in model_files:
-            pass
-        elif model_file is None:
-            trial = [&#39;q2&#39;, &#39;q3&#39;, &#39;q4&#39;]
-            stop = False
-            for t in trial:
-                for f in model_files:
-                    if t in f.lower():
-                        model_file = f
-                        stop = True
-                        break
-                if stop:
-                    break
-            if stop == False:
-                model_file = model_files[0]
-        else:
-            raise FileNotFoundError(f&#39;File &#34;{model_file}&#34; not found in repository &#34;{model_id}&#34;.&#39;)
+        model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         from llama_cpp import Llama
-        model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
         use_gpu = kwargs.get(&#39;use_gpu&#39;, True if ((is_cuda()) | (os_name() == [&#39;MacOS_apple_silicon&#39;])) else False)
         if use_gpu:
@@ -108,7 +119,7 @@ class LlamaCppCore(BaseCore):
         &#34;&#34;&#34;
         return self.tokenizer.detokenize(token_ids).decode()
     
-class LlamaCppLLM(LLM):
+class LlamaCppLLM(BaseLLM):
     &#39;&#39;&#39;Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
     core: LlamaCppCore
     generation_config: Dict[str, Any]
@@ -128,6 +139,7 @@ class LlamaCppLLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         &#34;&#34;&#34;
+        from .utils import get_stop_words
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, &#39;llamacpp&#39;)
 
         generation_config = dict(
@@ -163,6 +175,7 @@ class LlamaCppLLM(LLM):
         Yields:
             Iterator[str]: The next generated token.
         &#34;&#34;&#34;
+        from .utils import get_stop_words
         import warnings
         warnings.filterwarnings(&#39;ignore&#39;)
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;llamacpp&#39;) if stop is not None else self.stop
@@ -193,43 +206,7 @@ class LlamaCppLLM(LLM):
                 max_tokens=gen_config[&#39;max_new_tokens&#39;],
                 stop=stop
             )[&#39;choices&#39;][0][&#39;text&#39;]
-
-    def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
-        &#34;&#34;&#34;Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        &#34;&#34;&#34;
-        return self._call(prompt=input, stop=stop, stream=True)
     
-    def get_num_tokens(self, text: str) -&gt; int:
-        &#34;&#34;&#34;Get the number of tokens given the text string.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            int: Number of tokens
-        &#34;&#34;&#34;
-        return len(self.get_token_ids(text))
-    
-    def get_token_ids(self, text: str) -&gt; List[int]:
-        &#34;&#34;&#34;Get the token ids of the given text.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            List[int]: List of token ids.
-        &#34;&#34;&#34;
-        return self.core.encode(text=text)
-    
-
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
 
@@ -244,13 +221,76 @@ class LlamaCppLLM(LLM):
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmplus.Models.Cores.llamacpp_core.get_model_dir"><code class="name flex">
+<span>def <span class="ident">get_model_dir</span></span>(<span>model_id: str, model_file: Optional[str] = None) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Download the model file from Huggingface and get the local directory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Model's HuggingFace ID.</dd>
+<dt><strong><code>model_file</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Specific model quant file. If None, will choose the smallest quant automatically. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Local directory of the model file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_model_dir(model_id: str, model_file: Optional[str] = None) -&gt; str:
+    &#34;&#34;&#34;Download the model file from Huggingface and get the local directory.
+
+    Args:
+        model_id (str): Model&#39;s HuggingFace ID.
+        model_file (Optional[str], optional): Specific model quant file. If None, will choose the smallest quant automatically. Defaults to None.
+
+    Returns:
+        str: Local directory of the model file.
+    &#34;&#34;&#34;
+    from huggingface_hub import model_info, hf_hub_download
+    from ...utils import get_config
+    os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+    repo = model_info(repo_id=model_id)
+    files = list(map(lambda x: x.rfilename, repo.siblings))
+    model_files = list(filter(lambda x: x.endswith(&#39;.gguf&#39;), files))
+    if len(model_files) == 0:
+        raise FileNotFoundError(f&#39;No GGUF model files found in this repository &#34;{model_id}&#34;.&#39;)
+    if model_file in model_files:
+        pass
+    elif model_file is None:
+        trial = [&#39;q2&#39;, &#39;q3&#39;, &#39;q4&#39;]
+        stop = False
+        for t in trial:
+            for f in model_files:
+                if t in f.lower():
+                    model_file = f
+                    stop = True
+                    break
+            if stop:
+                break
+        if stop == False:
+            model_file = model_files[0]
+    else:
+        raise FileNotFoundError(f&#39;File &#34;{model_file}&#34; not found in repository &#34;{model_id}&#34;.&#39;)
+    model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
+    return model_dir</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppCore"><code class="flex name class">
 <span>class <span class="ident">LlamaCppCore</span></span>
-<span>(</span><span>model_id: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs)</span>
+<span>(</span><span>model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the core class of loading model in gguf format.</p>
@@ -258,7 +298,7 @@ class LlamaCppLLM(LLM):
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
-<dd>Model id (from Huggingface) to use.</dd>
+<dd>Model id (from Huggingface) or model file path to use.</dd>
 <dt><strong><code>model_file</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.</dd>
 <dt><strong><code>context_length</code></strong> :&ensp;<code>int</code>, optional</dt>
@@ -271,40 +311,19 @@ class LlamaCppLLM(LLM):
 <pre><code class="python">class LlamaCppCore(BaseCore):
     &#34;&#34;&#34;This is the core class of loading model in gguf format.
     &#34;&#34;&#34;
-    def __init__(self, model_id: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs) -&gt; None:
+    def __init__(self, model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialising the core.
 
         Args:
-            model_id (str): Model id (from Huggingface) to use.
+            model_id (str): Model id (from Huggingface) or model file path to use.
             model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
             context_length (int, optional): Context length of the model. Defaults to 4096.
         &#34;&#34;&#34;
-        self._model_id = model_id
+        from ...utils import is_cuda, os_name
+        self._model_id = os.path.basename(model_id_or_path).removesuffix(&#39;.gguf&#39;).removesuffix(&#39;.GGUF&#39;) if model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         self._core_type = &#39;LlamaCppCore&#39;
-        repo = model_info(repo_id=model_id)
-        files = list(map(lambda x: x.rfilename, repo.siblings))
-        model_files = list(filter(lambda x: x.endswith(&#39;.gguf&#39;), files))
-        if len(model_files) == 0:
-            raise FileNotFoundError(f&#39;No GGUF model files found in this repository &#34;{model_id}&#34;.&#39;)
-        if model_file in model_files:
-            pass
-        elif model_file is None:
-            trial = [&#39;q2&#39;, &#39;q3&#39;, &#39;q4&#39;]
-            stop = False
-            for t in trial:
-                for f in model_files:
-                    if t in f.lower():
-                        model_file = f
-                        stop = True
-                        break
-                if stop:
-                    break
-            if stop == False:
-                model_file = model_files[0]
-        else:
-            raise FileNotFoundError(f&#39;File &#34;{model_file}&#34; not found in repository &#34;{model_id}&#34;.&#39;)
+        model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         from llama_cpp import Llama
-        model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
         use_gpu = kwargs.get(&#39;use_gpu&#39;, True if ((is_cuda()) | (os_name() == [&#39;MacOS_apple_silicon&#39;])) else False)
         if use_gpu:
@@ -388,7 +407,7 @@ class LlamaCppLLM(LLM):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class LlamaCppLLM(LLM):
+<pre><code class="python">class LlamaCppLLM(BaseLLM):
     &#39;&#39;&#39;Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
     core: LlamaCppCore
     generation_config: Dict[str, Any]
@@ -408,6 +427,7 @@ class LlamaCppLLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         &#34;&#34;&#34;
+        from .utils import get_stop_words
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, &#39;llamacpp&#39;)
 
         generation_config = dict(
@@ -443,6 +463,7 @@ class LlamaCppLLM(LLM):
         Yields:
             Iterator[str]: The next generated token.
         &#34;&#34;&#34;
+        from .utils import get_stop_words
         import warnings
         warnings.filterwarnings(&#39;ignore&#39;)
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;llamacpp&#39;) if stop is not None else self.stop
@@ -473,43 +494,7 @@ class LlamaCppLLM(LLM):
                 max_tokens=gen_config[&#39;max_new_tokens&#39;],
                 stop=stop
             )[&#39;choices&#39;][0][&#39;text&#39;]
-
-    def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
-        &#34;&#34;&#34;Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        &#34;&#34;&#34;
-        return self._call(prompt=input, stop=stop, stream=True)
     
-    def get_num_tokens(self, text: str) -&gt; int:
-        &#34;&#34;&#34;Get the number of tokens given the text string.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            int: Number of tokens
-        &#34;&#34;&#34;
-        return len(self.get_token_ids(text))
-    
-    def get_token_ids(self, text: str) -&gt; List[int]:
-        &#34;&#34;&#34;Get the token ids of the given text.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            List[int]: List of token ids.
-        &#34;&#34;&#34;
-        return self.core.encode(text=text)
-    
-
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
 
@@ -520,6 +505,7 @@ class LlamaCppLLM(LLM):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></li>
 <li>langchain_core.language_models.llms.LLM</li>
 <li>langchain_core.language_models.llms.BaseLLM</li>
 <li>langchain_core.language_models.base.BaseLanguageModel</li>
@@ -546,108 +532,16 @@ class LlamaCppLLM(LLM):
 <div class="desc"></div>
 </dd>
 </dl>
-<h3>Methods</h3>
-<dl>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.get_num_tokens"><code class="name flex">
-<span>def <span class="ident">get_num_tokens</span></span>(<span>self, text: str) ‑> int</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the number of tokens given the text string.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
-<dd>Text</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>int</code></dt>
-<dd>Number of tokens</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_num_tokens(self, text: str) -&gt; int:
-    &#34;&#34;&#34;Get the number of tokens given the text string.
-
-    Args:
-        text (str): Text
-
-    Returns:
-        int: Number of tokens
-    &#34;&#34;&#34;
-    return len(self.get_token_ids(text))</code></pre>
-</details>
-</dd>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.get_token_ids"><code class="name flex">
-<span>def <span class="ident">get_token_ids</span></span>(<span>self, text: str) ‑> List[int]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the token ids of the given text.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
-<dd>Text</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>List[int]</code></dt>
-<dd>List of token ids.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_token_ids(self, text: str) -&gt; List[int]:
-    &#34;&#34;&#34;Get the token ids of the given text.
-
-    Args:
-        text (str): Text
-
-    Returns:
-        List[int]: List of token ids.
-    &#34;&#34;&#34;
-    return self.core.encode(text=text)</code></pre>
-</details>
-</dd>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stream"><code class="name flex">
-<span>def <span class="ident">stream</span></span>(<span>self, input: str, config: Optional[langchain_core.runnables.config.RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>input</code></strong> :&ensp;<code>str</code></dt>
-<dd>The prompt to the llm.</dd>
-<dt><strong><code>config</code></strong> :&ensp;<code>Optional[RunnableConfig]</code></dt>
-<dd>Not used. Defaults to None.</dd>
-<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
-<dd>List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.</dd>
-</dl>
-<h2 id="yields">Yields</h2>
-<dl>
-<dt><code>Iterator[str]</code></dt>
-<dd>The next generated token.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
-    &#34;&#34;&#34;Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-    Args:
-        input (str): The prompt to the llm.
-        config (Optional[RunnableConfig]): Not used. Defaults to None.
-        stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-    Yields:
-        Iterator[str]: The next generated token.
-    &#34;&#34;&#34;
-    return self._call(prompt=input, stop=stop, stream=True)</code></pre>
-</details>
-</dd>
-</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_token_ids" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_token_ids">get_token_ids</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.stream" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.stream">stream</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 </dl>
 </section>
@@ -663,6 +557,11 @@ class LlamaCppLLM(LLM):
 <li><code><a title="llmplus.Models.Cores" href="index.html">llmplus.Models.Cores</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmplus.Models.Cores.llamacpp_core.get_model_dir" href="#llmplus.Models.Cores.llamacpp_core.get_model_dir">get_model_dir</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -670,13 +569,10 @@ class LlamaCppLLM(LLM):
 </li>
 <li>
 <h4><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM">LlamaCppLLM</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.core" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.core">core</a></code></li>
 <li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.generation_config" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.generation_config">generation_config</a></code></li>
-<li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.get_num_tokens" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.get_num_tokens">get_num_tokens</a></code></li>
-<li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.get_token_ids" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.get_token_ids">get_token_ids</a></code></li>
 <li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stop" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stop">stop</a></code></li>
-<li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stream" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stream">stream</a></code></li>
 </ul>
 </li>
 </ul>

@@ -85,35 +85,11 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
 def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = '', extras: str = '') -> None:
     """Serve a llm with GGUF format from HuggingFace.
     """
-    from . import LlmFactory
-    from huggingface_hub import model_info, hf_hub_download
+    from .Models.Cores.llamacpp_core import get_model_dir
     from .utils import get_config
     import os
 
-    repo = model_info(repo_id=model_id)
-    files = list(map(lambda x: x.rfilename, repo.siblings))
-    model_files = list(filter(lambda x: x.endswith('.gguf'), files))
-    if len(model_files) == 0:
-        raise FileNotFoundError(f'No GGUF model files found in this repository "{model_id}".')
-    if model_file in model_files:
-        pass
-    elif model_file is None:
-        trial = ['q2', 'q3', 'q4']
-        stop = False
-        for t in trial:
-            for f in model_files:
-                if t in f.lower():
-                    model_file = f
-                    stop = True
-                    break
-            if stop:
-                break
-        if stop == False:
-            model_file = model_files[0]
-    else:
-        raise FileNotFoundError(f'File "{model_file}" not found in repository "{model_id}".')
-
-    model_dir = hf_hub_download(repo_id=model_id, filename=model_file)
+    model_dir = get_model_dir(model_id=model_id, model_file=model_file)
     kobold_dir = get_config()['llmplus_home'] if kobold_dir is None else kobold_dir
     kobold_dir = os.path.join(kobold_dir, 'koboldcpp', 'koboldcpp.py')
     if not os.path.exists(kobold_dir):

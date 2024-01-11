@@ -27,14 +27,9 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import os
-from ...utils import get_config
-os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
 from transformers import StoppingCriteria, StoppingCriteriaList
-from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.schema.runnable import RunnableConfig
-from .base_core import BaseCore
-from .utils import get_stop_words, textgen_iterator
+from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator, Literal
 
 class KeywordsStoppingCriteria(StoppingCriteria):
@@ -86,6 +81,8 @@ class HuggingfaceCore(BaseCore):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
+        from ...utils import get_config
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
         self._core_type = &#39;HuggingfaceCore&#39;
@@ -120,8 +117,7 @@ class HuggingfaceCore(BaseCore):
             import torch
             torch.cuda.empty_cache()
     
-
-class HuggingfaceLLM(LLM):
+class HuggingfaceLLM(BaseLLM):
     &#39;&#39;&#39;Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
     core: HuggingfaceCore
     generation_config: Dict[str, Any]
@@ -141,6 +137,7 @@ class HuggingfaceLLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         &#34;&#34;&#34;
+        from .utils import get_stop_words
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, &#39;transformers&#39;)
 
         generation_config = dict(
@@ -177,6 +174,7 @@ class HuggingfaceLLM(LLM):
         Yields:
             Iterator[str]: The next generated token.
         &#34;&#34;&#34;
+        from .utils import get_stop_words, textgen_iterator
         import warnings
         warnings.filterwarnings(&#39;ignore&#39;)
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;transformers&#39;) if stop is not None else self.stop
@@ -219,41 +217,6 @@ class HuggingfaceLLM(LLM):
             output = enforce_stop_tokens(output, stop)
             del pipe
             return output
-        
-    def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
-        &#34;&#34;&#34;Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        &#34;&#34;&#34;
-        return self._call(prompt=input, stop=stop, stream=True)
-    
-    def get_num_tokens(self, text: str) -&gt; int:
-        &#34;&#34;&#34;Get the number of tokens given the text string.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            int: Number of tokens
-        &#34;&#34;&#34;
-        return len(self.get_token_ids(text))
-    
-    def get_token_ids(self, text: str) -&gt; List[int]:
-        &#34;&#34;&#34;Get the token ids of the given text.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            List[int]: List of token ids.
-        &#34;&#34;&#34;
-        return self.core.encode(text=text)
 
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
@@ -306,6 +269,8 @@ class HuggingfaceLLM(LLM):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
+        from ...utils import get_config
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
         self._core_type = &#39;HuggingfaceCore&#39;
@@ -414,7 +379,7 @@ def model_type(self) -&gt; str:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class HuggingfaceLLM(LLM):
+<pre><code class="python">class HuggingfaceLLM(BaseLLM):
     &#39;&#39;&#39;Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
     core: HuggingfaceCore
     generation_config: Dict[str, Any]
@@ -434,6 +399,7 @@ def model_type(self) -&gt; str:
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         &#34;&#34;&#34;
+        from .utils import get_stop_words
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, &#39;transformers&#39;)
 
         generation_config = dict(
@@ -470,6 +436,7 @@ def model_type(self) -&gt; str:
         Yields:
             Iterator[str]: The next generated token.
         &#34;&#34;&#34;
+        from .utils import get_stop_words, textgen_iterator
         import warnings
         warnings.filterwarnings(&#39;ignore&#39;)
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;transformers&#39;) if stop is not None else self.stop
@@ -512,41 +479,6 @@ def model_type(self) -&gt; str:
             output = enforce_stop_tokens(output, stop)
             del pipe
             return output
-        
-    def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
-        &#34;&#34;&#34;Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        &#34;&#34;&#34;
-        return self._call(prompt=input, stop=stop, stream=True)
-    
-    def get_num_tokens(self, text: str) -&gt; int:
-        &#34;&#34;&#34;Get the number of tokens given the text string.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            int: Number of tokens
-        &#34;&#34;&#34;
-        return len(self.get_token_ids(text))
-    
-    def get_token_ids(self, text: str) -&gt; List[int]:
-        &#34;&#34;&#34;Get the token ids of the given text.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            List[int]: List of token ids.
-        &#34;&#34;&#34;
-        return self.core.encode(text=text)
 
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
@@ -558,6 +490,7 @@ def model_type(self) -&gt; str:
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></li>
 <li>langchain_core.language_models.llms.LLM</li>
 <li>langchain_core.language_models.llms.BaseLLM</li>
 <li>langchain_core.language_models.base.BaseLanguageModel</li>
@@ -584,108 +517,16 @@ def model_type(self) -&gt; str:
 <div class="desc"></div>
 </dd>
 </dl>
-<h3>Methods</h3>
-<dl>
-<dt id="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.get_num_tokens"><code class="name flex">
-<span>def <span class="ident">get_num_tokens</span></span>(<span>self, text: str) ‑> int</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the number of tokens given the text string.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
-<dd>Text</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>int</code></dt>
-<dd>Number of tokens</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_num_tokens(self, text: str) -&gt; int:
-    &#34;&#34;&#34;Get the number of tokens given the text string.
-
-    Args:
-        text (str): Text
-
-    Returns:
-        int: Number of tokens
-    &#34;&#34;&#34;
-    return len(self.get_token_ids(text))</code></pre>
-</details>
-</dd>
-<dt id="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.get_token_ids"><code class="name flex">
-<span>def <span class="ident">get_token_ids</span></span>(<span>self, text: str) ‑> List[int]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the token ids of the given text.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
-<dd>Text</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>List[int]</code></dt>
-<dd>List of token ids.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_token_ids(self, text: str) -&gt; List[int]:
-    &#34;&#34;&#34;Get the token ids of the given text.
-
-    Args:
-        text (str): Text
-
-    Returns:
-        List[int]: List of token ids.
-    &#34;&#34;&#34;
-    return self.core.encode(text=text)</code></pre>
-</details>
-</dd>
-<dt id="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.stream"><code class="name flex">
-<span>def <span class="ident">stream</span></span>(<span>self, input: str, config: Optional[langchain_core.runnables.config.RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>input</code></strong> :&ensp;<code>str</code></dt>
-<dd>The prompt to the llm.</dd>
-<dt><strong><code>config</code></strong> :&ensp;<code>Optional[RunnableConfig]</code></dt>
-<dd>Not used. Defaults to None.</dd>
-<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
-<dd>List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.</dd>
-</dl>
-<h2 id="yields">Yields</h2>
-<dl>
-<dt><code>Iterator[str]</code></dt>
-<dd>The next generated token.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
-    &#34;&#34;&#34;Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-    Args:
-        input (str): The prompt to the llm.
-        config (Optional[RunnableConfig]): Not used. Defaults to None.
-        stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-    Yields:
-        Iterator[str]: The next generated token.
-    &#34;&#34;&#34;
-    return self._call(prompt=input, stop=stop, stream=True)</code></pre>
-</details>
-</dd>
-</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_token_ids" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_token_ids">get_token_ids</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.stream" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.stream">stream</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 <dt id="llmplus.Models.Cores.huggingface_core.KeywordsStoppingCriteria"><code class="flex name class">
 <span>class <span class="ident">KeywordsStoppingCriteria</span></span>
@@ -797,13 +638,10 @@ def model_type(self) -&gt; str:
 </li>
 <li>
 <h4><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM">HuggingfaceLLM</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.core" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.core">core</a></code></li>
 <li><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.generation_config" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.generation_config">generation_config</a></code></li>
-<li><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.get_num_tokens" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.get_num_tokens">get_num_tokens</a></code></li>
-<li><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.get_token_ids" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.get_token_ids">get_token_ids</a></code></li>
 <li><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.stop" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.stop">stop</a></code></li>
-<li><code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.stream" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceLLM.stream">stream</a></code></li>
 </ul>
 </li>
 <li>

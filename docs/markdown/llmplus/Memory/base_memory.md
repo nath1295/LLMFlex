@@ -92,11 +92,11 @@ Classes
         Returns:
             List[List[str]]: List of interactions.
 
-    `get_token_memory(self, llm: llmplus.Models.Cores.base_core.BaseLLM, token_limit: int = 400) ‑> List[List[str]]`
+    `get_token_memory(self, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], token_limit: int = 400) ‑> List[List[str]]`
     :   Get the latest conversation limited by number of tokens.
         
         Args:
-            llm (BaseLLM): LLM to count tokens.
+            llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
         
         Returns:

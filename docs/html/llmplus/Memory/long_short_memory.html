@@ -32,20 +32,20 @@ from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..Data.vector_database import VectorDatabase
 from ..Models.Cores.base_core import BaseLLM
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Type
 
 class LongShortTermChatMemory(BaseChatMemory):
 
-    def __init__(self, title: str, embeddings: BaseEmbeddingsToolkit, from_exist: bool = True) -&gt; None:
+    def __init__(self, title: str, embeddings: Type[BaseEmbeddingsToolkit], from_exist: bool = True) -&gt; None:
         self._embeddings = embeddings
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+    def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
         &#34;&#34;&#34;Embeddings toolkit.
 
         Returns:
-            BaseEmbeddingsToolkit: Embeddings toolkit.
+            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
         &#34;&#34;&#34;
         return self._embeddings
 
@@ -108,13 +108,13 @@ class LongShortTermChatMemory(BaseChatMemory):
             self.vectordb.delete_by_metadata(order=self.interaction_count-1)
 
     def get_long_term_memory(self, query: str, short_term_memory: List[List[str]], 
-                             llm: BaseLLM, token_limit: int = 400, score_threshold: float = 0.2) -&gt; List[List[str]]:
+                             llm: Type[BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) -&gt; List[List[str]]:
         &#34;&#34;&#34;Retriving the long term memory with the given query. Usually used together with get_token_memory.
 
         Args:
             query (str): Search query for the vector database. Usually the latest user input.
             short_term_memory (List[List[str]]): List of interactions in the short term memory to skip in the long term memory.
-            llm (BaseLLM): LLM to count tokens.
+            llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
             score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
 
@@ -142,14 +142,14 @@ class LongShortTermChatMemory(BaseChatMemory):
                     final.append(msg[:2])
         return final
 
-def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: BaseLLM, memory: LongShortTermChatMemory,
+def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM], memory: LongShortTermChatMemory,
         system: str = DEFAULT_SYSTEM_MESSAGE, short_token_limit: int = 200, long_token_limit: int = 200, score_threshold: float = 0.5) -&gt; str:
     &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
 
     Args:
         user (str): User newest message.
         prompt_template (PromptTemplate): Prompt template to use.
-        llm (BaseLLM): LLM for counting tokens.
+        llm (Type[BaseLLM]): LLM for counting tokens.
         memory (LongShortTermChatMemory): The memory class with long short term functionalities.
         system (str, optional): System message for the conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
         short_token_limit (int, optional): Maximum number of tokens for short term memory. Defaults to 200.
@@ -165,7 +165,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
     if len(long) &gt; 0:
         system = system + &#39;\n\n##### These are some related message from previous conversations:\n&#39; + prompt_template.format_history(long) + \
             &#39;\n##### No need to use the above related messages if they are not useful for the current conversation.&#39;
-    prompt = prompt_template.create_chat_prompt(user=user, system=system, history=short)
+    prompt = prompt_template.create_prompt(user=user, system=system, history=short)
     return prompt</code></pre>
 </details>
 </section>
@@ -177,7 +177,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="llmplus.Memory.long_short_memory.create_long_short_prompt"><code class="name flex">
-<span>def <span class="ident">create_long_short_prompt</span></span>(<span>user: str, prompt_template: <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>, llm: <a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>, memory: <a title="llmplus.Memory.long_short_memory.LongShortTermChatMemory" href="#llmplus.Memory.long_short_memory.LongShortTermChatMemory">LongShortTermChatMemory</a>, system: str = 'This is a conversation between a human user and a helpful AI assistant.', short_token_limit: int = 200, long_token_limit: int = 200, score_threshold: float = 0.5) ‑> str</span>
+<span>def <span class="ident">create_long_short_prompt</span></span>(<span>user: str, prompt_template: <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], memory: <a title="llmplus.Memory.long_short_memory.LongShortTermChatMemory" href="#llmplus.Memory.long_short_memory.LongShortTermChatMemory">LongShortTermChatMemory</a>, system: str = 'This is a conversation between a human user and a helpful AI assistant.', short_token_limit: int = 200, long_token_limit: int = 200, score_threshold: float = 0.5) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. </p>
@@ -187,7 +187,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 <dd>User newest message.</dd>
 <dt><strong><code>prompt_template</code></strong> :&ensp;<code>PromptTemplate</code></dt>
 <dd>Prompt template to use.</dd>
-<dt><strong><code>llm</code></strong> :&ensp;<code>BaseLLM</code></dt>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
 <dd>LLM for counting tokens.</dd>
 <dt><strong><code>memory</code></strong> :&ensp;<code><a title="llmplus.Memory.long_short_memory.LongShortTermChatMemory" href="#llmplus.Memory.long_short_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></code></dt>
 <dd>The memory class with long short term functionalities.</dd>
@@ -209,14 +209,14 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: BaseLLM, memory: LongShortTermChatMemory,
+<pre><code class="python">def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM], memory: LongShortTermChatMemory,
         system: str = DEFAULT_SYSTEM_MESSAGE, short_token_limit: int = 200, long_token_limit: int = 200, score_threshold: float = 0.5) -&gt; str:
     &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
 
     Args:
         user (str): User newest message.
         prompt_template (PromptTemplate): Prompt template to use.
-        llm (BaseLLM): LLM for counting tokens.
+        llm (Type[BaseLLM]): LLM for counting tokens.
         memory (LongShortTermChatMemory): The memory class with long short term functionalities.
         system (str, optional): System message for the conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
         short_token_limit (int, optional): Maximum number of tokens for short term memory. Defaults to 200.
@@ -232,7 +232,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
     if len(long) &gt; 0:
         system = system + &#39;\n\n##### These are some related message from previous conversations:\n&#39; + prompt_template.format_history(long) + \
             &#39;\n##### No need to use the above related messages if they are not useful for the current conversation.&#39;
-    prompt = prompt_template.create_chat_prompt(user=user, system=system, history=short)
+    prompt = prompt_template.create_prompt(user=user, system=system, history=short)
     return prompt</code></pre>
 </details>
 </dd>
@@ -243,7 +243,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 <dl>
 <dt id="llmplus.Memory.long_short_memory.LongShortTermChatMemory"><code class="flex name class">
 <span>class <span class="ident">LongShortTermChatMemory</span></span>
-<span>(</span><span>title: str, embeddings: <a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>, from_exist: bool = True)</span>
+<span>(</span><span>title: str, embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], from_exist: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for chat memory.</p>
@@ -261,16 +261,16 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 </summary>
 <pre><code class="python">class LongShortTermChatMemory(BaseChatMemory):
 
-    def __init__(self, title: str, embeddings: BaseEmbeddingsToolkit, from_exist: bool = True) -&gt; None:
+    def __init__(self, title: str, embeddings: Type[BaseEmbeddingsToolkit], from_exist: bool = True) -&gt; None:
         self._embeddings = embeddings
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+    def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
         &#34;&#34;&#34;Embeddings toolkit.
 
         Returns:
-            BaseEmbeddingsToolkit: Embeddings toolkit.
+            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
         &#34;&#34;&#34;
         return self._embeddings
 
@@ -333,13 +333,13 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
             self.vectordb.delete_by_metadata(order=self.interaction_count-1)
 
     def get_long_term_memory(self, query: str, short_term_memory: List[List[str]], 
-                             llm: BaseLLM, token_limit: int = 400, score_threshold: float = 0.2) -&gt; List[List[str]]:
+                             llm: Type[BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) -&gt; List[List[str]]:
         &#34;&#34;&#34;Retriving the long term memory with the given query. Usually used together with get_token_memory.
 
         Args:
             query (str): Search query for the vector database. Usually the latest user input.
             short_term_memory (List[List[str]]): List of interactions in the short term memory to skip in the long term memory.
-            llm (BaseLLM): LLM to count tokens.
+            llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
             score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
 
@@ -373,12 +373,12 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmplus.Memory.long_short_memory.LongShortTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : <a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></code></dt>
+<dt id="llmplus.Memory.long_short_memory.LongShortTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>]</code></dt>
 <dd>
 <div class="desc"><p>Embeddings toolkit.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>BaseEmbeddingsToolkit</code></dt>
+<dt><code>Type[BaseEmbeddingsToolkit]</code></dt>
 <dd>Embeddings toolkit.</dd>
 </dl></div>
 <details class="source">
@@ -386,11 +386,11 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ba
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
     &#34;&#34;&#34;Embeddings toolkit.
 
     Returns:
-        BaseEmbeddingsToolkit: Embeddings toolkit.
+        Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
     &#34;&#34;&#34;
     return self._embeddings</code></pre>
 </details>
@@ -421,7 +421,7 @@ def vectordb(self) -&gt; VectorDatabase:
 <h3>Methods</h3>
 <dl>
 <dt id="llmplus.Memory.long_short_memory.LongShortTermChatMemory.get_long_term_memory"><code class="name flex">
-<span>def <span class="ident">get_long_term_memory</span></span>(<span>self, query: str, short_term_memory: List[List[str]], llm: <a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>, token_limit: int = 400, score_threshold: float = 0.2) ‑> List[List[str]]</span>
+<span>def <span class="ident">get_long_term_memory</span></span>(<span>self, query: str, short_term_memory: List[List[str]], llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], token_limit: int = 400, score_threshold: float = 0.2) ‑> List[List[str]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Retriving the long term memory with the given query. Usually used together with get_token_memory.</p>
@@ -431,7 +431,7 @@ def vectordb(self) -&gt; VectorDatabase:
 <dd>Search query for the vector database. Usually the latest user input.</dd>
 <dt><strong><code>short_term_memory</code></strong> :&ensp;<code>List[List[str]]</code></dt>
 <dd>List of interactions in the short term memory to skip in the long term memory.</dd>
-<dt><strong><code>llm</code></strong> :&ensp;<code>BaseLLM</code></dt>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
 <dd>LLM to count tokens.</dd>
 <dt><strong><code>token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
 <dd>Maximum number of tokens in the long term memory. Defaults to 400.</dd>
@@ -448,13 +448,13 @@ def vectordb(self) -&gt; VectorDatabase:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_long_term_memory(self, query: str, short_term_memory: List[List[str]], 
-                         llm: BaseLLM, token_limit: int = 400, score_threshold: float = 0.2) -&gt; List[List[str]]:
+                         llm: Type[BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) -&gt; List[List[str]]:
     &#34;&#34;&#34;Retriving the long term memory with the given query. Usually used together with get_token_memory.
 
     Args:
         query (str): Search query for the vector database. Usually the latest user input.
         short_term_memory (List[List[str]]): List of interactions in the short term memory to skip in the long term memory.
-        llm (BaseLLM): LLM to count tokens.
+        llm (Type[BaseLLM]): LLM to count tokens.
         token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
         score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
 

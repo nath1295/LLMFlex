@@ -27,8 +27,6 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import os
-from ..utils import get_config
-os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
 from .base_embeddings import BaseEmbeddingsToolkit
 from typing import Dict, Any
 
@@ -46,6 +44,10 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
+        from ..utils import get_config
+        os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from langchain.embeddings import HuggingFaceEmbeddings
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         from transformers import AutoTokenizer
@@ -107,6 +109,10 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
+        from ..utils import get_config
+        os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from langchain.embeddings import HuggingFaceEmbeddings
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         from transformers import AutoTokenizer

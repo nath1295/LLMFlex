@@ -1,8 +1,7 @@
 import os
 from ..utils import get_config
-from ..Prompts.prompt_template import PromptTemplate, presets
 from ..Models.Cores.base_core import BaseLLM
-from typing import List, Dict, Any, Union
+from typing import List, Dict, Any, Type
 
 
 def chat_memory_home() -> str:
@@ -201,11 +200,11 @@ class BaseChatMemory:
         results = history if len(history) <= k else history[-k:]
         return results
 
-    def get_token_memory(self, llm: BaseLLM, token_limit: int = 400) -> List[List[str]]:
+    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -> List[List[str]]:
         """Get the latest conversation limited by number of tokens.
 
         Args:
-            llm (BaseLLM): LLM to count tokens.
+            llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
 
         Returns:

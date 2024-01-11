@@ -96,7 +96,7 @@ class PromptTemplate:
             body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
         return body
     
-    def create_chat_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -> str:
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -> str:
         """Creating the full chat prompt.
 
         Args:
@@ -143,11 +143,11 @@ class PromptTemplate:
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal['Default Chat', 'Default Instruct', 'Llama 2 Chat', 'Vicuna 1.1 Chat', 'ChatML Chat', 'Zephyr Chat', 'OpenChat']) -> PromptTemplate:
+    def from_preset(cls, style: Literal['Default', 'Default Instruct', 'Llama2', 'Vicuna1.1', 'ChatML', 'Zephyr', 'OpenChat']) -> PromptTemplate:
         """Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&#39;Default Chat&#39;, &#39;Default Instruct&#39;, &#39;Llama 2 Chat&#39;, &#39;Vicuna 1.1 Chat&#39;, &#39;ChatML Chat&#39;, &#39;Zephyr Chat&#39;, &#39;OpenChat&#39;]): Format of the prompt.
+            style (Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna1.1&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -174,7 +174,7 @@ class PromptTemplate:
         )
     
 presets = {
-    'Default Chat' : {
+    'Default' : {
         'system_prefix': 'SYSTEM:\n',
         'system_suffix': '\n\nCurrent conversation:\n',
         'human_prefix': 'USER: ',
@@ -194,7 +194,7 @@ presets = {
         'wrapper': ['USER: ', '\n'],
         'stop': None
     },
-    'Llama 2 Chat' : {
+    'Llama2' : {
         'system_prefix': '<s>[INST] <<SYS>>\n',
         'system_suffix': '\n<</SYS>>\n',
         'human_prefix': '',
@@ -204,7 +204,7 @@ presets = {
         'wrapper': ['<s>[INST] ', ' </s>'],
         'stop': ['</s>', '</s><s>', '[INST]', '<s>[INST]']
     },
-    'Vicuna 1.1 Chat' : {
+    'Vicuna1.1' : {
         'system_prefix': '',
         'system_suffix': '\n\n',
         'human_prefix': 'USER: ',
@@ -214,7 +214,7 @@ presets = {
         'wrapper': ['USER: ', '\n'],
         'stop': None
     },
-    'ChatML Chat' : {
+    'ChatML' : {
         'system_prefix': '<|im_start|>system\n',
         'system_suffix': '<|im_end|>\n',
         'human_prefix': '<|im_start|>user\n',
@@ -224,7 +224,7 @@ presets = {
         'wrapper': ['<|im_start|>user\n', '<|im_end|>\n'],
         'stop': ['<|im_start|>', '<|im_end|>', '<|im_start|>user\n', '<|im_end|>\n<|im_start|>user\n']
     },
-    'Zephyr Chat' : {
+    'Zephyr' : {
         'system_prefix': '<|system|>\n',
         'system_suffix': '</s>\n',
         'human_prefix': '<|user|>\n',

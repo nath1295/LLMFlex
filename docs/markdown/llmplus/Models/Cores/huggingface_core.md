@@ -45,6 +45,7 @@ Classes
 
     ### Ancestors (in MRO)
 
+    * llmplus.Models.Cores.base_core.BaseLLM
     * langchain_core.language_models.llms.LLM
     * langchain_core.language_models.llms.BaseLLM
     * langchain_core.language_models.base.BaseLanguageModel
@@ -66,37 +67,6 @@ Classes
 
     `stop: List[str]`
     :
-
-    ### Methods
-
-    `get_num_tokens(self, text: str) ‑> int`
-    :   Get the number of tokens given the text string.
-        
-        Args:
-            text (str): Text
-        
-        Returns:
-            int: Number of tokens
-
-    `get_token_ids(self, text: str) ‑> List[int]`
-    :   Get the token ids of the given text.
-        
-        Args:
-            text (str): Text
-        
-        Returns:
-            List[int]: List of token ids.
-
-    `stream(self, input: str, config: Optional[langchain_core.runnables.config.RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]`
-    :   Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-        
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-        
-        Yields:
-            Iterator[str]: The next generated token.
 
 `KeywordsStoppingCriteria(stop_words: List[str], tokenizer: Any)`
 :   class for handling stop words in transformers.pipeline

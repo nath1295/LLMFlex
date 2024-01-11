@@ -1,12 +1,7 @@
 import os
-from ...utils import get_config
-os.environ['HF_HOME'] = get_config()['hf_home']
 from transformers import StoppingCriteria, StoppingCriteriaList
-from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.schema.runnable import RunnableConfig
-from .base_core import BaseCore
-from .utils import get_stop_words, textgen_iterator
+from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator, Literal
 
 class KeywordsStoppingCriteria(StoppingCriteria):
@@ -58,6 +53,8 @@ class HuggingfaceCore(BaseCore):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
         """
+        from ...utils import get_config
+        os.environ['HF_HOME'] = get_config()['hf_home']
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
         self._core_type = 'HuggingfaceCore'
@@ -92,8 +89,7 @@ class HuggingfaceCore(BaseCore):
             import torch
             torch.cuda.empty_cache()
     
-
-class HuggingfaceLLM(LLM):
+class HuggingfaceLLM(BaseLLM):
     '''Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.'''
     core: HuggingfaceCore
     generation_config: Dict[str, Any]
@@ -113,6 +109,7 @@ class HuggingfaceLLM(LLM):
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
         """
+        from .utils import get_stop_words
         stop = get_stop_words(stop, core.tokenizer, stop_newline_version, 'transformers')
 
         generation_config = dict(
@@ -149,6 +146,7 @@ class HuggingfaceLLM(LLM):
         Yields:
             Iterator[str]: The next generated token.
         """
+        from .utils import get_stop_words, textgen_iterator
         import warnings
         warnings.filterwarnings('ignore')
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type='transformers') if stop is not None else self.stop
@@ -191,41 +189,6 @@ class HuggingfaceLLM(LLM):
             output = enforce_stop_tokens(output, stop)
             del pipe
             return output
-        
-    def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -> Iterator[str]:
-        """Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
-
-        Args:
-            input (str): The prompt to the llm.
-            config (Optional[RunnableConfig]): Not used. Defaults to None.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        """
-        return self._call(prompt=input, stop=stop, stream=True)
-    
-    def get_num_tokens(self, text: str) -> int:
-        """Get the number of tokens given the text string.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            int: Number of tokens
-        """
-        return len(self.get_token_ids(text))
-    
-    def get_token_ids(self, text: str) -> List[int]:
-        """Get the token ids of the given text.
-
-        Args:
-            text (str): Text
-
-        Returns:
-            List[int]: List of token ids.
-        """
-        return self.core.encode(text=text)
 
     def _llm_type(self) -> str:
         """LLM type.

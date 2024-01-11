@@ -3,7 +3,7 @@ import os
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from langchain.schema.document import Document
 import pandas as pd
-from typing import List, Optional, Literal, Dict, Any, Union
+from typing import List, Optional, Type, Dict, Any, Union
 
 def default_vectordb_dir() -> str:
     """Default home directory of vector databases.
@@ -51,14 +51,14 @@ def name_checker(name: str) -> str:
     return name
         
 def texts_to_documents(texts: List[str], 
-        embeddings: BaseEmbeddingsToolkit, 
+        embeddings: Type[BaseEmbeddingsToolkit], 
         data: Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]] = None,
         split_text: bool = True) -> List[Document]:
     """Create splitted documents from the list of text strings.
 
     Args:
         texts (List[str]): List of strings to split into documents.
-        embeddings (BaseEmbeddingsToolkit): Embedding toolkits used to split the documents.
+        embeddings (Type[BaseEmbeddingsToolkit]): Embedding toolkits used to split the documents.
         data (Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]], optional): Metadata for each text strings. Defaults to None.
         split_text (bool, optional): Whether to split text if the given text is too long. Defaults to True.
 
@@ -81,13 +81,13 @@ class VectorDatabase:
     """Vector database class, suitable for storing text data as embeddings for similarity searches and other classes that requires numerical respresentations of texts.
     """
 
-    def __init__(self, embeddings: BaseEmbeddingsToolkit, 
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
                  vectordb_dir: Optional[str] = None, name: Optional[str] = None,
                  save_raw: bool = False) -> None:
         """Initialising basic information of the vector database.
 
         Args:
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkits used in the vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             save_raw (bool, optional): Whether to save raw text data and metadata as a separate json file. Defaults to False.
@@ -107,11 +107,11 @@ class VectorDatabase:
         return self._name
     
     @property
-    def embeddings(self) -> BaseEmbeddingsToolkit:
+    def embeddings(self) -> Type[BaseEmbeddingsToolkit]:
         """Embeddings toolkit used in the vector database.
 
         Returns:
-            BaseEmbeddingsToolkit: Embeddings toolkit used in the vector database.
+            Type[BaseEmbeddingsToolkit]: Embeddings toolkit used in the vector database.
         """
         return self._embeddings
     
@@ -187,7 +187,7 @@ class VectorDatabase:
         """
         return len(self.data)
         
-    def _init_vectordb(self, embeddings: BaseEmbeddingsToolkit, from_exist: bool = True) -> None:
+    def _init_vectordb(self, embeddings: Type[BaseEmbeddingsToolkit], from_exist: bool = True) -> None:
         """Initialise the langchain vectorstore
 
         Args:
@@ -231,12 +231,12 @@ class VectorDatabase:
                 save_json(self.data, os.path.join(self.vdb_dir, 'data.json'))
         
     @classmethod
-    def from_exist(cls, name: str, embeddings: BaseEmbeddingsToolkit, vectordb_dir: Optional[str] = None) -> VectorDatabase:
+    def from_exist(cls, name: str, embeddings: Type[BaseEmbeddingsToolkit], vectordb_dir: Optional[str] = None) -> VectorDatabase:
         """Initialise the vector database from existing files.
 
         Args:
             name (str): Name of the existing vector database.
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkit used in this vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit used in this vector database.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database. If None is given, the default_vectordb_dir will be used. Defaults to None.
 
         Returns:
@@ -257,11 +257,11 @@ class VectorDatabase:
         return vdb
     
     @classmethod
-    def from_empty(cls, embeddings: BaseEmbeddingsToolkit, name: Optional[str] = None, vectordb_dir: Optional[str] = None, save_raw: bool = False) -> VectorDatabase:
+    def from_empty(cls, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, save_raw: bool = False) -> VectorDatabase:
         """Initialise an empty vector database.
 
         Args:
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkits used in the vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
             save_raw (bool, optional): Whether to save raw text data and metadata as a separate json file. Defaults to False.
@@ -274,14 +274,14 @@ class VectorDatabase:
         return vdb
     
     @classmethod
-    def from_data(cls, index: List[str], embeddings: BaseEmbeddingsToolkit,
+    def from_data(cls, index: List[str], embeddings: Type[BaseEmbeddingsToolkit],
                   data: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = dict(), name: Optional[str] = None, 
                   vectordb_dir: Optional[str] = None, save_raw: bool = False, split_text: bool = True) -> VectorDatabase:
         """Initialise the vector database with list of texts.
 
         Args:
             index (List[str]): List of texts to initialise the database.
-            embeddings (BaseEmbeddingsToolkit): Embeddings toolkits used in the vector database.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
             data (Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]], optional): Metadata for the list of texts. Defaults to dict().
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
