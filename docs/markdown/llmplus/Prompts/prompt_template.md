@@ -84,22 +84,22 @@ Classes
 
     ### Methods
 
-    `create_prompt(self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: List[List[str]] = []) ‑> str`
+    `create_prompt(self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = []) ‑> str`
     :   Creating the full chat prompt.
         
         Args:
             user (str): Latest user input.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (List[List[str]], optional): List of conversation history. Defaults to [].
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
         
         Returns:
             str: The full prompt.
 
-    `format_history(self, history: List[List[str]], use_wrapper: bool = True) ‑> str`
+    `format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) ‑> str`
     :   Formatting a list of conversation history into a full string of conversation history.
         
         Args:
-            history (List[List[str]]): List of conversation history. 
+            history (Union[List[str], List[Tuple[str, str]]]): List of conversation history. 
             use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
         
         Returns:

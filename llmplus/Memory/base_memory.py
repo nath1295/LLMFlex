@@ -1,7 +1,7 @@
 import os
 from ..utils import get_config
 from ..Models.Cores.base_core import BaseLLM
-from typing import List, Dict, Any, Type
+from typing import List, Dict, Any, Type, Tuple
 
 
 def chat_memory_home() -> str:
@@ -118,22 +118,27 @@ class BaseChatMemory:
             return self._info
 
     @property    
-    def history(self) -> List[List[str]]:
+    def history(self) -> List[Tuple[str, str]]:
         """Entire chat history.
 
         Returns:
-            List[List[str]]: Entire chat history.
+            List[Tuple[str, str]]: Entire chat history.
         """
         history = list(map(lambda x: [x['metadata']['user'], x['metadata']['assistant'], x['metadata']['order']], self._data))
         if len(history) == 0:
             return []
-        import pandas as pd
-        history = pd.DataFrame(history, columns=['user', 'assistant', 'order'])
-        history = history.drop_duplicates(subset=['order'], keep='first')
-        return history.sort_values(by='order', ascending=True)[['user', 'assistant']].values.tolist()
-    
+        count = max(list(map(lambda x: x[2], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[2], reverse=False)
+        return list(map(lambda x: tuple(x[:2]), history))
+
     @property
     def interaction_count(self) -> int:
+        """Number of interactions.
+
+        Returns:
+            int: Number of interactions.
+        """
         return len(self.history)
 
     def _init_memory(self, from_exist: bool = True) -> None:
@@ -149,7 +154,6 @@ class BaseChatMemory:
         else:
             self._data = list()
             self.save()
-
 
     def save(self) -> None:
         """Save the current state of the memory.
@@ -187,20 +191,21 @@ class BaseChatMemory:
         """
         self._init_memory(from_exist=False)
 
-    def get_recent_memory(self, k: int = 3) -> List[List[str]]:
+    def get_recent_memory(self, k: int = 3) -> List[Tuple[str, str]]:
         """Get the last k interactions as a list.
 
         Args:
             k (int, optional): Maximum number of latest interactions. Defaults to 3.
 
         Returns:
-            List[List[str]]: List of interactions.
+            List[Tuple[str, str]]: List of interactions.
         """
+        from copy import deepcopy
         history = self.history
         results = history if len(history) <= k else history[-k:]
-        return results
+        return deepcopy(results)
 
-    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -> List[List[str]]:
+    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -> List[str]:
         """Get the latest conversation limited by number of tokens.
 
         Args:
@@ -208,22 +213,21 @@ class BaseChatMemory:
             token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
 
         Returns:
-            List[List[str]]: The formatted output of the recent conversation.
+            List[str]: List of most recent messages.
         """
         if len(self.history) == 0:
             return []
         tk_count = 0
-        history = list(reversed(self.history))
+        history = sum(list(map(list, self.history)), [])
+        history = list(reversed(history))
         results = list()
         for m in history:
-            msg_count = sum(list(map(lambda x: llm.get_num_tokens(x), m)))
-            if (msg_count + tk_count) <= token_limit:
+            msg_count = llm.get_num_tokens(m)
+            if (((msg_count + tk_count) <= token_limit) | (len(results) < 2)):
                 results = [m] + results
                 tk_count += msg_count
             else:
                 break
-        if len(results) == 0:
-            results = [history[0]]
         return results
 
 

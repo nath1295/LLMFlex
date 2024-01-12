@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Dict, Any, Optional, Literal
+from typing import List, Dict, Any, Optional, Literal, Union, Tuple
 
 DEFAULT_SYSTEM_MESSAGE = """This is a conversation between a human user and a helpful AI assistant."""
 
@@ -79,30 +79,49 @@ class PromptTemplate:
         """
         return self.__dict__.get('_template_name', 'Unititled template')
 
-    def format_history(self, history: List[List[str]], use_wrapper: bool = True) -> str:
+    def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -> str:
         """Formatting a list of conversation history into a full string of conversation history.
 
         Args:
-            history (List[List[str]]): List of conversation history. 
+            history (Union[List[str], List[Tuple[str, str]]]): List of conversation history. 
             use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
 
         Returns:
             str: Full string of conversation history.
         """
-        body = list(map(lambda x: f'{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}', history))
-        body = ''.join(body)
-        if use_wrapper:
-            body = self.wrapper[0] + body.removeprefix(self.human_prefix)
-            body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        if len(history) == 0:
+            return ''
+        elif not isinstance(history[0], str):
+            body = list(map(lambda x: f'{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}', history))
+            body = ''.join(body)
+            if use_wrapper:
+                body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        else:
+            length = len(history)
+            is_even = length % 2 == 0
+            lead = history[0]
+            alt_history = history if is_even else history[1:]
+            alt_history = list(map(lambda x: (alt_history[x * 2], alt_history[x * 2 + 1]), range(len(alt_history) // 2)))
+            body = list(map(lambda x: f'{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}', alt_history))
+            body = ''.join(body)
+            if not is_even:
+                body = f'{self.ai_prefix}{lead}{self.ai_suffix}' + body
+            if use_wrapper:
+                if is_even:
+                    body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+                else:
+                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
         return body
-    
-    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -> str:
+
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -> str:
         """Creating the full chat prompt.
 
         Args:
             user (str): Latest user input.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (List[List[str]], optional): List of conversation history. Defaults to [].
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
 
         Returns:
             str: The full prompt.

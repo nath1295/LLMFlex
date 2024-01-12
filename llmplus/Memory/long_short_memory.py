@@ -4,7 +4,7 @@ from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..Data.vector_database import VectorDatabase
 from ..Models.Cores.base_core import BaseLLM
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
-from typing import List, Dict, Any, Type
+from typing import List, Dict, Any, Type, Union, Tuple
 
 class LongShortTermChatMemory(BaseChatMemory):
 
@@ -79,39 +79,50 @@ class LongShortTermChatMemory(BaseChatMemory):
         if self.interaction_count != 0:
             self.vectordb.delete_by_metadata(order=self.interaction_count-1)
 
-    def get_long_term_memory(self, query: str, short_term_memory: List[List[str]], 
-                             llm: Type[BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) -> List[List[str]]:
+    def get_long_term_memory(self, query: str, recent_history: Union[List[str], List[Tuple[str, str]]], 
+                             llm: Type[BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) -> List[Tuple[str, str]]:
         """Retriving the long term memory with the given query. Usually used together with get_token_memory.
 
         Args:
             query (str): Search query for the vector database. Usually the latest user input.
-            short_term_memory (List[List[str]]): List of interactions in the short term memory to skip in the long term memory.
+            recent_history (Union[List[str], List[Tuple[str, str]]]): List of interactions in the short term memory to skip in the long term memory.
             llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
             score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
 
         Returns:
-            List[List[str]]: List of interactions related to the query.
+            List[Tuple[str, str]]: List of interactions related to the query.
         """
         if self.interaction_count == 0:
             return []
-        related = self.vectordb.search(query=query, top_k=10, index_only=False)
+        related = self.vectordb.search(query=query, top_k=15, index_only=False)
         related = list(map(lambda x: [x['metadata']['user'], x['metadata']['assistant'], x['score']], related))
         related = list(filter(lambda x: x[2] >= score_threshold, related))
+        related = list(map(lambda x: tuple(x[:2]), related))
         if len(related) == 0:
             return []
-        long_concat = list(map(lambda x: f'Input: {x[0]}\nOutput: {x[1]}', related))
-        short_conccat = list(map(lambda x: f'Input: {x[0]}\nOutput: {x[1]}', short_term_memory))
-        is_exist = list(map(lambda x: x in short_conccat, long_concat))
+        if len(recent_history) != 0:
+            if isinstance(recent_history[0], str):
+                length = len(recent_history)
+                is_even = length % 2 == 0
+                lead = recent_history[0]
+                alt_history = recent_history if is_even else recent_history[1:]
+                alt_history = list(map(lambda x: (alt_history[x * 2], alt_history[x * 2 + 1]), range(len(alt_history) // 2)))
+                related = list(filter(lambda x: x not in alt_history, related))
+                if not is_even:
+                    related = list(filter(lambda x: x[1] != lead, related))
+                
+            else:
+                alt_history = list(map(lambda x: tuple(x), recent_history))
+                related = list(filter(lambda x: x not in alt_history, related))
 
         final = []
         token_count = 0
-        for i, msg in enumerate(related):
-            if not is_exist[i]:
-                msg_count = llm.get_num_tokens(msg[0]) + llm.get_num_tokens(msg[1])
-                if (token_count + msg_count) <= token_limit:
-                    token_count += msg_count
-                    final.append(msg[:2])
+        for msg in related:
+            msg_count = llm.get_num_tokens(msg[0]) + llm.get_num_tokens(msg[1])
+            if (token_count + msg_count) <= token_limit:
+                token_count += msg_count
+                final.append(msg)
         return final
 
 def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM], memory: LongShortTermChatMemory,
@@ -133,7 +144,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
     """    """"""    
     user = user.strip(' \n\r\t')
     short = memory.get_token_memory(llm=llm, token_limit=short_token_limit)
-    long = memory.get_long_term_memory(query=user, short_term_memory=short, llm=llm, token_limit=long_token_limit, score_threshold=score_threshold)
+    long = memory.get_long_term_memory(query=user, recent_history=short, llm=llm, token_limit=long_token_limit, score_threshold=score_threshold)
     if len(long) > 0:
         system = system + '\n\n##### These are some related message from previous conversations:\n' + prompt_template.format_history(long) + \
             '\n##### No need to use the above related messages if they are not useful for the current conversation.'

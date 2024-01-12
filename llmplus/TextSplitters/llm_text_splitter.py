@@ -1,13 +1,22 @@
 from typing import List
 from langchain.text_splitter import TextSplitter
-from .base_core import BaseLLM
-from ..Factory.llm_factory import LlmFactory
+from ..Models.Cores.base_core import BaseLLM
+from ..Models.Factory.llm_factory import LlmFactory
 from typing import Union, Type
 
 class LLMTextSplitter(TextSplitter):
+    """Text splitter using the tokenizer in the llm as a measure to count tokens and split texts.
+    """
 
     def __init__(self, model: Union[LlmFactory, Type[BaseLLM]],
                  chunk_size: int = 400, chunk_overlap: int = 40) -> None:
+        """Initialise the TextSplitter.
+
+        Args:
+            model (Union[LlmFactory, Type[BaseLLM]]): Llm factory that contains the model or the llm that will be used to count tokens.
+            chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
+            chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
+        """
         
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
         self._model = model if hasattr(model, 'generation_config') else model()

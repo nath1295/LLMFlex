@@ -141,7 +141,7 @@ class WebSearchTool(BaseTool):
                 self.print(f'Generation of query failed, fall back to use the raw tool_input "{tool_input}".')
                 query = tool_input
 
-        from ..Models.Cores.text_splitter import LLMTextSplitter
+        from ..TextSplitters.llm_text_splitter import LLMTextSplitter
         from ..Models.Cores.utils import add_newline_char_to_stopwords
         from langchain.schema.document import Document
 

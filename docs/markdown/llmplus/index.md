@@ -9,6 +9,7 @@ Sub-modules
 * llmplus.Memory
 * llmplus.Models
 * llmplus.Prompts
+* llmplus.TextSplitters
 * llmplus.Tools
 * llmplus.cli
 * llmplus.utils

@@ -29,7 +29,7 @@
 <pre><code class="python">import os
 from ..utils import get_config
 from ..Models.Cores.base_core import BaseLLM
-from typing import List, Dict, Any, Type
+from typing import List, Dict, Any, Type, Tuple
 
 
 def chat_memory_home() -&gt; str:
@@ -146,22 +146,27 @@ class BaseChatMemory:
             return self._info
 
     @property    
-    def history(self) -&gt; List[List[str]]:
+    def history(self) -&gt; List[Tuple[str, str]]:
         &#34;&#34;&#34;Entire chat history.
 
         Returns:
-            List[List[str]]: Entire chat history.
+            List[Tuple[str, str]]: Entire chat history.
         &#34;&#34;&#34;
         history = list(map(lambda x: [x[&#39;metadata&#39;][&#39;user&#39;], x[&#39;metadata&#39;][&#39;assistant&#39;], x[&#39;metadata&#39;][&#39;order&#39;]], self._data))
         if len(history) == 0:
             return []
-        import pandas as pd
-        history = pd.DataFrame(history, columns=[&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;])
-        history = history.drop_duplicates(subset=[&#39;order&#39;], keep=&#39;first&#39;)
-        return history.sort_values(by=&#39;order&#39;, ascending=True)[[&#39;user&#39;, &#39;assistant&#39;]].values.tolist()
-    
+        count = max(list(map(lambda x: x[2], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[2], reverse=False)
+        return list(map(lambda x: tuple(x[:2]), history))
+
     @property
     def interaction_count(self) -&gt; int:
+        &#34;&#34;&#34;Number of interactions.
+
+        Returns:
+            int: Number of interactions.
+        &#34;&#34;&#34;
         return len(self.history)
 
     def _init_memory(self, from_exist: bool = True) -&gt; None:
@@ -177,7 +182,6 @@ class BaseChatMemory:
         else:
             self._data = list()
             self.save()
-
 
     def save(self) -&gt; None:
         &#34;&#34;&#34;Save the current state of the memory.
@@ -215,20 +219,21 @@ class BaseChatMemory:
         &#34;&#34;&#34;
         self._init_memory(from_exist=False)
 
-    def get_recent_memory(self, k: int = 3) -&gt; List[List[str]]:
+    def get_recent_memory(self, k: int = 3) -&gt; List[Tuple[str, str]]:
         &#34;&#34;&#34;Get the last k interactions as a list.
 
         Args:
             k (int, optional): Maximum number of latest interactions. Defaults to 3.
 
         Returns:
-            List[List[str]]: List of interactions.
+            List[Tuple[str, str]]: List of interactions.
         &#34;&#34;&#34;
+        from copy import deepcopy
         history = self.history
         results = history if len(history) &lt;= k else history[-k:]
-        return results
+        return deepcopy(results)
 
-    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[List[str]]:
+    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[str]:
         &#34;&#34;&#34;Get the latest conversation limited by number of tokens.
 
         Args:
@@ -236,22 +241,21 @@ class BaseChatMemory:
             token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
 
         Returns:
-            List[List[str]]: The formatted output of the recent conversation.
+            List[str]: List of most recent messages.
         &#34;&#34;&#34;
         if len(self.history) == 0:
             return []
         tk_count = 0
-        history = list(reversed(self.history))
+        history = sum(list(map(list, self.history)), [])
+        history = list(reversed(history))
         results = list()
         for m in history:
-            msg_count = sum(list(map(lambda x: llm.get_num_tokens(x), m)))
-            if (msg_count + tk_count) &lt;= token_limit:
+            msg_count = llm.get_num_tokens(m)
+            if (((msg_count + tk_count) &lt;= token_limit) | (len(results) &lt; 2)):
                 results = [m] + results
                 tk_count += msg_count
             else:
                 break
-        if len(results) == 0:
-            results = [history[0]]
         return results</code></pre>
 </details>
 </section>
@@ -459,22 +463,27 @@ class BaseChatMemory:
             return self._info
 
     @property    
-    def history(self) -&gt; List[List[str]]:
+    def history(self) -&gt; List[Tuple[str, str]]:
         &#34;&#34;&#34;Entire chat history.
 
         Returns:
-            List[List[str]]: Entire chat history.
+            List[Tuple[str, str]]: Entire chat history.
         &#34;&#34;&#34;
         history = list(map(lambda x: [x[&#39;metadata&#39;][&#39;user&#39;], x[&#39;metadata&#39;][&#39;assistant&#39;], x[&#39;metadata&#39;][&#39;order&#39;]], self._data))
         if len(history) == 0:
             return []
-        import pandas as pd
-        history = pd.DataFrame(history, columns=[&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;])
-        history = history.drop_duplicates(subset=[&#39;order&#39;], keep=&#39;first&#39;)
-        return history.sort_values(by=&#39;order&#39;, ascending=True)[[&#39;user&#39;, &#39;assistant&#39;]].values.tolist()
-    
+        count = max(list(map(lambda x: x[2], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[2], reverse=False)
+        return list(map(lambda x: tuple(x[:2]), history))
+
     @property
     def interaction_count(self) -&gt; int:
+        &#34;&#34;&#34;Number of interactions.
+
+        Returns:
+            int: Number of interactions.
+        &#34;&#34;&#34;
         return len(self.history)
 
     def _init_memory(self, from_exist: bool = True) -&gt; None:
@@ -490,7 +499,6 @@ class BaseChatMemory:
         else:
             self._data = list()
             self.save()
-
 
     def save(self) -&gt; None:
         &#34;&#34;&#34;Save the current state of the memory.
@@ -528,20 +536,21 @@ class BaseChatMemory:
         &#34;&#34;&#34;
         self._init_memory(from_exist=False)
 
-    def get_recent_memory(self, k: int = 3) -&gt; List[List[str]]:
+    def get_recent_memory(self, k: int = 3) -&gt; List[Tuple[str, str]]:
         &#34;&#34;&#34;Get the last k interactions as a list.
 
         Args:
             k (int, optional): Maximum number of latest interactions. Defaults to 3.
 
         Returns:
-            List[List[str]]: List of interactions.
+            List[Tuple[str, str]]: List of interactions.
         &#34;&#34;&#34;
+        from copy import deepcopy
         history = self.history
         results = history if len(history) &lt;= k else history[-k:]
-        return results
+        return deepcopy(results)
 
-    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[List[str]]:
+    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[str]:
         &#34;&#34;&#34;Get the latest conversation limited by number of tokens.
 
         Args:
@@ -549,22 +558,21 @@ class BaseChatMemory:
             token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
 
         Returns:
-            List[List[str]]: The formatted output of the recent conversation.
+            List[str]: List of most recent messages.
         &#34;&#34;&#34;
         if len(self.history) == 0:
             return []
         tk_count = 0
-        history = list(reversed(self.history))
+        history = sum(list(map(list, self.history)), [])
+        history = list(reversed(history))
         results = list()
         for m in history:
-            msg_count = sum(list(map(lambda x: llm.get_num_tokens(x), m)))
-            if (msg_count + tk_count) &lt;= token_limit:
+            msg_count = llm.get_num_tokens(m)
+            if (((msg_count + tk_count) &lt;= token_limit) | (len(results) &lt; 2)):
                 results = [m] + results
                 tk_count += msg_count
             else:
                 break
-        if len(results) == 0:
-            results = [history[0]]
         return results</code></pre>
 </details>
 <h3>Subclasses</h3>
@@ -610,12 +618,12 @@ def chat_dir(self) -&gt; str:
         return self._chat_dir</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Memory.base_memory.BaseChatMemory.history"><code class="name">var <span class="ident">history</span> : List[List[str]]</code></dt>
+<dt id="llmplus.Memory.base_memory.BaseChatMemory.history"><code class="name">var <span class="ident">history</span> : List[Tuple[str, str]]</code></dt>
 <dd>
 <div class="desc"><p>Entire chat history.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>List[List[str]]</code></dt>
+<dt><code>List[Tuple[str, str]]</code></dt>
 <dd>Entire chat history.</dd>
 </dl></div>
 <details class="source">
@@ -623,19 +631,19 @@ def chat_dir(self) -&gt; str:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property    
-def history(self) -&gt; List[List[str]]:
+def history(self) -&gt; List[Tuple[str, str]]:
     &#34;&#34;&#34;Entire chat history.
 
     Returns:
-        List[List[str]]: Entire chat history.
+        List[Tuple[str, str]]: Entire chat history.
     &#34;&#34;&#34;
     history = list(map(lambda x: [x[&#39;metadata&#39;][&#39;user&#39;], x[&#39;metadata&#39;][&#39;assistant&#39;], x[&#39;metadata&#39;][&#39;order&#39;]], self._data))
     if len(history) == 0:
         return []
-    import pandas as pd
-    history = pd.DataFrame(history, columns=[&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;])
-    history = history.drop_duplicates(subset=[&#39;order&#39;], keep=&#39;first&#39;)
-    return history.sort_values(by=&#39;order&#39;, ascending=True)[[&#39;user&#39;, &#39;assistant&#39;]].values.tolist()</code></pre>
+    count = max(list(map(lambda x: x[2], history))) + 1
+    history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+    history.sort(key=lambda x: x[2], reverse=False)
+    return list(map(lambda x: tuple(x[:2]), history))</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Memory.base_memory.BaseChatMemory.info"><code class="name">var <span class="ident">info</span> : Dict[str, Any]</code></dt>
@@ -672,13 +680,23 @@ def info(self) -&gt; Dict[str, Any]:
 </dd>
 <dt id="llmplus.Memory.base_memory.BaseChatMemory.interaction_count"><code class="name">var <span class="ident">interaction_count</span> : int</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Number of interactions.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Number of interactions.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def interaction_count(self) -&gt; int:
+    &#34;&#34;&#34;Number of interactions.
+
+    Returns:
+        int: Number of interactions.
+    &#34;&#34;&#34;
     return len(self.history)</code></pre>
 </details>
 </dd>
@@ -723,7 +741,7 @@ def title(self) -&gt; str:
 </details>
 </dd>
 <dt id="llmplus.Memory.base_memory.BaseChatMemory.get_recent_memory"><code class="name flex">
-<span>def <span class="ident">get_recent_memory</span></span>(<span>self, k: int = 3) ‑> List[List[str]]</span>
+<span>def <span class="ident">get_recent_memory</span></span>(<span>self, k: int = 3) ‑> List[Tuple[str, str]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the last k interactions as a list.</p>
@@ -734,29 +752,30 @@ def title(self) -&gt; str:
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>List[List[str]]</code></dt>
+<dt><code>List[Tuple[str, str]]</code></dt>
 <dd>List of interactions.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_recent_memory(self, k: int = 3) -&gt; List[List[str]]:
+<pre><code class="python">def get_recent_memory(self, k: int = 3) -&gt; List[Tuple[str, str]]:
     &#34;&#34;&#34;Get the last k interactions as a list.
 
     Args:
         k (int, optional): Maximum number of latest interactions. Defaults to 3.
 
     Returns:
-        List[List[str]]: List of interactions.
+        List[Tuple[str, str]]: List of interactions.
     &#34;&#34;&#34;
+    from copy import deepcopy
     history = self.history
     results = history if len(history) &lt;= k else history[-k:]
-    return results</code></pre>
+    return deepcopy(results)</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Memory.base_memory.BaseChatMemory.get_token_memory"><code class="name flex">
-<span>def <span class="ident">get_token_memory</span></span>(<span>self, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], token_limit: int = 400) ‑> List[List[str]]</span>
+<span>def <span class="ident">get_token_memory</span></span>(<span>self, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], token_limit: int = 400) ‑> List[str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the latest conversation limited by number of tokens.</p>
@@ -769,14 +788,14 @@ def title(self) -&gt; str:
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>List[List[str]]</code></dt>
-<dd>The formatted output of the recent conversation.</dd>
+<dt><code>List[str]</code></dt>
+<dd>List of most recent messages.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[List[str]]:
+<pre><code class="python">def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[str]:
     &#34;&#34;&#34;Get the latest conversation limited by number of tokens.
 
     Args:
@@ -784,22 +803,21 @@ def title(self) -&gt; str:
         token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
 
     Returns:
-        List[List[str]]: The formatted output of the recent conversation.
+        List[str]: List of most recent messages.
     &#34;&#34;&#34;
     if len(self.history) == 0:
         return []
     tk_count = 0
-    history = list(reversed(self.history))
+    history = sum(list(map(list, self.history)), [])
+    history = list(reversed(history))
     results = list()
     for m in history:
-        msg_count = sum(list(map(lambda x: llm.get_num_tokens(x), m)))
-        if (msg_count + tk_count) &lt;= token_limit:
+        msg_count = llm.get_num_tokens(m)
+        if (((msg_count + tk_count) &lt;= token_limit) | (len(results) &lt; 2)):
             results = [m] + results
             tk_count += msg_count
         else:
             break
-    if len(results) == 0:
-        results = [history[0]]
     return results</code></pre>
 </details>
 </dd>

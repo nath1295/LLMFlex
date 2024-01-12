@@ -54,15 +54,15 @@ Classes
 
     ### Methods
 
-    `get_long_term_memory(self, query: str, short_term_memory: List[List[str]], llm: Type[llmplus.Models.Cores.base_core.BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) ‑> List[List[str]]`
+    `get_long_term_memory(self, query: str, recent_history: Union[List[str], List[Tuple[str, str]]], llm: Type[llmplus.Models.Cores.base_core.BaseLLM], token_limit: int = 400, score_threshold: float = 0.2) ‑> List[Tuple[str, str]]`
     :   Retriving the long term memory with the given query. Usually used together with get_token_memory.
         
         Args:
             query (str): Search query for the vector database. Usually the latest user input.
-            short_term_memory (List[List[str]]): List of interactions in the short term memory to skip in the long term memory.
+            recent_history (Union[List[str], List[Tuple[str, str]]]): List of interactions in the short term memory to skip in the long term memory.
             llm (Type[BaseLLM]): LLM to count tokens.
             token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
             score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
         
         Returns:
-            List[List[str]]: List of interactions related to the query.
+            List[Tuple[str, str]]: List of interactions related to the query.

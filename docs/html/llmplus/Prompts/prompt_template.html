@@ -27,7 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from __future__ import annotations
-from typing import List, Dict, Any, Optional, Literal
+from typing import List, Dict, Any, Optional, Literal, Union, Tuple
 
 DEFAULT_SYSTEM_MESSAGE = &#34;&#34;&#34;This is a conversation between a human user and a helpful AI assistant.&#34;&#34;&#34;
 
@@ -107,30 +107,49 @@ class PromptTemplate:
         &#34;&#34;&#34;
         return self.__dict__.get(&#39;_template_name&#39;, &#39;Unititled template&#39;)
 
-    def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
+    def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -&gt; str:
         &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
 
         Args:
-            history (List[List[str]]): List of conversation history. 
+            history (Union[List[str], List[Tuple[str, str]]]): List of conversation history. 
             use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
 
         Returns:
             str: Full string of conversation history.
         &#34;&#34;&#34;
-        body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
-        body = &#39;&#39;.join(body)
-        if use_wrapper:
-            body = self.wrapper[0] + body.removeprefix(self.human_prefix)
-            body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        if len(history) == 0:
+            return &#39;&#39;
+        elif not isinstance(history[0], str):
+            body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
+            body = &#39;&#39;.join(body)
+            if use_wrapper:
+                body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        else:
+            length = len(history)
+            is_even = length % 2 == 0
+            lead = history[0]
+            alt_history = history if is_even else history[1:]
+            alt_history = list(map(lambda x: (alt_history[x * 2], alt_history[x * 2 + 1]), range(len(alt_history) // 2)))
+            body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, alt_history))
+            body = &#39;&#39;.join(body)
+            if not is_even:
+                body = f&#39;{self.ai_prefix}{lead}{self.ai_suffix}&#39; + body
+            if use_wrapper:
+                if is_even:
+                    body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+                else:
+                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
         return body
-    
-    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -&gt; str:
         &#34;&#34;&#34;Creating the full chat prompt.
 
         Args:
             user (str): Latest user input.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (List[List[str]], optional): List of conversation history. Defaults to [].
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
 
         Returns:
             str: The full prompt.
@@ -390,30 +409,49 @@ presets = {
         &#34;&#34;&#34;
         return self.__dict__.get(&#39;_template_name&#39;, &#39;Unititled template&#39;)
 
-    def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
+    def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -&gt; str:
         &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
 
         Args:
-            history (List[List[str]]): List of conversation history. 
+            history (Union[List[str], List[Tuple[str, str]]]): List of conversation history. 
             use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
 
         Returns:
             str: Full string of conversation history.
         &#34;&#34;&#34;
-        body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
-        body = &#39;&#39;.join(body)
-        if use_wrapper:
-            body = self.wrapper[0] + body.removeprefix(self.human_prefix)
-            body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        if len(history) == 0:
+            return &#39;&#39;
+        elif not isinstance(history[0], str):
+            body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
+            body = &#39;&#39;.join(body)
+            if use_wrapper:
+                body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+        else:
+            length = len(history)
+            is_even = length % 2 == 0
+            lead = history[0]
+            alt_history = history if is_even else history[1:]
+            alt_history = list(map(lambda x: (alt_history[x * 2], alt_history[x * 2 + 1]), range(len(alt_history) // 2)))
+            body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, alt_history))
+            body = &#39;&#39;.join(body)
+            if not is_even:
+                body = f&#39;{self.ai_prefix}{lead}{self.ai_suffix}&#39; + body
+            if use_wrapper:
+                if is_even:
+                    body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+                else:
+                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
         return body
-    
-    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -&gt; str:
         &#34;&#34;&#34;Creating the full chat prompt.
 
         Args:
             user (str): Latest user input.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (List[List[str]], optional): List of conversation history. Defaults to [].
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
 
         Returns:
             str: The full prompt.
@@ -711,7 +749,7 @@ def wrapper(self) -&gt; List[str]:
 <h3>Methods</h3>
 <dl>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.create_prompt"><code class="name flex">
-<span>def <span class="ident">create_prompt</span></span>(<span>self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: List[List[str]] = []) ‑> str</span>
+<span>def <span class="ident">create_prompt</span></span>(<span>self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = []) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creating the full chat prompt.</p>
@@ -721,7 +759,7 @@ def wrapper(self) -&gt; List[str]:
 <dd>Latest user input.</dd>
 <dt><strong><code>system</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>System message. Defaults to DEFAULT_SYSTEM_MESSAGE.</dd>
-<dt><strong><code>history</code></strong> :&ensp;<code>List[List[str]]</code>, optional</dt>
+<dt><strong><code>history</code></strong> :&ensp;<code>Union[List[str], List[Tuple[str, str]]]</code>, optional</dt>
 <dd>List of conversation history. Defaults to [].</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -733,13 +771,13 @@ def wrapper(self) -&gt; List[str]:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: List[List[str]] = []) -&gt; str:
+<pre><code class="python">def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -&gt; str:
     &#34;&#34;&#34;Creating the full chat prompt.
 
     Args:
         user (str): Latest user input.
         system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-        history (List[List[str]], optional): List of conversation history. Defaults to [].
+        history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
 
     Returns:
         str: The full prompt.
@@ -752,13 +790,13 @@ def wrapper(self) -&gt; List[str]:
 </details>
 </dd>
 <dt id="llmplus.Prompts.prompt_template.PromptTemplate.format_history"><code class="name flex">
-<span>def <span class="ident">format_history</span></span>(<span>self, history: List[List[str]], use_wrapper: bool = True) ‑> str</span>
+<span>def <span class="ident">format_history</span></span>(<span>self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Formatting a list of conversation history into a full string of conversation history.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>history</code></strong> :&ensp;<code>List[List[str]]</code></dt>
+<dt><strong><code>history</code></strong> :&ensp;<code>Union[List[str], List[Tuple[str, str]]]</code></dt>
 <dd>List of conversation history. </dd>
 <dt><strong><code>use_wrapper</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Whether to format the conversation history with the wrappers. Defaults to True.</dd>
@@ -772,21 +810,40 @@ def wrapper(self) -&gt; List[str]:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def format_history(self, history: List[List[str]], use_wrapper: bool = True) -&gt; str:
+<pre><code class="python">def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -&gt; str:
     &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history.
 
     Args:
-        history (List[List[str]]): List of conversation history. 
+        history (Union[List[str], List[Tuple[str, str]]]): List of conversation history. 
         use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
 
     Returns:
         str: Full string of conversation history.
     &#34;&#34;&#34;
-    body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
-    body = &#39;&#39;.join(body)
-    if use_wrapper:
-        body = self.wrapper[0] + body.removeprefix(self.human_prefix)
-        body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+    if len(history) == 0:
+        return &#39;&#39;
+    elif not isinstance(history[0], str):
+        body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, history))
+        body = &#39;&#39;.join(body)
+        if use_wrapper:
+            body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+            body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+    else:
+        length = len(history)
+        is_even = length % 2 == 0
+        lead = history[0]
+        alt_history = history if is_even else history[1:]
+        alt_history = list(map(lambda x: (alt_history[x * 2], alt_history[x * 2 + 1]), range(len(alt_history) // 2)))
+        body = list(map(lambda x: f&#39;{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}&#39;, alt_history))
+        body = &#39;&#39;.join(body)
+        if not is_even:
+            body = f&#39;{self.ai_prefix}{lead}{self.ai_suffix}&#39; + body
+        if use_wrapper:
+            if is_even:
+                body = self.wrapper[0] + body.removeprefix(self.human_prefix)
+                body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+            else:
+                body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
     return body</code></pre>
 </details>
 </dd>

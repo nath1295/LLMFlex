@@ -57,11 +57,11 @@ Classes
         Returns:
             str: Directory of the chat.
 
-    `history: List[List[str]]`
+    `history: List[Tuple[str, str]]`
     :   Entire chat history.
         
         Returns:
-            List[List[str]]: Entire chat history.
+            List[Tuple[str, str]]: Entire chat history.
 
     `info: Dict[str, Any]`
     :   Information of the chat.
@@ -70,7 +70,10 @@ Classes
             Dict[str, Any]: Information of the chat.
 
     `interaction_count: int`
-    :
+    :   Number of interactions.
+        
+        Returns:
+            int: Number of interactions.
 
     `title: str`
     :   Chat title.
@@ -83,16 +86,16 @@ Classes
     `clear(self) ‑> None`
     :   Empty the whole chat history.
 
-    `get_recent_memory(self, k: int = 3) ‑> List[List[str]]`
+    `get_recent_memory(self, k: int = 3) ‑> List[Tuple[str, str]]`
     :   Get the last k interactions as a list.
         
         Args:
             k (int, optional): Maximum number of latest interactions. Defaults to 3.
         
         Returns:
-            List[List[str]]: List of interactions.
+            List[Tuple[str, str]]: List of interactions.
 
-    `get_token_memory(self, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], token_limit: int = 400) ‑> List[List[str]]`
+    `get_token_memory(self, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], token_limit: int = 400) ‑> List[str]`
     :   Get the latest conversation limited by number of tokens.
         
         Args:
@@ -100,7 +103,7 @@ Classes
             token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
         
         Returns:
-            List[List[str]]: The formatted output of the recent conversation.
+            List[str]: List of most recent messages.
 
     `remove_last_interaction(self) ‑> None`
     :   Remove the latest interaction.
