@@ -77,7 +77,6 @@ class PromptTemplate:
         Returns:
             str: Name of the template.
         """
-        getattr()
         return getattr(self, '_template_name', 'Unititled template')
 
     def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -> str:
@@ -201,7 +200,7 @@ presets = {
         'human_suffix': '\n',
         'ai_prefix': 'ASSISTANT: ',
         'ai_suffix': '\n',
-        'wrapper': ['USER: ', '\nUSER: ', 'USER:'],
+        'wrapper': ['USER: ', '\n'],
         'stop': None
     },
     'Default Instruct' : {
