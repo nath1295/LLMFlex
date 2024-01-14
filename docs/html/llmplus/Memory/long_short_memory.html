@@ -89,7 +89,7 @@ class LongShortTermChatMemory(BaseChatMemory):
         &#34;&#34;&#34;
         self.vectordb.save()
 
-    def save_interaction(self, user_input: str, assistant_output: str) -&gt; None:
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
         &#34;&#34;&#34;Saving an interaction to the memory.
 
         Args:
@@ -98,8 +98,12 @@ class LongShortTermChatMemory(BaseChatMemory):
         &#34;&#34;&#34;
         user_input = user_input.strip(&#39; \n\r\t&#39;)
         assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+                metadata[k] = v
         self.vectordb.add_texts(texts=[f&#39;{user_input}\n\n{assistant_output}&#39;],
-                                metadata=dict(user=user_input, assistant=assistant_output, order=self.interaction_count))
+                                metadata=metadata)
 
     def remove_last_interaction(self) -&gt; None:
         &#34;&#34;&#34;Remove the latest interaction.
@@ -325,7 +329,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
         &#34;&#34;&#34;
         self.vectordb.save()
 
-    def save_interaction(self, user_input: str, assistant_output: str) -&gt; None:
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
         &#34;&#34;&#34;Saving an interaction to the memory.
 
         Args:
@@ -334,8 +338,12 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
         &#34;&#34;&#34;
         user_input = user_input.strip(&#39; \n\r\t&#39;)
         assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+                metadata[k] = v
         self.vectordb.add_texts(texts=[f&#39;{user_input}\n\n{assistant_output}&#39;],
-                                metadata=dict(user=user_input, assistant=assistant_output, order=self.interaction_count))
+                                metadata=metadata)
 
     def remove_last_interaction(self) -&gt; None:
         &#34;&#34;&#34;Remove the latest interaction.

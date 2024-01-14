@@ -39,6 +39,12 @@ Classes
         Returns:
             str: Model ID.
 
+    `prompt_template: llmplus.Prompts.prompt_template.PromptTemplate`
+    :   Default prompt template for the model.
+        
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+
     `tokenizer: Any`
     :   Tokenizer of the model.
         

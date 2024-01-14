@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmplus.Tools.web_search_utils API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmplus.Tools.web_search_utils</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from bs4 import BeautifulSoup, NavigableString, Tag
+from langchain.llms.base import LLM
+from typing import Optional, List, Union
+
+def get_soup_from_url(url: str, timeout: int = 8) -&gt; BeautifulSoup:
+    &#34;&#34;&#34;Get the soup object from a URL.
+
+    Args:
+        url (str): URL of the  website.
+        timeout (int, optional): Timeout for the request in seconds. Defaults to 8.
+
+    Returns:
+        BeautifulSoup: Soup object of the website.
+    &#34;&#34;&#34;
+    import requests
+    from fake_useragent import UserAgent
+    agent  = UserAgent(os = [&#39;windows&#39;, &#39;macos&#39;])
+    response = requests.get(url, headers={&#39;User-agent&#39;: agent.random}, timeout=timeout)
+    if response.status_code != 200:
+        return BeautifulSoup(&#39;&#39;, &#39;html.parser&#39;)
+    return BeautifulSoup(response.content, &#39;html.parser&#39;)
+
+def unwanted_contents() -&gt; List[str]:
+    &#34;&#34;&#34;Unwanted elements.
+
+    Returns:
+        List[str]: List of unwanted elements.
+    &#34;&#34;&#34;
+    unwanted = [&#39;notification-bar&#39;, &#39;banner&#39;, &#39;nav&#39;, &#39;footer&#39;, &#39;sidebar&#39;, &#39;.nav&#39;, &#39;.footer&#39;, &#39;.sidebar&#39;, &#39;#nav&#39;, &#39;#footer&#39;, &#39;#sidebar&#39;]
+    return unwanted
+
+def wanted_contents() -&gt; List[str]:
+    &#34;&#34;&#34;Wanted elements.
+
+    Returns:
+        List[str]: List of wanted elements.
+    &#34;&#34;&#34;
+    wanted = [&#39;a&#39;, &#39;h1&#39;, &#39;h2&#39;, &#39;h3&#39;, &#39;h4&#39;, &#39;h5&#39;, &#39;h6&#39;, &#39;p&#39;, &#39;ul&#39;, &#39;ol&#39;, &#39;table&#39;, &#39;article&#39;, &#39;section&#39;, &#39;blockquote&#39;, &#39;code&#39;, &#39;pre&#39;, &#39;samp&#39;]
+    return wanted
+
+def filtered_child(element: Union[BeautifulSoup, Tag]) -&gt; List[Tag]:
+    &#34;&#34;&#34;Get the filtered list of children of an element.
+
+    Args:
+        element (Union[BeautifulSoup, Tag]): The element to filter.
+
+    Returns:
+        List[Tag]: List of children.
+    &#34;&#34;&#34;
+    children = element.children
+    output = []
+    for child in children:
+        if isinstance(child, NavigableString):
+            output.append(child)
+        elif child.name in unwanted_contents():
+            pass
+        elif any(c in unwanted_contents() for c in child.get(&#39;class&#39;, [])):
+            pass
+        elif child.get(&#39;id&#39;, &#39;&#39;) in unwanted_contents():
+            pass
+        else:
+            output.append(child)
+    return output
+    
+def process_table_row(row: Tag) -&gt; str:
+    children = list(row.children)
+    children = list(filter(lambda x: x.name in [&#39;th&#39;, &#39;td&#39;], children))
+    if len(children) == 0:
+        return None
+    is_header = children[0].name == &#39;th&#39;
+    data = []
+    for child in children:
+        out = list(map(process_list_children, child.children))
+        out = list(filter(lambda x: x is not None, out))
+        out = &#39; &#39;.join(out)
+        out = &#39;EMPTY CELL&#39; if out.strip(&#39; \n\r\t&#39;)==&#39;&#39; else out
+        data.append(out)
+    num = len(data)
+    data = &#39;| &#39; + &#39; | &#39;.join(data) + &#39; |&#39;
+    if is_header:
+        seps = [&#39;:---&#39;] * num
+        seps = &#39;| &#39; + &#39; | &#39;.join(seps) + &#39; |&#39;
+        data += &#39;\n&#39; + seps
+    return data
+
+def format_table(table: Tag) -&gt; str:
+    children = list(filter(lambda x: x.name == &#39;tr&#39;, list(table.children)))
+    children = list(map(process_table_row, children))
+    children = list(filter(lambda x: x is not None, children))
+    if len(children) == 0:
+        return None
+    return &#39;\n&#39;.join(children)
+
+def process_list_children(child: Union[Tag, NavigableString], order: int = 0) -&gt; Optional[str]:
+    if isinstance(child, NavigableString):
+        out = child.get_text(strip=True)
+        out = None if out.strip(&#39; \n\r\t&#39;) == &#39;&#39; else out
+    elif child.name == &#39;a&#39;:
+        out = format_link(child)
+    elif child.name ==&#39;ol&#39;:
+        out = format_ordered_list(child, order=order + 1)
+    elif child.name ==&#39;ul&#39;:
+        out = format_unordered_list(child, order=order + 1)
+    else:
+        out = child.get_text(strip=True)
+        out = None if out.strip(&#39; \n\r\t&#39;) == &#39;&#39; else out
+    return out
+
+def format_ordered_list(olist: Tag, order: int = 0) -&gt; Optional[str]:
+    count = 0
+    outputs = []
+    for l in olist.children:
+        if not isinstance(l, Tag):
+            continue
+        elif l.name != &#39;li&#39;:
+            continue
+        else:
+            child = list(map(lambda x: process_list_children(x, order), list(l.children)))
+            child = list(filter(lambda x: x is not None, child))
+            if len(child) == 0: 
+                out = None
+            else:
+                out = &#39; &#39;.join(child)
+            if out is None:
+                continue
+            if out.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+                continue
+            else:
+                count += 1
+                outputs.append(&#39;\t&#39; * order + f&#39;{count}. {out}&#39;)
+
+    if len(outputs) == 0:
+        return None
+    else:
+        return &#39;\n&#39;.join(outputs)
+
+def format_unordered_list(ulist: Tag, order: int = 0) -&gt; Optional[str]:
+    outputs = []
+    for l in ulist.children:
+        if not isinstance(l, Tag):
+            continue
+        elif l.name != &#39;li&#39;:
+            continue
+        else:
+            child = list(map(lambda x: process_list_children(x, order), list(l.children)))
+            child = list(filter(lambda x: x is not None, child))
+            if len(child) == 0: 
+                out = None
+            else:
+                out = &#39; &#39;.join(child)
+            if out is None:
+                continue
+            if out.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+                continue
+            else:
+                outputs.append(&#39;\t&#39; * order + f&#39;* {out}&#39;)
+
+    if len(outputs) == 0:
+        return None
+    else:
+        return &#39;\n&#39;.join(outputs)
+
+def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
+    text = code.get_text(strip=True)
+    if text.strip(&#39; \n\r\t&#39;) ==&#39;&#39;:
+        return None
+    else:
+        output = text.strip(&#39; \n\r\t&#39;)
+    if with_wrapper:
+        return &#39;```\n&#39; + output + &#39;\n```&#39;
+    
+def format_paragraph(paragraph: Tag) -&gt; str:
+    outputs = []
+    for child in filtered_child(paragraph):
+        if isinstance(child, NavigableString):
+            outputs.append(child.get_text(strip=True))
+        elif child.name in [&#39;pre&#39;, &#39;code&#39;, &#39;samp&#39;]:
+            code = format_code(child, with_wrapper=False)
+            if code is not None:
+                outputs.append(f&#39;`{code}`&#39;)
+            else:
+                code = child.get_text(strip=True)
+                outputs.append(f&#39;`{code}`&#39;)
+
+        elif child.name == &#39;a&#39;:
+            outputs.append(format_link(child))
+        else:
+            outputs.append(child.get_text(strip=True))
+    if len(outputs) == 0:
+        return None
+    else:
+        return &#39; &#39;.join(outputs)
+
+def format_header(header: Tag) -&gt; str:
+    size = int(header.name[1])
+    return &#39;#&#39; * size + &#39; &#39; + header.get_text(strip=True)
+
+def format_link(link: Tag) -&gt; str:
+    text = link.get_text(strip=True)
+    href = link.get(&#39;href&#39;, &#39;&#39;)
+    if ((text.strip(&#39; \n\r\t#&#39;) == &#39;&#39;) &amp; (href.strip(&#39; \n\r\t#&#39;) == &#39;&#39;)):
+        return None
+    elif text.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+        output = f&#39;[{href}]&#39;
+    elif href.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+        output = text
+    else:
+        output = f&#39;[{text}]({href})&#39;
+    return output
+
+def process_element(element: Union[BeautifulSoup, Tag, NavigableString], sep: str = &#39;\n\n&#39;, end=&#39;  &#39;, as_list: bool = False) -&gt; Optional[Union[str, List[str]]]:
+    &#34;&#34;&#34;Process an element recursively and return the output as text of list of texts by elements.
+
+    Args:
+        element (Union[BeautifulSoup, Tag, NavigableString]): Element to process.
+        sep (str, optional): Seperator of each element. Defaults to &#39;\n\n&#39;.
+        end (str, optional): Added string to the end of each element. Defaults to &#39;  &#39;.
+        as_list (bool, optional): Whether to return a list of strings of elements or a single string. Defaults to False.
+
+    Returns:
+        Optional[Union[str, List[str]]]: Content string or list of string of the element.
+    &#34;&#34;&#34;
+    outputs = []
+    for e in filtered_child(element):
+        if isinstance(e, NavigableString):
+            text = e.get_text(strip=True)
+            text = None if text.strip(&#39; \n\r\t&#39;) == &#39;&#39; else text
+            outputs.append(text)
+        elif e.name in [&#39;pre&#39;, &#39;code&#39;, &#39;samp&#39;]:
+            outputs.append(format_code(e))
+        elif e.name == &#39;ul&#39;:
+            outputs.append(format_unordered_list(e))
+        elif e.name == &#39;ol&#39;:
+            outputs.append(format_ordered_list(e))
+        elif e.name == &#39;table&#39;:
+            outputs.append(format_table(e))
+        elif e.name in [&#39;h1&#39;, &#39;h2&#39;, &#39;h3&#39;, &#39;h4&#39;, &#39;h5&#39;, &#39;h6&#39;]:
+            outputs.append(format_header(e))
+        elif e.name == &#39;a&#39;:
+            outputs.append(format_link(e))
+        elif e.name in [&#39;p&#39;]:
+            outputs.append(format_paragraph(e))
+        else:
+            outputs.append(process_element(e, as_list=as_list))
+    final = []
+    for o in outputs:
+        if o is None:
+            continue
+        elif isinstance(o, list):
+            final.extend(o)
+        elif o.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+            continue
+        elif len(o) &lt; 3: # Remove random elements with less than 3 characters.
+            continue
+        else:
+            final.append(o)
+    if len(final) == 0:
+        return None
+    if as_list:
+        return final
+    else:
+        final = list(map(lambda x: x + end, final))
+        return sep.join(final)
+    
+def create_content_chunks(contents: List[str], llm: LLM, chunk_size: int = 400) -&gt; List[str]:
+    &#34;&#34;&#34;Create a list of strings of chunks limited by the count of tokens.
+
+    Args:
+        contents (List[str]): List of contents to aggregate.
+        llm (LLM): LLM to count tokens.
+        chunk_size (int, optional): Token limit of each chunk. Defaults to 400.
+
+    Returns:
+        List[str]: List of content chunks.
+    &#34;&#34;&#34;
+    chunks = []
+    current = []
+    current_count = 0
+    for c in contents:
+        count = llm.get_num_tokens(c)
+        if current_count + count &lt;= chunk_size:
+            current.append(c)
+            current_count += count
+        elif count &gt; chunk_size:
+            chunks.append(&#39;\n\n&#39;.join(current))
+            chunks.append(c)
+            current = []
+            current_count = 0
+        else:
+            chunks.append(&#39;\n\n&#39;.join(current))
+            current = [c]
+            current_count = count
+    if len(current) != 0:
+        chunks.append(&#39;\n\n&#39;.join(current))
+    return chunks
+
+def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[str, List[str]]:
+    &#34;&#34;&#34;Get the content of a URL as a string or a list of strings.
+
+    Args:
+        url (str): URL of the website.
+        timeout (int, optional): Request timeout as seconds. Defaults to 8.
+        as_list (bool, optional): Whether to return the content as a list or as a string. Defaults to False.
+
+    Returns:
+        Union[str, List[str]]: Content of the URL as a string or a list of string.
+    &#34;&#34;&#34;
+    soup = get_soup_from_url(url, timeout=timeout)
+    return process_element(soup, as_list=as_list)
+
+
+    </code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmplus.Tools.web_search_utils.create_content_chunks"><code class="name flex">
+<span>def <span class="ident">create_content_chunks</span></span>(<span>contents: List[str], llm: langchain_core.language_models.llms.LLM, chunk_size: int = 400) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a list of strings of chunks limited by the count of tokens.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>contents</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of contents to aggregate.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>LLM</code></dt>
+<dd>LLM to count tokens.</dd>
+<dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Token limit of each chunk. Defaults to 400.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of content chunks.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_content_chunks(contents: List[str], llm: LLM, chunk_size: int = 400) -&gt; List[str]:
+    &#34;&#34;&#34;Create a list of strings of chunks limited by the count of tokens.
+
+    Args:
+        contents (List[str]): List of contents to aggregate.
+        llm (LLM): LLM to count tokens.
+        chunk_size (int, optional): Token limit of each chunk. Defaults to 400.
+
+    Returns:
+        List[str]: List of content chunks.
+    &#34;&#34;&#34;
+    chunks = []
+    current = []
+    current_count = 0
+    for c in contents:
+        count = llm.get_num_tokens(c)
+        if current_count + count &lt;= chunk_size:
+            current.append(c)
+            current_count += count
+        elif count &gt; chunk_size:
+            chunks.append(&#39;\n\n&#39;.join(current))
+            chunks.append(c)
+            current = []
+            current_count = 0
+        else:
+            chunks.append(&#39;\n\n&#39;.join(current))
+            current = [c]
+            current_count = count
+    if len(current) != 0:
+        chunks.append(&#39;\n\n&#39;.join(current))
+    return chunks</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.filtered_child"><code class="name flex">
+<span>def <span class="ident">filtered_child</span></span>(<span>element: Union[bs4.BeautifulSoup, bs4.element.Tag]) ‑> List[bs4.element.Tag]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the filtered list of children of an element.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>element</code></strong> :&ensp;<code>Union[BeautifulSoup, Tag]</code></dt>
+<dd>The element to filter.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Tag]</code></dt>
+<dd>List of children.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def filtered_child(element: Union[BeautifulSoup, Tag]) -&gt; List[Tag]:
+    &#34;&#34;&#34;Get the filtered list of children of an element.
+
+    Args:
+        element (Union[BeautifulSoup, Tag]): The element to filter.
+
+    Returns:
+        List[Tag]: List of children.
+    &#34;&#34;&#34;
+    children = element.children
+    output = []
+    for child in children:
+        if isinstance(child, NavigableString):
+            output.append(child)
+        elif child.name in unwanted_contents():
+            pass
+        elif any(c in unwanted_contents() for c in child.get(&#39;class&#39;, [])):
+            pass
+        elif child.get(&#39;id&#39;, &#39;&#39;) in unwanted_contents():
+            pass
+        else:
+            output.append(child)
+    return output</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_code"><code class="name flex">
+<span>def <span class="ident">format_code</span></span>(<span>code: bs4.element.Tag, with_wrapper: bool = True) ‑> Optional[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
+    text = code.get_text(strip=True)
+    if text.strip(&#39; \n\r\t&#39;) ==&#39;&#39;:
+        return None
+    else:
+        output = text.strip(&#39; \n\r\t&#39;)
+    if with_wrapper:
+        return &#39;```\n&#39; + output + &#39;\n```&#39;</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_header"><code class="name flex">
+<span>def <span class="ident">format_header</span></span>(<span>header: bs4.element.Tag) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_header(header: Tag) -&gt; str:
+    size = int(header.name[1])
+    return &#39;#&#39; * size + &#39; &#39; + header.get_text(strip=True)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_link"><code class="name flex">
+<span>def <span class="ident">format_link</span></span>(<span>link: bs4.element.Tag) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_link(link: Tag) -&gt; str:
+    text = link.get_text(strip=True)
+    href = link.get(&#39;href&#39;, &#39;&#39;)
+    if ((text.strip(&#39; \n\r\t#&#39;) == &#39;&#39;) &amp; (href.strip(&#39; \n\r\t#&#39;) == &#39;&#39;)):
+        return None
+    elif text.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+        output = f&#39;[{href}]&#39;
+    elif href.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+        output = text
+    else:
+        output = f&#39;[{text}]({href})&#39;
+    return output</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_ordered_list"><code class="name flex">
+<span>def <span class="ident">format_ordered_list</span></span>(<span>olist: bs4.element.Tag, order: int = 0) ‑> Optional[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_ordered_list(olist: Tag, order: int = 0) -&gt; Optional[str]:
+    count = 0
+    outputs = []
+    for l in olist.children:
+        if not isinstance(l, Tag):
+            continue
+        elif l.name != &#39;li&#39;:
+            continue
+        else:
+            child = list(map(lambda x: process_list_children(x, order), list(l.children)))
+            child = list(filter(lambda x: x is not None, child))
+            if len(child) == 0: 
+                out = None
+            else:
+                out = &#39; &#39;.join(child)
+            if out is None:
+                continue
+            if out.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+                continue
+            else:
+                count += 1
+                outputs.append(&#39;\t&#39; * order + f&#39;{count}. {out}&#39;)
+
+    if len(outputs) == 0:
+        return None
+    else:
+        return &#39;\n&#39;.join(outputs)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_paragraph"><code class="name flex">
+<span>def <span class="ident">format_paragraph</span></span>(<span>paragraph: bs4.element.Tag) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_paragraph(paragraph: Tag) -&gt; str:
+    outputs = []
+    for child in filtered_child(paragraph):
+        if isinstance(child, NavigableString):
+            outputs.append(child.get_text(strip=True))
+        elif child.name in [&#39;pre&#39;, &#39;code&#39;, &#39;samp&#39;]:
+            code = format_code(child, with_wrapper=False)
+            if code is not None:
+                outputs.append(f&#39;`{code}`&#39;)
+            else:
+                code = child.get_text(strip=True)
+                outputs.append(f&#39;`{code}`&#39;)
+
+        elif child.name == &#39;a&#39;:
+            outputs.append(format_link(child))
+        else:
+            outputs.append(child.get_text(strip=True))
+    if len(outputs) == 0:
+        return None
+    else:
+        return &#39; &#39;.join(outputs)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_table"><code class="name flex">
+<span>def <span class="ident">format_table</span></span>(<span>table: bs4.element.Tag) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_table(table: Tag) -&gt; str:
+    children = list(filter(lambda x: x.name == &#39;tr&#39;, list(table.children)))
+    children = list(map(process_table_row, children))
+    children = list(filter(lambda x: x is not None, children))
+    if len(children) == 0:
+        return None
+    return &#39;\n&#39;.join(children)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.format_unordered_list"><code class="name flex">
+<span>def <span class="ident">format_unordered_list</span></span>(<span>ulist: bs4.element.Tag, order: int = 0) ‑> Optional[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def format_unordered_list(ulist: Tag, order: int = 0) -&gt; Optional[str]:
+    outputs = []
+    for l in ulist.children:
+        if not isinstance(l, Tag):
+            continue
+        elif l.name != &#39;li&#39;:
+            continue
+        else:
+            child = list(map(lambda x: process_list_children(x, order), list(l.children)))
+            child = list(filter(lambda x: x is not None, child))
+            if len(child) == 0: 
+                out = None
+            else:
+                out = &#39; &#39;.join(child)
+            if out is None:
+                continue
+            if out.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+                continue
+            else:
+                outputs.append(&#39;\t&#39; * order + f&#39;* {out}&#39;)
+
+    if len(outputs) == 0:
+        return None
+    else:
+        return &#39;\n&#39;.join(outputs)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.get_markdown"><code class="name flex">
+<span>def <span class="ident">get_markdown</span></span>(<span>url: str, timeout: int = 8, as_list: bool = False) ‑> Union[str, List[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the content of a URL as a string or a list of strings.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the website.</dd>
+<dt><strong><code>timeout</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Request timeout as seconds. Defaults to 8.</dd>
+<dt><strong><code>as_list</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the content as a list or as a string. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, List[str]]</code></dt>
+<dd>Content of the URL as a string or a list of string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[str, List[str]]:
+    &#34;&#34;&#34;Get the content of a URL as a string or a list of strings.
+
+    Args:
+        url (str): URL of the website.
+        timeout (int, optional): Request timeout as seconds. Defaults to 8.
+        as_list (bool, optional): Whether to return the content as a list or as a string. Defaults to False.
+
+    Returns:
+        Union[str, List[str]]: Content of the URL as a string or a list of string.
+    &#34;&#34;&#34;
+    soup = get_soup_from_url(url, timeout=timeout)
+    return process_element(soup, as_list=as_list)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.get_soup_from_url"><code class="name flex">
+<span>def <span class="ident">get_soup_from_url</span></span>(<span>url: str, timeout: int = 8) ‑> bs4.BeautifulSoup</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the soup object from a URL.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL of the
+website.</dd>
+<dt><strong><code>timeout</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Timeout for the request in seconds. Defaults to 8.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BeautifulSoup</code></dt>
+<dd>Soup object of the website.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_soup_from_url(url: str, timeout: int = 8) -&gt; BeautifulSoup:
+    &#34;&#34;&#34;Get the soup object from a URL.
+
+    Args:
+        url (str): URL of the  website.
+        timeout (int, optional): Timeout for the request in seconds. Defaults to 8.
+
+    Returns:
+        BeautifulSoup: Soup object of the website.
+    &#34;&#34;&#34;
+    import requests
+    from fake_useragent import UserAgent
+    agent  = UserAgent(os = [&#39;windows&#39;, &#39;macos&#39;])
+    response = requests.get(url, headers={&#39;User-agent&#39;: agent.random}, timeout=timeout)
+    if response.status_code != 200:
+        return BeautifulSoup(&#39;&#39;, &#39;html.parser&#39;)
+    return BeautifulSoup(response.content, &#39;html.parser&#39;)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.process_element"><code class="name flex">
+<span>def <span class="ident">process_element</span></span>(<span>element: Union[bs4.BeautifulSoup, bs4.element.Tag, bs4.element.NavigableString], sep: str = '\n\n', end='
+', as_list: bool = False) ‑> Union[str, List[str], ForwardRef(None)]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Process an element recursively and return the output as text of list of texts by elements.</p>
+<pre><code>Args:
+    element (Union[BeautifulSoup, Tag, NavigableString]): Element to process.
+    sep (str, optional): Seperator of each element. Defaults to '
+</code></pre>
+<p>'.
+end (str, optional): Added string to the end of each element. Defaults to '
+'.
+as_list (bool, optional): Whether to return a list of strings of elements or a single string. Defaults to False.</p>
+<pre><code>Returns:
+    Optional[Union[str, List[str]]]: Content string or list of string of the element.
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_element(element: Union[BeautifulSoup, Tag, NavigableString], sep: str = &#39;\n\n&#39;, end=&#39;  &#39;, as_list: bool = False) -&gt; Optional[Union[str, List[str]]]:
+    &#34;&#34;&#34;Process an element recursively and return the output as text of list of texts by elements.
+
+    Args:
+        element (Union[BeautifulSoup, Tag, NavigableString]): Element to process.
+        sep (str, optional): Seperator of each element. Defaults to &#39;\n\n&#39;.
+        end (str, optional): Added string to the end of each element. Defaults to &#39;  &#39;.
+        as_list (bool, optional): Whether to return a list of strings of elements or a single string. Defaults to False.
+
+    Returns:
+        Optional[Union[str, List[str]]]: Content string or list of string of the element.
+    &#34;&#34;&#34;
+    outputs = []
+    for e in filtered_child(element):
+        if isinstance(e, NavigableString):
+            text = e.get_text(strip=True)
+            text = None if text.strip(&#39; \n\r\t&#39;) == &#39;&#39; else text
+            outputs.append(text)
+        elif e.name in [&#39;pre&#39;, &#39;code&#39;, &#39;samp&#39;]:
+            outputs.append(format_code(e))
+        elif e.name == &#39;ul&#39;:
+            outputs.append(format_unordered_list(e))
+        elif e.name == &#39;ol&#39;:
+            outputs.append(format_ordered_list(e))
+        elif e.name == &#39;table&#39;:
+            outputs.append(format_table(e))
+        elif e.name in [&#39;h1&#39;, &#39;h2&#39;, &#39;h3&#39;, &#39;h4&#39;, &#39;h5&#39;, &#39;h6&#39;]:
+            outputs.append(format_header(e))
+        elif e.name == &#39;a&#39;:
+            outputs.append(format_link(e))
+        elif e.name in [&#39;p&#39;]:
+            outputs.append(format_paragraph(e))
+        else:
+            outputs.append(process_element(e, as_list=as_list))
+    final = []
+    for o in outputs:
+        if o is None:
+            continue
+        elif isinstance(o, list):
+            final.extend(o)
+        elif o.strip(&#39; \n\r\t&#39;) == &#39;&#39;:
+            continue
+        elif len(o) &lt; 3: # Remove random elements with less than 3 characters.
+            continue
+        else:
+            final.append(o)
+    if len(final) == 0:
+        return None
+    if as_list:
+        return final
+    else:
+        final = list(map(lambda x: x + end, final))
+        return sep.join(final)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.process_list_children"><code class="name flex">
+<span>def <span class="ident">process_list_children</span></span>(<span>child: Union[bs4.element.Tag, bs4.element.NavigableString], order: int = 0) ‑> Optional[str]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_list_children(child: Union[Tag, NavigableString], order: int = 0) -&gt; Optional[str]:
+    if isinstance(child, NavigableString):
+        out = child.get_text(strip=True)
+        out = None if out.strip(&#39; \n\r\t&#39;) == &#39;&#39; else out
+    elif child.name == &#39;a&#39;:
+        out = format_link(child)
+    elif child.name ==&#39;ol&#39;:
+        out = format_ordered_list(child, order=order + 1)
+    elif child.name ==&#39;ul&#39;:
+        out = format_unordered_list(child, order=order + 1)
+    else:
+        out = child.get_text(strip=True)
+        out = None if out.strip(&#39; \n\r\t&#39;) == &#39;&#39; else out
+    return out</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.process_table_row"><code class="name flex">
+<span>def <span class="ident">process_table_row</span></span>(<span>row: bs4.element.Tag) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_table_row(row: Tag) -&gt; str:
+    children = list(row.children)
+    children = list(filter(lambda x: x.name in [&#39;th&#39;, &#39;td&#39;], children))
+    if len(children) == 0:
+        return None
+    is_header = children[0].name == &#39;th&#39;
+    data = []
+    for child in children:
+        out = list(map(process_list_children, child.children))
+        out = list(filter(lambda x: x is not None, out))
+        out = &#39; &#39;.join(out)
+        out = &#39;EMPTY CELL&#39; if out.strip(&#39; \n\r\t&#39;)==&#39;&#39; else out
+        data.append(out)
+    num = len(data)
+    data = &#39;| &#39; + &#39; | &#39;.join(data) + &#39; |&#39;
+    if is_header:
+        seps = [&#39;:---&#39;] * num
+        seps = &#39;| &#39; + &#39; | &#39;.join(seps) + &#39; |&#39;
+        data += &#39;\n&#39; + seps
+    return data</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.unwanted_contents"><code class="name flex">
+<span>def <span class="ident">unwanted_contents</span></span>(<span>) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Unwanted elements.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of unwanted elements.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unwanted_contents() -&gt; List[str]:
+    &#34;&#34;&#34;Unwanted elements.
+
+    Returns:
+        List[str]: List of unwanted elements.
+    &#34;&#34;&#34;
+    unwanted = [&#39;notification-bar&#39;, &#39;banner&#39;, &#39;nav&#39;, &#39;footer&#39;, &#39;sidebar&#39;, &#39;.nav&#39;, &#39;.footer&#39;, &#39;.sidebar&#39;, &#39;#nav&#39;, &#39;#footer&#39;, &#39;#sidebar&#39;]
+    return unwanted</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.web_search_utils.wanted_contents"><code class="name flex">
+<span>def <span class="ident">wanted_contents</span></span>(<span>) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Wanted elements.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of wanted elements.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wanted_contents() -&gt; List[str]:
+    &#34;&#34;&#34;Wanted elements.
+
+    Returns:
+        List[str]: List of wanted elements.
+    &#34;&#34;&#34;
+    wanted = [&#39;a&#39;, &#39;h1&#39;, &#39;h2&#39;, &#39;h3&#39;, &#39;h4&#39;, &#39;h5&#39;, &#39;h6&#39;, &#39;p&#39;, &#39;ul&#39;, &#39;ol&#39;, &#39;table&#39;, &#39;article&#39;, &#39;section&#39;, &#39;blockquote&#39;, &#39;code&#39;, &#39;pre&#39;, &#39;samp&#39;]
+    return wanted</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmplus.Tools" href="index.html">llmplus.Tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmplus.Tools.web_search_utils.create_content_chunks" href="#llmplus.Tools.web_search_utils.create_content_chunks">create_content_chunks</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.filtered_child" href="#llmplus.Tools.web_search_utils.filtered_child">filtered_child</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_code" href="#llmplus.Tools.web_search_utils.format_code">format_code</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_header" href="#llmplus.Tools.web_search_utils.format_header">format_header</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_link" href="#llmplus.Tools.web_search_utils.format_link">format_link</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_ordered_list" href="#llmplus.Tools.web_search_utils.format_ordered_list">format_ordered_list</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_paragraph" href="#llmplus.Tools.web_search_utils.format_paragraph">format_paragraph</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_table" href="#llmplus.Tools.web_search_utils.format_table">format_table</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.format_unordered_list" href="#llmplus.Tools.web_search_utils.format_unordered_list">format_unordered_list</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.get_markdown" href="#llmplus.Tools.web_search_utils.get_markdown">get_markdown</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.get_soup_from_url" href="#llmplus.Tools.web_search_utils.get_soup_from_url">get_soup_from_url</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.process_element" href="#llmplus.Tools.web_search_utils.process_element">process_element</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.process_list_children" href="#llmplus.Tools.web_search_utils.process_list_children">process_list_children</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.process_table_row" href="#llmplus.Tools.web_search_utils.process_table_row">process_table_row</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.unwanted_contents" href="#llmplus.Tools.web_search_utils.unwanted_contents">unwanted_contents</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.wanted_contents" href="#llmplus.Tools.web_search_utils.wanted_contents">wanted_contents</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

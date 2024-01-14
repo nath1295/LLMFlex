@@ -29,6 +29,7 @@
 <pre><code class="python">from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
+from ...Prompts.prompt_template import PromptTemplate
 from typing import Any, List, Dict, Optional, Union, Iterator, Type
 
 class BaseCore:
@@ -82,6 +83,17 @@ class BaseCore:
         &#34;&#34;&#34;
         return self._model_id
     
+    @property
+    def prompt_template(self) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Default prompt template for the model.
+
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_prompt_template&#39;):
+            self._prompt_template = PromptTemplate.from_preset(&#39;Default&#39;)
+        return self._prompt_template
+    
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
 
@@ -106,10 +118,12 @@ class BaseCore:
     
     def unload(self) -&gt; None:
         &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;
+        import gc
         del self._model
         self._model = None
         del self._tokenizer
         self._tokenizer = None
+        gc.collect()
     
 class BaseLLM(LLM):
     &#34;&#34;&#34;Base LLM class for llmplus, using the LLM class from langchain.
@@ -334,6 +348,17 @@ class DebugLLM(BaseLLM):
         &#34;&#34;&#34;
         return self._model_id
     
+    @property
+    def prompt_template(self) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Default prompt template for the model.
+
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_prompt_template&#39;):
+            self._prompt_template = PromptTemplate.from_preset(&#39;Default&#39;)
+        return self._prompt_template
+    
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
 
@@ -358,10 +383,12 @@ class DebugLLM(BaseLLM):
     
     def unload(self) -&gt; None:
         &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;
+        import gc
         del self._model
         self._model = None
         del self._tokenizer
-        self._tokenizer = None</code></pre>
+        self._tokenizer = None
+        gc.collect()</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -435,6 +462,30 @@ def model_id(self) -&gt; str:
         str: Model ID.
     &#34;&#34;&#34;
     return self._model_id</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Models.Cores.base_core.BaseCore.prompt_template"><code class="name">var <span class="ident">prompt_template</span> : <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
+<dd>
+<div class="desc"><p>Default prompt template for the model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PromptTemplate</code></dt>
+<dd>Default prompt template for the model.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def prompt_template(self) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Default prompt template for the model.
+
+    Returns:
+        PromptTemplate: Default prompt template for the model.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_prompt_template&#39;):
+        self._prompt_template = PromptTemplate.from_preset(&#39;Default&#39;)
+    return self._prompt_template</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Models.Cores.base_core.BaseCore.tokenizer"><code class="name">var <span class="ident">tokenizer</span> : Any</code></dt>
@@ -535,10 +586,12 @@ def tokenizer(self) -&gt; Any:
 </summary>
 <pre><code class="python">def unload(self) -&gt; None:
     &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;
+    import gc
     del self._model
     self._model = None
     del self._tokenizer
-    self._tokenizer = None</code></pre>
+    self._tokenizer = None
+    gc.collect()</code></pre>
 </details>
 </dd>
 </dl>
@@ -939,6 +992,7 @@ def tokenizer(self) -&gt; Any:
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.encode" href="#llmplus.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model" href="#llmplus.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model_id" href="#llmplus.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.prompt_template" href="#llmplus.Models.Cores.base_core.BaseCore.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer" href="#llmplus.Models.Cores.base_core.BaseCore.tokenizer">tokenizer</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.unload" href="#llmplus.Models.Cores.base_core.BaseCore.unload">unload</a></code></li>
 </ul>

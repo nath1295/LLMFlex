@@ -153,7 +153,17 @@ class HuggingfaceLLM(BaseLLM):
         stream = kwargs.get('stream', False)
         gen_config = self.generation_config.copy()
         gen_config['stopping_criteria'] = StoppingCriteriaList([KeywordsStoppingCriteria(stop, self.core.tokenizer)])
-
+        for k, v in kwargs.items():
+            if k == 'temperature':
+                if v > 0:
+                    gen_config['temperature'] = v
+                    gen_config['do_sample'] = True
+                else:
+                    gen_config['temperature'] = 0.01
+                    gen_config['do_sample'] = False
+            elif k in ['max_new_tokens', 'top_p', 'top_k', 'repetition_penalty']:
+                gen_config[k] = v
+                
         if stream:
             from threading import Thread
             from transformers import TextIteratorStreamer

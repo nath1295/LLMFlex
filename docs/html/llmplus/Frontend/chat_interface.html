@@ -41,7 +41,7 @@ class ChatInterface:
         self.embeddings = embeddings
         self.memory = LongShortTermChatMemory(title=&#39;Untitled 0&#39;, embeddings=self.embeddings, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
-        self.template = PromptTemplate.from_preset(&#39;Default&#39;)
+        self.template = self.model.prompt_template
         self.llm = self.model(stop=self.template.stop + [&#39;###&#39;])
         self.short_limit = 600
         self.long_limit = 500
@@ -118,7 +118,7 @@ class ChatInterface:
             sys_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),
 
             # format settings
-            templates = dict(obj=&#39;dropdown&#39;, args=dict(choices=self.presets, value=&#39;Default&#39;, show_label=False, interactive=True, container=False)),
+            templates = dict(obj=&#39;dropdown&#39;, args=dict(choices=self.presets, value=self.template.template_name, show_label=False, interactive=True, container=False)),
             format_save = dict(obj=&#39;btn&#39;, args=dict(value=&#39;Save&#39;, min_width=20, variant=&#39;secondary&#39;, size=&#39;sm&#39;, scale=2, interactive=True)),
             format_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_prompt_settings(), lines=2, container=False)),
 
@@ -267,7 +267,7 @@ class ChatInterface:
         system = self.memory.info.get(&#39;system&#39;, DEFAULT_SYSTEM_MESSAGE)
         self.system = system
         # Things to return: new, title dropdown, chatbot, system
-        return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True)
+        return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True), self.get_memory_settings()
 
     def remove_last(self) -&gt; List[List[str]]:
         &#34;&#34;&#34;Removing the last interaction of the conversation.
@@ -450,9 +450,9 @@ class ChatInterface:
 
 
             # functions
-            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
+            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
 
             self.bot[&#39;format_save&#39;].click(fn=self.change_prompt_format, inputs=self.output_map([&#39;templates&#39;]), outputs=self.output_map([&#39;format_log&#39;]))
             self.bot[&#39;sys_save&#39;].click(fn=self.change_memory_setting, inputs=self.output_map([&#39;system&#39;, &#39;long_limit&#39;, &#39;short_limit&#39;, &#39;sim_score&#39;]), outputs=self.output_map([&#39;sys_log&#39;]))
@@ -540,9 +540,9 @@ class ChatInterface:
 
 
             # functions
-            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
+            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
 
             self.bot[&#39;format_save&#39;].click(fn=self.change_prompt_format, inputs=self.output_map([&#39;templates&#39;]), outputs=self.output_map([&#39;format_log&#39;]))
             self.bot[&#39;sys_save&#39;].click(fn=self.change_memory_setting, inputs=self.output_map([&#39;system&#39;, &#39;long_limit&#39;, &#39;short_limit&#39;, &#39;sim_score&#39;]), outputs=self.output_map([&#39;sys_log&#39;]))
@@ -617,7 +617,7 @@ class ChatInterface:
         self.embeddings = embeddings
         self.memory = LongShortTermChatMemory(title=&#39;Untitled 0&#39;, embeddings=self.embeddings, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
-        self.template = PromptTemplate.from_preset(&#39;Default&#39;)
+        self.template = self.model.prompt_template
         self.llm = self.model(stop=self.template.stop + [&#39;###&#39;])
         self.short_limit = 600
         self.long_limit = 500
@@ -694,7 +694,7 @@ class ChatInterface:
             sys_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),
 
             # format settings
-            templates = dict(obj=&#39;dropdown&#39;, args=dict(choices=self.presets, value=&#39;Default&#39;, show_label=False, interactive=True, container=False)),
+            templates = dict(obj=&#39;dropdown&#39;, args=dict(choices=self.presets, value=self.template.template_name, show_label=False, interactive=True, container=False)),
             format_save = dict(obj=&#39;btn&#39;, args=dict(value=&#39;Save&#39;, min_width=20, variant=&#39;secondary&#39;, size=&#39;sm&#39;, scale=2, interactive=True)),
             format_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_prompt_settings(), lines=2, container=False)),
 
@@ -843,7 +843,7 @@ class ChatInterface:
         system = self.memory.info.get(&#39;system&#39;, DEFAULT_SYSTEM_MESSAGE)
         self.system = system
         # Things to return: new, title dropdown, chatbot, system
-        return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True)
+        return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True), self.get_memory_settings()
 
     def remove_last(self) -&gt; List[List[str]]:
         &#34;&#34;&#34;Removing the last interaction of the conversation.
@@ -1026,9 +1026,9 @@ class ChatInterface:
 
 
             # functions
-            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
+            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
 
             self.bot[&#39;format_save&#39;].click(fn=self.change_prompt_format, inputs=self.output_map([&#39;templates&#39;]), outputs=self.output_map([&#39;format_log&#39;]))
             self.bot[&#39;sys_save&#39;].click(fn=self.change_memory_setting, inputs=self.output_map([&#39;system&#39;, &#39;long_limit&#39;, &#39;short_limit&#39;, &#39;sim_score&#39;]), outputs=self.output_map([&#39;sys_log&#39;]))
@@ -1116,9 +1116,9 @@ class ChatInterface:
 
 
             # functions
-            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
-            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;]))
+            self.bot[&#39;add&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;add&#39;, &#39;new&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;select&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;select&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
+            self.bot[&#39;remove&#39;].click(fn=self.change_memory, inputs=self.output_map([&#39;remove&#39;, &#39;convos&#39;]), outputs=self.output_map([&#39;new&#39;, &#39;convos&#39;, &#39;bot&#39;, &#39;system&#39;, &#39;sys_log&#39;]))
 
             self.bot[&#39;format_save&#39;].click(fn=self.change_prompt_format, inputs=self.output_map([&#39;templates&#39;]), outputs=self.output_map([&#39;format_log&#39;]))
             self.bot[&#39;sys_save&#39;].click(fn=self.change_memory_setting, inputs=self.output_map([&#39;system&#39;, &#39;long_limit&#39;, &#39;short_limit&#39;, &#39;sim_score&#39;]), outputs=self.output_map([&#39;sys_log&#39;]))
@@ -1203,7 +1203,7 @@ def config_dict(self) -&gt; Dict[str, Any]:
         sys_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),
 
         # format settings
-        templates = dict(obj=&#39;dropdown&#39;, args=dict(choices=self.presets, value=&#39;Default&#39;, show_label=False, interactive=True, container=False)),
+        templates = dict(obj=&#39;dropdown&#39;, args=dict(choices=self.presets, value=self.template.template_name, show_label=False, interactive=True, container=False)),
         format_save = dict(obj=&#39;btn&#39;, args=dict(value=&#39;Save&#39;, min_width=20, variant=&#39;secondary&#39;, size=&#39;sm&#39;, scale=2, interactive=True)),
         format_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_prompt_settings(), lines=2, container=False)),
 
@@ -1429,7 +1429,7 @@ def titles(self) -&gt; List[str]:
     system = self.memory.info.get(&#39;system&#39;, DEFAULT_SYSTEM_MESSAGE)
     self.system = system
     # Things to return: new, title dropdown, chatbot, system
-    return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True)</code></pre>
+    return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True), self.get_memory_settings()</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Frontend.chat_interface.ChatInterface.change_memory_setting"><code class="name flex">

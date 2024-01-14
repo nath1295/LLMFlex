@@ -81,7 +81,7 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
 @click.option('--context_size', default=4096, help='Context size of the model. Defaults to 4096.')
 @click.option('--port', default=5001, help='Port to use. Defaults to 5001.')
 @click.option('--kobold_dir', default=None, help='Directory of the KoboldCPP. Defaults to "koboldcpp" under home directory.')
-@click.option('--extras', default='', help='Extra arugments for KoblodCPP.')
+@click.option('--extras', default='', help='Extra arugments for KoblodCPP or llama-cpp-python.')
 def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = '', extras: str = '') -> None:
     """Serve a llm with GGUF format from HuggingFace.
     """
@@ -93,8 +93,10 @@ def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4
     kobold_dir = get_config()['llmplus_home'] if kobold_dir is None else kobold_dir
     kobold_dir = os.path.join(kobold_dir, 'koboldcpp', 'koboldcpp.py')
     if not os.path.exists(kobold_dir):
-        raise FileNotFoundError(f'Cannot find the script "{kobold_dir}".')
-    os.system(f'python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port} {extras}')
+        print(f'Cannot find the script "{kobold_dir}". Falling back to use llama-cpp-python for serving.')
+        os.system(f'python -m llama_cpp.server --model {model_dir} --n_ctx {context_size} --use_mlock True --port {port} {extras}')
+    else:
+        os.system(f'python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port} {extras}')
     
     
 

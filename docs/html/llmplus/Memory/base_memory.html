@@ -192,7 +192,7 @@ class BaseChatMemory:
         save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
         save_json(self._data, os.path.join(self.chat_dir, &#39;data.json&#39;))
 
-    def save_interaction(self, user_input: str, assistant_output: str) -&gt; None:
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
         &#34;&#34;&#34;Saving an interaction to the memory.
 
         Args:
@@ -201,9 +201,13 @@ class BaseChatMemory:
         &#34;&#34;&#34;
         user_input = user_input.strip(&#39; \n\r\t&#39;)
         assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+                metadata[k] = v
         self._data.append(dict(
             index=f&#39;{user_input}\n\n{assistant_output}&#39;,
-            metadata=dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+            metadata=metadata
         ))
         self.save()
 
@@ -509,7 +513,7 @@ class BaseChatMemory:
         save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
         save_json(self._data, os.path.join(self.chat_dir, &#39;data.json&#39;))
 
-    def save_interaction(self, user_input: str, assistant_output: str) -&gt; None:
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
         &#34;&#34;&#34;Saving an interaction to the memory.
 
         Args:
@@ -518,9 +522,13 @@ class BaseChatMemory:
         &#34;&#34;&#34;
         user_input = user_input.strip(&#39; \n\r\t&#39;)
         assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+                metadata[k] = v
         self._data.append(dict(
             index=f&#39;{user_input}\n\n{assistant_output}&#39;,
-            metadata=dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+            metadata=metadata
         ))
         self.save()
 
@@ -858,7 +866,7 @@ def title(self) -&gt; str:
 </details>
 </dd>
 <dt id="llmplus.Memory.base_memory.BaseChatMemory.save_interaction"><code class="name flex">
-<span>def <span class="ident">save_interaction</span></span>(<span>self, user_input: str, assistant_output: str) ‑> None</span>
+<span>def <span class="ident">save_interaction</span></span>(<span>self, user_input: str, assistant_output: str, **kwargs) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Saving an interaction to the memory.</p>
@@ -873,7 +881,7 @@ def title(self) -&gt; str:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def save_interaction(self, user_input: str, assistant_output: str) -&gt; None:
+<pre><code class="python">def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
     &#34;&#34;&#34;Saving an interaction to the memory.
 
     Args:
@@ -882,9 +890,13 @@ def title(self) -&gt; str:
     &#34;&#34;&#34;
     user_input = user_input.strip(&#39; \n\r\t&#39;)
     assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+    metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+    for k, v in kwargs.items():
+        if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+            metadata[k] = v
     self._data.append(dict(
         index=f&#39;{user_input}\n\n{assistant_output}&#39;,
-        metadata=dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        metadata=metadata
     ))
     self.save()</code></pre>
 </details>

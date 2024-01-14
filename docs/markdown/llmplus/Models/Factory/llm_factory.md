@@ -44,6 +44,12 @@ Classes
         Returns:
             str: Type of model format.
 
+    `prompt_template: llmplus.Prompts.prompt_template.PromptTemplate`
+    :   Default prompt template for the model.
+        
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+
     ### Methods
 
     `call(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, newline=True, **kwargs: Dict[str, Any]) ‑> Type[llmplus.Models.Cores.base_core.BaseLLM]`

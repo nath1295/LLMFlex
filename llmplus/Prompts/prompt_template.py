@@ -77,7 +77,8 @@ class PromptTemplate:
         Returns:
             str: Name of the template.
         """
-        return self.__dict__.get('_template_name', 'Unititled template')
+        getattr()
+        return getattr(self, '_template_name', 'Unititled template')
 
     def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -> str:
         """Formatting a list of conversation history into a full string of conversation history.
@@ -126,8 +127,8 @@ class PromptTemplate:
         Returns:
             str: The full prompt.
         """
-        head = f'{self.system_prefix}{system}{self.system_suffix}'
-        body = self.format_history(history=history, use_wrapper=False)
+        head = f'{self.system_prefix}{system}{self.system_suffix}' if system.strip(' \n\r\t') != '' else ''
+        body = self.format_history(history=history, use_wrapper=(head==''))
         tail = f'{self.human_prefix}{user}{self.human_suffix}{self.ai_prefix}'
         prompt = head + body + tail
         return prompt
@@ -162,11 +163,11 @@ class PromptTemplate:
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal['Default', 'Default Instruct', 'Llama2', 'Vicuna1.1', 'ChatML', 'Zephyr', 'OpenChat']) -> PromptTemplate:
+    def from_preset(cls, style: Literal['Default', 'Default Instruct', 'Llama2', 'Vicuna', 'ChatML', 'Zephyr', 'OpenChat']) -> PromptTemplate:
         """Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna1.1&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]): Format of the prompt.
+            style (Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -214,8 +215,8 @@ presets = {
         'stop': None
     },
     'Llama2' : {
-        'system_prefix': '<s>[INST] <<SYS>>\n',
-        'system_suffix': '\n<</SYS>>\n',
+        'system_prefix': '[INST] <<SYS>>\n',
+        'system_suffix': '\n<</SYS>>\n\n',
         'human_prefix': '',
         'human_suffix': ' [/INST] ',
         'ai_prefix': '',
@@ -223,7 +224,7 @@ presets = {
         'wrapper': ['<s>[INST] ', ' </s>'],
         'stop': ['</s>', '</s><s>', '[INST]', '<s>[INST]']
     },
-    'Vicuna1.1' : {
+    'Vicuna' : {
         'system_prefix': '',
         'system_suffix': '\n\n',
         'human_prefix': 'USER: ',

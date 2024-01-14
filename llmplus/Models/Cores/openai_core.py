@@ -127,6 +127,9 @@ class OpenAILLM(BaseLLM):
         stream = kwargs.get('stream', False)
         gen_config = self.generation_config.copy()
         gen_config['stop'] = stop
+        for k, v in kwargs.items():
+            if k in ['temperature', 'max_new_tokens', 'top_p', 'top_k', 'repetition_penalty']:
+                gen_config[k] = v
         if stream:
             def generate():
                 for i in self.core._model.completions.create(

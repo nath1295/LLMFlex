@@ -93,7 +93,7 @@ if cuda is not None:
 elif system == 'MacOS_apple_silicon':
     os.environ['CMAKE_ARGS'] = '-DLLAMA_METAL=on'
 try:
-    subprocess.run(["pip", "install", "llama-cpp-python"])
+    subprocess.run(["pip", "install", "llama-cpp-python[server]"])
 except:
     import warnings
     warnings.warn('Failed to install llama-cpp-python. Please install manually with the guidelines from https://pypi.org/project/llama-cpp-python/.')

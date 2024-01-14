@@ -1,4 +1,5 @@
 from ..Cores.base_core import BaseCore, BaseLLM
+from ...Prompts.prompt_template import PromptTemplate
 from typing import Literal, Optional, Dict, List, Any, Type
 
 def detect_model_type(model_id: str) -> str:
@@ -77,6 +78,15 @@ class LlmFactory:
             Type[BaseCore]: Core model of the llm factory.
         """
         return self._core
+    
+    @property
+    def prompt_template(self) -> PromptTemplate:
+        """Default prompt template for the model.
+
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+        """
+        return self.core.prompt_template
     
     def __call__(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95,
                 top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, 

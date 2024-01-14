@@ -19,7 +19,6 @@ Relevant chunks of contents:
 
 """
 
-
 def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -> List[Union[str, Dict[str, Any]]]:
     """Search with DuckDuckGo.
 
@@ -98,14 +97,14 @@ class WebSearchTool(BaseTool):
             return [f'Search engine "{self.search_engine}" not supported.']
         
 
-    def run(self, tool_input: str, llm: Type[BaseLLM] = None, stream: bool = False, 
+    def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
             history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
             generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) -> Union[str, Iterator[str], List[Dict[str, Any]], Any]:
         """Run the web search tool. Any keyword arguments will be passed to the search method.
 
         Args:
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
-            llm (Type[BaseLLM], optional): It will be used to create the search query and generate output if `generate_query=True`. 
+            llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
             history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
@@ -130,7 +129,7 @@ class WebSearchTool(BaseTool):
 
             prompt_template = PromptTemplate.from_preset('Default Instruct') if prompt_template is None else prompt_template
             request = f'This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.'
-            query_prompt = prompt_template.create_chat_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
+            query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
             query_prompt += '```json\n{"Search query": "'
             query = '{"Search query": "' + llm(query_prompt, stop=['```'])
             try:
@@ -143,18 +142,30 @@ class WebSearchTool(BaseTool):
 
         from ..TextSplitters.llm_text_splitter import LLMTextSplitter
         from ..Models.Cores.utils import add_newline_char_to_stopwords
+        from .web_search_utils import get_markdown, create_content_chunks
         from langchain.schema.document import Document
 
         text_splitter = LLMTextSplitter(model=llm)
         results = self.search(query=query, urls_only=False, **kwargs)
         urls = list(map(lambda x: x['href'], results))
-        contents = list(map(parse_url, urls))
-        self.print('Parsing contents completed.')
-        docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-        docs = text_splitter.split_documents(documents=docs)
-        index = list(map(lambda x: x.page_content, docs))
-        data = list(map(lambda x: x.metadata, docs))
-        self.print(f'Splitting contents completed. Number of documents: {len(index)}')
+        if llm is None:
+            contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
+            self.print('Parsing contents completed.')
+            docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+            docs = text_splitter.split_documents(documents=docs)
+            index = list(map(lambda x: x.page_content, docs))
+            data = list(map(lambda x: x.metadata, docs))
+            self.print(f'Splitting contents completed. Number of documents: {len(index)}')
+        else:
+            contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
+            self.print('Parsing contents completed.')
+            contents = list(map(lambda x: create_content_chunks(x, llm), contents))
+            docs = list(zip(contents, results))
+            docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+            docs = sum(docs, [])
+            index = list(map(lambda x: x.page_content, docs))
+            data = list(map(lambda x: x.metadata, docs))
+            self.print(f'Splitting contents completed. Number of documents: {len(index)}')
         self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
         self.print('Storing contents completed.')
 
@@ -168,7 +179,7 @@ class WebSearchTool(BaseTool):
         rel_info = list(map(lambda x: x['index'], chunks))
         rel_info = '\n\n'.join(rel_info) + '\n'
 
-        prompt = prompt_template.create_chat_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
+        prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
         stop = add_newline_char_to_stopwords(prompt_template.stop)
         if stream:
             return llm.stream(prompt, stop=stop)

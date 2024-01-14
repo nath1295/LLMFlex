@@ -181,7 +181,17 @@ class HuggingfaceLLM(BaseLLM):
         stream = kwargs.get(&#39;stream&#39;, False)
         gen_config = self.generation_config.copy()
         gen_config[&#39;stopping_criteria&#39;] = StoppingCriteriaList([KeywordsStoppingCriteria(stop, self.core.tokenizer)])
-
+        for k, v in kwargs.items():
+            if k == &#39;temperature&#39;:
+                if v &gt; 0:
+                    gen_config[&#39;temperature&#39;] = v
+                    gen_config[&#39;do_sample&#39;] = True
+                else:
+                    gen_config[&#39;temperature&#39;] = 0.01
+                    gen_config[&#39;do_sample&#39;] = False
+            elif k in [&#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
+                gen_config[k] = v
+                
         if stream:
             from threading import Thread
             from transformers import TextIteratorStreamer
@@ -343,6 +353,7 @@ def model_type(self) -&gt; str:
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.encode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model_id" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.prompt_template" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer">tokenizer</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.unload" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.unload">unload</a></code></li>
 </ul>
@@ -443,7 +454,17 @@ def model_type(self) -&gt; str:
         stream = kwargs.get(&#39;stream&#39;, False)
         gen_config = self.generation_config.copy()
         gen_config[&#39;stopping_criteria&#39;] = StoppingCriteriaList([KeywordsStoppingCriteria(stop, self.core.tokenizer)])
-
+        for k, v in kwargs.items():
+            if k == &#39;temperature&#39;:
+                if v &gt; 0:
+                    gen_config[&#39;temperature&#39;] = v
+                    gen_config[&#39;do_sample&#39;] = True
+                else:
+                    gen_config[&#39;temperature&#39;] = 0.01
+                    gen_config[&#39;do_sample&#39;] = False
+            elif k in [&#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
+                gen_config[k] = v
+                
         if stream:
             from threading import Thread
             from transformers import TextIteratorStreamer

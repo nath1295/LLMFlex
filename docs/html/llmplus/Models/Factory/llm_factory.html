@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from ..Cores.base_core import BaseCore, BaseLLM
+from ...Prompts.prompt_template import PromptTemplate
 from typing import Literal, Optional, Dict, List, Any, Type
 
 def detect_model_type(model_id: str) -&gt; str:
@@ -105,6 +106,15 @@ class LlmFactory:
             Type[BaseCore]: Core model of the llm factory.
         &#34;&#34;&#34;
         return self._core
+    
+    @property
+    def prompt_template(self) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Default prompt template for the model.
+
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+        &#34;&#34;&#34;
+        return self.core.prompt_template
     
     def __call__(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95,
                 top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, 
@@ -289,6 +299,15 @@ class LlmFactory:
         &#34;&#34;&#34;
         return self._core
     
+    @property
+    def prompt_template(self) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Default prompt template for the model.
+
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+        &#34;&#34;&#34;
+        return self.core.prompt_template
+    
     def __call__(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95,
                 top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, 
                 newline=True, **kwargs: Dict[str, Any]) -&gt; BaseLLM:
@@ -414,6 +433,28 @@ def model_type(self) -&gt; str:
     return self._model_type </code></pre>
 </details>
 </dd>
+<dt id="llmplus.Models.Factory.llm_factory.LlmFactory.prompt_template"><code class="name">var <span class="ident">prompt_template</span> : <a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
+<dd>
+<div class="desc"><p>Default prompt template for the model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PromptTemplate</code></dt>
+<dd>Default prompt template for the model.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def prompt_template(self) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Default prompt template for the model.
+
+    Returns:
+        PromptTemplate: Default prompt template for the model.
+    &#34;&#34;&#34;
+    return self.core.prompt_template</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Methods</h3>
 <dl>
@@ -515,6 +556,7 @@ def model_type(self) -&gt; str:
 <li><code><a title="llmplus.Models.Factory.llm_factory.LlmFactory.core" href="#llmplus.Models.Factory.llm_factory.LlmFactory.core">core</a></code></li>
 <li><code><a title="llmplus.Models.Factory.llm_factory.LlmFactory.model_id" href="#llmplus.Models.Factory.llm_factory.LlmFactory.model_id">model_id</a></code></li>
 <li><code><a title="llmplus.Models.Factory.llm_factory.LlmFactory.model_type" href="#llmplus.Models.Factory.llm_factory.LlmFactory.model_type">model_type</a></code></li>
+<li><code><a title="llmplus.Models.Factory.llm_factory.LlmFactory.prompt_template" href="#llmplus.Models.Factory.llm_factory.LlmFactory.prompt_template">prompt_template</a></code></li>
 </ul>
 </li>
 </ul>

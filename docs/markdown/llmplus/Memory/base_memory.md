@@ -111,7 +111,7 @@ Classes
     `save(self) ‑> None`
     :   Save the current state of the memory.
 
-    `save_interaction(self, user_input: str, assistant_output: str) ‑> None`
+    `save_interaction(self, user_input: str, assistant_output: str, **kwargs) ‑> None`
     :   Saving an interaction to the memory.
         
         Args:

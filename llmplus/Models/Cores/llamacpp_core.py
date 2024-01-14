@@ -3,6 +3,14 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator
 
+_chat_formats_map = {
+    'llama-2': 'Llama2',
+    'vicuna': 'Vicuna1.1',
+    'chatml': 'ChatML',
+    'openchat': 'OpenChat',
+    'zephyr': 'Zephyr'
+}
+
 def get_model_dir(model_id: str, model_file: Optional[str] = None) -> str:
     """Download the model file from Huggingface and get the local directory.
 
@@ -53,6 +61,7 @@ class LlamaCppCore(BaseCore):
             context_length (int, optional): Context length of the model. Defaults to 4096.
         """
         from ...utils import is_cuda, os_name
+        from ...Prompts.prompt_template import PromptTemplate
         self._model_id = os.path.basename(model_id_or_path).removesuffix('.gguf').removesuffix('.GGUF') if model_id_or_path.lower().endswith('.gguf') else model_id_or_path
         self._core_type = 'LlamaCppCore'
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith('.gguf') else model_id_or_path
@@ -68,6 +77,7 @@ class LlamaCppCore(BaseCore):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
+        self._prompt_template = PromptTemplate.from_preset(_chat_formats_map.get(self._model.chat_format, 'Default'))
 
     def encode(self, text: str) -> List[int]:
         """Tokenize the given text.
@@ -154,6 +164,10 @@ class LlamaCppLLM(BaseLLM):
         stream = kwargs.get('stream', False)
         gen_config = self.generation_config.copy()
         gen_config['stop'] = stop
+        for k, v in kwargs.items():
+            if k in ['temperature', 'max_new_tokens', 'top_p', 'top_k', 'repetition_penalty']:
+                gen_config[k] = v
+
         if stream:
             def generate():
                 for i in self.core.model(

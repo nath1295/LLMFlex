@@ -49,12 +49,12 @@ Classes
 
     ### Methods
 
-    `run(self, tool_input: str, llm: Type[llmplus.Models.Cores.base_core.BaseLLM] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]`
+    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]`
     :   Run the web search tool. Any keyword arguments will be passed to the search method.
         
         Args:
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
-            llm (Type[BaseLLM], optional): It will be used to create the search query and generate output if `generate_query=True`. 
+            llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
             history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.

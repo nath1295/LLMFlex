@@ -61,7 +61,7 @@ class LongShortTermChatMemory(BaseChatMemory):
         """
         self.vectordb.save()
 
-    def save_interaction(self, user_input: str, assistant_output: str) -> None:
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -> None:
         """Saving an interaction to the memory.
 
         Args:
@@ -70,8 +70,12 @@ class LongShortTermChatMemory(BaseChatMemory):
         """
         user_input = user_input.strip(' \n\r\t')
         assistant_output = assistant_output.strip(' \n\r\t')
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in ['user', 'assistant', 'order']:
+                metadata[k] = v
         self.vectordb.add_texts(texts=[f'{user_input}\n\n{assistant_output}'],
-                                metadata=dict(user=user_input, assistant=assistant_output, order=self.interaction_count))
+                                metadata=metadata)
 
     def remove_last_interaction(self) -> None:
         """Remove the latest interaction.

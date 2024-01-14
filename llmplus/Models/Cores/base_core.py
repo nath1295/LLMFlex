@@ -1,6 +1,7 @@
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
+from ...Prompts.prompt_template import PromptTemplate
 from typing import Any, List, Dict, Optional, Union, Iterator, Type
 
 class BaseCore:
@@ -54,6 +55,17 @@ class BaseCore:
         """
         return self._model_id
     
+    @property
+    def prompt_template(self) -> PromptTemplate:
+        """Default prompt template for the model.
+
+        Returns:
+            PromptTemplate: Default prompt template for the model.
+        """
+        if not hasattr(self, '_prompt_template'):
+            self._prompt_template = PromptTemplate.from_preset('Default')
+        return self._prompt_template
+    
     def encode(self, text: str) -> List[int]:
         """Tokenize the given text.
 
@@ -78,10 +90,12 @@ class BaseCore:
     
     def unload(self) -> None:
         """Unload the model from ram."""
+        import gc
         del self._model
         self._model = None
         del self._tokenizer
         self._tokenizer = None
+        gc.collect()
     
 class BaseLLM(LLM):
     """Base LLM class for llmplus, using the LLM class from langchain.

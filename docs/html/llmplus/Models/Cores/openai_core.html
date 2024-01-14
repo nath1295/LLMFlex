@@ -155,6 +155,9 @@ class OpenAILLM(BaseLLM):
         stream = kwargs.get(&#39;stream&#39;, False)
         gen_config = self.generation_config.copy()
         gen_config[&#39;stop&#39;] = stop
+        for k, v in kwargs.items():
+            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
+                gen_config[k] = v
         if stream:
             def generate():
                 for i in self.core._model.completions.create(
@@ -294,6 +297,7 @@ class OpenAILLM(BaseLLM):
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.encode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model_id" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.prompt_template" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer">tokenizer</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.unload" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.unload">unload</a></code></li>
 </ul>
@@ -395,6 +399,9 @@ class OpenAILLM(BaseLLM):
         stream = kwargs.get(&#39;stream&#39;, False)
         gen_config = self.generation_config.copy()
         gen_config[&#39;stop&#39;] = stop
+        for k, v in kwargs.items():
+            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
+                gen_config[k] = v
         if stream:
             def generate():
                 for i in self.core._model.completions.create(

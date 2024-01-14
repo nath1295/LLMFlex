@@ -1,12 +1,12 @@
 click
 transformers>=4.35.0
+accelerate>=0.25.0
 sentence-transformers
 langchain
 faiss-cpu
 pandas
 gradio>=4.11.0
 duckduckgo-search
-markdownify
 fake-useragent
 openai>=1.4
 tiktoken

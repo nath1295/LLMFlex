@@ -31,6 +31,14 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator
 
+_chat_formats_map = {
+    &#39;llama-2&#39;: &#39;Llama2&#39;,
+    &#39;vicuna&#39;: &#39;Vicuna1.1&#39;,
+    &#39;chatml&#39;: &#39;ChatML&#39;,
+    &#39;openchat&#39;: &#39;OpenChat&#39;,
+    &#39;zephyr&#39;: &#39;Zephyr&#39;
+}
+
 def get_model_dir(model_id: str, model_file: Optional[str] = None) -&gt; str:
     &#34;&#34;&#34;Download the model file from Huggingface and get the local directory.
 
@@ -81,6 +89,7 @@ class LlamaCppCore(BaseCore):
             context_length (int, optional): Context length of the model. Defaults to 4096.
         &#34;&#34;&#34;
         from ...utils import is_cuda, os_name
+        from ...Prompts.prompt_template import PromptTemplate
         self._model_id = os.path.basename(model_id_or_path).removesuffix(&#39;.gguf&#39;).removesuffix(&#39;.GGUF&#39;) if model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         self._core_type = &#39;LlamaCppCore&#39;
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
@@ -96,6 +105,7 @@ class LlamaCppCore(BaseCore):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
+        self._prompt_template = PromptTemplate.from_preset(_chat_formats_map.get(self._model.chat_format, &#39;Default&#39;))
 
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -182,6 +192,10 @@ class LlamaCppLLM(BaseLLM):
         stream = kwargs.get(&#39;stream&#39;, False)
         gen_config = self.generation_config.copy()
         gen_config[&#39;stop&#39;] = stop
+        for k, v in kwargs.items():
+            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
+                gen_config[k] = v
+
         if stream:
             def generate():
                 for i in self.core.model(
@@ -320,6 +334,7 @@ class LlamaCppLLM(BaseLLM):
             context_length (int, optional): Context length of the model. Defaults to 4096.
         &#34;&#34;&#34;
         from ...utils import is_cuda, os_name
+        from ...Prompts.prompt_template import PromptTemplate
         self._model_id = os.path.basename(model_id_or_path).removesuffix(&#39;.gguf&#39;).removesuffix(&#39;.GGUF&#39;) if model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         self._core_type = &#39;LlamaCppCore&#39;
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
@@ -335,6 +350,7 @@ class LlamaCppLLM(BaseLLM):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
+        self._prompt_template = PromptTemplate.from_preset(_chat_formats_map.get(self._model.chat_format, &#39;Default&#39;))
 
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -371,6 +387,7 @@ class LlamaCppLLM(BaseLLM):
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.encode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model_id" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.prompt_template" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer">tokenizer</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.unload" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.unload">unload</a></code></li>
 </ul>
@@ -470,6 +487,10 @@ class LlamaCppLLM(BaseLLM):
         stream = kwargs.get(&#39;stream&#39;, False)
         gen_config = self.generation_config.copy()
         gen_config[&#39;stop&#39;] = stop
+        for k, v in kwargs.items():
+            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
+                gen_config[k] = v
+
         if stream:
             def generate():
                 for i in self.core.model(
