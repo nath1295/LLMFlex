@@ -1,6 +1,6 @@
 [project]
 name = "llmplus"
-version = "0.0.6.dev"
+version = "0.0.7dev"
 description = "A python package for developing AI applications with local LLMs."
 authors = [
     {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
@@ -29,16 +29,14 @@ requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "MIT"}
 
-[build-system]
-requires = ["setuptools>=61", "wheel"]
-build-backend = "setuptools.build_meta"
+[project.scripts]
+llmplus = "llmplus.cli:cli"
 
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [tool.pdm]
 package-type = "library"
+src-layout = true
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["llmplus"]
-exclude = []
-namespaces = false
