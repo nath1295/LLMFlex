@@ -189,6 +189,7 @@ class PromptTemplate:
             human_suffix = self.human_suffix,
             ai_prefix = self.ai_prefix,
             ai_suffix = self.ai_suffix,
+            wrapper = self.wrapper,
             stop = self._stop if return_raw_stop else self.stop
         )
     

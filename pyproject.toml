@@ -1,0 +1,38 @@
+[project]
+name = "llmplus"
+version = "0.0.6.dev"
+description = "A python package for developing AI applications with local LLMs."
+authors = [
+    {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
+]
+dependencies = [
+    "torch",
+    "torchvision",
+    "torchaudio",
+    "llama-cpp-python[server]",
+    "click",
+    "transformers>=4.35.0",
+    "accelerate>=0.25.0",
+    "sentence-transformers",
+    "langchain",
+    "faiss-cpu",
+    "optimum",
+    "gradio>=4.0",
+    "duckduckgo-search",
+    "fake-useragent",
+    "openai>=1.0.0",
+    "tiktoken",
+    "protobuf",
+    "beautifulsoup4",
+]
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[tool.pdm]
+package-type = "library"
