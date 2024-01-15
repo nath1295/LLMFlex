@@ -18,7 +18,7 @@ Classes
 -------
 
 `LlmFactory(model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'debug'] = 'auto', **kwargs)`
-:   Initiate the model core to create LLMs.
+:   Initialise the model core to create LLMs.
     
     Args:
         model_id (str): Model id (from Huggingface) to use.

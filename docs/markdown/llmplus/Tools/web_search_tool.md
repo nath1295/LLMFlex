@@ -16,17 +16,6 @@ Functions
     Returns:
         List[Union[str, Dict[str, Any]]]: List of search results.
 
-    
-`parse_url(url: str, timeout: int = 10) ‑> str`
-:   Parse the given URL as markdown.
-    
-    Args:
-        url (str): URL to parse.
-        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
-    
-    Returns:
-        str: Content of the URL as markdown.
-
 Classes
 -------
 
@@ -49,14 +38,14 @@ Classes
 
     ### Methods
 
-    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]`
+    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]`
     :   Run the web search tool. Any keyword arguments will be passed to the search method.
         
         Args:
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
             llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
-            history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
             generate_query (bool, optional): Whether to treat the tool_input as part of the conversation and generate a different search query. Defaults to True.
             return_type (Literal['response', 'vectordb', 'chunks'], optional): Return a full response given the tool_input, the vector database, or the chunks only. Defaults to 'response'.

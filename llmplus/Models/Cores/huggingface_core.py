@@ -55,6 +55,7 @@ class HuggingfaceCore(BaseCore):
         """
         from ...utils import get_config
         os.environ['HF_HOME'] = get_config()['hf_home']
+        os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
         self._core_type = 'HuggingfaceCore'

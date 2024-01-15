@@ -1,5 +1,6 @@
 from langchain.embeddings.base import Embeddings
 from langchain.text_splitter import TextSplitter
+from typing import Type
 
 class BaseEmbeddingsToolkit:
     """Base class for storing the embedding model and the text splitter.
@@ -14,7 +15,7 @@ class BaseEmbeddingsToolkit:
         self._embedding_size = 1024
 
     @property
-    def embedding_model(self) -> Embeddings:
+    def embedding_model(self) -> Type[Embeddings]:
         """The embedding model.
 
         Returns:
@@ -23,7 +24,7 @@ class BaseEmbeddingsToolkit:
         return self._model
     
     @property
-    def text_splitter(self) -> TextSplitter:
+    def text_splitter(self) -> Type[TextSplitter]:
         """The text splitter.
 
         Returns:

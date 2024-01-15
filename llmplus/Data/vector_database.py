@@ -2,6 +2,7 @@ from __future__ import annotations
 import os
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from langchain.schema.document import Document
+from langchain.text_splitter import TextSplitter
 import pandas as pd
 from typing import List, Optional, Type, Dict, Any, Union
 
@@ -51,14 +52,16 @@ def name_checker(name: str) -> str:
     return name
         
 def texts_to_documents(texts: List[str], 
-        embeddings: Type[BaseEmbeddingsToolkit], 
+        embeddings: Optional[Type[BaseEmbeddingsToolkit]] = None,
+        text_splitter: Optional[Type[TextSplitter]] = None,
         data: Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]] = None,
         split_text: bool = True) -> List[Document]:
     """Create splitted documents from the list of text strings.
 
     Args:
         texts (List[str]): List of strings to split into documents.
-        embeddings (Type[BaseEmbeddingsToolkit]): Embedding toolkits used to split the documents.
+        embeddings (Optional[Type[BaseEmbeddingsToolkit]], optional): Embedding toolkit used to split the documents. Defaults to None
+        text_splitter (Optional[Type[TextSplitter]], optional): Text splitter used to split the documents. If provided, it will be used instead of the embedding toolkit. Defaults to None.
         data (Optional[Union[pd.DataFrame, List[Dict[str, Any]], Dict[str, Any]]], optional): Metadata for each text strings. Defaults to None.
         split_text (bool, optional): Whether to split text if the given text is too long. Defaults to True.
 
@@ -74,7 +77,12 @@ def texts_to_documents(texts: List[str],
     
     docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(texts, data))))
     if split_text:
-        docs = embeddings.text_splitter.split_documents(docs)
+        if text_splitter is not None:
+            docs = text_splitter.split_documents(docs)
+        elif embeddings is not None:
+            docs = embeddings.text_splitter.split_documents(docs)
+        else:
+            raise RuntimeError('Either embeddings or text_splitter has to be provided if split_text=True.')
     return docs
 
 class VectorDatabase:
@@ -275,7 +283,7 @@ class VectorDatabase:
     
     @classmethod
     def from_data(cls, index: List[str], embeddings: Type[BaseEmbeddingsToolkit],
-                  data: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = dict(), name: Optional[str] = None, 
+                  data: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = dict(), text_splitter: Type[TextSplitter] = None, name: Optional[str] = None, 
                   vectordb_dir: Optional[str] = None, save_raw: bool = False, split_text: bool = True) -> VectorDatabase:
         """Initialise the vector database with list of texts.
 
@@ -283,6 +291,7 @@ class VectorDatabase:
             index (List[str]): List of texts to initialise the database.
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkits used in the vector database.
             data (Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]], optional): Metadata for the list of texts. Defaults to dict().
+            text_splitter (Optional[Type[TextSplitter]], optional): Text splitter used to split the documents. If provided, it will be used instead of the embedding toolkit. Defaults to None.
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             vectordb_dir (Optional[str], optional): Parent directory of the vector database if it is not In-memory only. If None is given, the default_vectordb_dir will be used. Defaults to None.
             save_raw (bool, optional): Whether to save raw text data and metadata as a separate json file. Defaults to False.
@@ -292,20 +301,34 @@ class VectorDatabase:
             VectorDatabase: The intialised vector database.
         """
         vdb = cls.from_empty(embeddings=embeddings, name=name, vectordb_dir=vectordb_dir, save_raw=save_raw)
-        vdb.add_texts(texts=index, metadata=data, split_text=split_text)
+        vdb.add_texts(texts=index, metadata=data, text_splitter=text_splitter, split_text=split_text)
         return vdb
     
-    def add_texts(self, texts: List[str], metadata: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = dict(), split_text: bool = True) -> None:
+    def add_texts(self, texts: List[str], metadata: Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]] = dict(), 
+                  text_splitter: Optional[Type[TextSplitter]] = None, split_text: bool = True) -> None:
         """Adding texts to the vector database.
 
         Args:
             texts (List[str]): List of texts to add.
-            metadata (Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]], optional): Meta data for the texts. Defaults to dict().
+            metadata (Union[pd.DataFrame, Dict[str, Any], List[Dict[str, Any]]], optional): Metadata for the texts. Defaults to dict().
+            text_splitter (Optional[Type[TextSplitter]], optional): Text splitter used to split the documents. If provided, it will be used instead of the embedding toolkit. Defaults to None.
             split_text (bool, optional): Whether to split the texts if they are too long. Defaults to True.
         """
-        docs = texts_to_documents(texts=texts, embeddings=self.embeddings, data=metadata, split_text=split_text)
+        docs = texts_to_documents(texts=texts, embeddings=self.embeddings, text_splitter=text_splitter, data=metadata, split_text=split_text)
         self.vectorstore.add_documents(docs)
         self.save()
+
+    def add_documents(self, docs: List[Document], text_splitter: Optional[Type[TextSplitter]] = None, split_text: bool = True) -> None:
+        """Adding documents to the vector database.
+
+        Args:
+            docs (List[Document]): List of documents to add.
+            text_splitter (Optional[Type[TextSplitter]], optional): Text splitter used to split the documents. If provided, it will be used instead of the embedding toolkit. Defaults to None.
+            split_text (bool, optional): Whether to split the texts if they are too long. Defaults to True.
+        """
+        texts = list(map(lambda x: x.page_content, docs))
+        metadata = list(map(lambda x: x.metadata, docs))
+        self.add_texts(texts=texts, metadata=metadata, text_splitter=text_splitter, split_text=split_text)
 
     def _result_dict(self, index: str, score: float, metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Helper method to construct search results into a dictionary.

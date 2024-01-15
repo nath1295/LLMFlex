@@ -24,7 +24,7 @@ def detect_model_type(model_id: str) -> str:
 class LlmFactory:
 
     def __init__(self, model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'debug'] = 'auto', **kwargs) -> None:
-        """Initiate the model core to create LLMs.
+        """Initialise the model core to create LLMs.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.

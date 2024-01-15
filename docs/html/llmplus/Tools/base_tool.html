@@ -28,7 +28,7 @@
 </summary>
 <pre><code class="python">from ..Prompts.prompt_template import PromptTemplate
 from ..Models.Cores.base_core import BaseLLM
-from typing import List, Iterator, Optional, Union, Type
+from typing import List, Iterator, Optional, Union, Type, Tuple
 
 class BaseTool:
     &#34;&#34;&#34;This is a base class for callables for LLMs.
@@ -61,14 +61,14 @@ class BaseTool:
         return newlines.sub(&#39; &#39;, self._description)
     
     def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-            history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
+            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
         &#34;&#34;&#34;Run the tool and return the output as a string.
 
         Args:
             tool_input (str): String input for to run the tool.
             llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
             stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
-            history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
 
         Returns:
@@ -139,14 +139,14 @@ class BaseTool:
         return newlines.sub(&#39; &#39;, self._description)
     
     def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-            history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
+            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
         &#34;&#34;&#34;Run the tool and return the output as a string.
 
         Args:
             tool_input (str): String input for to run the tool.
             llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
             stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
-            history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
 
         Returns:
@@ -245,7 +245,7 @@ def name(self) -&gt; str:
 </details>
 </dd>
 <dt id="llmplus.Tools.base_tool.BaseTool.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Optional[Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, **kwargs) ‑> Union[str, Iterator[str]]</span>
+<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Optional[Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, **kwargs) ‑> Union[str, Iterator[str]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Run the tool and return the output as a string.</p>
@@ -257,7 +257,7 @@ def name(self) -&gt; str:
 <dd>LLM to generate the output in a conversational setup. Defaults to None.</dd>
 <dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.</dd>
-<dt><strong><code>history</code></strong> :&ensp;<code>Optional[List[List[str]]]</code>, optional</dt>
+<dt><strong><code>history</code></strong> :&ensp;<code>Optional[Union[List[str], List[Tuple[str, str]]]]</code>, optional</dt>
 <dd>Snippet of chat history to help running the tool if required. Defaults to None.</dd>
 <dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
 <dd>prompt_template to format the chat history. Defaults to None.</dd>
@@ -272,14 +272,14 @@ def name(self) -&gt; str:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-        history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
+        history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
     &#34;&#34;&#34;Run the tool and return the output as a string.
 
     Args:
         tool_input (str): String input for to run the tool.
         llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
         stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
-        history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+        history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
         prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
 
     Returns:

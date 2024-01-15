@@ -47,7 +47,7 @@ class OpenAICore(BaseCore):
         &#34;&#34;&#34;
         from openai import OpenAI
         self._core_type = &#39;OpenAICore&#39;
-        api_key = &#39;NOAPIKEY&#39; if api_key is None else api_key
+        api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;, &#39;NOAPIKEY&#39;) if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
@@ -101,7 +101,7 @@ class OpenAILLM(BaseLLM):
         &#34;&#34;&#34;Initialising the llm.
 
         Args:
-            core (OpenAICor): The OpenAICore core.
+            core (OpenAICore): The OpenAICore core.
             temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -241,7 +241,7 @@ class OpenAILLM(BaseLLM):
         &#34;&#34;&#34;
         from openai import OpenAI
         self._core_type = &#39;OpenAICore&#39;
-        api_key = &#39;NOAPIKEY&#39; if api_key is None else api_key
+        api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;, &#39;NOAPIKEY&#39;) if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
@@ -313,7 +313,7 @@ class OpenAILLM(BaseLLM):
 <p>Initialising the llm.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>core</code></strong> :&ensp;<code>OpenAICor</code></dt>
+<dt><strong><code>core</code></strong> :&ensp;<code><a title="llmplus.Models.Cores.openai_core.OpenAICore" href="#llmplus.Models.Cores.openai_core.OpenAICore">OpenAICore</a></code></dt>
 <dd>The OpenAICore core.</dd>
 <dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
 <dd>Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.</dd>
@@ -345,7 +345,7 @@ class OpenAILLM(BaseLLM):
         &#34;&#34;&#34;Initialising the llm.
 
         Args:
-            core (OpenAICor): The OpenAICore core.
+            core (OpenAICore): The OpenAICore core.
             temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.

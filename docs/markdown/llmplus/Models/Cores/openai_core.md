@@ -27,7 +27,7 @@ Classes
     Initialising the llm.
     
     Args:
-        core (OpenAICor): The OpenAICore core.
+        core (OpenAICore): The OpenAICore core.
         temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
         max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
         top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.

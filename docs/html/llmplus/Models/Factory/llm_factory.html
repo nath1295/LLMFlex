@@ -52,7 +52,7 @@ def detect_model_type(model_id: str) -&gt; str:
 class LlmFactory:
 
     def __init__(self, model_id: str, model_type: Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;debug&#39;] = &#39;auto&#39;, **kwargs) -&gt; None:
-        &#34;&#34;&#34;Initiate the model core to create LLMs.
+        &#34;&#34;&#34;Initialise the model core to create LLMs.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.
@@ -230,7 +230,7 @@ class LlmFactory:
 <span>(</span><span>model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'debug'] = 'auto', **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Initiate the model core to create LLMs.</p>
+<div class="desc"><p>Initialise the model core to create LLMs.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
@@ -244,7 +244,7 @@ class LlmFactory:
 <pre><code class="python">class LlmFactory:
 
     def __init__(self, model_id: str, model_type: Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;debug&#39;] = &#39;auto&#39;, **kwargs) -&gt; None:
-        &#34;&#34;&#34;Initiate the model core to create LLMs.
+        &#34;&#34;&#34;Initialise the model core to create LLMs.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.

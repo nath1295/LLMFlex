@@ -145,7 +145,7 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
 
     Returns:
         str: The full chat prompt.
-    """    """"""    
+    """
     user = user.strip(' \n\r\t')
     short = memory.get_token_memory(llm=llm, token_limit=short_token_limit)
     long = memory.get_long_term_memory(query=user, recent_history=short, llm=llm, token_limit=long_token_limit, score_threshold=score_threshold)

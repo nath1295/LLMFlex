@@ -36,14 +36,14 @@ Classes
         Args:
             text (str): Text to print.
 
-    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, **kwargs) ‑> Union[str, Iterator[str]]`
+    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, **kwargs) ‑> Union[str, Iterator[str]]`
     :   Run the tool and return the output as a string.
         
         Args:
             tool_input (str): String input for to run the tool.
             llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
             stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
-            history (Optional[List[List[str]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
         
         Returns:

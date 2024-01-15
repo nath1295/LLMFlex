@@ -105,7 +105,6 @@ class PromptTemplate:
         Returns:
             str: Name of the template.
         &#34;&#34;&#34;
-        getattr()
         return getattr(self, &#39;_template_name&#39;, &#39;Unititled template&#39;)
 
     def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -&gt; str:
@@ -229,7 +228,7 @@ presets = {
         &#39;human_suffix&#39;: &#39;\n&#39;,
         &#39;ai_prefix&#39;: &#39;ASSISTANT: &#39;,
         &#39;ai_suffix&#39;: &#39;\n&#39;,
-        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\nUSER: &#39;, &#39;USER:&#39;],
+        &#39;wrapper&#39;: [&#39;USER: &#39;, &#39;\n&#39;],
         &#39;stop&#39;: None
     },
     &#39;Default Instruct&#39; : {
@@ -408,7 +407,6 @@ presets = {
         Returns:
             str: Name of the template.
         &#34;&#34;&#34;
-        getattr()
         return getattr(self, &#39;_template_name&#39;, &#39;Unititled template&#39;)
 
     def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -&gt; str:
@@ -732,7 +730,6 @@ def template_name(self) -&gt; str:
     Returns:
         str: Name of the template.
     &#34;&#34;&#34;
-    getattr()
     return getattr(self, &#39;_template_name&#39;, &#39;Unititled template&#39;)</code></pre>
 </details>
 </dd>

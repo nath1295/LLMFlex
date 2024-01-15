@@ -30,7 +30,7 @@
 from ..Prompts.prompt_template import PromptTemplate
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from .base_tool import BaseTool
-from typing import Iterator, List, Dict, Any, Optional, Union, Literal, Type
+from typing import Iterator, List, Dict, Any, Optional, Union, Literal, Type, Tuple
 
 WEB_SEARCH_TOOL_DESCRIPTION = &#34;&#34;&#34;This tool is for doing searches on the internet for facts or most updated information via a search engine.
 Input of this tool should be a search query. 
@@ -64,28 +64,6 @@ def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; L
     if urls_only:
         results = list(map(lambda x: x[&#39;href&#39;], results))
     return results
-
-def parse_url(url: str, timeout: int = 10) -&gt; str:
-    &#34;&#34;&#34;Parse the given URL as markdown.
-
-    Args:
-        url (str): URL to parse.
-        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
-
-    Returns:
-        str: Content of the URL as markdown.
-    &#34;&#34;&#34;
-    import requests
-    from fake_useragent import UserAgent
-    from markdownify import markdownify
-    
-    ua = UserAgent()
-    response = requests.get(url, headers={&#39;User-Agent&#39;: ua.random}, timeout=timeout)
-    if response.status_code != 200:
-        return &#39;&#39;
-    else:
-        content = response.text
-        return markdownify(content, heading_style=&#39;ATX&#39;)
     
 class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
@@ -126,7 +104,7 @@ class WebSearchTool(BaseTool):
         
 
     def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-            history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
+            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, 
             generate_query: bool = True, return_type: Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;] = &#39;response&#39;, **kwargs) -&gt; Union[str, Iterator[str], List[Dict[str, Any]], Any]:
         &#34;&#34;&#34;Run the web search tool. Any keyword arguments will be passed to the search method.
 
@@ -134,7 +112,7 @@ class WebSearchTool(BaseTool):
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
             llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
-            history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
             generate_query (bool, optional): Whether to treat the tool_input as part of the conversation and generate a different search query. Defaults to True.
             return_type (Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;], optional): Return a full response given the tool_input, the vector database, or the chunks only. Defaults to &#39;response&#39;.
@@ -143,8 +121,10 @@ class WebSearchTool(BaseTool):
             Union[str, Iterator[str], List[Dict[str, Any]], Any]: Search result, if llm and prompt template is provided, the result will be provided as a reponse to the tool_input.
         &#34;&#34;&#34;
         tool_input = tool_input.strip(&#39; \n\r\t&#39;)
+        generate_query = generate_query if llm is not None else False
         if not generate_query:
             query = tool_input
+            self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
         else:
             if ((history is not None) &amp; (prompt_template is not None)):
                 conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
@@ -154,7 +134,6 @@ class WebSearchTool(BaseTool):
                 raise ValueError(&#39;Prompt template need to be provided to process chat history.&#39;)
             else:
                 conversation = &#39;User: &#39; + tool_input
-
             prompt_template = PromptTemplate.from_preset(&#39;Default Instruct&#39;) if prompt_template is None else prompt_template
             request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
@@ -163,7 +142,7 @@ class WebSearchTool(BaseTool):
             try:
                 import json
                 query = json.loads(query)[&#39;Search query&#39;]
-                self.print(f&#39;Search query: {query}&#39;)
+                self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
             except:
                 self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
                 query = tool_input
@@ -180,10 +159,8 @@ class WebSearchTool(BaseTool):
             contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
             self.print(&#39;Parsing contents completed.&#39;)
             docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-            docs = text_splitter.split_documents(documents=docs)
-            index = list(map(lambda x: x.page_content, docs))
-            data = list(map(lambda x: x.metadata, docs))
-            self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
+            self.vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
+            self.print(&#39;Storing contents completed.&#39;)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
             self.print(&#39;Parsing contents completed.&#39;)
@@ -191,11 +168,8 @@ class WebSearchTool(BaseTool):
             docs = list(zip(contents, results))
             docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
-            index = list(map(lambda x: x.page_content, docs))
-            data = list(map(lambda x: x.metadata, docs))
-            self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
-        self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
-        self.print(&#39;Storing contents completed.&#39;)
+            self.vectordb.add_documents(docs=docs, split_text=False)
+            self.print(&#39;Storing contents completed.&#39;)
 
         if return_type == &#39;vectordb&#39;:
             return self.vectordb
@@ -209,6 +183,8 @@ class WebSearchTool(BaseTool):
 
         prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
         stop = add_newline_char_to_stopwords(prompt_template.stop)
+        if llm is None:
+            raise ValueError(f&#39;A llm has to be provided to generate response.&#39;)
         if stream:
             return llm.stream(prompt, stop=stop)
         else:
@@ -266,50 +242,6 @@ class WebSearchTool(BaseTool):
     if urls_only:
         results = list(map(lambda x: x[&#39;href&#39;], results))
     return results</code></pre>
-</details>
-</dd>
-<dt id="llmplus.Tools.web_search_tool.parse_url"><code class="name flex">
-<span>def <span class="ident">parse_url</span></span>(<span>url: str, timeout: int = 10) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Parse the given URL as markdown.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
-<dd>URL to parse.</dd>
-<dt><strong><code>timeout</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Number of seconds before request time out. Defaults to 10.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>str</code></dt>
-<dd>Content of the URL as markdown.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def parse_url(url: str, timeout: int = 10) -&gt; str:
-    &#34;&#34;&#34;Parse the given URL as markdown.
-
-    Args:
-        url (str): URL to parse.
-        timeout (int, optional): Number of seconds before request time out. Defaults to 10.
-
-    Returns:
-        str: Content of the URL as markdown.
-    &#34;&#34;&#34;
-    import requests
-    from fake_useragent import UserAgent
-    from markdownify import markdownify
-    
-    ua = UserAgent()
-    response = requests.get(url, headers={&#39;User-Agent&#39;: ua.random}, timeout=timeout)
-    if response.status_code != 200:
-        return &#39;&#39;
-    else:
-        content = response.text
-        return markdownify(content, heading_style=&#39;ATX&#39;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -379,7 +311,7 @@ class WebSearchTool(BaseTool):
         
 
     def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-            history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
+            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, 
             generate_query: bool = True, return_type: Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;] = &#39;response&#39;, **kwargs) -&gt; Union[str, Iterator[str], List[Dict[str, Any]], Any]:
         &#34;&#34;&#34;Run the web search tool. Any keyword arguments will be passed to the search method.
 
@@ -387,7 +319,7 @@ class WebSearchTool(BaseTool):
             tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
             llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
             stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
-            history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
             prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
             generate_query (bool, optional): Whether to treat the tool_input as part of the conversation and generate a different search query. Defaults to True.
             return_type (Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;], optional): Return a full response given the tool_input, the vector database, or the chunks only. Defaults to &#39;response&#39;.
@@ -396,8 +328,10 @@ class WebSearchTool(BaseTool):
             Union[str, Iterator[str], List[Dict[str, Any]], Any]: Search result, if llm and prompt template is provided, the result will be provided as a reponse to the tool_input.
         &#34;&#34;&#34;
         tool_input = tool_input.strip(&#39; \n\r\t&#39;)
+        generate_query = generate_query if llm is not None else False
         if not generate_query:
             query = tool_input
+            self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
         else:
             if ((history is not None) &amp; (prompt_template is not None)):
                 conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
@@ -407,7 +341,6 @@ class WebSearchTool(BaseTool):
                 raise ValueError(&#39;Prompt template need to be provided to process chat history.&#39;)
             else:
                 conversation = &#39;User: &#39; + tool_input
-
             prompt_template = PromptTemplate.from_preset(&#39;Default Instruct&#39;) if prompt_template is None else prompt_template
             request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
@@ -416,7 +349,7 @@ class WebSearchTool(BaseTool):
             try:
                 import json
                 query = json.loads(query)[&#39;Search query&#39;]
-                self.print(f&#39;Search query: {query}&#39;)
+                self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
             except:
                 self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
                 query = tool_input
@@ -433,10 +366,8 @@ class WebSearchTool(BaseTool):
             contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
             self.print(&#39;Parsing contents completed.&#39;)
             docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-            docs = text_splitter.split_documents(documents=docs)
-            index = list(map(lambda x: x.page_content, docs))
-            data = list(map(lambda x: x.metadata, docs))
-            self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
+            self.vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
+            self.print(&#39;Storing contents completed.&#39;)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
             self.print(&#39;Parsing contents completed.&#39;)
@@ -444,11 +375,8 @@ class WebSearchTool(BaseTool):
             docs = list(zip(contents, results))
             docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
-            index = list(map(lambda x: x.page_content, docs))
-            data = list(map(lambda x: x.metadata, docs))
-            self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
-        self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
-        self.print(&#39;Storing contents completed.&#39;)
+            self.vectordb.add_documents(docs=docs, split_text=False)
+            self.print(&#39;Storing contents completed.&#39;)
 
         if return_type == &#39;vectordb&#39;:
             return self.vectordb
@@ -462,6 +390,8 @@ class WebSearchTool(BaseTool):
 
         prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
         stop = add_newline_char_to_stopwords(prompt_template.stop)
+        if llm is None:
+            raise ValueError(f&#39;A llm has to be provided to generate response.&#39;)
         if stream:
             return llm.stream(prompt, stop=stop)
         else:
@@ -474,7 +404,7 @@ class WebSearchTool(BaseTool):
 <h3>Methods</h3>
 <dl>
 <dt id="llmplus.Tools.web_search_tool.WebSearchTool.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Optional[Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None, stream: bool = False, history: Optional[List[List[str]]] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]</span>
+<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Optional[Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Run the web search tool. Any keyword arguments will be passed to the search method.</p>
@@ -486,7 +416,7 @@ class WebSearchTool(BaseTool):
 <dd>It will be used to create the search query and generate output if <code>generate_query=True</code>. </dd>
 <dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>If an llm is provided and <code>stream=True</code>, A generator of the output will be returned. Defaults to False.</dd>
-<dt><strong><code>history</code></strong> :&ensp;<code>Optional[List[List[str]]]</code>, optional</dt>
+<dt><strong><code>history</code></strong> :&ensp;<code>Optional[Union[List[str], List[Tuple[str, str]]]]</code>, optional</dt>
 <dd>Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.</dd>
 <dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
 <dd>Prompt template use to format the chat history. Defaults to None.</dd>
@@ -504,7 +434,7 @@ class WebSearchTool(BaseTool):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-        history: Optional[List[List[str]]] = None, prompt_template: Optional[PromptTemplate] = None, 
+        history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, 
         generate_query: bool = True, return_type: Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;] = &#39;response&#39;, **kwargs) -&gt; Union[str, Iterator[str], List[Dict[str, Any]], Any]:
     &#34;&#34;&#34;Run the web search tool. Any keyword arguments will be passed to the search method.
 
@@ -512,7 +442,7 @@ class WebSearchTool(BaseTool):
         tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
         llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
         stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
-        history (Optional[List[List[str]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
+        history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
         prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
         generate_query (bool, optional): Whether to treat the tool_input as part of the conversation and generate a different search query. Defaults to True.
         return_type (Literal[&#39;response&#39;, &#39;vectordb&#39;, &#39;chunks&#39;], optional): Return a full response given the tool_input, the vector database, or the chunks only. Defaults to &#39;response&#39;.
@@ -521,8 +451,10 @@ class WebSearchTool(BaseTool):
         Union[str, Iterator[str], List[Dict[str, Any]], Any]: Search result, if llm and prompt template is provided, the result will be provided as a reponse to the tool_input.
     &#34;&#34;&#34;
     tool_input = tool_input.strip(&#39; \n\r\t&#39;)
+    generate_query = generate_query if llm is not None else False
     if not generate_query:
         query = tool_input
+        self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
     else:
         if ((history is not None) &amp; (prompt_template is not None)):
             conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
@@ -532,7 +464,6 @@ class WebSearchTool(BaseTool):
             raise ValueError(&#39;Prompt template need to be provided to process chat history.&#39;)
         else:
             conversation = &#39;User: &#39; + tool_input
-
         prompt_template = PromptTemplate.from_preset(&#39;Default Instruct&#39;) if prompt_template is None else prompt_template
         request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
         query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
@@ -541,7 +472,7 @@ class WebSearchTool(BaseTool):
         try:
             import json
             query = json.loads(query)[&#39;Search query&#39;]
-            self.print(f&#39;Search query: {query}&#39;)
+            self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
         except:
             self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
             query = tool_input
@@ -558,10 +489,8 @@ class WebSearchTool(BaseTool):
         contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
         self.print(&#39;Parsing contents completed.&#39;)
         docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-        docs = text_splitter.split_documents(documents=docs)
-        index = list(map(lambda x: x.page_content, docs))
-        data = list(map(lambda x: x.metadata, docs))
-        self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
+        self.vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
+        self.print(&#39;Storing contents completed.&#39;)
     else:
         contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
         self.print(&#39;Parsing contents completed.&#39;)
@@ -569,11 +498,8 @@ class WebSearchTool(BaseTool):
         docs = list(zip(contents, results))
         docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
         docs = sum(docs, [])
-        index = list(map(lambda x: x.page_content, docs))
-        data = list(map(lambda x: x.metadata, docs))
-        self.print(f&#39;Splitting contents completed. Number of documents: {len(index)}&#39;)
-    self.vectordb.add_texts(texts=index, metadata=data, split_text=False)
-    self.print(&#39;Storing contents completed.&#39;)
+        self.vectordb.add_documents(docs=docs, split_text=False)
+        self.print(&#39;Storing contents completed.&#39;)
 
     if return_type == &#39;vectordb&#39;:
         return self.vectordb
@@ -587,6 +513,8 @@ class WebSearchTool(BaseTool):
 
     prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
     stop = add_newline_char_to_stopwords(prompt_template.stop)
+    if llm is None:
+        raise ValueError(f&#39;A llm has to be provided to generate response.&#39;)
     if stream:
         return llm.stream(prompt, stop=stop)
     else:
@@ -662,7 +590,6 @@ class WebSearchTool(BaseTool):
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="llmplus.Tools.web_search_tool.ddg_search" href="#llmplus.Tools.web_search_tool.ddg_search">ddg_search</a></code></li>
-<li><code><a title="llmplus.Tools.web_search_tool.parse_url" href="#llmplus.Tools.web_search_tool.parse_url">parse_url</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>

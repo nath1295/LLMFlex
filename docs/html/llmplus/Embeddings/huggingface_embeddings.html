@@ -28,21 +28,21 @@
 </summary>
 <pre><code class="python">import os
 from .base_embeddings import BaseEmbeddingsToolkit
-from typing import Dict, Any
+from typing import Optional, Dict, Any
 
 class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
-    def __init__(self, model_id: str, chunk_overlap_perc: float = 0.1,
+    def __init__(self, model_id: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
                  model_kwargs: Dict[str, Any] = dict(), 
-                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128)) -&gt; None:
         &#34;&#34;&#34;Initialising the Huggingface embeddings toolkit.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.
+            chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
             chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
             model_kwargs (Dict[str, Any], optional): Keyword arguments for the model. Defaults to dict().
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
         from ..utils import get_config
         os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
@@ -50,15 +50,15 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from langchain.embeddings import HuggingFaceEmbeddings
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-        from transformers import AutoTokenizer
         self._model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
         self._name = model_id
         self._type = &#39;huggingface_embeddings&#39;
         self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
+        chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
         self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
-            tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs),
-            chunk_size = self.embedding_model.client.max_seq_length,
-            chunk_overlap = int(self.embedding_model.client.max_seq_length * chunk_overlap_perc)
+            tokenizer = self.embedding_model.client.tokenizer,
+            chunk_size = chunk_size,
+            chunk_overlap = int(chunk_size * chunk_overlap_perc)
         )</code></pre>
 </details>
 </section>
@@ -73,7 +73,7 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <dl>
 <dt id="llmplus.Embeddings.huggingface_embeddings.HuggingfaceEmbeddingsToolkit"><code class="flex name class">
 <span>class <span class="ident">HuggingfaceEmbeddingsToolkit</span></span>
-<span>(</span><span>model_id: str, chunk_overlap_perc: float = 0.1, model_kwargs: Dict[str, Any] = {}, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True}, tokenizer_kwargs: Dict[str, Any] = {})</span>
+<span>(</span><span>model_id: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, model_kwargs: Dict[str, Any] = {}, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128})</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for storing the embedding model and the text splitter.</p>
@@ -82,14 +82,14 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <dl>
 <dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
 <dd>Model id (from Huggingface) to use.</dd>
+<dt><strong><code>chunk_size</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.</dd>
 <dt><strong><code>chunk_overlap_perc</code></strong> :&ensp;<code>float</code>, optional</dt>
 <dd>Number of tokens percentage overlap during text splitting. Defaults to 0.1.</dd>
 <dt><strong><code>model_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
 <dd>Keyword arguments for the model. Defaults to dict().</dd>
 <dt><strong><code>encode_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
 <dd>Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).</dd>
-<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
-<dd>Keyword arguments for the tokenizer. Defaults to dict().</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -97,17 +97,17 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 </summary>
 <pre><code class="python">class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
-    def __init__(self, model_id: str, chunk_overlap_perc: float = 0.1,
+    def __init__(self, model_id: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
                  model_kwargs: Dict[str, Any] = dict(), 
-                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128)) -&gt; None:
         &#34;&#34;&#34;Initialising the Huggingface embeddings toolkit.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.
+            chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
             chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
             model_kwargs (Dict[str, Any], optional): Keyword arguments for the model. Defaults to dict().
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
         from ..utils import get_config
         os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
@@ -115,15 +115,15 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from langchain.embeddings import HuggingFaceEmbeddings
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-        from transformers import AutoTokenizer
         self._model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
         self._name = model_id
         self._type = &#39;huggingface_embeddings&#39;
         self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
+        chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
         self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
-            tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs),
-            chunk_size = self.embedding_model.client.max_seq_length,
-            chunk_overlap = int(self.embedding_model.client.max_seq_length * chunk_overlap_perc)
+            tokenizer = self.embedding_model.client.tokenizer,
+            chunk_size = chunk_size,
+            chunk_overlap = int(chunk_size * chunk_overlap_perc)
         )</code></pre>
 </details>
 <h3>Ancestors</h3>

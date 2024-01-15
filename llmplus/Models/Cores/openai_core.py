@@ -19,7 +19,7 @@ class OpenAICore(BaseCore):
         """
         from openai import OpenAI
         self._core_type = 'OpenAICore'
-        api_key = 'NOAPIKEY' if api_key is None else api_key
+        api_key = os.environ.get('OPENAI_API_KEY', 'NOAPIKEY') if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else ('gpt-3.5-turbo' if 'gpt-3.5-turbo' in models else models[0])
@@ -73,7 +73,7 @@ class OpenAILLM(BaseLLM):
         """Initialising the llm.
 
         Args:
-            core (OpenAICor): The OpenAICore core.
+            core (OpenAICore): The OpenAICore core.
             temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.

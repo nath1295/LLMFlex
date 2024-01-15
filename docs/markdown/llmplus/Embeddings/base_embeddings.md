@@ -16,7 +16,7 @@ Classes
 
     ### Instance variables
 
-    `embedding_model: langchain_core.embeddings.Embeddings`
+    `embedding_model: Type[langchain_core.embeddings.Embeddings]`
     :   The embedding model.
         
         Returns:
@@ -34,7 +34,7 @@ Classes
         Returns:
             str: Name of the embedding model.
 
-    `text_splitter: langchain.text_splitter.TextSplitter`
+    `text_splitter: Type[langchain.text_splitter.TextSplitter]`
     :   The text splitter.
         
         Returns:

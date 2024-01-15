@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from langchain.embeddings.base import Embeddings
 from langchain.text_splitter import TextSplitter
+from typing import Type
 
 class BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Base class for storing the embedding model and the text splitter.
@@ -42,7 +43,7 @@ class BaseEmbeddingsToolkit:
         self._embedding_size = 1024
 
     @property
-    def embedding_model(self) -&gt; Embeddings:
+    def embedding_model(self) -&gt; Type[Embeddings]:
         &#34;&#34;&#34;The embedding model.
 
         Returns:
@@ -51,7 +52,7 @@ class BaseEmbeddingsToolkit:
         return self._model
     
     @property
-    def text_splitter(self) -&gt; TextSplitter:
+    def text_splitter(self) -&gt; Type[TextSplitter]:
         &#34;&#34;&#34;The text splitter.
 
         Returns:
@@ -119,7 +120,7 @@ class BaseEmbeddingsToolkit:
         self._embedding_size = 1024
 
     @property
-    def embedding_model(self) -&gt; Embeddings:
+    def embedding_model(self) -&gt; Type[Embeddings]:
         &#34;&#34;&#34;The embedding model.
 
         Returns:
@@ -128,7 +129,7 @@ class BaseEmbeddingsToolkit:
         return self._model
     
     @property
-    def text_splitter(self) -&gt; TextSplitter:
+    def text_splitter(self) -&gt; Type[TextSplitter]:
         &#34;&#34;&#34;The text splitter.
 
         Returns:
@@ -169,7 +170,7 @@ class BaseEmbeddingsToolkit:
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model"><code class="name">var <span class="ident">embedding_model</span> : langchain_core.embeddings.Embeddings</code></dt>
+<dt id="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model"><code class="name">var <span class="ident">embedding_model</span> : Type[langchain_core.embeddings.Embeddings]</code></dt>
 <dd>
 <div class="desc"><p>The embedding model.</p>
 <h2 id="returns">Returns</h2>
@@ -182,7 +183,7 @@ class BaseEmbeddingsToolkit:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def embedding_model(self) -&gt; Embeddings:
+def embedding_model(self) -&gt; Type[Embeddings]:
     &#34;&#34;&#34;The embedding model.
 
     Returns:
@@ -235,7 +236,7 @@ def name(self) -&gt; str:
     return self._name</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter"><code class="name">var <span class="ident">text_splitter</span> : langchain.text_splitter.TextSplitter</code></dt>
+<dt id="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter"><code class="name">var <span class="ident">text_splitter</span> : Type[langchain.text_splitter.TextSplitter]</code></dt>
 <dd>
 <div class="desc"><p>The text splitter.</p>
 <h2 id="returns">Returns</h2>
@@ -248,7 +249,7 @@ def name(self) -&gt; str:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def text_splitter(self) -&gt; TextSplitter:
+def text_splitter(self) -&gt; Type[TextSplitter]:
     &#34;&#34;&#34;The text splitter.
 
     Returns:
