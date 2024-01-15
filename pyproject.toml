@@ -36,3 +36,9 @@ build-backend = "setuptools.build_meta"
 
 [tool.pdm]
 package-type = "library"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["llmplus"]
+exclude = []
+namespaces = false
