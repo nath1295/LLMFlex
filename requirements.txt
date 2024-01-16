@@ -9,7 +9,7 @@ sentence-transformers
 langchain
 faiss-cpu
 optimum
-gradio>=4.0
+gradio>=4.2
 duckduckgo-search
 fake-useragent
 openai>=1.0.0
