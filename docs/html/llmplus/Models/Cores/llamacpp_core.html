@@ -95,7 +95,7 @@ class LlamaCppCore(BaseCore):
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         from llama_cpp import Llama
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
-        use_gpu = kwargs.get(&#39;use_gpu&#39;, True if ((is_cuda()) | (os_name() == [&#39;MacOS_apple_silicon&#39;])) else False)
+        use_gpu = kwargs.get(&#39;use_gpu&#39;, True if ((is_cuda()) | (os_name() in [&#39;MacOS_apple_silicon&#39;])) else False)
         if use_gpu:
             load_kwargs[&#39;n_gpu_layers&#39;] = 50
         try:
@@ -340,7 +340,7 @@ class LlamaCppLLM(BaseLLM):
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith(&#39;.gguf&#39;) else model_id_or_path
         from llama_cpp import Llama
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
-        use_gpu = kwargs.get(&#39;use_gpu&#39;, True if ((is_cuda()) | (os_name() == [&#39;MacOS_apple_silicon&#39;])) else False)
+        use_gpu = kwargs.get(&#39;use_gpu&#39;, True if ((is_cuda()) | (os_name() in [&#39;MacOS_apple_silicon&#39;])) else False)
         if use_gpu:
             load_kwargs[&#39;n_gpu_layers&#39;] = 50
         try:
