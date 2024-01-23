@@ -47,6 +47,12 @@ If you simply want to play with a model, there's a gradio frontend chatbot that 
 
 Before you begin, make sure your python version is >= 3.9. Creating a virtual python environment with conda is highly recommended before installing the package.
 
+### Pytorch
+It is highly recommended to install PyTorch before you go ahead to install LLMPlus. Install it with the official installation guidelines with your machine [here](https://pytorch.org/get-started/locally/).
+
+### Llama-cpp-python
+If you want to use GGUF models with this package, please install [llama-cpp-python](https://pypi.org/project/llama-cpp-python/) with the correct CMake arguments according to the llama-cpp-python installation guide. 
+
 ## Installing LLMPlus
 
 You can install LLMPlus with pip easily.

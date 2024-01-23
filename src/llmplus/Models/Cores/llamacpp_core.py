@@ -67,7 +67,7 @@ class LlamaCppCore(BaseCore):
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith('.gguf') else model_id_or_path
         from llama_cpp import Llama
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
-        use_gpu = kwargs.get('use_gpu', True if ((is_cuda()) | (os_name() == ['MacOS_apple_silicon'])) else False)
+        use_gpu = kwargs.get('use_gpu', True if ((is_cuda()) | (os_name() in ['MacOS_apple_silicon'])) else False)
         if use_gpu:
             load_kwargs['n_gpu_layers'] = 50
         try:

@@ -1,7 +1,7 @@
 [project]
 name = "llmplus"
 description = "A python package for developing AI applications with local LLMs."
-dynamic = ["version"]
+version = "0.0.7.dev"
 authors = [
     {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
 ]
@@ -9,8 +9,6 @@ requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "MIT"}
 dependencies = [
-    "torch>=2.1.0",
-    "llama-cpp-python[server]",
     "click",
     "transformers>=4.35.0",
     "accelerate>=0.25.0",
@@ -31,42 +29,14 @@ dependencies = [
 llmplus = "llmplus.cli:cli"
 
 [project.optional-dependencies]
-cpu = [
-    "torch@https://download.pytorch.org/whl/cpu"
-]
-mac = [
-    "torch>=2.1.0"
-] 
 cu121 = [
-    "torch@https://download.pytorch.org/whl/cu121",
     "auto-gptq>=0.6.0",
     "autoawq"
 ]
 cu118 = [
-    "torch@https://download.pytorch.org/whl/cu118",
     "auto-gptq@https://huggingface.github.io/autogptq-index/whl/cu118",
     "autoawq"
 ]
-
-[[tool.pdm.source]]
-url = "https://huggingface.github.io/autogptq-index/whl/cu118"
-verify_ssl = true
-name = "gptqcu118"
-
-[[tool.pdm.source]]
-url = "https://download.pytorch.org/whl/cpu"
-verify_ssl = true
-name = "torchcpu"
-
-[[tool.pdm.source]]
-url = "https://download.pytorch.org/whl/cu118"
-verify_ssl = true
-name = "torchcu118"
-
-[[tool.pdm.source]]
-url = "https://download.pytorch.org/whl/cu121"
-verify_ssl = true
-name = "torchcu121"
 
 [build-system]
 requires = ["pdm-backend", "pdm-pep517"]

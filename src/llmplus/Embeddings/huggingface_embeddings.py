@@ -20,7 +20,7 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         os.environ['SENTENCE_TRANSFORMERS_HOME'] = get_config()['st_home']
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
-        from langchain.embeddings import HuggingFaceEmbeddings
+        from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         self._model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
         self._name = model_id
