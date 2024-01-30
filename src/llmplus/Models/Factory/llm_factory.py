@@ -20,6 +20,8 @@ def detect_model_type(model_id: str) -> str:
         return 'awq'
     elif 'gptq' in model_id:
         return 'gptq'
+    elif 'exl2' in model_id:
+        return 'exl2'
     else:
         return 'default'
 
@@ -27,9 +29,10 @@ class LlmFactory:
 
     def __init__(self, 
                 model_id: str, 
-                model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'debug'] = 'auto',
+                model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'exl2', 'debug'] = 'auto',
                 model_file: Optional[str] = None,
                 model_kwargs: Dict[str, Any] = dict(),
+                revision: Optional[str] = None,
                 context_length: int = 4096,
                 base_url: Optional[str] = None,
                 api_key: Optional[str] = None,
@@ -40,9 +43,10 @@ class LlmFactory:
 
         Args:
             model_id (str): Model ID (from Huggingface) to use or the model to use if using OpenAI API core.
-            model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.
+            model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;exl2&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.
             model_file (Optional[str], optional): Specific model file to use. Only useful for `model_type="gguf"`. Defaults to None.
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to dict().
+            revision (Optional[str], optional): Specific revision of the model repository. Only useful for `model_type="exl2"`. Defaults to None.
             context_length (int, optional): Size of the context window. Only useful for GGUF models. Defaults to 4096.
             base_url (Optional[str], optional): Base URL for the API. Only useful for OpenAI APIs. Defaults to None.
             api_key (Optional[str], optional): API key for OpenAI API. Defaults to None.
@@ -61,6 +65,9 @@ class LlmFactory:
             from ..Cores.openai_core import OpenAICore
             self._core = OpenAICore(base_url=base_url, api_key=api_key, model_id=model_id, tokenizer_id=tokenizer_id, tokenizer_kwargs=tokenizer_kwargs)
             self._model_id = self.core.model_id
+        elif self.model_type == 'exl2':
+            from ..Cores.exllamav2_core import Exl2Core
+            self._core = Exl2Core(self.model_id, revision=revision, **kwargs)
         elif self.model_type == 'debug':
             self._core = BaseCore(model_id=self.model_id, **kwargs)
         else:
@@ -152,6 +159,10 @@ class LlmFactory:
         elif self.model_type == 'openai':
             from ..Cores.openai_core import OpenAILLM
             return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
+        elif self.model_type == 'exl2':
+            from ..Cores.exllamav2_core import Exl2LLM
+            return Exl2LLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
                                  top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
         elif self.model_type =='debug':
             from ..Cores.base_core import DebugLLM

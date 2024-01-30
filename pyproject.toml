@@ -1,7 +1,7 @@
 [project]
 name = "llmplus"
 description = "A python package for developing AI applications with local LLMs."
-version = "0.0.7.dev"
+version = "0.0.9.dev"
 authors = [
     {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
 ]
@@ -31,11 +31,13 @@ llmplus = "llmplus.cli:cli"
 [project.optional-dependencies]
 cu121 = [
     "auto-gptq>=0.6.0",
-    "autoawq"
+    "autoawq",
+    "exllamav2"
 ]
 cu118 = [
     "auto-gptq@https://huggingface.github.io/autogptq-index/whl/cu118",
-    "autoawq"
+    "autoawq",
+    "exllamav2"
 ]
 
 [build-system]

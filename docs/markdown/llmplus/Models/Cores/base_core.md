@@ -15,6 +15,7 @@ Classes
 
     ### Descendants
 
+    * llmplus.Models.Cores.exllamav2_core.Exl2Core
     * llmplus.Models.Cores.huggingface_core.HuggingfaceCore
     * llmplus.Models.Cores.llamacpp_core.LlamaCppCore
     * llmplus.Models.Cores.openai_core.OpenAICore
@@ -101,6 +102,7 @@ Classes
     ### Descendants
 
     * llmplus.Models.Cores.base_core.DebugLLM
+    * llmplus.Models.Cores.exllamav2_core.Exl2LLM
     * llmplus.Models.Cores.huggingface_core.HuggingfaceLLM
     * llmplus.Models.Cores.llamacpp_core.LlamaCppLLM
     * llmplus.Models.Cores.openai_core.OpenAILLM

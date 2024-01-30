@@ -19,6 +19,7 @@ Supported formats:
 * __AWQ__ (using transformers)
 * __GPTQ__ (using transformers)
 * __OpenAI API__ (Work with any local servers that serve models with OpenAI API format)
+* __EXL2__ (using exllamav2)
 
 ### 4. Embedding Toolkits
 Bundled classes for using embedding models which contains the embedding model and a tokens-count-based text splitter using the embedding model.

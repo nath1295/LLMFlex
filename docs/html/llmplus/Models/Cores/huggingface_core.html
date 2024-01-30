@@ -129,7 +129,7 @@ class HuggingfaceLLM(BaseLLM):
         &#34;&#34;&#34;Initialising the llm.
 
         Args:
-            core (LlamaCppCore): The LlamaCppCore core.
+            core (HuggingfaceCore): The HuggingfaceCore core.
             temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -371,8 +371,8 @@ def model_type(self) -&gt; str:
 <p>Initialising the llm.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>core</code></strong> :&ensp;<code>LlamaCppCore</code></dt>
-<dd>The LlamaCppCore core.</dd>
+<dt><strong><code>core</code></strong> :&ensp;<code><a title="llmplus.Models.Cores.huggingface_core.HuggingfaceCore" href="#llmplus.Models.Cores.huggingface_core.HuggingfaceCore">HuggingfaceCore</a></code></dt>
+<dd>The HuggingfaceCore core.</dd>
 <dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
 <dd>Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.</dd>
 <dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
@@ -403,7 +403,7 @@ def model_type(self) -&gt; str:
         &#34;&#34;&#34;Initialising the llm.
 
         Args:
-            core (LlamaCppCore): The LlamaCppCore core.
+            core (HuggingfaceCore): The HuggingfaceCore core.
             temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
