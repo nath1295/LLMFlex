@@ -145,7 +145,8 @@ class OpenAILLM(BaseLLM):
                     yield i.choices[0].text
             return textgen_iterator(generate(), stop=stop)
         else:
-            return self.core._model.completions.create(
+            from langchain.llms.utils import enforce_stop_tokens
+            output = self.core._model.completions.create(
                 model=self.core.model_id,
                 prompt=prompt,
                 temperature=gen_config['temperature'],
@@ -154,6 +155,8 @@ class OpenAILLM(BaseLLM):
                 max_tokens=gen_config['max_new_tokens'],
                 stop=stop
             ).choices[0].text
+            output = enforce_stop_tokens(output, stop=stop)
+            return output
 
     def _llm_type(self) -> str:
         """LLM type.

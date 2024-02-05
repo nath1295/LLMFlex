@@ -33,6 +33,7 @@ class LlmFactory:
                 model_file: Optional[str] = None,
                 model_kwargs: Dict[str, Any] = dict(),
                 revision: Optional[str] = None,
+                from_local: bool = False,
                 context_length: int = 4096,
                 base_url: Optional[str] = None,
                 api_key: Optional[str] = None,
@@ -47,6 +48,7 @@ class LlmFactory:
             model_file (Optional[str], optional): Specific model file to use. Only useful for `model_type="gguf"`. Defaults to None.
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to dict().
             revision (Optional[str], optional): Specific revision of the model repository. Only useful for `model_type="exl2"`. Defaults to None.
+            from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Only useful for GGUF models. Defaults to False.
             context_length (int, optional): Size of the context window. Only useful for GGUF models. Defaults to 4096.
             base_url (Optional[str], optional): Base URL for the API. Only useful for OpenAI APIs. Defaults to None.
             api_key (Optional[str], optional): API key for OpenAI API. Defaults to None.

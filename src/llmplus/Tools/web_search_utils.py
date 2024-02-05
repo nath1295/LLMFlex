@@ -160,6 +160,41 @@ def format_unordered_list(ulist: Tag, order: int = 0) -> Optional[str]:
     else:
         return '\n'.join(outputs)
 
+def detect_language(code_snippet: str) -> str:
+    """Quick guess for the language of the code snippet.
+
+    Args:
+        code_snippet (str): Code snippet to guess.
+
+    Returns:
+        str: Programming language.
+    """
+    # Normalize the code snippet to help with detection
+    code_snippet_lower = code_snippet.lower()
+
+    if 'class' in code_snippet_lower and 'public static void main' in code_snippet:
+        return 'java'
+    elif ('def ' in code_snippet or 'import ' in code_snippet) and ':' in code_snippet:
+        return 'python'
+    elif ('function ' in code_snippet or '=>' in code_snippet) and ('var ' in code_snippet or 'let ' in code_snippet or 'const ' in code_snippet):
+        return 'javascript'
+    elif '#include' in code_snippet:
+        return 'cpp'
+    elif code_snippet.startswith('#!/bin/bash') or 'echo ' in code_snippet or 'grep ' in code_snippet:
+        return 'bash'
+    elif 'def ' in code_snippet and 'end' in code_snippet:
+        return 'ruby'
+    elif '<?php' in code_snippet_lower or 'echo ' in code_snippet or '->' in code_snippet:
+        return 'php'
+    elif 'using ' in code_snippet and 'namespace ' in code_snippet:
+        return 'csharp'  # Note: Markdown typically uses 'cs' or 'csharp' for C#
+    elif '<html>' in code_snippet_lower or '<div>' in code_snippet_lower or 'doctype html' in code_snippet_lower:
+        return 'html'
+    elif '{' in code_snippet and '}' in code_snippet and (':' in code_snippet or ';' in code_snippet) and ('color:' in code_snippet_lower or 'background:' in code_snippet_lower or 'font-size:' in code_snippet_lower):
+        return 'css'
+    else:
+        return 'plaintext'  # Using 'plaintext' for unknown or plain text code blocks
+
 def format_code(code: Tag, with_wrapper: bool = True) -> Optional[str]:
     text = code.get_text(strip=True)
     if text.strip(' \n\r\t') =='':
@@ -167,7 +202,7 @@ def format_code(code: Tag, with_wrapper: bool = True) -> Optional[str]:
     else:
         output = text.strip(' \n\r\t')
     if with_wrapper:
-        return '```\n' + output + '\n```'
+        return f'```{detect_language(output)}\n' + output + '\n```'
     
 def format_paragraph(paragraph: Tag) -> str:
     outputs = []
@@ -307,8 +342,3 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -> Union[str
     """
     soup = get_soup_from_url(url, timeout=timeout)
     return process_element(soup, as_list=as_list)
-
-
-    
-
-

@@ -84,7 +84,6 @@ class WebSearchTool(BaseTool):
         from ..Data.vector_database import VectorDatabase
         self.search_engine = search_engine
         self.embeddings = embeddings
-        self.vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
 
     def search(self, query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
         &#34;&#34;&#34;Search with the given query.
@@ -139,6 +138,7 @@ class WebSearchTool(BaseTool):
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
             query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
             query = &#39;{&#34;Search query&#34;: &#34;&#39; + llm(query_prompt, stop=[&#39;```&#39;])
+            query = query.rstrip(&#39;`&#39;)
             try:
                 import json
                 query = json.loads(query)[&#39;Search query&#39;]
@@ -151,15 +151,17 @@ class WebSearchTool(BaseTool):
         from ..Models.Cores.utils import add_newline_char_to_stopwords
         from .web_search_utils import get_markdown, create_content_chunks
         from langchain.schema.document import Document
+        from ..Data.vector_database import VectorDatabase
 
         text_splitter = LLMTextSplitter(model=llm)
         results = self.search(query=query, urls_only=False, **kwargs)
         urls = list(map(lambda x: x[&#39;href&#39;], results))
+        vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
         if llm is None:
             contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
             self.print(&#39;Parsing contents completed.&#39;)
             docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-            self.vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
+            vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
             self.print(&#39;Storing contents completed.&#39;)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
@@ -168,13 +170,13 @@ class WebSearchTool(BaseTool):
             docs = list(zip(contents, results))
             docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
-            self.vectordb.add_documents(docs=docs, split_text=False)
+            vectordb.add_documents(docs=docs, split_text=False)
             self.print(&#39;Storing contents completed.&#39;)
 
         if return_type == &#39;vectordb&#39;:
-            return self.vectordb
+            return vectordb
         
-        chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
+        chunks = vectordb.search(query=query, top_k=3, index_only=False)
         if return_type == &#39;chunks&#39;:
             return chunks
         
@@ -189,10 +191,7 @@ class WebSearchTool(BaseTool):
             return llm.stream(prompt, stop=stop)
         else:
             return llm(prompt, stop=stop)
-        
-
-
-            </code></pre>
+        </code></pre>
 </details>
 </section>
 <section>
@@ -291,7 +290,6 @@ class WebSearchTool(BaseTool):
         from ..Data.vector_database import VectorDatabase
         self.search_engine = search_engine
         self.embeddings = embeddings
-        self.vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
 
     def search(self, query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
         &#34;&#34;&#34;Search with the given query.
@@ -346,6 +344,7 @@ class WebSearchTool(BaseTool):
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
             query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
             query = &#39;{&#34;Search query&#34;: &#34;&#39; + llm(query_prompt, stop=[&#39;```&#39;])
+            query = query.rstrip(&#39;`&#39;)
             try:
                 import json
                 query = json.loads(query)[&#39;Search query&#39;]
@@ -358,15 +357,17 @@ class WebSearchTool(BaseTool):
         from ..Models.Cores.utils import add_newline_char_to_stopwords
         from .web_search_utils import get_markdown, create_content_chunks
         from langchain.schema.document import Document
+        from ..Data.vector_database import VectorDatabase
 
         text_splitter = LLMTextSplitter(model=llm)
         results = self.search(query=query, urls_only=False, **kwargs)
         urls = list(map(lambda x: x[&#39;href&#39;], results))
+        vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
         if llm is None:
             contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
             self.print(&#39;Parsing contents completed.&#39;)
             docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-            self.vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
+            vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
             self.print(&#39;Storing contents completed.&#39;)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
@@ -375,13 +376,13 @@ class WebSearchTool(BaseTool):
             docs = list(zip(contents, results))
             docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
-            self.vectordb.add_documents(docs=docs, split_text=False)
+            vectordb.add_documents(docs=docs, split_text=False)
             self.print(&#39;Storing contents completed.&#39;)
 
         if return_type == &#39;vectordb&#39;:
-            return self.vectordb
+            return vectordb
         
-        chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
+        chunks = vectordb.search(query=query, top_k=3, index_only=False)
         if return_type == &#39;chunks&#39;:
             return chunks
         
@@ -400,6 +401,7 @@ class WebSearchTool(BaseTool):
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -469,6 +471,7 @@ class WebSearchTool(BaseTool):
         query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
         query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
         query = &#39;{&#34;Search query&#34;: &#34;&#39; + llm(query_prompt, stop=[&#39;```&#39;])
+        query = query.rstrip(&#39;`&#39;)
         try:
             import json
             query = json.loads(query)[&#39;Search query&#39;]
@@ -481,15 +484,17 @@ class WebSearchTool(BaseTool):
     from ..Models.Cores.utils import add_newline_char_to_stopwords
     from .web_search_utils import get_markdown, create_content_chunks
     from langchain.schema.document import Document
+    from ..Data.vector_database import VectorDatabase
 
     text_splitter = LLMTextSplitter(model=llm)
     results = self.search(query=query, urls_only=False, **kwargs)
     urls = list(map(lambda x: x[&#39;href&#39;], results))
+    vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
     if llm is None:
         contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
         self.print(&#39;Parsing contents completed.&#39;)
         docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
-        self.vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
+        vectordb.add_documents(docs=docs, text_splitter=text_splitter, split_text=True)
         self.print(&#39;Storing contents completed.&#39;)
     else:
         contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
@@ -498,13 +503,13 @@ class WebSearchTool(BaseTool):
         docs = list(zip(contents, results))
         docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
         docs = sum(docs, [])
-        self.vectordb.add_documents(docs=docs, split_text=False)
+        vectordb.add_documents(docs=docs, split_text=False)
         self.print(&#39;Storing contents completed.&#39;)
 
     if return_type == &#39;vectordb&#39;:
-        return self.vectordb
+        return vectordb
     
-    chunks = self.vectordb.search(query=query, top_k=3, index_only=False)
+    chunks = vectordb.search(query=query, top_k=3, index_only=False)
     if return_type == &#39;chunks&#39;:
         return chunks
     

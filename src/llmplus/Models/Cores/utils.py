@@ -104,5 +104,46 @@ def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -> Iterator
     else:
         yield ''
     
+def detect_prompt_template_by_id(model_id: str) -> str:
+    """Guess the prompt format for the model by model ID.
+
+    Args:
+        model_id (str): Huggingface ID of the model.
+
+    Returns:
+        str: Prompt template preset.
+    """
+    finetunes = dict(
+        hermes = 'ChatML',
+        nous = 'ChatML',
+        wizardlm = 'Vicuna',
+        openchat = 'OpenChat',
+        zephyr = 'Zephyr',
+        solar = 'Llama2'
+    )
+    base = dict(
+        llama = 'Llama2',
+        mistral = 'Llama2',
+        mixtral = 'Llama2'
+    )
+    id_lower = model_id.lower()
+
+    # Check if it is in the finetune list
+    keys = list(map(lambda x: (x, id_lower.find(x)), finetunes.keys()))
+    keys.sort(key=lambda x: x[1])
+    keys = list(filter(lambda x: x[1]!=-1, keys))
+    if len(keys) != 0:
+        return finetunes[keys[0][0]]
+    
+    # Check if in the base list
+    keys = list(map(lambda x: (x, id_lower.find(x)), base.keys()))
+    keys.sort(key=lambda x: x[1])
+    keys = list(filter(lambda x: x[1]!=-1, keys))
+    if len(keys) != 0:
+        return base[keys[0][0]]
+    
+    return 'Default'
+    
+
 
 

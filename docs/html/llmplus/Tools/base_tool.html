@@ -28,9 +28,10 @@
 </summary>
 <pre><code class="python">from ..Prompts.prompt_template import PromptTemplate
 from ..Models.Cores.base_core import BaseLLM
+from abc import ABC, abstractmethod
 from typing import List, Iterator, Optional, Union, Type, Tuple
 
-class BaseTool:
+class BaseTool(ABC):
     &#34;&#34;&#34;This is a base class for callables for LLMs.
     &#34;&#34;&#34;
     def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, verbose: bool = True) -&gt; None:
@@ -108,7 +109,7 @@ class BaseTool:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class BaseTool:
+<pre><code class="python">class BaseTool(ABC):
     &#34;&#34;&#34;This is a base class for callables for LLMs.
     &#34;&#34;&#34;
     def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, verbose: bool = True) -&gt; None:
@@ -165,6 +166,10 @@ class BaseTool:
         if self._verbose:
             print(text, **kwargs)</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="llmplus.Tools.web_search_tool.WebSearchTool" href="web_search_tool.html#llmplus.Tools.web_search_tool.WebSearchTool">WebSearchTool</a></li>

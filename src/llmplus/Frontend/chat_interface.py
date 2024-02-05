@@ -83,8 +83,8 @@ class ChatInterface:
             # settings
             # system settings 
             system = dict(obj='textbox', args=dict(value=DEFAULT_SYSTEM_MESSAGE, show_label=False, placeholder='System message here...', lines=8, max_lines=40, scale=4, interactive=True)),
-            long_limit = dict(obj='slider', args=dict(value=self.long_limit, minimum=0, maximum=2000, step=1, label='Long term memory tokens limit')),
-            short_limit = dict(obj='slider', args=dict(value=self.short_limit, minimum=0, maximum=2000, step=1, label='Short term memory tokens limit')),
+            long_limit = dict(obj='slider', args=dict(value=self.long_limit, minimum=0, maximum=4000, step=1, label='Long term memory tokens limit')),
+            short_limit = dict(obj='slider', args=dict(value=self.short_limit, minimum=0, maximum=6000, step=1, label='Short term memory tokens limit')),
             sim_score = dict(obj='slider', args=dict(value=self.score_threshold, minimum=0, maximum=1, step=0.01, label='Long term memory relevance score threshold')),
             sys_save = dict(obj='btn', args=dict(value='Save', min_width=20, variant='secondary', size='sm', scale=2, interactive=True)),
             sys_log = dict(obj='text', args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),

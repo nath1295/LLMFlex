@@ -1,8 +1,9 @@
 from ..Prompts.prompt_template import PromptTemplate
 from ..Models.Cores.base_core import BaseLLM
+from abc import ABC, abstractmethod
 from typing import List, Iterator, Optional, Union, Type, Tuple
 
-class BaseTool:
+class BaseTool(ABC):
     """This is a base class for callables for LLMs.
     """
     def __init__(self, name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True) -> None:

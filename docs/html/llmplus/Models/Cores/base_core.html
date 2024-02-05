@@ -91,7 +91,8 @@ class BaseCore:
             PromptTemplate: Default prompt template for the model.
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_prompt_template&#39;):
-            self._prompt_template = PromptTemplate.from_preset(&#39;Default&#39;)
+            from .utils import detect_prompt_template_by_id
+            self._prompt_template = PromptTemplate.from_preset(detect_prompt_template_by_id(self.model_id))
         return self._prompt_template
     
     def encode(self, text: str) -&gt; List[int]:
@@ -356,7 +357,8 @@ class DebugLLM(BaseLLM):
             PromptTemplate: Default prompt template for the model.
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_prompt_template&#39;):
-            self._prompt_template = PromptTemplate.from_preset(&#39;Default&#39;)
+            from .utils import detect_prompt_template_by_id
+            self._prompt_template = PromptTemplate.from_preset(detect_prompt_template_by_id(self.model_id))
         return self._prompt_template
     
     def encode(self, text: str) -&gt; List[int]:
@@ -485,7 +487,8 @@ def prompt_template(self) -&gt; PromptTemplate:
         PromptTemplate: Default prompt template for the model.
     &#34;&#34;&#34;
     if not hasattr(self, &#39;_prompt_template&#39;):
-        self._prompt_template = PromptTemplate.from_preset(&#39;Default&#39;)
+        from .utils import detect_prompt_template_by_id
+        self._prompt_template = PromptTemplate.from_preset(detect_prompt_template_by_id(self.model_id))
     return self._prompt_template</code></pre>
 </details>
 </dd>

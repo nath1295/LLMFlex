@@ -35,6 +35,7 @@ Classes
     ### Ancestors (in MRO)
 
     * llmplus.Tools.base_tool.BaseTool
+    * abc.ABC
 
     ### Methods
 

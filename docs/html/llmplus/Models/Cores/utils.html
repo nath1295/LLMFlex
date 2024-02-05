@@ -131,6 +131,46 @@ def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -&gt; Itera
         yield root
     else:
         yield &#39;&#39;
+    
+def detect_prompt_template_by_id(model_id: str) -&gt; str:
+    &#34;&#34;&#34;Guess the prompt format for the model by model ID.
+
+    Args:
+        model_id (str): Huggingface ID of the model.
+
+    Returns:
+        str: Prompt template preset.
+    &#34;&#34;&#34;
+    finetunes = dict(
+        hermes = &#39;ChatML&#39;,
+        nous = &#39;ChatML&#39;,
+        wizardlm = &#39;Vicuna&#39;,
+        openchat = &#39;OpenChat&#39;,
+        zephyr = &#39;Zephyr&#39;,
+        solar = &#39;Llama2&#39;
+    )
+    base = dict(
+        llama = &#39;Llama2&#39;,
+        mistral = &#39;Llama2&#39;,
+        mixtral = &#39;Llama2&#39;
+    )
+    id_lower = model_id.lower()
+
+    # Check if it is in the finetune list
+    keys = list(map(lambda x: (x, id_lower.find(x)), finetunes.keys()))
+    keys.sort(key=lambda x: x[1])
+    keys = list(filter(lambda x: x[1]!=-1, keys))
+    if len(keys) != 0:
+        return finetunes[keys[0][0]]
+    
+    # Check if in the base list
+    keys = list(map(lambda x: (x, id_lower.find(x)), base.keys()))
+    keys.sort(key=lambda x: x[1])
+    keys = list(filter(lambda x: x[1]!=-1, keys))
+    if len(keys) != 0:
+        return base[keys[0][0]]
+    
+    return &#39;Default&#39;
     </code></pre>
 </details>
 </section>
@@ -176,6 +216,66 @@ def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -&gt; Itera
             new.append(&#39;\n&#39; + i)
     new = list(set(new))
     return new</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Models.Cores.utils.detect_prompt_template_by_id"><code class="name flex">
+<span>def <span class="ident">detect_prompt_template_by_id</span></span>(<span>model_id: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Guess the prompt format for the model by model ID.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Huggingface ID of the model.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Prompt template preset.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_prompt_template_by_id(model_id: str) -&gt; str:
+    &#34;&#34;&#34;Guess the prompt format for the model by model ID.
+
+    Args:
+        model_id (str): Huggingface ID of the model.
+
+    Returns:
+        str: Prompt template preset.
+    &#34;&#34;&#34;
+    finetunes = dict(
+        hermes = &#39;ChatML&#39;,
+        nous = &#39;ChatML&#39;,
+        wizardlm = &#39;Vicuna&#39;,
+        openchat = &#39;OpenChat&#39;,
+        zephyr = &#39;Zephyr&#39;,
+        solar = &#39;Llama2&#39;
+    )
+    base = dict(
+        llama = &#39;Llama2&#39;,
+        mistral = &#39;Llama2&#39;,
+        mixtral = &#39;Llama2&#39;
+    )
+    id_lower = model_id.lower()
+
+    # Check if it is in the finetune list
+    keys = list(map(lambda x: (x, id_lower.find(x)), finetunes.keys()))
+    keys.sort(key=lambda x: x[1])
+    keys = list(filter(lambda x: x[1]!=-1, keys))
+    if len(keys) != 0:
+        return finetunes[keys[0][0]]
+    
+    # Check if in the base list
+    keys = list(map(lambda x: (x, id_lower.find(x)), base.keys()))
+    keys.sort(key=lambda x: x[1])
+    keys = list(filter(lambda x: x[1]!=-1, keys))
+    if len(keys) != 0:
+        return base[keys[0][0]]
+    
+    return &#39;Default&#39;</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Models.Cores.utils.find_roots"><code class="name flex">
@@ -355,6 +455,7 @@ def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -&gt; Itera
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="llmplus.Models.Cores.utils.add_newline_char_to_stopwords" href="#llmplus.Models.Cores.utils.add_newline_char_to_stopwords">add_newline_char_to_stopwords</a></code></li>
+<li><code><a title="llmplus.Models.Cores.utils.detect_prompt_template_by_id" href="#llmplus.Models.Cores.utils.detect_prompt_template_by_id">detect_prompt_template_by_id</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.find_roots" href="#llmplus.Models.Cores.utils.find_roots">find_roots</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.get_stop_words" href="#llmplus.Models.Cores.utils.get_stop_words">get_stop_words</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.textgen_iterator" href="#llmplus.Models.Cores.utils.textgen_iterator">textgen_iterator</a></code></li>

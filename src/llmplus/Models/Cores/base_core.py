@@ -63,7 +63,8 @@ class BaseCore:
             PromptTemplate: Default prompt template for the model.
         """
         if not hasattr(self, '_prompt_template'):
-            self._prompt_template = PromptTemplate.from_preset('Default')
+            from .utils import detect_prompt_template_by_id
+            self._prompt_template = PromptTemplate.from_preset(detect_prompt_template_by_id(self.model_id))
         return self._prompt_template
     
     def encode(self, text: str) -> List[int]:

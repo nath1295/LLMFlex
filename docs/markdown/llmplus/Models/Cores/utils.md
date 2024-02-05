@@ -15,6 +15,16 @@ Functions
         List[str]: New version of the list of stop words, with new line characters.
 
     
+`detect_prompt_template_by_id(model_id: str) ‑> str`
+:   Guess the prompt format for the model by model ID.
+    
+    Args:
+        model_id (str): Huggingface ID of the model.
+    
+    Returns:
+        str: Prompt template preset.
+
+    
 `find_roots(text: str, stop: List[str], stop_len: List[int]) ‑> Tuple[str, str]`
 :   This function is a helper function for stopping stop words from showing up while doing work streaming in some custom llm classes. Not intended to be used alone.
     

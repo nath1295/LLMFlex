@@ -5,7 +5,7 @@ from typing import Optional, List, Dict, Any, Union, Iterator
 
 _chat_formats_map = {
     'llama-2': 'Llama2',
-    'vicuna': 'Vicuna1.1',
+    'vicuna': 'Vicuna',
     'chatml': 'ChatML',
     'openchat': 'OpenChat',
     'zephyr': 'Zephyr'
@@ -52,19 +52,21 @@ def get_model_dir(model_id: str, model_file: Optional[str] = None) -> str:
 class LlamaCppCore(BaseCore):
     """This is the core class of loading model in gguf format.
     """
-    def __init__(self, model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs) -> None:
+    def __init__(self, model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, from_local: bool = False, **kwargs) -> None:
         """Initialising the core.
 
         Args:
             model_id (str): Model id (from Huggingface) or model file path to use.
             model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
             context_length (int, optional): Context length of the model. Defaults to 4096.
+            from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Defaults to False.
         """
         from ...utils import is_cuda, os_name
+        from .utils import detect_prompt_template_by_id
         from ...Prompts.prompt_template import PromptTemplate
-        self._model_id = os.path.basename(model_id_or_path).removesuffix('.gguf').removesuffix('.GGUF') if model_id_or_path.lower().endswith('.gguf') else model_id_or_path
+        self._model_id = os.path.basename(model_id_or_path).removesuffix('.gguf').removesuffix('.GGUF') if from_local else model_id_or_path
         self._core_type = 'LlamaCppCore'
-        model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not model_id_or_path.lower().endswith('.gguf') else model_id_or_path
+        model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not from_local else model_id_or_path
         from llama_cpp import Llama
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
         use_gpu = kwargs.get('use_gpu', True if ((is_cuda()) | (os_name() in ['MacOS_apple_silicon'])) else False)
@@ -77,7 +79,9 @@ class LlamaCppCore(BaseCore):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
-        self._prompt_template = PromptTemplate.from_preset(_chat_formats_map.get(self._model.chat_format, 'Default'))
+        preset = detect_prompt_template_by_id(self.model_id)
+        preset = _chat_formats_map.get(self._model.chat_format, 'Default') if preset == 'Default' else preset
+        self._prompt_template = PromptTemplate.from_preset(preset)
 
     def encode(self, text: str) -> List[int]:
         """Tokenize the given text.

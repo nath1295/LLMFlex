@@ -18,7 +18,7 @@ Functions
 Classes
 -------
 
-`LlamaCppCore(model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, **kwargs)`
+`LlamaCppCore(model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, from_local: bool = False, **kwargs)`
 :   This is the core class of loading model in gguf format.
         
     
@@ -28,6 +28,7 @@ Classes
         model_id (str): Model id (from Huggingface) or model file path to use.
         model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
         context_length (int, optional): Context length of the model. Defaults to 4096.
+        from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Defaults to False.
 
     ### Ancestors (in MRO)
 

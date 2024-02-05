@@ -17,6 +17,16 @@ Functions
         List[str]: List of content chunks.
 
     
+`detect_language(code_snippet: str) ‑> str`
+:   Quick guess for the language of the code snippet.
+    
+    Args:
+        code_snippet (str): Code snippet to guess.
+    
+    Returns:
+        str: Programming language.
+
+    
 `filtered_child(element: Union[bs4.BeautifulSoup, bs4.element.Tag]) ‑> List[bs4.element.Tag]`
 :   Get the filtered list of children of an element.
     

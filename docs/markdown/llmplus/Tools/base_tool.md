@@ -10,6 +10,10 @@ Classes
     
     Initialising the tool.
 
+    ### Ancestors (in MRO)
+
+    * abc.ABC
+
     ### Descendants
 
     * llmplus.Tools.web_search_tool.WebSearchTool

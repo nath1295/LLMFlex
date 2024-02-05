@@ -111,8 +111,8 @@ class ChatInterface:
             # settings
             # system settings 
             system = dict(obj=&#39;textbox&#39;, args=dict(value=DEFAULT_SYSTEM_MESSAGE, show_label=False, placeholder=&#39;System message here...&#39;, lines=8, max_lines=40, scale=4, interactive=True)),
-            long_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.long_limit, minimum=0, maximum=2000, step=1, label=&#39;Long term memory tokens limit&#39;)),
-            short_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.short_limit, minimum=0, maximum=2000, step=1, label=&#39;Short term memory tokens limit&#39;)),
+            long_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.long_limit, minimum=0, maximum=4000, step=1, label=&#39;Long term memory tokens limit&#39;)),
+            short_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.short_limit, minimum=0, maximum=6000, step=1, label=&#39;Short term memory tokens limit&#39;)),
             sim_score = dict(obj=&#39;slider&#39;, args=dict(value=self.score_threshold, minimum=0, maximum=1, step=0.01, label=&#39;Long term memory relevance score threshold&#39;)),
             sys_save = dict(obj=&#39;btn&#39;, args=dict(value=&#39;Save&#39;, min_width=20, variant=&#39;secondary&#39;, size=&#39;sm&#39;, scale=2, interactive=True)),
             sys_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),
@@ -687,8 +687,8 @@ class ChatInterface:
             # settings
             # system settings 
             system = dict(obj=&#39;textbox&#39;, args=dict(value=DEFAULT_SYSTEM_MESSAGE, show_label=False, placeholder=&#39;System message here...&#39;, lines=8, max_lines=40, scale=4, interactive=True)),
-            long_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.long_limit, minimum=0, maximum=2000, step=1, label=&#39;Long term memory tokens limit&#39;)),
-            short_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.short_limit, minimum=0, maximum=2000, step=1, label=&#39;Short term memory tokens limit&#39;)),
+            long_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.long_limit, minimum=0, maximum=4000, step=1, label=&#39;Long term memory tokens limit&#39;)),
+            short_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.short_limit, minimum=0, maximum=6000, step=1, label=&#39;Short term memory tokens limit&#39;)),
             sim_score = dict(obj=&#39;slider&#39;, args=dict(value=self.score_threshold, minimum=0, maximum=1, step=0.01, label=&#39;Long term memory relevance score threshold&#39;)),
             sys_save = dict(obj=&#39;btn&#39;, args=dict(value=&#39;Save&#39;, min_width=20, variant=&#39;secondary&#39;, size=&#39;sm&#39;, scale=2, interactive=True)),
             sys_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),
@@ -1196,8 +1196,8 @@ def config_dict(self) -&gt; Dict[str, Any]:
         # settings
         # system settings 
         system = dict(obj=&#39;textbox&#39;, args=dict(value=DEFAULT_SYSTEM_MESSAGE, show_label=False, placeholder=&#39;System message here...&#39;, lines=8, max_lines=40, scale=4, interactive=True)),
-        long_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.long_limit, minimum=0, maximum=2000, step=1, label=&#39;Long term memory tokens limit&#39;)),
-        short_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.short_limit, minimum=0, maximum=2000, step=1, label=&#39;Short term memory tokens limit&#39;)),
+        long_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.long_limit, minimum=0, maximum=4000, step=1, label=&#39;Long term memory tokens limit&#39;)),
+        short_limit = dict(obj=&#39;slider&#39;, args=dict(value=self.short_limit, minimum=0, maximum=6000, step=1, label=&#39;Short term memory tokens limit&#39;)),
         sim_score = dict(obj=&#39;slider&#39;, args=dict(value=self.score_threshold, minimum=0, maximum=1, step=0.01, label=&#39;Long term memory relevance score threshold&#39;)),
         sys_save = dict(obj=&#39;btn&#39;, args=dict(value=&#39;Save&#39;, min_width=20, variant=&#39;secondary&#39;, size=&#39;sm&#39;, scale=2, interactive=True)),
         sys_log = dict(obj=&#39;text&#39;, args=dict(show_label=False, value=self.get_memory_settings(), lines=5, container=False)),

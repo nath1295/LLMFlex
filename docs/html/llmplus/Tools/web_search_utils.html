@@ -188,6 +188,41 @@ def format_unordered_list(ulist: Tag, order: int = 0) -&gt; Optional[str]:
     else:
         return &#39;\n&#39;.join(outputs)
 
+def detect_language(code_snippet: str) -&gt; str:
+    &#34;&#34;&#34;Quick guess for the language of the code snippet.
+
+    Args:
+        code_snippet (str): Code snippet to guess.
+
+    Returns:
+        str: Programming language.
+    &#34;&#34;&#34;
+    # Normalize the code snippet to help with detection
+    code_snippet_lower = code_snippet.lower()
+
+    if &#39;class&#39; in code_snippet_lower and &#39;public static void main&#39; in code_snippet:
+        return &#39;java&#39;
+    elif (&#39;def &#39; in code_snippet or &#39;import &#39; in code_snippet) and &#39;:&#39; in code_snippet:
+        return &#39;python&#39;
+    elif (&#39;function &#39; in code_snippet or &#39;=&gt;&#39; in code_snippet) and (&#39;var &#39; in code_snippet or &#39;let &#39; in code_snippet or &#39;const &#39; in code_snippet):
+        return &#39;javascript&#39;
+    elif &#39;#include&#39; in code_snippet:
+        return &#39;cpp&#39;
+    elif code_snippet.startswith(&#39;#!/bin/bash&#39;) or &#39;echo &#39; in code_snippet or &#39;grep &#39; in code_snippet:
+        return &#39;bash&#39;
+    elif &#39;def &#39; in code_snippet and &#39;end&#39; in code_snippet:
+        return &#39;ruby&#39;
+    elif &#39;&lt;?php&#39; in code_snippet_lower or &#39;echo &#39; in code_snippet or &#39;-&gt;&#39; in code_snippet:
+        return &#39;php&#39;
+    elif &#39;using &#39; in code_snippet and &#39;namespace &#39; in code_snippet:
+        return &#39;csharp&#39;  # Note: Markdown typically uses &#39;cs&#39; or &#39;csharp&#39; for C#
+    elif &#39;&lt;html&gt;&#39; in code_snippet_lower or &#39;&lt;div&gt;&#39; in code_snippet_lower or &#39;doctype html&#39; in code_snippet_lower:
+        return &#39;html&#39;
+    elif &#39;{&#39; in code_snippet and &#39;}&#39; in code_snippet and (&#39;:&#39; in code_snippet or &#39;;&#39; in code_snippet) and (&#39;color:&#39; in code_snippet_lower or &#39;background:&#39; in code_snippet_lower or &#39;font-size:&#39; in code_snippet_lower):
+        return &#39;css&#39;
+    else:
+        return &#39;plaintext&#39;  # Using &#39;plaintext&#39; for unknown or plain text code blocks
+
 def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
     text = code.get_text(strip=True)
     if text.strip(&#39; \n\r\t&#39;) ==&#39;&#39;:
@@ -195,7 +230,7 @@ def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
     else:
         output = text.strip(&#39; \n\r\t&#39;)
     if with_wrapper:
-        return &#39;```\n&#39; + output + &#39;\n```&#39;
+        return f&#39;```{detect_language(output)}\n&#39; + output + &#39;\n```&#39;
     
 def format_paragraph(paragraph: Tag) -&gt; str:
     outputs = []
@@ -334,10 +369,7 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
         Union[str, List[str]]: Content of the URL as a string or a list of string.
     &#34;&#34;&#34;
     soup = get_soup_from_url(url, timeout=timeout)
-    return process_element(soup, as_list=as_list)
-
-
-    </code></pre>
+    return process_element(soup, as_list=as_list)</code></pre>
 </details>
 </section>
 <section>
@@ -403,6 +435,61 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
     return chunks</code></pre>
 </details>
 </dd>
+<dt id="llmplus.Tools.web_search_utils.detect_language"><code class="name flex">
+<span>def <span class="ident">detect_language</span></span>(<span>code_snippet: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Quick guess for the language of the code snippet.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>code_snippet</code></strong> :&ensp;<code>str</code></dt>
+<dd>Code snippet to guess.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Programming language.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_language(code_snippet: str) -&gt; str:
+    &#34;&#34;&#34;Quick guess for the language of the code snippet.
+
+    Args:
+        code_snippet (str): Code snippet to guess.
+
+    Returns:
+        str: Programming language.
+    &#34;&#34;&#34;
+    # Normalize the code snippet to help with detection
+    code_snippet_lower = code_snippet.lower()
+
+    if &#39;class&#39; in code_snippet_lower and &#39;public static void main&#39; in code_snippet:
+        return &#39;java&#39;
+    elif (&#39;def &#39; in code_snippet or &#39;import &#39; in code_snippet) and &#39;:&#39; in code_snippet:
+        return &#39;python&#39;
+    elif (&#39;function &#39; in code_snippet or &#39;=&gt;&#39; in code_snippet) and (&#39;var &#39; in code_snippet or &#39;let &#39; in code_snippet or &#39;const &#39; in code_snippet):
+        return &#39;javascript&#39;
+    elif &#39;#include&#39; in code_snippet:
+        return &#39;cpp&#39;
+    elif code_snippet.startswith(&#39;#!/bin/bash&#39;) or &#39;echo &#39; in code_snippet or &#39;grep &#39; in code_snippet:
+        return &#39;bash&#39;
+    elif &#39;def &#39; in code_snippet and &#39;end&#39; in code_snippet:
+        return &#39;ruby&#39;
+    elif &#39;&lt;?php&#39; in code_snippet_lower or &#39;echo &#39; in code_snippet or &#39;-&gt;&#39; in code_snippet:
+        return &#39;php&#39;
+    elif &#39;using &#39; in code_snippet and &#39;namespace &#39; in code_snippet:
+        return &#39;csharp&#39;  # Note: Markdown typically uses &#39;cs&#39; or &#39;csharp&#39; for C#
+    elif &#39;&lt;html&gt;&#39; in code_snippet_lower or &#39;&lt;div&gt;&#39; in code_snippet_lower or &#39;doctype html&#39; in code_snippet_lower:
+        return &#39;html&#39;
+    elif &#39;{&#39; in code_snippet and &#39;}&#39; in code_snippet and (&#39;:&#39; in code_snippet or &#39;;&#39; in code_snippet) and (&#39;color:&#39; in code_snippet_lower or &#39;background:&#39; in code_snippet_lower or &#39;font-size:&#39; in code_snippet_lower):
+        return &#39;css&#39;
+    else:
+        return &#39;plaintext&#39;  # Using &#39;plaintext&#39; for unknown or plain text code blocks</code></pre>
+</details>
+</dd>
 <dt id="llmplus.Tools.web_search_utils.filtered_child"><code class="name flex">
 <span>def <span class="ident">filtered_child</span></span>(<span>element: Union[bs4.BeautifulSoup, bs4.element.Tag]) ‑> List[bs4.element.Tag]</span>
 </code></dt>
@@ -463,7 +550,7 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
     else:
         output = text.strip(&#39; \n\r\t&#39;)
     if with_wrapper:
-        return &#39;```\n&#39; + output + &#39;\n```&#39;</code></pre>
+        return f&#39;```{detect_language(output)}\n&#39; + output + &#39;\n```&#39;</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Tools.web_search_utils.format_header"><code class="name flex">
@@ -905,6 +992,7 @@ as_list (bool, optional): Whether to return a list of strings of elements or a s
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="llmplus.Tools.web_search_utils.create_content_chunks" href="#llmplus.Tools.web_search_utils.create_content_chunks">create_content_chunks</a></code></li>
+<li><code><a title="llmplus.Tools.web_search_utils.detect_language" href="#llmplus.Tools.web_search_utils.detect_language">detect_language</a></code></li>
 <li><code><a title="llmplus.Tools.web_search_utils.filtered_child" href="#llmplus.Tools.web_search_utils.filtered_child">filtered_child</a></code></li>
 <li><code><a title="llmplus.Tools.web_search_utils.format_code" href="#llmplus.Tools.web_search_utils.format_code">format_code</a></code></li>
 <li><code><a title="llmplus.Tools.web_search_utils.format_header" href="#llmplus.Tools.web_search_utils.format_header">format_header</a></code></li>
