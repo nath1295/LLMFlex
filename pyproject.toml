@@ -1,7 +1,7 @@
 [project]
 name = "llmplus"
 description = "A python package for developing AI applications with local LLMs."
-version = "0.0.10.dev"
+version = "0.0.10"
 authors = [
     {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
 ]
