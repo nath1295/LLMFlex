@@ -29,10 +29,10 @@
 <pre><code class="python">from ..Prompts.prompt_template import PromptTemplate
 from ..Models.Cores.base_core import BaseLLM
 from abc import ABC, abstractmethod
-from typing import List, Iterator, Optional, Union, Type, Tuple
+from typing import List, Iterator, Optional, Union, Type, Tuple, Any, Dict
 
 class BaseTool(ABC):
-    &#34;&#34;&#34;This is a base class for callables for LLMs.
+    &#34;&#34;&#34;This is a base class for tools for LLMs.
     &#34;&#34;&#34;
     def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialising the tool.
@@ -61,23 +61,19 @@ class BaseTool(ABC):
         newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
         return newlines.sub(&#39; &#39;, self._description)
     
-    def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
-        &#34;&#34;&#34;Run the tool and return the output as a string.
-
-        Args:
-            tool_input (str): String input for to run the tool.
-            llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
-            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
-            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
-            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
+    @property
+    def _avail_steps(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of available steps of the tool.
 
         Returns:
-            Union[str, Iterator[str]]: Output of the tool.
+            List[str]: List of available steps of the tool.
         &#34;&#34;&#34;
-        if ((history is not None) &amp; (prompt_template is None)):
-            raise ValueError(&#39;Prompt template need to be provided to process chat history.&#39;)
-        return &#39;Base tool output.&#39;
+        import inspect
+        attrs = dir(self)
+        core_methods = [&#39;run&#39;, &#39;print&#39;, &#39;_execute_step&#39;, &#39;_tool_schema&#39;, &#39;_validate_schema&#39;, &#39;_avail_steps&#39;]
+        steps = list(filter(lambda x: x not in core_methods, attrs))
+        steps = list(filter(lambda x: inspect.ismethod(getattr(self, x)), steps))
+        return steps
     
     def print(self, text: str, **kwargs) -&gt; None:
         &#34;&#34;&#34;Print the given text if verbose is True.
@@ -86,7 +82,173 @@ class BaseTool(ABC):
             text (str): Text to print.
         &#34;&#34;&#34;
         if self._verbose:
-            print(text, **kwargs)</code></pre>
+            print(text, **kwargs)
+
+    def _execute_step(self, step: str, **kwargs) -&gt; Any:
+        &#34;&#34;&#34;Executing a step (a method in your tool class).
+
+        Args:
+            step (str): Step to execute.
+
+        Returns:
+            Any: Output of the step.
+        &#34;&#34;&#34;
+        if step not in self._avail_steps:
+            raise ValueError(f&#39;Step &#34;{step}&#34; not implemented yet.&#39;)
+        method = getattr(self, step)
+        return method(**kwargs)
+    
+    @abstractmethod
+    def _tool_schema(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Defining how the run method runs the tool. This method is the most important method of the tool class and must be implemented properly.
+        The returned dictionary is the order of running the tool steps, with the keys as the name of the steps and the value as a dictionary input and output of the step.
+        Example: {
+            &#34;step1&#34;: {&#34;input&#34;: [&#34;tool_input&#34;], &#34;output&#34;: [&#34;var1&#34;, &#34;var2&#34;]}, 
+            &#34;step2&#34;: {&#34;input&#34;: [&#34;var1&#34;], &#34;output&#34;: [&#34;var3&#34;]}, 
+            &#34;final_step&#34;: {&#34;input&#34;: [&#34;var2&#34;, &#34;var3&#34;, &#34;llm&#34;, &#34;stream&#34;, &#34;prompt_template&#34;], &#34;output&#34;: [&#34;final_output&#34;]}
+            }
+        As demonstrated in the example, the final step must have the &#34;stream&#34; and &#34;prompt_template&#34; arguments to allow the tool to return a string or an iterator of string as the llm response.
+
+        Returns:
+            Dict[str, Any]: Tool run schema dictionary.
+        &#34;&#34;&#34;
+        pass
+
+    def _validate_schema(self, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Raise an error if the _tool_schema is not implemented properly.
+        &#34;&#34;&#34;
+        import inspect
+        schema = self._tool_schema()
+        steps = list(schema.keys())
+        if len(steps) == 0:
+            raise RuntimeError(f&#39;&#34;_tool_schema&#34; cannot return an empty dictinoary.&#39;)
+        final_step = list(schema.keys())[-1]
+        var_space = [&#34;tool_input&#34;, &#34;llm&#34;, &#34;stream&#34;, &#34;history&#34;, &#34;prompt_template&#34;] + list(kwargs.keys())
+        for k, v in schema.items():
+            if type(v) != dict:
+                raise TypeError(f&#39;Value for step &#34;{k}&#34; is not a dictionary.&#39;)
+            for i in [&#39;input&#39;, &#39;output&#39;]:
+                if i not in v.keys():
+                    raise ValueError(f&#39;&#34;{i}&#34; not in the dictionary of step &#34;{k}&#34;.&#39;)
+                if type(v[i]) != list:
+                    raise ValueError(f&#39;&#34;{i}&#34; of step &#34;{k}&#34; is not a list.&#39;)
+            if k == final_step:
+                if &#34;stream&#34; not in v[&#39;input&#39;]:
+                    raise ValueError(f&#39;Argument &#34;stream&#34; not in the input of the final step &#34;{k}&#34;.&#39;)
+                if &#34;llm&#34; not in v[&#39;input&#39;]:
+                    raise ValueError(f&#39;Argument &#34;llm&#34; not in the input of the final step &#34;{k}&#34;.&#39;)
+                if &#34;final_output&#34; not in v[&#39;output&#39;]:
+                    raise ValueError(f&#39;Argument &#34;final_output&#34; not in the output of the final step &#34;{k}&#34;.&#39;)
+                if inspect.signature(getattr(self, k)).return_annotation != Union[str, Iterator[str]]:
+                    raise TypeError(f&#39;The output of the final step &#34;{k}&#34; might not be &#34;Union[str, Iterator[str]]&#34;, if it is please add the appropriate type hinting.&#39;)
+            if any(i not in var_space for i in v[&#39;input&#39;]):
+                raise ValueError(f&#39;Some inputs of step &#34;{k}&#34; are not created prior to executing the step.&#39;)
+            var_space.extend(v[&#39;output&#39;])
+
+    def run(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Run the tool and return the output as a string or an iterator of strings.
+
+        Args:
+            tool_input (str): String input for to run the tool.
+            llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+
+        Returns:
+            Union[str, Iterator[str]]: Output of the tool.
+        &#34;&#34;&#34;
+        self._validate_schema(**kwargs)
+        var_space = dict(
+            tool_input = tool_input,
+            llm = llm,
+            prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template,
+            stream = stream,
+            history = history
+        )
+        var_space.update(kwargs)
+        for k, v in self._tool_schema().items():
+            input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
+            output_dict = dict()
+            self.print(k)
+            if len(v[&#39;output&#39;]) == 0:
+                self._execute_step(k, **input_dict)
+            elif len(v[&#39;output&#39;]) == 1:
+                output_dict[v[&#39;output&#39;][0]] = self._execute_step(k, **input_dict)
+            else:
+                outputs = self._execute_step(k, **input_dict)
+                output_dict = dict(zip(v[&#39;output&#39;], outputs))
+            self.print(&#39;\tOutputs:&#39;)
+            for s, o in output_dict.items():
+                if s != &#39;final_output&#39;:
+                    limit = 100
+                    output = str(o).replace(&#39;\n&#39;, &#39; &#39;)
+                    output = output.replace(&#39;\r&#39;, &#39; &#39;)
+                    output = output if len(output) &lt;= limit else output[:limit] + &#39;...&#39;
+                    self.print(f&#39;\t{s}: {output}&#39;)
+            self.print(&#39;\n&#39;)
+            var_space.update(output_dict)
+        return var_space[&#39;final_output&#39;]
+    
+    def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -&gt; Iterator[Union[str, Iterator[str]]]:
+        &#34;&#34;&#34;Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+
+        Args:
+            tool_input (str): String input for to run the tool.
+            llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+
+        Yields:
+            Iterator[Union[str, Iterator[str]]]: Iterator of the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+        &#34;&#34;&#34;
+        self._validate_schema(**kwargs)
+        var_space = dict(
+            tool_input = tool_input,
+            llm = llm,
+            prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template,
+            stream = stream,
+            history = history
+        )
+        var_space.update(kwargs)
+        info_format = &#39;&lt;details&gt;\n&lt;summary&gt;{header}&lt;/summary&gt;\n{info}\n&lt;/details&gt;&#39;
+        info = []
+        name = self.name.replace(&#39;_&#39;, &#39; &#39;).title()
+        header = f&#39;Running &#34;{name}&#34;...&#39;
+        yield info_format.format(header=header, info=&#39;\n&#39;.join(info))
+
+        for k, v in self._tool_schema().items():
+            input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
+            output_dict = dict()
+            info.append(f&#39;{k}:  &#39;)
+            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+            if len(v[&#39;output&#39;]) == 0:
+                self._execute_step(k, **input_dict)
+            elif len(v[&#39;output&#39;]) == 1:
+                output_dict[v[&#39;output&#39;][0]] = self._execute_step(k, **input_dict)
+            else:
+                outputs = self._execute_step(k, **input_dict)
+                output_dict = dict(zip(v[&#39;output&#39;], outputs))
+            info.append(&#39;\tOutputs:  &#39;)
+            for s, o in output_dict.items():
+                if s != &#39;final_output&#39;:
+                    limit = 100
+                    output = str(o).replace(&#39;\n&#39;, &#39; &#39;)
+                    output = output.replace(&#39;\r&#39;, &#39; &#39;)
+                    output = output if len(output) &lt;= limit else output[:limit] + &#39;...&#39;
+                    info.append(f&#39;\t{s}: {output}  &#39;)
+            info.append(&#39;\n&#39;)
+            var_space.update(output_dict)
+            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+        yield info_format.format(header=f&#39;&#34;{name}&#34; completed.&#39;, info=&#39;\n&#39;.join(info))
+        yield var_space[&#39;final_output&#39;]
+
+        if &#39;extra_info&#39; in var_space.keys():
+            yield f&#39;\n\n---\n{var_space[&#34;extra_info&#34;]}&#39;
+        </code></pre>
 </details>
 </section>
 <section>
@@ -103,14 +265,14 @@ class BaseTool(ABC):
 <span>(</span><span>name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This is a base class for callables for LLMs.</p>
+<div class="desc"><p>This is a base class for tools for LLMs.</p>
 <p>Initialising the tool.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class BaseTool(ABC):
-    &#34;&#34;&#34;This is a base class for callables for LLMs.
+    &#34;&#34;&#34;This is a base class for tools for LLMs.
     &#34;&#34;&#34;
     def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialising the tool.
@@ -139,23 +301,19 @@ class BaseTool(ABC):
         newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
         return newlines.sub(&#39; &#39;, self._description)
     
-    def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
-        &#34;&#34;&#34;Run the tool and return the output as a string.
-
-        Args:
-            tool_input (str): String input for to run the tool.
-            llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
-            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
-            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
-            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
+    @property
+    def _avail_steps(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of available steps of the tool.
 
         Returns:
-            Union[str, Iterator[str]]: Output of the tool.
+            List[str]: List of available steps of the tool.
         &#34;&#34;&#34;
-        if ((history is not None) &amp; (prompt_template is None)):
-            raise ValueError(&#39;Prompt template need to be provided to process chat history.&#39;)
-        return &#39;Base tool output.&#39;
+        import inspect
+        attrs = dir(self)
+        core_methods = [&#39;run&#39;, &#39;print&#39;, &#39;_execute_step&#39;, &#39;_tool_schema&#39;, &#39;_validate_schema&#39;, &#39;_avail_steps&#39;]
+        steps = list(filter(lambda x: x not in core_methods, attrs))
+        steps = list(filter(lambda x: inspect.ismethod(getattr(self, x)), steps))
+        return steps
     
     def print(self, text: str, **kwargs) -&gt; None:
         &#34;&#34;&#34;Print the given text if verbose is True.
@@ -164,7 +322,172 @@ class BaseTool(ABC):
             text (str): Text to print.
         &#34;&#34;&#34;
         if self._verbose:
-            print(text, **kwargs)</code></pre>
+            print(text, **kwargs)
+
+    def _execute_step(self, step: str, **kwargs) -&gt; Any:
+        &#34;&#34;&#34;Executing a step (a method in your tool class).
+
+        Args:
+            step (str): Step to execute.
+
+        Returns:
+            Any: Output of the step.
+        &#34;&#34;&#34;
+        if step not in self._avail_steps:
+            raise ValueError(f&#39;Step &#34;{step}&#34; not implemented yet.&#39;)
+        method = getattr(self, step)
+        return method(**kwargs)
+    
+    @abstractmethod
+    def _tool_schema(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Defining how the run method runs the tool. This method is the most important method of the tool class and must be implemented properly.
+        The returned dictionary is the order of running the tool steps, with the keys as the name of the steps and the value as a dictionary input and output of the step.
+        Example: {
+            &#34;step1&#34;: {&#34;input&#34;: [&#34;tool_input&#34;], &#34;output&#34;: [&#34;var1&#34;, &#34;var2&#34;]}, 
+            &#34;step2&#34;: {&#34;input&#34;: [&#34;var1&#34;], &#34;output&#34;: [&#34;var3&#34;]}, 
+            &#34;final_step&#34;: {&#34;input&#34;: [&#34;var2&#34;, &#34;var3&#34;, &#34;llm&#34;, &#34;stream&#34;, &#34;prompt_template&#34;], &#34;output&#34;: [&#34;final_output&#34;]}
+            }
+        As demonstrated in the example, the final step must have the &#34;stream&#34; and &#34;prompt_template&#34; arguments to allow the tool to return a string or an iterator of string as the llm response.
+
+        Returns:
+            Dict[str, Any]: Tool run schema dictionary.
+        &#34;&#34;&#34;
+        pass
+
+    def _validate_schema(self, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Raise an error if the _tool_schema is not implemented properly.
+        &#34;&#34;&#34;
+        import inspect
+        schema = self._tool_schema()
+        steps = list(schema.keys())
+        if len(steps) == 0:
+            raise RuntimeError(f&#39;&#34;_tool_schema&#34; cannot return an empty dictinoary.&#39;)
+        final_step = list(schema.keys())[-1]
+        var_space = [&#34;tool_input&#34;, &#34;llm&#34;, &#34;stream&#34;, &#34;history&#34;, &#34;prompt_template&#34;] + list(kwargs.keys())
+        for k, v in schema.items():
+            if type(v) != dict:
+                raise TypeError(f&#39;Value for step &#34;{k}&#34; is not a dictionary.&#39;)
+            for i in [&#39;input&#39;, &#39;output&#39;]:
+                if i not in v.keys():
+                    raise ValueError(f&#39;&#34;{i}&#34; not in the dictionary of step &#34;{k}&#34;.&#39;)
+                if type(v[i]) != list:
+                    raise ValueError(f&#39;&#34;{i}&#34; of step &#34;{k}&#34; is not a list.&#39;)
+            if k == final_step:
+                if &#34;stream&#34; not in v[&#39;input&#39;]:
+                    raise ValueError(f&#39;Argument &#34;stream&#34; not in the input of the final step &#34;{k}&#34;.&#39;)
+                if &#34;llm&#34; not in v[&#39;input&#39;]:
+                    raise ValueError(f&#39;Argument &#34;llm&#34; not in the input of the final step &#34;{k}&#34;.&#39;)
+                if &#34;final_output&#34; not in v[&#39;output&#39;]:
+                    raise ValueError(f&#39;Argument &#34;final_output&#34; not in the output of the final step &#34;{k}&#34;.&#39;)
+                if inspect.signature(getattr(self, k)).return_annotation != Union[str, Iterator[str]]:
+                    raise TypeError(f&#39;The output of the final step &#34;{k}&#34; might not be &#34;Union[str, Iterator[str]]&#34;, if it is please add the appropriate type hinting.&#39;)
+            if any(i not in var_space for i in v[&#39;input&#39;]):
+                raise ValueError(f&#39;Some inputs of step &#34;{k}&#34; are not created prior to executing the step.&#39;)
+            var_space.extend(v[&#39;output&#39;])
+
+    def run(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Run the tool and return the output as a string or an iterator of strings.
+
+        Args:
+            tool_input (str): String input for to run the tool.
+            llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+
+        Returns:
+            Union[str, Iterator[str]]: Output of the tool.
+        &#34;&#34;&#34;
+        self._validate_schema(**kwargs)
+        var_space = dict(
+            tool_input = tool_input,
+            llm = llm,
+            prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template,
+            stream = stream,
+            history = history
+        )
+        var_space.update(kwargs)
+        for k, v in self._tool_schema().items():
+            input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
+            output_dict = dict()
+            self.print(k)
+            if len(v[&#39;output&#39;]) == 0:
+                self._execute_step(k, **input_dict)
+            elif len(v[&#39;output&#39;]) == 1:
+                output_dict[v[&#39;output&#39;][0]] = self._execute_step(k, **input_dict)
+            else:
+                outputs = self._execute_step(k, **input_dict)
+                output_dict = dict(zip(v[&#39;output&#39;], outputs))
+            self.print(&#39;\tOutputs:&#39;)
+            for s, o in output_dict.items():
+                if s != &#39;final_output&#39;:
+                    limit = 100
+                    output = str(o).replace(&#39;\n&#39;, &#39; &#39;)
+                    output = output.replace(&#39;\r&#39;, &#39; &#39;)
+                    output = output if len(output) &lt;= limit else output[:limit] + &#39;...&#39;
+                    self.print(f&#39;\t{s}: {output}&#39;)
+            self.print(&#39;\n&#39;)
+            var_space.update(output_dict)
+        return var_space[&#39;final_output&#39;]
+    
+    def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -&gt; Iterator[Union[str, Iterator[str]]]:
+        &#34;&#34;&#34;Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+
+        Args:
+            tool_input (str): String input for to run the tool.
+            llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+
+        Yields:
+            Iterator[Union[str, Iterator[str]]]: Iterator of the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+        &#34;&#34;&#34;
+        self._validate_schema(**kwargs)
+        var_space = dict(
+            tool_input = tool_input,
+            llm = llm,
+            prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template,
+            stream = stream,
+            history = history
+        )
+        var_space.update(kwargs)
+        info_format = &#39;&lt;details&gt;\n&lt;summary&gt;{header}&lt;/summary&gt;\n{info}\n&lt;/details&gt;&#39;
+        info = []
+        name = self.name.replace(&#39;_&#39;, &#39; &#39;).title()
+        header = f&#39;Running &#34;{name}&#34;...&#39;
+        yield info_format.format(header=header, info=&#39;\n&#39;.join(info))
+
+        for k, v in self._tool_schema().items():
+            input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
+            output_dict = dict()
+            info.append(f&#39;{k}:  &#39;)
+            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+            if len(v[&#39;output&#39;]) == 0:
+                self._execute_step(k, **input_dict)
+            elif len(v[&#39;output&#39;]) == 1:
+                output_dict[v[&#39;output&#39;][0]] = self._execute_step(k, **input_dict)
+            else:
+                outputs = self._execute_step(k, **input_dict)
+                output_dict = dict(zip(v[&#39;output&#39;], outputs))
+            info.append(&#39;\tOutputs:  &#39;)
+            for s, o in output_dict.items():
+                if s != &#39;final_output&#39;:
+                    limit = 100
+                    output = str(o).replace(&#39;\n&#39;, &#39; &#39;)
+                    output = output.replace(&#39;\r&#39;, &#39; &#39;)
+                    output = output if len(output) &lt;= limit else output[:limit] + &#39;...&#39;
+                    info.append(f&#39;\t{s}: {output}  &#39;)
+            info.append(&#39;\n&#39;)
+            var_space.update(output_dict)
+            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+        yield info_format.format(header=f&#39;&#34;{name}&#34; completed.&#39;, info=&#39;\n&#39;.join(info))
+        yield var_space[&#39;final_output&#39;]
+
+        if &#39;extra_info&#39; in var_space.keys():
+            yield f&#39;\n\n---\n{var_space[&#34;extra_info&#34;]}&#39;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -250,22 +573,22 @@ def name(self) -&gt; str:
 </details>
 </dd>
 <dt id="llmplus.Tools.base_tool.BaseTool.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Optional[Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, **kwargs) ‑> Union[str, Iterator[str]]</span>
+<span>def <span class="ident">run</span></span>(<span>self, tool_input: str, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, **kwargs) ‑> Union[str, Iterator[str]]</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Run the tool and return the output as a string.</p>
+<div class="desc"><p>Run the tool and return the output as a string or an iterator of strings.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>tool_input</code></strong> :&ensp;<code>str</code></dt>
 <dd>String input for to run the tool.</dd>
-<dt><strong><code>llm</code></strong> :&ensp;<code>Optional[Type[BaseLLM]]</code>, optional</dt>
-<dd>LLM to generate the output in a conversational setup. Defaults to None.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM to generate the output in a conversational setup.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.</dd>
 <dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.</dd>
 <dt><strong><code>history</code></strong> :&ensp;<code>Optional[Union[List[str], List[Tuple[str, str]]]]</code>, optional</dt>
 <dd>Snippet of chat history to help running the tool if required. Defaults to None.</dd>
-<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
-<dd>prompt_template to format the chat history. Defaults to None.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -276,23 +599,137 @@ def name(self) -&gt; str:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run(self, tool_input: str, llm: Optional[Type[BaseLLM]] = None, stream: bool = False, 
-        history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
-    &#34;&#34;&#34;Run the tool and return the output as a string.
+<pre><code class="python">def run(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
+        stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Run the tool and return the output as a string or an iterator of strings.
 
     Args:
         tool_input (str): String input for to run the tool.
-        llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
+        llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+        prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
         stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
         history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
-        prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
 
     Returns:
         Union[str, Iterator[str]]: Output of the tool.
     &#34;&#34;&#34;
-    if ((history is not None) &amp; (prompt_template is None)):
-        raise ValueError(&#39;Prompt template need to be provided to process chat history.&#39;)
-    return &#39;Base tool output.&#39;</code></pre>
+    self._validate_schema(**kwargs)
+    var_space = dict(
+        tool_input = tool_input,
+        llm = llm,
+        prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template,
+        stream = stream,
+        history = history
+    )
+    var_space.update(kwargs)
+    for k, v in self._tool_schema().items():
+        input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
+        output_dict = dict()
+        self.print(k)
+        if len(v[&#39;output&#39;]) == 0:
+            self._execute_step(k, **input_dict)
+        elif len(v[&#39;output&#39;]) == 1:
+            output_dict[v[&#39;output&#39;][0]] = self._execute_step(k, **input_dict)
+        else:
+            outputs = self._execute_step(k, **input_dict)
+            output_dict = dict(zip(v[&#39;output&#39;], outputs))
+        self.print(&#39;\tOutputs:&#39;)
+        for s, o in output_dict.items():
+            if s != &#39;final_output&#39;:
+                limit = 100
+                output = str(o).replace(&#39;\n&#39;, &#39; &#39;)
+                output = output.replace(&#39;\r&#39;, &#39; &#39;)
+                output = output if len(output) &lt;= limit else output[:limit] + &#39;...&#39;
+                self.print(f&#39;\t{s}: {output}&#39;)
+        self.print(&#39;\n&#39;)
+        var_space.update(output_dict)
+    return var_space[&#39;final_output&#39;]</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.base_tool.BaseTool.run_with_chat"><code class="name flex">
+<span>def <span class="ident">run_with_chat</span></span>(<span>self, tool_input: str, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, **kwargs) ‑> Iterator[Union[str, Iterator[str]]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tool_input</code></strong> :&ensp;<code>str</code></dt>
+<dd>String input for to run the tool.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM to generate the output in a conversational setup.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.</dd>
+<dt><strong><code>history</code></strong> :&ensp;<code>Optional[Union[List[str], List[Tuple[str, str]]]]</code>, optional</dt>
+<dd>Snippet of chat history to help running the tool if required. Defaults to None.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Iterator[Union[str, Iterator[str]]]</code></dt>
+<dd>Iterator of the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
+        stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -&gt; Iterator[Union[str, Iterator[str]]]:
+    &#34;&#34;&#34;Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+
+    Args:
+        tool_input (str): String input for to run the tool.
+        llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+        prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
+        stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
+        history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+
+    Yields:
+        Iterator[Union[str, Iterator[str]]]: Iterator of the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+    &#34;&#34;&#34;
+    self._validate_schema(**kwargs)
+    var_space = dict(
+        tool_input = tool_input,
+        llm = llm,
+        prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template,
+        stream = stream,
+        history = history
+    )
+    var_space.update(kwargs)
+    info_format = &#39;&lt;details&gt;\n&lt;summary&gt;{header}&lt;/summary&gt;\n{info}\n&lt;/details&gt;&#39;
+    info = []
+    name = self.name.replace(&#39;_&#39;, &#39; &#39;).title()
+    header = f&#39;Running &#34;{name}&#34;...&#39;
+    yield info_format.format(header=header, info=&#39;\n&#39;.join(info))
+
+    for k, v in self._tool_schema().items():
+        input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
+        output_dict = dict()
+        info.append(f&#39;{k}:  &#39;)
+        yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+        if len(v[&#39;output&#39;]) == 0:
+            self._execute_step(k, **input_dict)
+        elif len(v[&#39;output&#39;]) == 1:
+            output_dict[v[&#39;output&#39;][0]] = self._execute_step(k, **input_dict)
+        else:
+            outputs = self._execute_step(k, **input_dict)
+            output_dict = dict(zip(v[&#39;output&#39;], outputs))
+        info.append(&#39;\tOutputs:  &#39;)
+        for s, o in output_dict.items():
+            if s != &#39;final_output&#39;:
+                limit = 100
+                output = str(o).replace(&#39;\n&#39;, &#39; &#39;)
+                output = output.replace(&#39;\r&#39;, &#39; &#39;)
+                output = output if len(output) &lt;= limit else output[:limit] + &#39;...&#39;
+                info.append(f&#39;\t{s}: {output}  &#39;)
+        info.append(&#39;\n&#39;)
+        var_space.update(output_dict)
+        yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+    yield info_format.format(header=f&#39;&#34;{name}&#34; completed.&#39;, info=&#39;\n&#39;.join(info))
+    yield var_space[&#39;final_output&#39;]
+
+    if &#39;extra_info&#39; in var_space.keys():
+        yield f&#39;\n\n---\n{var_space[&#34;extra_info&#34;]}&#39;</code></pre>
 </details>
 </dd>
 </dl>
@@ -320,6 +757,7 @@ def name(self) -&gt; str:
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.name" href="#llmplus.Tools.base_tool.BaseTool.name">name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.print" href="#llmplus.Tools.base_tool.BaseTool.print">print</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.run" href="#llmplus.Tools.base_tool.BaseTool.run">run</a></code></li>
+<li><code><a title="llmplus.Tools.base_tool.BaseTool.run_with_chat" href="#llmplus.Tools.base_tool.BaseTool.run_with_chat">run_with_chat</a></code></li>
 </ul>
 </li>
 </ul>

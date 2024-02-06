@@ -83,7 +83,7 @@ Write a python script to load a Pandas Dataframe from the csv file 'test.csv'
 Solution:
 ```python
 """
-script = llm(prompt)
+script = llm.invoke(prompt)
 print(script)
 
 # Or if you prefer to generate the output with token streamming.

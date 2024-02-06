@@ -6,7 +6,14 @@ Functions
 
     
 `get_exl2_model_dir(repo_id: str, revision: Optional[str] = None) ‑> str`
-:   
+:   Download and get the model repository local directory.
+    
+    Args:
+        repo_id (str): Huggingface model ID.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+    
+    Returns:
+        str: Model local directory.
 
 Classes
 -------
@@ -15,10 +22,11 @@ Classes
 :   Base class of Core object to store the llm model and tokenizer.
         
     
-    Initialising the core instance.
+    Initialise the exl2 model core.
     
     Args:
-        model_id (str, optional): Model id (from Huggingface) to use. Defaults to 'gpt2'.
+        repo_id (str): Huggingface model ID.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
 
     ### Ancestors (in MRO)
 

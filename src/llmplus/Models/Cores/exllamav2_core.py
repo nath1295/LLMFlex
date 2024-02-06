@@ -5,21 +5,34 @@ from typing import Optional, List, Dict, Any, Union, Iterator
 
 
 def get_exl2_model_dir(repo_id: str, revision: Optional[str] = None) -> str:
-  from huggingface_hub import snapshot_download
-  return snapshot_download(repo_id=repo_id, revision=revision)
+    """Download and get the model repository local directory.
 
+    Args:
+        repo_id (str): Huggingface model ID.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
 
+    Returns:
+        str: Model local directory.
+    """
+    from huggingface_hub import snapshot_download
+    return snapshot_download(repo_id=repo_id, revision=revision)
 
 class Exl2Core(BaseCore):
 
     def __init__(self, repo_id: str, revision: Optional[str] = None, **kwargs) -> None:
+        """Initialise the exl2 model core.
+
+        Args:
+            repo_id (str): Huggingface model ID.
+            revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        """
         from exllamav2 import(
             ExLlamaV2,
             ExLlamaV2Config,
             ExLlamaV2Cache,
             ExLlamaV2Tokenizer,
         )
-        from exllamav2.generator import ExLlamaV2StreamingGenerator
+        from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
         self._model_id = repo_id
         config = ExLlamaV2Config()
         config.model_dir = get_exl2_model_dir(repo_id, revision)
@@ -30,7 +43,10 @@ class Exl2Core(BaseCore):
         model.load_autosplit(cache)
 
         self._tokenizer = ExLlamaV2Tokenizer(config)
-        self._model = ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
+        self._model = dict(
+            default=ExLlamaV2BaseGenerator(model, cache, self._tokenizer),
+            streamer=ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
+            )
         self._core_type = 'Exl2Core'
 
     def encode(self, text: str) -> List[int]:
@@ -114,7 +130,7 @@ class Exl2LLM(BaseLLM):
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Dict[str, Any],
-    ) -> Union[str, Iterator[str]]:
+    ) -> str:
         """Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
 
         Args:
@@ -138,23 +154,10 @@ class Exl2LLM(BaseLLM):
         settings.disallow_tokens(self.core.tokenizer, [self.core.tokenizer.eos_token_id])
         max_new_tokens = kwargs.get('max_new_tokens', self.generation_config['max_new_tokens'])
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type='transformers') if stop is not None else self.stop
-        stream = kwargs.get('stream', False)
-        input_ids = self.core.tokenizer.encode(prompt)
-        self.core.model.warmup()
+        self.core.model['default'].warmup()
+        self.core.model['default'].set_stop_conditions(stop)
 
-        self.core.model.set_stop_conditions(stop)
-        self.core.model.begin_stream(input_ids, settings)
-
-        output = ''
-        cont = True
-        generated_tokens = 0
-        while cont:
-            chunk, eos, _ = self.core.model.stream()
-            generated_tokens += 1
-            if eos or generated_tokens == max_new_tokens:
-                cont = False
-            else:
-                output += chunk
+        output = self.core.model['default'].generate_simple(prompt=prompt, gen_settings=self.settings, num_tokens=max_new_tokens, stop_token=stop)
         return output
         
     def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -> Iterator[str]:
@@ -179,16 +182,16 @@ class Exl2LLM(BaseLLM):
         max_new_tokens = kwargs.get('max_new_tokens', self.generation_config['max_new_tokens'])
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type='transformers') if stop is not None else self.stop
         input_ids = self.core.tokenizer.encode(input)
-        self.core.model.warmup()
+        self.core.model['streamer'].warmup()
 
-        self.core.model.set_stop_conditions(stop)
-        self.core.model.begin_stream(input_ids, settings)
+        self.core.model['streamer'].set_stop_conditions(stop)
+        self.core.model['streamer'].begin_stream(input_ids, settings)
 
         def stream_generator():
             cont = True
             generated_tokens = 0
             while cont:
-                chunk, eos, _ = self.core.model.stream()
+                chunk, eos, _ = self.core.model['streamer'].stream()
                 generated_tokens += 1
                 if eos or generated_tokens == max_new_tokens:
                     cont = False

@@ -63,6 +63,14 @@ def filtered_child(element: Union[BeautifulSoup, Tag]) -> List[Tag]:
     return output
     
 def process_table_row(row: Tag) -> str:
+    """Process a table row element.
+
+    Args:
+        row (Tag): Table row element.
+
+    Returns:
+        str: Formatted row as markdown.
+    """
     children = list(row.children)
     children = list(filter(lambda x: x.name in ['th', 'td'], children))
     if len(children) == 0:
@@ -84,6 +92,14 @@ def process_table_row(row: Tag) -> str:
     return data
 
 def format_table(table: Tag) -> str:
+    """Format a table element as markdown.
+
+    Args:
+        table (Tag): Table element.
+
+    Returns:
+        str: Formatted table as markdown.
+    """
     children = list(filter(lambda x: x.name == 'tr', list(table.children)))
     children = list(map(process_table_row, children))
     children = list(filter(lambda x: x is not None, children))
@@ -92,6 +108,15 @@ def format_table(table: Tag) -> str:
     return '\n'.join(children)
 
 def process_list_children(child: Union[Tag, NavigableString], order: int = 0) -> Optional[str]:
+    """Process list child elements.
+
+    Args:
+        child (Union[Tag, NavigableString]): List child element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted child element as markdown or None if it's not needed.
+    """
     if isinstance(child, NavigableString):
         out = child.get_text(strip=True)
         out = None if out.strip(' \n\r\t') == '' else out
@@ -107,6 +132,15 @@ def process_list_children(child: Union[Tag, NavigableString], order: int = 0) ->
     return out
 
 def format_ordered_list(olist: Tag, order: int = 0) -> Optional[str]:
+    """Format an ordered list element as markdown.
+
+    Args:
+        olist (Tag): Ordered list element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted ordered list as markdown or None if it's empty.
+    """
     count = 0
     outputs = []
     for l in olist.children:
@@ -135,6 +169,15 @@ def format_ordered_list(olist: Tag, order: int = 0) -> Optional[str]:
         return '\n'.join(outputs)
 
 def format_unordered_list(ulist: Tag, order: int = 0) -> Optional[str]:
+    """Format an unordered list element as markdown.
+
+    Args:
+        ulist (Tag): Unordered list element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted unordered list as markdown or None if it's empty.
+    """
     outputs = []
     for l in ulist.children:
         if not isinstance(l, Tag):
@@ -161,7 +204,7 @@ def format_unordered_list(ulist: Tag, order: int = 0) -> Optional[str]:
         return '\n'.join(outputs)
 
 def detect_language(code_snippet: str) -> str:
-    """Quick guess for the language of the code snippet.
+    """Detect the language of a code snippet.
 
     Args:
         code_snippet (str): Code snippet to guess.
@@ -196,6 +239,15 @@ def detect_language(code_snippet: str) -> str:
         return 'plaintext'  # Using 'plaintext' for unknown or plain text code blocks
 
 def format_code(code: Tag, with_wrapper: bool = True) -> Optional[str]:
+    """Format a code element as markdown.
+
+    Args:
+        code (Tag): Code element.
+        with_wrapper (bool, optional): Whether to include language wrappers in the output or not. Defaults to True.
+
+    Returns:
+        Optional[str]: Formatted code block as markdown or None if it's not needed.
+    """
     text = code.get_text(strip=True)
     if text.strip(' \n\r\t') =='':
         return None
@@ -205,6 +257,14 @@ def format_code(code: Tag, with_wrapper: bool = True) -> Optional[str]:
         return f'```{detect_language(output)}\n' + output + '\n```'
     
 def format_paragraph(paragraph: Tag) -> str:
+    """Format a paragraph element as markdown.
+
+    Args:
+        paragraph (Tag): Paragraph element.
+
+    Returns:
+        str: Formatted paragraph as markdown.
+    """
     outputs = []
     for child in filtered_child(paragraph):
         if isinstance(child, NavigableString):
@@ -227,10 +287,26 @@ def format_paragraph(paragraph: Tag) -> str:
         return ' '.join(outputs)
 
 def format_header(header: Tag) -> str:
+    """Format a header element as markdown.
+
+    Args:
+        header (Tag): Header element.
+
+    Returns:
+        str: Formatted header as markdown.
+    """
     size = int(header.name[1])
     return '#' * size + ' ' + header.get_text(strip=True)
 
 def format_link(link: Tag) -> str:
+    """Format a link element as markdown.
+
+    Args:
+        link (Tag): Link element.
+
+    Returns:
+        str: Formatted link as markdown.
+    """
     text = link.get_text(strip=True)
     href = link.get('href', '')
     if ((text.strip(' \n\r\t#') == '') & (href.strip(' \n\r\t#') == '')):

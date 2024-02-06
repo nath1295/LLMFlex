@@ -53,14 +53,14 @@ def config() -> None:
 
 @cli.command()
 @click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')
-@click.option('--embeddings', default='thenlper/gte-large', help='Embeddings model ID to use.')
+@click.option('--embeddings', default='thenlper/gte-small', help='Embeddings model ID to use.')
 @click.option('--model_type', default='auto', help='LLM model type.')
 @click.option('--mobile', is_flag=True, help='Whether to launch the mobile interface or not.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
 @click.option('--share', is_flag=True, help='Whether to create a public link or not.')
 @click.option('--extras', default='', help='Extra arugments for loading the model.')
 def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
-              embeddings: str = 'thenlper/gte-large', 
+              embeddings: str = 'thenlper/gte-small', 
               model_type: str = 'auto',
               mobile: bool = False, auth: Optional[Tuple[str, str]] = None,
               share: bool = False,

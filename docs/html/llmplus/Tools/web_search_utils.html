@@ -91,6 +91,14 @@ def filtered_child(element: Union[BeautifulSoup, Tag]) -&gt; List[Tag]:
     return output
     
 def process_table_row(row: Tag) -&gt; str:
+    &#34;&#34;&#34;Process a table row element.
+
+    Args:
+        row (Tag): Table row element.
+
+    Returns:
+        str: Formatted row as markdown.
+    &#34;&#34;&#34;
     children = list(row.children)
     children = list(filter(lambda x: x.name in [&#39;th&#39;, &#39;td&#39;], children))
     if len(children) == 0:
@@ -112,6 +120,14 @@ def process_table_row(row: Tag) -&gt; str:
     return data
 
 def format_table(table: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a table element as markdown.
+
+    Args:
+        table (Tag): Table element.
+
+    Returns:
+        str: Formatted table as markdown.
+    &#34;&#34;&#34;
     children = list(filter(lambda x: x.name == &#39;tr&#39;, list(table.children)))
     children = list(map(process_table_row, children))
     children = list(filter(lambda x: x is not None, children))
@@ -120,6 +136,15 @@ def format_table(table: Tag) -&gt; str:
     return &#39;\n&#39;.join(children)
 
 def process_list_children(child: Union[Tag, NavigableString], order: int = 0) -&gt; Optional[str]:
+    &#34;&#34;&#34;Process list child elements.
+
+    Args:
+        child (Union[Tag, NavigableString]): List child element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted child element as markdown or None if it&#39;s not needed.
+    &#34;&#34;&#34;
     if isinstance(child, NavigableString):
         out = child.get_text(strip=True)
         out = None if out.strip(&#39; \n\r\t&#39;) == &#39;&#39; else out
@@ -135,6 +160,15 @@ def process_list_children(child: Union[Tag, NavigableString], order: int = 0) -&
     return out
 
 def format_ordered_list(olist: Tag, order: int = 0) -&gt; Optional[str]:
+    &#34;&#34;&#34;Format an ordered list element as markdown.
+
+    Args:
+        olist (Tag): Ordered list element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted ordered list as markdown or None if it&#39;s empty.
+    &#34;&#34;&#34;
     count = 0
     outputs = []
     for l in olist.children:
@@ -163,6 +197,15 @@ def format_ordered_list(olist: Tag, order: int = 0) -&gt; Optional[str]:
         return &#39;\n&#39;.join(outputs)
 
 def format_unordered_list(ulist: Tag, order: int = 0) -&gt; Optional[str]:
+    &#34;&#34;&#34;Format an unordered list element as markdown.
+
+    Args:
+        ulist (Tag): Unordered list element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted unordered list as markdown or None if it&#39;s empty.
+    &#34;&#34;&#34;
     outputs = []
     for l in ulist.children:
         if not isinstance(l, Tag):
@@ -189,7 +232,7 @@ def format_unordered_list(ulist: Tag, order: int = 0) -&gt; Optional[str]:
         return &#39;\n&#39;.join(outputs)
 
 def detect_language(code_snippet: str) -&gt; str:
-    &#34;&#34;&#34;Quick guess for the language of the code snippet.
+    &#34;&#34;&#34;Detect the language of a code snippet.
 
     Args:
         code_snippet (str): Code snippet to guess.
@@ -224,6 +267,15 @@ def detect_language(code_snippet: str) -&gt; str:
         return &#39;plaintext&#39;  # Using &#39;plaintext&#39; for unknown or plain text code blocks
 
 def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
+    &#34;&#34;&#34;Format a code element as markdown.
+
+    Args:
+        code (Tag): Code element.
+        with_wrapper (bool, optional): Whether to include language wrappers in the output or not. Defaults to True.
+
+    Returns:
+        Optional[str]: Formatted code block as markdown or None if it&#39;s not needed.
+    &#34;&#34;&#34;
     text = code.get_text(strip=True)
     if text.strip(&#39; \n\r\t&#39;) ==&#39;&#39;:
         return None
@@ -233,6 +285,14 @@ def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
         return f&#39;```{detect_language(output)}\n&#39; + output + &#39;\n```&#39;
     
 def format_paragraph(paragraph: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a paragraph element as markdown.
+
+    Args:
+        paragraph (Tag): Paragraph element.
+
+    Returns:
+        str: Formatted paragraph as markdown.
+    &#34;&#34;&#34;
     outputs = []
     for child in filtered_child(paragraph):
         if isinstance(child, NavigableString):
@@ -255,10 +315,26 @@ def format_paragraph(paragraph: Tag) -&gt; str:
         return &#39; &#39;.join(outputs)
 
 def format_header(header: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a header element as markdown.
+
+    Args:
+        header (Tag): Header element.
+
+    Returns:
+        str: Formatted header as markdown.
+    &#34;&#34;&#34;
     size = int(header.name[1])
     return &#39;#&#39; * size + &#39; &#39; + header.get_text(strip=True)
 
 def format_link(link: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a link element as markdown.
+
+    Args:
+        link (Tag): Link element.
+
+    Returns:
+        str: Formatted link as markdown.
+    &#34;&#34;&#34;
     text = link.get_text(strip=True)
     href = link.get(&#39;href&#39;, &#39;&#39;)
     if ((text.strip(&#39; \n\r\t#&#39;) == &#39;&#39;) &amp; (href.strip(&#39; \n\r\t#&#39;) == &#39;&#39;)):
@@ -439,7 +515,7 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">detect_language</span></span>(<span>code_snippet: str) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Quick guess for the language of the code snippet.</p>
+<div class="desc"><p>Detect the language of a code snippet.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>code_snippet</code></strong> :&ensp;<code>str</code></dt>
@@ -455,7 +531,7 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def detect_language(code_snippet: str) -&gt; str:
-    &#34;&#34;&#34;Quick guess for the language of the code snippet.
+    &#34;&#34;&#34;Detect the language of a code snippet.
 
     Args:
         code_snippet (str): Code snippet to guess.
@@ -538,12 +614,33 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_code</span></span>(<span>code: bs4.element.Tag, with_wrapper: bool = True) ‑> Optional[str]</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format a code element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>code</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Code element.</dd>
+<dt><strong><code>with_wrapper</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to include language wrappers in the output or not. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>Formatted code block as markdown or None if it's not needed.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_code(code: Tag, with_wrapper: bool = True) -&gt; Optional[str]:
+    &#34;&#34;&#34;Format a code element as markdown.
+
+    Args:
+        code (Tag): Code element.
+        with_wrapper (bool, optional): Whether to include language wrappers in the output or not. Defaults to True.
+
+    Returns:
+        Optional[str]: Formatted code block as markdown or None if it&#39;s not needed.
+    &#34;&#34;&#34;
     text = code.get_text(strip=True)
     if text.strip(&#39; \n\r\t&#39;) ==&#39;&#39;:
         return None
@@ -557,12 +654,30 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_header</span></span>(<span>header: bs4.element.Tag) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format a header element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>header</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Header element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Formatted header as markdown.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_header(header: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a header element as markdown.
+
+    Args:
+        header (Tag): Header element.
+
+    Returns:
+        str: Formatted header as markdown.
+    &#34;&#34;&#34;
     size = int(header.name[1])
     return &#39;#&#39; * size + &#39; &#39; + header.get_text(strip=True)</code></pre>
 </details>
@@ -571,12 +686,30 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_link</span></span>(<span>link: bs4.element.Tag) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format a link element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>link</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Link element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Formatted link as markdown.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_link(link: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a link element as markdown.
+
+    Args:
+        link (Tag): Link element.
+
+    Returns:
+        str: Formatted link as markdown.
+    &#34;&#34;&#34;
     text = link.get_text(strip=True)
     href = link.get(&#39;href&#39;, &#39;&#39;)
     if ((text.strip(&#39; \n\r\t#&#39;) == &#39;&#39;) &amp; (href.strip(&#39; \n\r\t#&#39;) == &#39;&#39;)):
@@ -594,12 +727,33 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_ordered_list</span></span>(<span>olist: bs4.element.Tag, order: int = 0) ‑> Optional[str]</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format an ordered list element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>olist</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Ordered list element.</dd>
+<dt><strong><code>order</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Order of the list. Defaults to 0.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>Formatted ordered list as markdown or None if it's empty.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_ordered_list(olist: Tag, order: int = 0) -&gt; Optional[str]:
+    &#34;&#34;&#34;Format an ordered list element as markdown.
+
+    Args:
+        olist (Tag): Ordered list element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted ordered list as markdown or None if it&#39;s empty.
+    &#34;&#34;&#34;
     count = 0
     outputs = []
     for l in olist.children:
@@ -632,12 +786,30 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_paragraph</span></span>(<span>paragraph: bs4.element.Tag) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format a paragraph element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>paragraph</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Paragraph element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Formatted paragraph as markdown.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_paragraph(paragraph: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a paragraph element as markdown.
+
+    Args:
+        paragraph (Tag): Paragraph element.
+
+    Returns:
+        str: Formatted paragraph as markdown.
+    &#34;&#34;&#34;
     outputs = []
     for child in filtered_child(paragraph):
         if isinstance(child, NavigableString):
@@ -664,12 +836,30 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_table</span></span>(<span>table: bs4.element.Tag) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format a table element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>table</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Table element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Formatted table as markdown.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_table(table: Tag) -&gt; str:
+    &#34;&#34;&#34;Format a table element as markdown.
+
+    Args:
+        table (Tag): Table element.
+
+    Returns:
+        str: Formatted table as markdown.
+    &#34;&#34;&#34;
     children = list(filter(lambda x: x.name == &#39;tr&#39;, list(table.children)))
     children = list(map(process_table_row, children))
     children = list(filter(lambda x: x is not None, children))
@@ -682,12 +872,33 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
 <span>def <span class="ident">format_unordered_list</span></span>(<span>ulist: bs4.element.Tag, order: int = 0) ‑> Optional[str]</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Format an unordered list element as markdown.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>ulist</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Unordered list element.</dd>
+<dt><strong><code>order</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Order of the list. Defaults to 0.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>Formatted unordered list as markdown or None if it's empty.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def format_unordered_list(ulist: Tag, order: int = 0) -&gt; Optional[str]:
+    &#34;&#34;&#34;Format an unordered list element as markdown.
+
+    Args:
+        ulist (Tag): Unordered list element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted unordered list as markdown or None if it&#39;s empty.
+    &#34;&#34;&#34;
     outputs = []
     for l in ulist.children:
         if not isinstance(l, Tag):
@@ -873,12 +1084,33 @@ as_list (bool, optional): Whether to return a list of strings of elements or a s
 <span>def <span class="ident">process_list_children</span></span>(<span>child: Union[bs4.element.Tag, bs4.element.NavigableString], order: int = 0) ‑> Optional[str]</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Process list child elements.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>child</code></strong> :&ensp;<code>Union[Tag, NavigableString]</code></dt>
+<dd>List child element.</dd>
+<dt><strong><code>order</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Order of the list. Defaults to 0.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>Formatted child element as markdown or None if it's not needed.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def process_list_children(child: Union[Tag, NavigableString], order: int = 0) -&gt; Optional[str]:
+    &#34;&#34;&#34;Process list child elements.
+
+    Args:
+        child (Union[Tag, NavigableString]): List child element.
+        order (int, optional): Order of the list. Defaults to 0.
+
+    Returns:
+        Optional[str]: Formatted child element as markdown or None if it&#39;s not needed.
+    &#34;&#34;&#34;
     if isinstance(child, NavigableString):
         out = child.get_text(strip=True)
         out = None if out.strip(&#39; \n\r\t&#39;) == &#39;&#39; else out
@@ -898,12 +1130,30 @@ as_list (bool, optional): Whether to return a list of strings of elements or a s
 <span>def <span class="ident">process_table_row</span></span>(<span>row: bs4.element.Tag) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Process a table row element.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>row</code></strong> :&ensp;<code>Tag</code></dt>
+<dd>Table row element.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Formatted row as markdown.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def process_table_row(row: Tag) -&gt; str:
+    &#34;&#34;&#34;Process a table row element.
+
+    Args:
+        row (Tag): Table row element.
+
+    Returns:
+        str: Formatted row as markdown.
+    &#34;&#34;&#34;
     children = list(row.children)
     children = list(filter(lambda x: x.name in [&#39;th&#39;, &#39;td&#39;], children))
     if len(children) == 0:
