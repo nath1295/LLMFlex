@@ -129,7 +129,7 @@ class ChatInterface:
         """
         btns = []
         for k, v in self.config_dict.items():
-            if ((v['obj'] == 'btn') & k != 'send'):
+            if ((v['obj'] == 'btn') & (k != 'send')):
                 btns.append(k)
         return btns
 
