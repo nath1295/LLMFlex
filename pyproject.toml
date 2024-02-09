@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-username/your-package-name"
+Homepage = "https://github.com/nath1295/LLMPlus/tree/master"
 
 [project.scripts]
 llmplus = "llmplus.cli:cli"
