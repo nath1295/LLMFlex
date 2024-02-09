@@ -5,7 +5,7 @@ Classes
 -------
 
 `BaseTool(name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True)`
-:   This is a base class for callables for LLMs.
+:   This is a base class for tools for LLMs.
         
     
     Initialising the tool.
@@ -40,15 +40,30 @@ Classes
         Args:
             text (str): Text to print.
 
-    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, **kwargs) ‑> Union[str, Iterator[str]]`
-    :   Run the tool and return the output as a string.
+    `run(self, tool_input: str, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, add_footnote: bool = False, **kwargs) ‑> Union[str, Iterator[str]]`
+    :   Run the tool and return the output as a string or an iterator of strings.
         
         Args:
             tool_input (str): String input for to run the tool.
-            llm (Optional[Type[BaseLLM]], optional): LLM to generate the output in a conversational setup. Defaults to None.
+            llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
             stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
             history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
-            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history. Defaults to None.
+            add_footnote (bool, optional): Whether to append to footnote to the output. Defaults to False.
         
         Returns:
             Union[str, Iterator[str]]: Output of the tool.
+
+    `run_with_chat(self, tool_input: str, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, add_footnote: bool = True, **kwargs) ‑> Iterator[Union[str, Iterator[str]]]`
+    :   Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
+        
+        Args:
+            tool_input (str): String input for to run the tool.
+            llm (Type[BaseLLM]): LLM to generate the output in a conversational setup.
+            prompt_template (Optional[PromptTemplate], optional): prompt_template to format the chat history and create final output. If not given, the llm default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to stream the output, if True, a generator of the output will be returned. Defaults to False.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of chat history to help running the tool if required. Defaults to None.
+            add_footnote (bool, optional): Whether to append to footnote to the output. Defaults to True.
+        
+        Yields:
+            Iterator[Union[str, Iterator[str]]]: Iterator of the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.

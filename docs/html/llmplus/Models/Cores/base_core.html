@@ -29,8 +29,8 @@
 <pre><code class="python">from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
-from ...Prompts.prompt_template import PromptTemplate
-from typing import Any, List, Dict, Optional, Union, Iterator, Type
+from ...Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
+from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple
 
 class BaseCore:
     &#34;&#34;&#34;Base class of Core object to store the llm model and tokenizer.
@@ -217,6 +217,28 @@ class BaseLLM(LLM):
             List[int]: List of token ids.
         &#34;&#34;&#34;
         return self.core.encode(text=text)
+    
+    def chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, 
+            system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Chat with the llm given the input.
+
+        Args:
+            prompt (str): User message.
+            prompt_template (Optional[PromptTemplate], optional): Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to return the response as an iterator or a string. Defaults to False.
+            system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+
+        Returns:
+            Union[str, Iterator[str]]: Response of the llm.
+        &#34;&#34;&#34;
+        prompt_template = self.core.prompt_template if prompt_template is None else prompt_template
+        prompt = prompt_template.create_prompt(prompt, system=system, history=history)
+        stop = prompt_template.stop
+        if stream:
+            return self.stream(prompt, stop=stop)
+        else:
+            return self.invoke(prompt, stop=stop)
     
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
@@ -712,6 +734,28 @@ def tokenizer(self) -&gt; Any:
         &#34;&#34;&#34;
         return self.core.encode(text=text)
     
+    def chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, 
+            system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Chat with the llm given the input.
+
+        Args:
+            prompt (str): User message.
+            prompt_template (Optional[PromptTemplate], optional): Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to return the response as an iterator or a string. Defaults to False.
+            system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+
+        Returns:
+            Union[str, Iterator[str]]: Response of the llm.
+        &#34;&#34;&#34;
+        prompt_template = self.core.prompt_template if prompt_template is None else prompt_template
+        prompt = prompt_template.create_prompt(prompt, system=system, history=history)
+        stop = prompt_template.stop
+        if stream:
+            return self.stream(prompt, stop=stop)
+        else:
+            return self.invoke(prompt, stop=stop)
+    
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
 
@@ -758,6 +802,56 @@ def tokenizer(self) -&gt; Any:
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="llmplus.Models.Cores.base_core.BaseLLM.chat"><code class="name flex">
+<span>def <span class="ident">chat</span></span>(<span>self, prompt: str, prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = []) ‑> Union[str, Iterator[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Chat with the llm given the input.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>User message.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the response as an iterator or a string. Defaults to False.</dd>
+<dt><strong><code>system</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>System message. Defaults to DEFAULT_SYSTEM_MESSAGE.</dd>
+<dt><strong><code>history</code></strong> :&ensp;<code>Union[List[str], List[Tuple[str, str]]]</code>, optional</dt>
+<dd>List of conversation history. Defaults to [].</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>Response of the llm.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, 
+        system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Chat with the llm given the input.
+
+    Args:
+        prompt (str): User message.
+        prompt_template (Optional[PromptTemplate], optional): Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.
+        stream (bool, optional): Whether to return the response as an iterator or a string. Defaults to False.
+        system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+        history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+
+    Returns:
+        Union[str, Iterator[str]]: Response of the llm.
+    &#34;&#34;&#34;
+    prompt_template = self.core.prompt_template if prompt_template is None else prompt_template
+    prompt = prompt_template.create_prompt(prompt, system=system, history=history)
+    stop = prompt_template.stop
+    if stream:
+        return self.stream(prompt, stop=stop)
+    else:
+        return self.invoke(prompt, stop=stop)</code></pre>
+</details>
+</dd>
 <dt id="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens"><code class="name flex">
 <span>def <span class="ident">get_num_tokens</span></span>(<span>self, text: str) ‑> int</span>
 </code></dt>
@@ -966,6 +1060,7 @@ def tokenizer(self) -&gt; Any:
 <ul class="hlist">
 <li><code><b><a title="llmplus.Models.Cores.base_core.BaseLLM" href="#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></b></code>:
 <ul class="hlist">
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.chat" href="#llmplus.Models.Cores.base_core.BaseLLM.chat">chat</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_token_ids" href="#llmplus.Models.Cores.base_core.BaseLLM.get_token_ids">get_token_ids</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.stream" href="#llmplus.Models.Cores.base_core.BaseLLM.stream">stream</a></code></li>
@@ -1005,6 +1100,7 @@ def tokenizer(self) -&gt; Any:
 <li>
 <h4><code><a title="llmplus.Models.Cores.base_core.BaseLLM" href="#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></code></h4>
 <ul class="two-column">
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.chat" href="#llmplus.Models.Cores.base_core.BaseLLM.chat">chat</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.core" href="#llmplus.Models.Cores.base_core.BaseLLM.core">core</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.generation_config" href="#llmplus.Models.Cores.base_core.BaseLLM.generation_config">generation_config</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>

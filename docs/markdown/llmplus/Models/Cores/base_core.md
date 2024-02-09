@@ -120,6 +120,19 @@ Classes
 
     ### Methods
 
+    `chat(self, prompt: str, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = []) ‑> Union[str, Iterator[str]]`
+    :   Chat with the llm given the input.
+        
+        Args:
+            prompt (str): User message.
+            prompt_template (Optional[PromptTemplate], optional): Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to return the response as an iterator or a string. Defaults to False.
+            system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+        
+        Returns:
+            Union[str, Iterator[str]]: Response of the llm.
+
     `get_num_tokens(self, text: str) ‑> int`
     :   Get the number of tokens given the text string.
         

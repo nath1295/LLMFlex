@@ -1,8 +1,8 @@
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
-from ...Prompts.prompt_template import PromptTemplate
-from typing import Any, List, Dict, Optional, Union, Iterator, Type
+from ...Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
+from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple
 
 class BaseCore:
     """Base class of Core object to store the llm model and tokenizer.
@@ -189,6 +189,28 @@ class BaseLLM(LLM):
             List[int]: List of token ids.
         """
         return self.core.encode(text=text)
+    
+    def chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, 
+            system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -> Union[str, Iterator[str]]:
+        """Chat with the llm given the input.
+
+        Args:
+            prompt (str): User message.
+            prompt_template (Optional[PromptTemplate], optional): Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.
+            stream (bool, optional): Whether to return the response as an iterator or a string. Defaults to False.
+            system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
+            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+
+        Returns:
+            Union[str, Iterator[str]]: Response of the llm.
+        """
+        prompt_template = self.core.prompt_template if prompt_template is None else prompt_template
+        prompt = prompt_template.create_prompt(prompt, system=system, history=history)
+        stop = prompt_template.stop
+        if stream:
+            return self.stream(prompt, stop=stop)
+        else:
+            return self.invoke(prompt, stop=stop)
     
     def _llm_type(self) -> str:
         """LLM type.

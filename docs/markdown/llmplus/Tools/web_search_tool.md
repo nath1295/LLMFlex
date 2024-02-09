@@ -19,11 +19,11 @@ Functions
 Classes
 -------
 
-`WebSearchTool(embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)`
+`WebSearchTool(embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query or your question. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)`
 :   This is the tool class for doing web search.
         
     
-    Initialise teh web search tool.
+    Initialise the web search tool.
     
     Args:
         embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
@@ -39,22 +39,42 @@ Classes
 
     ### Methods
 
-    `run(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, generate_query: bool = True, return_type: Literal['response', 'vectordb', 'chunks'] = 'response', **kwargs) ‑> Union[str, Iterator[str], List[Dict[str, Any]], Any]`
-    :   Run the web search tool. Any keyword arguments will be passed to the search method.
+    `create_relevant_content_chunks(self, query: str, vectordb: llmplus.Data.vector_database.VectorDatabase) ‑> Tuple[List[Dict[str, Any]], str]`
+    :   Return the relevant chunks of contents from the vector database.
         
         Args:
-            tool_input (str): Input of the tool, usually the latest user input in the chatbot conversation.
-            llm (Optional[Type[BaseLLM]], optional): It will be used to create the search query and generate output if `generate_query=True`. 
-            stream (bool, optional): If an llm is provided and `stream=True`, A generator of the output will be returned. Defaults to False.
-            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Snippet of recent chat history to help forming more relevant search if provided. Defaults to None.
-            prompt_template (Optional[PromptTemplate], optional): Prompt template use to format the chat history. Defaults to None.
-            generate_query (bool, optional): Whether to treat the tool_input as part of the conversation and generate a different search query. Defaults to True.
-            return_type (Literal['response', 'vectordb', 'chunks'], optional): Return a full response given the tool_input, the vector database, or the chunks only. Defaults to 'response'.
+            query (str): Search query.
+            vectordb (VectorDatabase): Vector database of search result contents.
         
         Returns:
-            Union[str, Iterator[str], List[Dict[str, Any]], Any]: Search result, if llm and prompt template is provided, the result will be provided as a reponse to the tool_input.
+            Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
 
-    `search(self, query: str, n: int = 5, urls_only: bool = True, **kwargs) ‑> List[Union[str, Dict[str, Any]]]`
+    `create_search_query(self, tool_input: str, llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None) ‑> str`
+    :   Creating the search query for the search engine given the user input.
+        
+        Args:
+            tool_input (str): User input.
+            llm (Optional[Type[BaseLLM]], optional): LLM to create the search query. If not given, the search query will be the user input. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Recent conversation history as extra context for creating search query. Defaults to None.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template for structuring the prompt to create search query. Defaults to None.
+        
+        Returns:
+            str: Search query.
+
+    `create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[llmplus.Models.Cores.base_core.BaseLLM]] = None) ‑> llmplus.Data.vector_database.VectorDatabase`
+    :   Creating a temporary vector database of the search result contents.
+        
+        Args:
+            results (List[Dict[str, Any]]): Search results from the search engine.
+            llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
+        
+        Returns:
+            VectorDatabase: The temporary vector database.
+
+    `generate_response(self, tool_input: str, chunks: List[Dict[str, Any]], llm: Type[llmplus.Models.Cores.base_core.BaseLLM], history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, stream: bool = False, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None) ‑> Union[str, Iterator[str]]`
+    :
+
+    `search(self, query: str, n: int = 5, urls_only: bool = False, **kwargs) ‑> List[Union[str, Dict[str, Any]]]`
     :   Search with the given query.
         
         Args:

@@ -1,7 +1,7 @@
 [project]
 name = "llmplus"
 description = "A python package for developing AI applications with local LLMs."
-version = "0.0.10.dev"
+dynamic = ["version"]
 authors = [
     {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
 ]
@@ -25,6 +25,9 @@ dependencies = [
     "beautifulsoup4",
 ]
 
+[project.urls]
+Homepage = "https://github.com/your-username/your-package-name"
+
 [project.scripts]
 llmplus = "llmplus.cli:cli"
 
@@ -41,10 +44,15 @@ cu118 = [
 ]
 
 [build-system]
-requires = ["pdm-backend", "pdm-pep517"]
-build-backend = "pdm.pep517.api"
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
 
-[tool.pdm]
-package-type = "library"
-src-layout = true
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.dynamic]
+version = {attr = "llmplus.__version__"}  # Update this with the path to your __version__ variable
+
+[tool.setuptools.packages.find]
+where = ["src"]
 

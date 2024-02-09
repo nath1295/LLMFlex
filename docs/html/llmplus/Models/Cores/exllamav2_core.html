@@ -33,21 +33,34 @@ from typing import Optional, List, Dict, Any, Union, Iterator
 
 
 def get_exl2_model_dir(repo_id: str, revision: Optional[str] = None) -&gt; str:
-  from huggingface_hub import snapshot_download
-  return snapshot_download(repo_id=repo_id, revision=revision)
+    &#34;&#34;&#34;Download and get the model repository local directory.
 
+    Args:
+        repo_id (str): Huggingface model ID.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
 
+    Returns:
+        str: Model local directory.
+    &#34;&#34;&#34;
+    from huggingface_hub import snapshot_download
+    return snapshot_download(repo_id=repo_id, revision=revision)
 
 class Exl2Core(BaseCore):
 
     def __init__(self, repo_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialise the exl2 model core.
+
+        Args:
+            repo_id (str): Huggingface model ID.
+            revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        &#34;&#34;&#34;
         from exllamav2 import(
             ExLlamaV2,
             ExLlamaV2Config,
             ExLlamaV2Cache,
             ExLlamaV2Tokenizer,
         )
-        from exllamav2.generator import ExLlamaV2StreamingGenerator
+        from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
         self._model_id = repo_id
         config = ExLlamaV2Config()
         config.model_dir = get_exl2_model_dir(repo_id, revision)
@@ -58,7 +71,10 @@ class Exl2Core(BaseCore):
         model.load_autosplit(cache)
 
         self._tokenizer = ExLlamaV2Tokenizer(config)
-        self._model = ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
+        self._model = dict(
+            default=ExLlamaV2BaseGenerator(model, cache, self._tokenizer),
+            streamer=ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
+            )
         self._core_type = &#39;Exl2Core&#39;
 
     def encode(self, text: str) -&gt; List[int]:
@@ -142,7 +158,7 @@ class Exl2LLM(BaseLLM):
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Dict[str, Any],
-    ) -&gt; Union[str, Iterator[str]]:
+    ) -&gt; str:
         &#34;&#34;&#34;Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
 
         Args:
@@ -166,23 +182,10 @@ class Exl2LLM(BaseLLM):
         settings.disallow_tokens(self.core.tokenizer, [self.core.tokenizer.eos_token_id])
         max_new_tokens = kwargs.get(&#39;max_new_tokens&#39;, self.generation_config[&#39;max_new_tokens&#39;])
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;transformers&#39;) if stop is not None else self.stop
-        stream = kwargs.get(&#39;stream&#39;, False)
-        input_ids = self.core.tokenizer.encode(prompt)
-        self.core.model.warmup()
+        self.core.model[&#39;default&#39;].warmup()
+        self.core.model[&#39;default&#39;].set_stop_conditions(stop)
 
-        self.core.model.set_stop_conditions(stop)
-        self.core.model.begin_stream(input_ids, settings)
-
-        output = &#39;&#39;
-        cont = True
-        generated_tokens = 0
-        while cont:
-            chunk, eos, _ = self.core.model.stream()
-            generated_tokens += 1
-            if eos or generated_tokens == max_new_tokens:
-                cont = False
-            else:
-                output += chunk
+        output = self.core.model[&#39;default&#39;].generate_simple(prompt=prompt, gen_settings=self.settings, num_tokens=max_new_tokens, stop_token=stop)
         return output
         
     def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
@@ -207,16 +210,16 @@ class Exl2LLM(BaseLLM):
         max_new_tokens = kwargs.get(&#39;max_new_tokens&#39;, self.generation_config[&#39;max_new_tokens&#39;])
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;transformers&#39;) if stop is not None else self.stop
         input_ids = self.core.tokenizer.encode(input)
-        self.core.model.warmup()
+        self.core.model[&#39;streamer&#39;].warmup()
 
-        self.core.model.set_stop_conditions(stop)
-        self.core.model.begin_stream(input_ids, settings)
+        self.core.model[&#39;streamer&#39;].set_stop_conditions(stop)
+        self.core.model[&#39;streamer&#39;].begin_stream(input_ids, settings)
 
         def stream_generator():
             cont = True
             generated_tokens = 0
             while cont:
-                chunk, eos, _ = self.core.model.stream()
+                chunk, eos, _ = self.core.model[&#39;streamer&#39;].stream()
                 generated_tokens += 1
                 if eos or generated_tokens == max_new_tokens:
                     cont = False
@@ -245,14 +248,35 @@ class Exl2LLM(BaseLLM):
 <span>def <span class="ident">get_exl2_model_dir</span></span>(<span>repo_id: str, revision: Optional[str] = None) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Download and get the model repository local directory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>repo_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Huggingface model ID.</dd>
+<dt><strong><code>revision</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Branch of the repository. If None is given, the main branch will be used. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Model local directory.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_exl2_model_dir(repo_id: str, revision: Optional[str] = None) -&gt; str:
-  from huggingface_hub import snapshot_download
-  return snapshot_download(repo_id=repo_id, revision=revision)</code></pre>
+    &#34;&#34;&#34;Download and get the model repository local directory.
+
+    Args:
+        repo_id (str): Huggingface model ID.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+
+    Returns:
+        str: Model local directory.
+    &#34;&#34;&#34;
+    from huggingface_hub import snapshot_download
+    return snapshot_download(repo_id=repo_id, revision=revision)</code></pre>
 </details>
 </dd>
 </dl>
@@ -266,11 +290,13 @@ class Exl2LLM(BaseLLM):
 </code></dt>
 <dd>
 <div class="desc"><p>Base class of Core object to store the llm model and tokenizer.</p>
-<p>Initialising the core instance.</p>
+<p>Initialise the exl2 model core.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>Model id (from Huggingface) to use. Defaults to 'gpt2'.</dd>
+<dt><strong><code>repo_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Huggingface model ID.</dd>
+<dt><strong><code>revision</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Branch of the repository. If None is given, the main branch will be used. Defaults to None.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -279,13 +305,19 @@ class Exl2LLM(BaseLLM):
 <pre><code class="python">class Exl2Core(BaseCore):
 
     def __init__(self, repo_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialise the exl2 model core.
+
+        Args:
+            repo_id (str): Huggingface model ID.
+            revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        &#34;&#34;&#34;
         from exllamav2 import(
             ExLlamaV2,
             ExLlamaV2Config,
             ExLlamaV2Cache,
             ExLlamaV2Tokenizer,
         )
-        from exllamav2.generator import ExLlamaV2StreamingGenerator
+        from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
         self._model_id = repo_id
         config = ExLlamaV2Config()
         config.model_dir = get_exl2_model_dir(repo_id, revision)
@@ -296,7 +328,10 @@ class Exl2LLM(BaseLLM):
         model.load_autosplit(cache)
 
         self._tokenizer = ExLlamaV2Tokenizer(config)
-        self._model = ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
+        self._model = dict(
+            default=ExLlamaV2BaseGenerator(model, cache, self._tokenizer),
+            streamer=ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
+            )
         self._core_type = &#39;Exl2Core&#39;
 
     def encode(self, text: str) -&gt; List[int]:
@@ -462,7 +497,7 @@ class Exl2LLM(BaseLLM):
         stop: Optional[List[str]] = None,
         run_manager: Optional[CallbackManagerForLLMRun] = None,
         **kwargs: Dict[str, Any],
-    ) -&gt; Union[str, Iterator[str]]:
+    ) -&gt; str:
         &#34;&#34;&#34;Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
 
         Args:
@@ -486,23 +521,10 @@ class Exl2LLM(BaseLLM):
         settings.disallow_tokens(self.core.tokenizer, [self.core.tokenizer.eos_token_id])
         max_new_tokens = kwargs.get(&#39;max_new_tokens&#39;, self.generation_config[&#39;max_new_tokens&#39;])
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;transformers&#39;) if stop is not None else self.stop
-        stream = kwargs.get(&#39;stream&#39;, False)
-        input_ids = self.core.tokenizer.encode(prompt)
-        self.core.model.warmup()
+        self.core.model[&#39;default&#39;].warmup()
+        self.core.model[&#39;default&#39;].set_stop_conditions(stop)
 
-        self.core.model.set_stop_conditions(stop)
-        self.core.model.begin_stream(input_ids, settings)
-
-        output = &#39;&#39;
-        cont = True
-        generated_tokens = 0
-        while cont:
-            chunk, eos, _ = self.core.model.stream()
-            generated_tokens += 1
-            if eos or generated_tokens == max_new_tokens:
-                cont = False
-            else:
-                output += chunk
+        output = self.core.model[&#39;default&#39;].generate_simple(prompt=prompt, gen_settings=self.settings, num_tokens=max_new_tokens, stop_token=stop)
         return output
         
     def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -&gt; Iterator[str]:
@@ -527,16 +549,16 @@ class Exl2LLM(BaseLLM):
         max_new_tokens = kwargs.get(&#39;max_new_tokens&#39;, self.generation_config[&#39;max_new_tokens&#39;])
         stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;transformers&#39;) if stop is not None else self.stop
         input_ids = self.core.tokenizer.encode(input)
-        self.core.model.warmup()
+        self.core.model[&#39;streamer&#39;].warmup()
 
-        self.core.model.set_stop_conditions(stop)
-        self.core.model.begin_stream(input_ids, settings)
+        self.core.model[&#39;streamer&#39;].set_stop_conditions(stop)
+        self.core.model[&#39;streamer&#39;].begin_stream(input_ids, settings)
 
         def stream_generator():
             cont = True
             generated_tokens = 0
             while cont:
-                chunk, eos, _ = self.core.model.stream()
+                chunk, eos, _ = self.core.model[&#39;streamer&#39;].stream()
                 generated_tokens += 1
                 if eos or generated_tokens == max_new_tokens:
                     cont = False
@@ -586,6 +608,7 @@ class Exl2LLM(BaseLLM):
 <ul class="hlist">
 <li><code><b><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></b></code>:
 <ul class="hlist">
+<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.chat" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.chat">chat</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_token_ids" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_token_ids">get_token_ids</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.stream" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.stream">stream</a></code></li>

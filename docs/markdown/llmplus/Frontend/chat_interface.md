@@ -9,6 +9,12 @@ Classes
 
     ### Instance variables
 
+    `buttons: List[str]`
+    :   List of buttons except send.
+        
+        Returns:
+            List[str]: List of buttons except send.
+
     `config_dict: Dict[str, Any]`
     :
 

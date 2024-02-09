@@ -147,6 +147,19 @@ class ChatInterface:
             for a, i in v.items():
                 config[k][&#39;args&#39;][a] = i
         return config
+    
+    @property
+    def buttons(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of buttons except send.
+
+        Returns:
+            List[str]: List of buttons except send.
+        &#34;&#34;&#34;
+        btns = []
+        for k, v in self.config_dict.items():
+            if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; k != &#39;send&#39;):
+                btns.append(k)
+        return btns
 
     def get_memory_settings(self) -&gt; str:
         settings = [
@@ -326,13 +339,13 @@ class ChatInterface:
                 gr.Button(value=&#39;Stop&#39;, variant=&#39;stop&#39;),
                 user,
                 bot,
-            ] + [gr.Button(interactive=False)] * 9
+            ] + [gr.Button(interactive=False)] * len(self.buttons)
         else:
             returns = [
                 gr.Button(value=&#39;Send&#39;),
                 user,
                 self.history,
-            ] + [gr.Button(interactive=True)] * 9
+            ] + [gr.Button(interactive=True)] * len(self.buttons)
         return tuple(returns)
 
     def generation(self, bot: List[List[str]]) -&gt; List[List[str]]:
@@ -371,7 +384,7 @@ class ChatInterface:
             List[Any]: All buttons.
         &#34;&#34;&#34;
         import gradio as gr
-        return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * 9)
+        return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * len(self.buttons))
 
     def vars(self, var_name: str, **kwargs: Dict[str, Any]) -&gt; Any:
         &#34;&#34;&#34;Generate the gradio component in the config dictionary given the key in the config dict.
@@ -461,35 +474,35 @@ class ChatInterface:
 
             self.bot[&#39;send&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;send&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;user&#39;].submit(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;send&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;cont&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;cont&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;regen&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;regen&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
 
     def _init_mobile_frame(self) -&gt; None:
@@ -551,27 +564,27 @@ class ChatInterface:
 
             self.bot[&#39;send&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;send&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;cont&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;cont&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;regen&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;regen&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
 
 
@@ -723,6 +736,19 @@ class ChatInterface:
             for a, i in v.items():
                 config[k][&#39;args&#39;][a] = i
         return config
+    
+    @property
+    def buttons(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of buttons except send.
+
+        Returns:
+            List[str]: List of buttons except send.
+        &#34;&#34;&#34;
+        btns = []
+        for k, v in self.config_dict.items():
+            if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; k != &#39;send&#39;):
+                btns.append(k)
+        return btns
 
     def get_memory_settings(self) -&gt; str:
         settings = [
@@ -902,13 +928,13 @@ class ChatInterface:
                 gr.Button(value=&#39;Stop&#39;, variant=&#39;stop&#39;),
                 user,
                 bot,
-            ] + [gr.Button(interactive=False)] * 9
+            ] + [gr.Button(interactive=False)] * len(self.buttons)
         else:
             returns = [
                 gr.Button(value=&#39;Send&#39;),
                 user,
                 self.history,
-            ] + [gr.Button(interactive=True)] * 9
+            ] + [gr.Button(interactive=True)] * len(self.buttons)
         return tuple(returns)
 
     def generation(self, bot: List[List[str]]) -&gt; List[List[str]]:
@@ -947,7 +973,7 @@ class ChatInterface:
             List[Any]: All buttons.
         &#34;&#34;&#34;
         import gradio as gr
-        return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * 9)
+        return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * len(self.buttons))
 
     def vars(self, var_name: str, **kwargs: Dict[str, Any]) -&gt; Any:
         &#34;&#34;&#34;Generate the gradio component in the config dictionary given the key in the config dict.
@@ -1037,35 +1063,35 @@ class ChatInterface:
 
             self.bot[&#39;send&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;send&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;user&#39;].submit(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;send&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;cont&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;cont&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;regen&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;regen&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
 
     def _init_mobile_frame(self) -&gt; None:
@@ -1127,27 +1153,27 @@ class ChatInterface:
 
             self.bot[&#39;send&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;send&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;cont&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;cont&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
             self.bot[&#39;regen&#39;].click(fn=self.input_handler, 
                                    inputs=self.output_map([ &#39;regen&#39;, &#39;user&#39;, &#39;start&#39;, &#39;bot&#39;]), 
-                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;]),
+                                   outputs=self.output_map([&#39;send&#39;, &#39;user&#39;, &#39;bot&#39;] + self.buttons),
                                    queue=False).then(
                                        fn=self.generation, inputs=self.output_map(&#39;bot&#39;), outputs=self.output_map(&#39;bot&#39;)
                                    ).then(
-                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;, &#39;add&#39;, &#39;select&#39;, &#39;remove&#39;, &#39;cont&#39;, &#39;regen&#39;, &#39;rmlast&#39;, &#39;format_save&#39;, &#39;llm_save&#39;, &#39;sys_save&#39;])
+                                       fn=self.postgen_handler, outputs=self.output_map([&#39;send&#39;] + self.buttons)
                                    )
 
 
@@ -1166,6 +1192,32 @@ class ChatInterface:
 </details>
 <h3>Instance variables</h3>
 <dl>
+<dt id="llmplus.Frontend.chat_interface.ChatInterface.buttons"><code class="name">var <span class="ident">buttons</span> : List[str]</code></dt>
+<dd>
+<div class="desc"><p>List of buttons except send.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of buttons except send.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def buttons(self) -&gt; List[str]:
+    &#34;&#34;&#34;List of buttons except send.
+
+    Returns:
+        List[str]: List of buttons except send.
+    &#34;&#34;&#34;
+    btns = []
+    for k, v in self.config_dict.items():
+        if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; k != &#39;send&#39;):
+            btns.append(k)
+    return btns</code></pre>
+</details>
+</dd>
 <dt id="llmplus.Frontend.chat_interface.ChatInterface.config_dict"><code class="name">var <span class="ident">config_dict</span> : Dict[str, Any]</code></dt>
 <dd>
 <div class="desc"></div>
@@ -1698,13 +1750,13 @@ def titles(self) -&gt; List[str]:
             gr.Button(value=&#39;Stop&#39;, variant=&#39;stop&#39;),
             user,
             bot,
-        ] + [gr.Button(interactive=False)] * 9
+        ] + [gr.Button(interactive=False)] * len(self.buttons)
     else:
         returns = [
             gr.Button(value=&#39;Send&#39;),
             user,
             self.history,
-        ] + [gr.Button(interactive=True)] * 9
+        ] + [gr.Button(interactive=True)] * len(self.buttons)
     return tuple(returns)</code></pre>
 </details>
 </dd>
@@ -1766,7 +1818,7 @@ def titles(self) -&gt; List[str]:
         List[Any]: All buttons.
     &#34;&#34;&#34;
     import gradio as gr
-    return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * 9)</code></pre>
+    return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * len(self.buttons))</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Frontend.chat_interface.ChatInterface.remove_last"><code class="name flex">
@@ -1857,6 +1909,7 @@ def titles(self) -&gt; List[str]:
 <li>
 <h4><code><a title="llmplus.Frontend.chat_interface.ChatInterface" href="#llmplus.Frontend.chat_interface.ChatInterface">ChatInterface</a></code></h4>
 <ul class="">
+<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.buttons" href="#llmplus.Frontend.chat_interface.ChatInterface.buttons">buttons</a></code></li>
 <li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_llm_setting" href="#llmplus.Frontend.chat_interface.ChatInterface.change_llm_setting">change_llm_setting</a></code></li>
 <li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_memory" href="#llmplus.Frontend.chat_interface.ChatInterface.change_memory">change_memory</a></code></li>
 <li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_memory_setting" href="#llmplus.Frontend.chat_interface.ChatInterface.change_memory_setting">change_memory_setting</a></code></li>

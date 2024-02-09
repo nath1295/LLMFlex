@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmplus.Tools.tool_selection API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmplus.Tools.tool_selection</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from .base_tool import BaseTool
+from ..Data.vector_database import VectorDatabase
+from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from typing import Type, Optional, List
+
+class ToolSelector:
+    &#34;&#34;&#34;Class to select the appropriate tool given the user input.&#34;&#34;&#34;
+
+    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.7) -&gt; None:
+        if len(tools) == 0:
+            raise ValueError(f&#39;At least one tool must be provided.&#39;)
+        self._tool = tools
+        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._score_threshold = score_threshold
+        for tool in self.tools:
+            index = [tool.name, tool.description]
+            data = dict(name=tool.name, description=tool.description)
+            self.vector_db.add_texts(index, metadata=data)
+
+    @property
+    def tools(self) -&gt; List[Type[BaseTool]]:
+        &#34;&#34;&#34;List of tools.
+
+        Returns:
+            List[Type[BaseTool]]: List of tools.
+        &#34;&#34;&#34;
+
+    @property
+    def vectordb(self) -&gt; VectorDatabase:
+        &#34;&#34;&#34;Vector database for that store tools information.
+
+        Returns:
+            VectorDatabase: Vector database for that store tools information.
+        &#34;&#34;&#34;
+        return self._vectordb
+
+    @property
+    def score_threshold(self) -&gt; float:
+        &#34;&#34;&#34;Score threshold for retrieving tools from vector database.
+
+        Returns:
+            float: Score threshold.
+        &#34;&#34;&#34;
+        return self._score_threshold
+    
+    def set_score_threshold(self, score_threshold: float) -&gt; None:
+        &#34;&#34;&#34;Set a new score threshold.
+
+        Args:
+            score_threshold (float): New score threshold.
+        &#34;&#34;&#34;
+        self._score_threshold = score_threshold
+
+    def get_tool(self, user_input: str) -&gt; Optional[Type[BaseTool]]:
+        &#34;&#34;&#34;Select the most appropriate tool for a given user input.
+
+        Args:
+            user_input (str): User input string.
+
+        Returns:
+            Optional[BaseTool]: Selected tool or None if no tool is found or required.
+        &#34;&#34;&#34;
+        tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+        if tool[&#39;score&#39;] &gt;= self.score_threshold:
+            tool = list(filter(lambda x: x.name == tool[&#39;name&#39;], self.tools))[0]
+            return tool
+        else:
+            return None</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmplus.Tools.tool_selection.ToolSelector"><code class="flex name class">
+<span>class <span class="ident">ToolSelector</span></span>
+<span>(</span><span>tools: List[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]], embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], score_threshold: float = 0.7)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class to select the appropriate tool given the user input.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ToolSelector:
+    &#34;&#34;&#34;Class to select the appropriate tool given the user input.&#34;&#34;&#34;
+
+    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.7) -&gt; None:
+        if len(tools) == 0:
+            raise ValueError(f&#39;At least one tool must be provided.&#39;)
+        self._tool = tools
+        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._score_threshold = score_threshold
+        for tool in self.tools:
+            index = [tool.name, tool.description]
+            data = dict(name=tool.name, description=tool.description)
+            self.vector_db.add_texts(index, metadata=data)
+
+    @property
+    def tools(self) -&gt; List[Type[BaseTool]]:
+        &#34;&#34;&#34;List of tools.
+
+        Returns:
+            List[Type[BaseTool]]: List of tools.
+        &#34;&#34;&#34;
+
+    @property
+    def vectordb(self) -&gt; VectorDatabase:
+        &#34;&#34;&#34;Vector database for that store tools information.
+
+        Returns:
+            VectorDatabase: Vector database for that store tools information.
+        &#34;&#34;&#34;
+        return self._vectordb
+
+    @property
+    def score_threshold(self) -&gt; float:
+        &#34;&#34;&#34;Score threshold for retrieving tools from vector database.
+
+        Returns:
+            float: Score threshold.
+        &#34;&#34;&#34;
+        return self._score_threshold
+    
+    def set_score_threshold(self, score_threshold: float) -&gt; None:
+        &#34;&#34;&#34;Set a new score threshold.
+
+        Args:
+            score_threshold (float): New score threshold.
+        &#34;&#34;&#34;
+        self._score_threshold = score_threshold
+
+    def get_tool(self, user_input: str) -&gt; Optional[Type[BaseTool]]:
+        &#34;&#34;&#34;Select the most appropriate tool for a given user input.
+
+        Args:
+            user_input (str): User input string.
+
+        Returns:
+            Optional[BaseTool]: Selected tool or None if no tool is found or required.
+        &#34;&#34;&#34;
+        tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+        if tool[&#39;score&#39;] &gt;= self.score_threshold:
+            tool = list(filter(lambda x: x.name == tool[&#39;name&#39;], self.tools))[0]
+            return tool
+        else:
+            return None</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.score_threshold"><code class="name">var <span class="ident">score_threshold</span> : float</code></dt>
+<dd>
+<div class="desc"><p>Score threshold for retrieving tools from vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>Score threshold.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def score_threshold(self) -&gt; float:
+    &#34;&#34;&#34;Score threshold for retrieving tools from vector database.
+
+    Returns:
+        float: Score threshold.
+    &#34;&#34;&#34;
+    return self._score_threshold</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.tools"><code class="name">var <span class="ident">tools</span> : List[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]]</code></dt>
+<dd>
+<div class="desc"><p>List of tools.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Type[BaseTool]]</code></dt>
+<dd>List of tools.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tools(self) -&gt; List[Type[BaseTool]]:
+    &#34;&#34;&#34;List of tools.
+
+    Returns:
+        List[Type[BaseTool]]: List of tools.
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmplus.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmplus.Data.vector_database.VectorDatabase">VectorDatabase</a></code></dt>
+<dd>
+<div class="desc"><p>Vector database for that store tools information.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>VectorDatabase</code></dt>
+<dd>Vector database for that store tools information.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def vectordb(self) -&gt; VectorDatabase:
+    &#34;&#34;&#34;Vector database for that store tools information.
+
+    Returns:
+        VectorDatabase: Vector database for that store tools information.
+    &#34;&#34;&#34;
+    return self._vectordb</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.get_tool"><code class="name flex">
+<span>def <span class="ident">get_tool</span></span>(<span>self, user_input: str) ‑> Optional[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Select the most appropriate tool for a given user input.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_input</code></strong> :&ensp;<code>str</code></dt>
+<dd>User input string.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[BaseTool]</code></dt>
+<dd>Selected tool or None if no tool is found or required.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_tool(self, user_input: str) -&gt; Optional[Type[BaseTool]]:
+    &#34;&#34;&#34;Select the most appropriate tool for a given user input.
+
+    Args:
+        user_input (str): User input string.
+
+    Returns:
+        Optional[BaseTool]: Selected tool or None if no tool is found or required.
+    &#34;&#34;&#34;
+    tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+    if tool[&#39;score&#39;] &gt;= self.score_threshold:
+        tool = list(filter(lambda x: x.name == tool[&#39;name&#39;], self.tools))[0]
+        return tool
+    else:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.set_score_threshold"><code class="name flex">
+<span>def <span class="ident">set_score_threshold</span></span>(<span>self, score_threshold: float) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set a new score threshold.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>score_threshold</code></strong> :&ensp;<code>float</code></dt>
+<dd>New score threshold.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_score_threshold(self, score_threshold: float) -&gt; None:
+    &#34;&#34;&#34;Set a new score threshold.
+
+    Args:
+        score_threshold (float): New score threshold.
+    &#34;&#34;&#34;
+    self._score_threshold = score_threshold</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmplus.Tools" href="index.html">llmplus.Tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmplus.Tools.tool_selection.ToolSelector" href="#llmplus.Tools.tool_selection.ToolSelector">ToolSelector</a></code></h4>
+<ul class="">
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.get_tool" href="#llmplus.Tools.tool_selection.ToolSelector.get_tool">get_tool</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.score_threshold" href="#llmplus.Tools.tool_selection.ToolSelector.score_threshold">score_threshold</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.set_score_threshold" href="#llmplus.Tools.tool_selection.ToolSelector.set_score_threshold">set_score_threshold</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.tools" href="#llmplus.Tools.tool_selection.ToolSelector.tools">tools</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.vectordb" href="#llmplus.Tools.tool_selection.ToolSelector.vectordb">vectordb</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
