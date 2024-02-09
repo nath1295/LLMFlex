@@ -226,4 +226,5 @@ class BaseTool(ABC):
 
         if (('footnote' in var_space.keys() & add_footnote)):
             yield f'\n\n---\n{var_space["footnote"]}'
+
         

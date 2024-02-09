@@ -2,6 +2,7 @@
 name = "llmplus"
 description = "A python package for developing AI applications with local LLMs."
 dynamic = ["version"]
+
 authors = [
     {name = "Pok Hin Tam", email = "nathan1295@gmail.com"},
 ]
