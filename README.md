@@ -178,7 +178,7 @@ if you want to chat with the web search tool:
 llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF --embeddings thenlper/gte-small --web_search --extras "model_file='openhermes-2.5-mistral-7b-16k.Q6_K.gguf', context_length=16384"
 ```
 You will see a streamlit frontend, use it to chat with the LLM model.  
-![Gradio GUI](imgs/CHAT_GUI.png)
+![Streamlit GUI](imgs/chat_gui_streamlit.png)
 
 ### 6. Serve an OpenAI API with a GGUF model
 To serve a GGUF model with OpenAI API:
