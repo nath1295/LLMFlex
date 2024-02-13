@@ -4,10 +4,22 @@ Module llmplus.Tools.tool_selection
 Classes
 -------
 
-`ToolSelector(tools: List[Type[llmplus.Tools.base_tool.BaseTool]], embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], score_threshold: float = 0.7)`
+`ToolSelector(tools: List[Type[llmplus.Tools.base_tool.BaseTool]], embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], score_threshold: float = 0.75)`
 :   Class to select the appropriate tool given the user input.
 
     ### Instance variables
+
+    `last_score: float`
+    :   The last similarity score when using get_tool.
+        
+        Returns:
+            float: The last similarity score when using get_tool.
+
+    `last_tool: str`
+    :   The last tool picked regardless of the score.
+        
+        Returns:
+            str: The last tool picked regardless of the score.
 
     `score_threshold: float`
     :   Score threshold for retrieving tools from vector database.

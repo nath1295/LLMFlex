@@ -154,7 +154,6 @@ class WebSearchTool(BaseTool):
             VectorDatabase: The temporary vector database.
         &#34;&#34;&#34;
         from .web_search_utils import get_markdown, create_content_chunks
-        from ..TextSplitters.llm_text_splitter import LLMTextSplitter
         from langchain.schema.document import Document
 
         urls = list(map(lambda x: x[&#39;href&#39;], results))
@@ -403,7 +402,6 @@ class WebSearchTool(BaseTool):
             VectorDatabase: The temporary vector database.
         &#34;&#34;&#34;
         from .web_search_utils import get_markdown, create_content_chunks
-        from ..TextSplitters.llm_text_splitter import LLMTextSplitter
         from langchain.schema.document import Document
 
         urls = list(map(lambda x: x[&#39;href&#39;], results))
@@ -633,7 +631,6 @@ class WebSearchTool(BaseTool):
         VectorDatabase: The temporary vector database.
     &#34;&#34;&#34;
     from .web_search_utils import get_markdown, create_content_chunks
-    from ..TextSplitters.llm_text_splitter import LLMTextSplitter
     from langchain.schema.document import Document
 
     urls = list(map(lambda x: x[&#39;href&#39;], results))
@@ -731,6 +728,7 @@ class WebSearchTool(BaseTool):
 <ul class="hlist">
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.description" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.description">description</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.name" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.name">name</a></code></li>
+<li><code><a title="llmplus.Tools.base_tool.BaseTool.pretty_name" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.pretty_name">pretty_name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.print" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.print">print</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.run" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.run">run</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.run_with_chat" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.run_with_chat">run_with_chat</a></code></li>

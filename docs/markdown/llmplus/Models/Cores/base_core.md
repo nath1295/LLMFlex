@@ -13,6 +13,10 @@ Classes
     Args:
         model_id (str, optional): Model id (from Huggingface) to use. Defaults to 'gpt2'.
 
+    ### Ancestors (in MRO)
+
+    * abc.ABC
+
     ### Descendants
 
     * llmplus.Models.Cores.exllamav2_core.Exl2Core
@@ -52,6 +56,12 @@ Classes
         Returns:
             Any: Tokenizer of the model.
 
+    `tokenizer_type: Literal['transformers', 'llamacpp', 'openai']`
+    :   Type of tokenizer.
+        
+        Returns:
+            Literal['transformers', 'llamacpp', 'openai']: Type of tokenizer.
+
     ### Methods
 
     `decode(self, token_ids: List[int]) ‑> str`
@@ -71,6 +81,23 @@ Classes
         
         Returns:
             List[int]: List of token ids.
+
+    `generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, stream: bool = False, **kwargs) ‑> Union[str, Iterator[str]]`
+    :   Generate the output with the given prompt.
+        
+        Args:
+            prompt (str): The prompt for the text generation.
+            temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+        
+        Returns:
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
 
     `unload(self) ‑> None`
     :   Unload the model from ram.
@@ -101,11 +128,7 @@ Classes
 
     ### Descendants
 
-    * llmplus.Models.Cores.base_core.DebugLLM
-    * llmplus.Models.Cores.exllamav2_core.Exl2LLM
-    * llmplus.Models.Cores.huggingface_core.HuggingfaceLLM
-    * llmplus.Models.Cores.llamacpp_core.LlamaCppLLM
-    * llmplus.Models.Cores.openai_core.OpenAILLM
+    * llmplus.Models.Cores.base_core.GenericLLM
 
     ### Class variables
 
@@ -120,7 +143,7 @@ Classes
 
     ### Methods
 
-    `chat(self, prompt: str, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = []) ‑> Union[str, Iterator[str]]`
+    `chat(self, prompt: str, prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) ‑> Union[str, Iterator[str]]`
     :   Chat with the llm given the input.
         
         Args:
@@ -162,14 +185,14 @@ Classes
         Yields:
             Iterator[str]: The next generated token.
 
-`DebugLLM(core: llmplus.Models.Cores.base_core.BaseCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)`
-:   Base LLM class for llmplus, using the LLM class from langchain.
+`GenericLLM(core: Type[llmplus.Models.Cores.base_core.BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)`
+:   Generic LLM class for llmplus, using the LLM class from langchain.
         
     
     Initialising the LLM.
     
     Args:
-        core (BaseCore): The BaseCore core.
+        core (Type[BaseCore]): The LLM model core.
         temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
         max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
         top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.

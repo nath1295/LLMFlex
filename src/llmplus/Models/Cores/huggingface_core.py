@@ -64,6 +64,7 @@ class HuggingfaceCore(BaseCore):
         if not hasattr(tokenizer_kwargs, 'pretrained_model_name_or_path'):
             tokenizer_kwargs['pretrained_model_name_or_path'] = model_id
         self._tokenizer = AutoTokenizer.from_pretrained(**tokenizer_kwargs)
+        self._tokenizer_type = 'transformers'
 
         if not hasattr(model_kwargs, 'device_map'):
             model_kwargs['device_map'] = 'auto'
@@ -79,29 +80,13 @@ class HuggingfaceCore(BaseCore):
         """
         return self._model_type
     
-    def unload(self) -> None:
-        """Unload the model from ram."""
-        device = self._model.device
-        del self._model
-        self._model = None
-        del self._tokenizer
-        self._tokenizer = None
-        if 'cuda' in device:
-            import torch
-            torch.cuda.empty_cache()
-    
-class HuggingfaceLLM(BaseLLM):
-    '''Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.'''
-    core: HuggingfaceCore
-    generation_config: Dict[str, Any]
-    stop: List[str]
-
-    def __init__(self, core: HuggingfaceCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -> None:
-        """Initialising the llm.
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -> Union[str, Iterator[str]]:
+        """Generate the output with the given prompt.
 
         Args:
-            core (HuggingfaceCore): The HuggingfaceCore core.
+            prompt (str): The prompt for the text generation.
             temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -109,73 +94,37 @@ class HuggingfaceLLM(BaseLLM):
             repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
-        """
-        from .utils import get_stop_words
-        stop = get_stop_words(stop, core.tokenizer, stop_newline_version, 'transformers')
-
-        generation_config = dict(
-            temperature = temperature if temperature != 0 else 0.01,
-            do_sample = False if temperature == 0 else True,
-            max_new_tokens = max_new_tokens,
-            top_p  = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        super().__init__(core=core, generation_config=generation_config, stop=stop)
-        self.generation_config = generation_config
-        self.core = core
-        self.stop = stop
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Dict[str, Any],
-    ) -> Union[str, Iterator[str]]:
-        """Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
-
-        Args:
-            prompt (str): The prompt to the llm.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-            run_manager (Optional[CallbackManagerForLLMRun], optional): Not used. Defaults to None.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
 
         Returns:
-            Union[str, Iterator]: The output string or a python generator, depending on if it's in stream mode.
-
-        Yields:
-            Iterator[str]: The next generated token.
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         """
         from .utils import get_stop_words, textgen_iterator
         import warnings
         warnings.filterwarnings('ignore')
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type='transformers') if stop is not None else self.stop
-        stream = kwargs.get('stream', False)
-        gen_config = self.generation_config.copy()
-        gen_config['stopping_criteria'] = StoppingCriteriaList([KeywordsStoppingCriteria(stop, self.core.tokenizer)])
-        for k, v in kwargs.items():
-            if k == 'temperature':
-                if v > 0:
-                    gen_config['temperature'] = v
-                    gen_config['do_sample'] = True
-                else:
-                    gen_config['temperature'] = 0.01
-                    gen_config['do_sample'] = False
-            elif k in ['max_new_tokens', 'top_p', 'top_k', 'repetition_penalty']:
-                gen_config[k] = v
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        gen_config = dict(
+            temperature=temperature if temperature!=0 else 0.01,
+            do_sample=temperature!=0,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            stopping_criteria=StoppingCriteriaList([KeywordsStoppingCriteria(stop, self.tokenizer)])
+        )
+        gen_config.update(kwargs)
                 
         if stream:
             from threading import Thread
             from transformers import TextIteratorStreamer
-            gen_config['streamer'] = TextIteratorStreamer(tokenizer=self.core.tokenizer, skip_prompt=True)
+            gen_config['streamer'] = TextIteratorStreamer(tokenizer=self.tokenizer, skip_prompt=True)
             
             def pipe(prompt):
-                tokens = self.core.tokenizer(
+                tokens = self.tokenizer(
                     prompt,
                     return_tensors='pt'
-                ).input_ids.to(self.core.model.device)
-                output = self.core.model.generate(tokens, **gen_config)
+                ).input_ids.to(self.model.device)
+                output = self.model.generate(tokens, **gen_config)
             
             trd = Thread(target=pipe, args=[prompt])
             def generate():
@@ -189,22 +138,26 @@ class HuggingfaceLLM(BaseLLM):
         else:
             from langchain.llms.utils import enforce_stop_tokens
             def pipe(prompt):
-                tokens = self.core.tokenizer(
+                tokens = self.tokenizer(
                     prompt,
                     return_tensors='pt'
-                ).input_ids.to(self.core.model.device)
-                output = self.core.model.generate(tokens, **gen_config)
-                return self.core.tokenizer.decode(output[0], skip_special_tokens=True).removeprefix(prompt)
+                ).input_ids.to(self.model.device)
+                output = self.model.generate(tokens, **gen_config)
+                return self.tokenizer.decode(output[0], skip_special_tokens=True).removeprefix(prompt)
 
             output = pipe(prompt)
             output = enforce_stop_tokens(output, stop)
             del pipe
             return output
-
-    def _llm_type(self) -> str:
-        """LLM type.
-
-        Returns:
-            str: LLM type.
-        """
-        return 'HuggingfaceLLM'
+    
+    def unload(self) -> None:
+        """Unload the model from ram."""
+        device = self._model.device
+        del self._model
+        self._model = None
+        del self._tokenizer
+        self._tokenizer = None
+        if 'cuda' in device:
+            import torch
+            torch.cuda.empty_cache()
+    

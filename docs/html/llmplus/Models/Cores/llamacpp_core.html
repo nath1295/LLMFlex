@@ -107,6 +107,7 @@ class LlamaCppCore(BaseCore):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
+        self._tokenizer_type = &#39;llamacpp&#39;
         preset = detect_prompt_template_by_id(self.model_id)
         preset = _chat_formats_map.get(self._model.chat_format, &#39;Default&#39;) if preset == &#39;Default&#39; else preset
         self._prompt_template = PromptTemplate.from_preset(preset)
@@ -133,18 +134,13 @@ class LlamaCppCore(BaseCore):
         &#34;&#34;&#34;
         return self.tokenizer.detokenize(token_ids).decode()
     
-class LlamaCppLLM(BaseLLM):
-    &#39;&#39;&#39;Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
-    core: LlamaCppCore
-    generation_config: Dict[str, Any]
-    stop: List[str]
-
-    def __init__(self, core: LlamaCppCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -&gt; None:
-        &#34;&#34;&#34;Initialising the llm.
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generate the output with the given prompt.
 
         Args:
-            core (LlamaCppCore): The LlamaCppCore core.
+            prompt (str): The prompt for the text generation.
             temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -152,86 +148,40 @@ class LlamaCppLLM(BaseLLM):
             repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
-        &#34;&#34;&#34;
-        from .utils import get_stop_words
-        stop = get_stop_words(stop, core.tokenizer, stop_newline_version, &#39;llamacpp&#39;)
-
-        generation_config = dict(
-            temperature = temperature,
-            max_new_tokens = max_new_tokens,
-            top_p = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        super().__init__(core=core, generation_config=generation_config, stop=stop)
-        self.generation_config = generation_config
-        self.core = core
-        self.stop = stop
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Dict[str, Any],
-    ) -&gt; Union[str, Iterator[str]]:
-        &#34;&#34;&#34;Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
-
-        Args:
-            prompt (str): The prompt to the llm.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-            run_manager (Optional[CallbackManagerForLLMRun], optional): Not used. Defaults to None.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
 
         Returns:
-            Union[str, Iterator]: The output string or a python generator, depending on if it&#39;s in stream mode.
-
-        Yields:
-            Iterator[str]: The next generated token.
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         &#34;&#34;&#34;
         from .utils import get_stop_words
         import warnings
         warnings.filterwarnings(&#39;ignore&#39;)
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;llamacpp&#39;) if stop is not None else self.stop
-        stream = kwargs.get(&#39;stream&#39;, False)
-        gen_config = self.generation_config.copy()
-        gen_config[&#39;stop&#39;] = stop
-        for k, v in kwargs.items():
-            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
-                gen_config[k] = v
-
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
         if stream:
             def generate():
-                for i in self.core.model(
+                for i in self.model(
                     prompt=prompt,
-                    temperature=gen_config[&#39;temperature&#39;],
-                    top_k=gen_config[&#39;top_k&#39;],
-                    top_p=gen_config[&#39;top_p&#39;],
-                    repeat_penalty=gen_config[&#39;repetition_penalty&#39;],
-                    max_tokens=gen_config[&#39;max_new_tokens&#39;],
+                    temperature=temperature,
+                    top_k=top_k,
+                    top_p=top_p,
+                    repeat_penalty=repetition_penalty,
+                    max_tokens=max_new_tokens,
                     stop=stop,
                     stream=True
                 ):
                     yield i[&#39;choices&#39;][0][&#39;text&#39;]
             return generate()
         else:
-            return self.core.model(
+            return self.model(
                 prompt=prompt,
-                temperature=gen_config[&#39;temperature&#39;],
-                top_k=gen_config[&#39;top_k&#39;],
-                top_p=gen_config[&#39;top_p&#39;],
-                repeat_penalty=gen_config[&#39;repetition_penalty&#39;],
-                max_tokens=gen_config[&#39;max_new_tokens&#39;],
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+                repeat_penalty=repetition_penalty,
+                max_tokens=max_new_tokens,
                 stop=stop
             )[&#39;choices&#39;][0][&#39;text&#39;]
-    
-    def _llm_type(self) -&gt; str:
-        &#34;&#34;&#34;LLM type.
-
-        Returns:
-            str: LLM type.
-        &#34;&#34;&#34;
-        return &#39;LlamaCppLLM&#39;</code></pre>
+    </code></pre>
 </details>
 </section>
 <section>
@@ -358,6 +308,7 @@ class LlamaCppLLM(BaseLLM):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
+        self._tokenizer_type = &#39;llamacpp&#39;
         preset = detect_prompt_template_by_id(self.model_id)
         preset = _chat_formats_map.get(self._model.chat_format, &#39;Default&#39;) if preset == &#39;Default&#39; else preset
         self._prompt_template = PromptTemplate.from_preset(preset)
@@ -382,11 +333,60 @@ class LlamaCppLLM(BaseLLM):
         Returns:
             str: Untokenized string.
         &#34;&#34;&#34;
-        return self.tokenizer.detokenize(token_ids).decode()</code></pre>
+        return self.tokenizer.detokenize(token_ids).decode()
+    
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generate the output with the given prompt.
+
+        Args:
+            prompt (str): The prompt for the text generation.
+            temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+
+        Returns:
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
+        &#34;&#34;&#34;
+        from .utils import get_stop_words
+        import warnings
+        warnings.filterwarnings(&#39;ignore&#39;)
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        if stream:
+            def generate():
+                for i in self.model(
+                    prompt=prompt,
+                    temperature=temperature,
+                    top_k=top_k,
+                    top_p=top_p,
+                    repeat_penalty=repetition_penalty,
+                    max_tokens=max_new_tokens,
+                    stop=stop,
+                    stream=True
+                ):
+                    yield i[&#39;choices&#39;][0][&#39;text&#39;]
+            return generate()
+        else:
+            return self.model(
+                prompt=prompt,
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+                repeat_penalty=repetition_penalty,
+                max_tokens=max_new_tokens,
+                stop=stop
+            )[&#39;choices&#39;][0][&#39;text&#39;]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="llmplus.Models.Cores.base_core.BaseCore" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore">BaseCore</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -395,182 +395,13 @@ class LlamaCppLLM(BaseLLM):
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.core_type" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.core_type">core_type</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.decode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.decode">decode</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.encode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.generate" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.generate">generate</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model_id" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.prompt_template" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer">tokenizer</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer_type" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer_type">tokenizer_type</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.unload" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.unload">unload</a></code></li>
-</ul>
-</li>
-</ul>
-</dd>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM"><code class="flex name class">
-<span>class <span class="ident">LlamaCppLLM</span></span>
-<span>(</span><span>core: <a title="llmplus.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a>, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Custom implementation of streaming for models loaded with <code>llama-cpp-python</code>, Used in the Llm factory to get new llm from the model.</p>
-<p>Initialising the llm.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>core</code></strong> :&ensp;<code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></code></dt>
-<dd>The LlamaCppCore core.</dd>
-<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.</dd>
-<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Maximum number of tokens to generate by the llm. Defaults to 2048.</dd>
-<dt><strong><code>top_p</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.</dd>
-<dt><strong><code>top_k</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.</dd>
-<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>The value to penalise the model for generating repetitive text. Defaults to 1.1.</dd>
-<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
-<dd>List of strings to stop the generation of the llm. Defaults to None.</dd>
-<dt><strong><code>stop_newline_version</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class LlamaCppLLM(BaseLLM):
-    &#39;&#39;&#39;Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
-    core: LlamaCppCore
-    generation_config: Dict[str, Any]
-    stop: List[str]
-
-    def __init__(self, core: LlamaCppCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -&gt; None:
-        &#34;&#34;&#34;Initialising the llm.
-
-        Args:
-            core (LlamaCppCore): The LlamaCppCore core.
-            temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
-            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
-            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
-            top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
-            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
-            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
-        &#34;&#34;&#34;
-        from .utils import get_stop_words
-        stop = get_stop_words(stop, core.tokenizer, stop_newline_version, &#39;llamacpp&#39;)
-
-        generation_config = dict(
-            temperature = temperature,
-            max_new_tokens = max_new_tokens,
-            top_p = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        super().__init__(core=core, generation_config=generation_config, stop=stop)
-        self.generation_config = generation_config
-        self.core = core
-        self.stop = stop
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Dict[str, Any],
-    ) -&gt; Union[str, Iterator[str]]:
-        &#34;&#34;&#34;Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
-
-        Args:
-            prompt (str): The prompt to the llm.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-            run_manager (Optional[CallbackManagerForLLMRun], optional): Not used. Defaults to None.
-
-        Returns:
-            Union[str, Iterator]: The output string or a python generator, depending on if it&#39;s in stream mode.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        &#34;&#34;&#34;
-        from .utils import get_stop_words
-        import warnings
-        warnings.filterwarnings(&#39;ignore&#39;)
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=&#39;llamacpp&#39;) if stop is not None else self.stop
-        stream = kwargs.get(&#39;stream&#39;, False)
-        gen_config = self.generation_config.copy()
-        gen_config[&#39;stop&#39;] = stop
-        for k, v in kwargs.items():
-            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
-                gen_config[k] = v
-
-        if stream:
-            def generate():
-                for i in self.core.model(
-                    prompt=prompt,
-                    temperature=gen_config[&#39;temperature&#39;],
-                    top_k=gen_config[&#39;top_k&#39;],
-                    top_p=gen_config[&#39;top_p&#39;],
-                    repeat_penalty=gen_config[&#39;repetition_penalty&#39;],
-                    max_tokens=gen_config[&#39;max_new_tokens&#39;],
-                    stop=stop,
-                    stream=True
-                ):
-                    yield i[&#39;choices&#39;][0][&#39;text&#39;]
-            return generate()
-        else:
-            return self.core.model(
-                prompt=prompt,
-                temperature=gen_config[&#39;temperature&#39;],
-                top_k=gen_config[&#39;top_k&#39;],
-                top_p=gen_config[&#39;top_p&#39;],
-                repeat_penalty=gen_config[&#39;repetition_penalty&#39;],
-                max_tokens=gen_config[&#39;max_new_tokens&#39;],
-                stop=stop
-            )[&#39;choices&#39;][0][&#39;text&#39;]
-    
-    def _llm_type(self) -&gt; str:
-        &#34;&#34;&#34;LLM type.
-
-        Returns:
-            str: LLM type.
-        &#34;&#34;&#34;
-        return &#39;LlamaCppLLM&#39;</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></li>
-<li>langchain_core.language_models.llms.LLM</li>
-<li>langchain_core.language_models.llms.BaseLLM</li>
-<li>langchain_core.language_models.base.BaseLanguageModel</li>
-<li>langchain_core.runnables.base.RunnableSerializable</li>
-<li>langchain_core.load.serializable.Serializable</li>
-<li>pydantic.v1.main.BaseModel</li>
-<li>pydantic.v1.utils.Representation</li>
-<li>langchain_core.runnables.base.Runnable</li>
-<li>typing.Generic</li>
-<li>abc.ABC</li>
-</ul>
-<h3>Class variables</h3>
-<dl>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.core"><code class="name">var <span class="ident">core</span> : <a title="llmplus.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.generation_config"><code class="name">var <span class="ident">generation_config</span> : Dict[str, Any]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stop"><code class="name">var <span class="ident">stop</span> : List[str]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-<h3>Inherited members</h3>
-<ul class="hlist">
-<li><code><b><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></b></code>:
-<ul class="hlist">
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.chat" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.chat">chat</a></code></li>
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_token_ids" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_token_ids">get_token_ids</a></code></li>
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.stream" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.stream">stream</a></code></li>
 </ul>
 </li>
 </ul>
@@ -598,14 +429,6 @@ class LlamaCppLLM(BaseLLM):
 <ul>
 <li>
 <h4><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></code></h4>
-</li>
-<li>
-<h4><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM">LlamaCppLLM</a></code></h4>
-<ul class="">
-<li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.core" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.core">core</a></code></li>
-<li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.generation_config" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.generation_config">generation_config</a></code></li>
-<li><code><a title="llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stop" href="#llmplus.Models.Cores.llamacpp_core.LlamaCppLLM.stop">stop</a></code></li>
-</ul>
 </li>
 </ul>
 </li>

@@ -126,7 +126,6 @@ class WebSearchTool(BaseTool):
             VectorDatabase: The temporary vector database.
         """
         from .web_search_utils import get_markdown, create_content_chunks
-        from ..TextSplitters.llm_text_splitter import LLMTextSplitter
         from langchain.schema.document import Document
 
         urls = list(map(lambda x: x['href'], results))

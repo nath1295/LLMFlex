@@ -34,16 +34,18 @@ from typing import Type, Optional, List
 class ToolSelector:
     &#34;&#34;&#34;Class to select the appropriate tool given the user input.&#34;&#34;&#34;
 
-    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.7) -&gt; None:
+    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.75) -&gt; None:
         if len(tools) == 0:
             raise ValueError(f&#39;At least one tool must be provided.&#39;)
-        self._tool = tools
+        self._tools = tools
         self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
         self._score_threshold = score_threshold
+        self._last_score = 0
+        self._last_tool = &#39;&#39;
         for tool in self.tools:
             index = [tool.name, tool.description]
             data = dict(name=tool.name, description=tool.description)
-            self.vector_db.add_texts(index, metadata=data)
+            self.vectordb.add_texts(index, metadata=data)
 
     @property
     def tools(self) -&gt; List[Type[BaseTool]]:
@@ -52,6 +54,7 @@ class ToolSelector:
         Returns:
             List[Type[BaseTool]]: List of tools.
         &#34;&#34;&#34;
+        return self._tools
 
     @property
     def vectordb(self) -&gt; VectorDatabase:
@@ -71,6 +74,24 @@ class ToolSelector:
         &#34;&#34;&#34;
         return self._score_threshold
     
+    @property
+    def last_score(self) -&gt; float:
+        &#34;&#34;&#34;The last similarity score when using get_tool.
+
+        Returns:
+            float: The last similarity score when using get_tool.
+        &#34;&#34;&#34;
+        return self._last_score
+    
+    @property
+    def last_tool(self) -&gt; str:
+        &#34;&#34;&#34;The last tool picked regardless of the score.
+
+        Returns:
+            str: The last tool picked regardless of the score.
+        &#34;&#34;&#34;
+        return self._last_tool
+    
     def set_score_threshold(self, score_threshold: float) -&gt; None:
         &#34;&#34;&#34;Set a new score threshold.
 
@@ -89,8 +110,10 @@ class ToolSelector:
             Optional[BaseTool]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
         tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+        self._last_score = tool[&#39;score&#39;]
+        self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
         if tool[&#39;score&#39;] &gt;= self.score_threshold:
-            tool = list(filter(lambda x: x.name == tool[&#39;name&#39;], self.tools))[0]
+            tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
             return tool
         else:
             return None</code></pre>
@@ -107,7 +130,7 @@ class ToolSelector:
 <dl>
 <dt id="llmplus.Tools.tool_selection.ToolSelector"><code class="flex name class">
 <span>class <span class="ident">ToolSelector</span></span>
-<span>(</span><span>tools: List[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]], embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], score_threshold: float = 0.7)</span>
+<span>(</span><span>tools: List[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]], embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], score_threshold: float = 0.75)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class to select the appropriate tool given the user input.</p></div>
@@ -118,16 +141,18 @@ class ToolSelector:
 <pre><code class="python">class ToolSelector:
     &#34;&#34;&#34;Class to select the appropriate tool given the user input.&#34;&#34;&#34;
 
-    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.7) -&gt; None:
+    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.75) -&gt; None:
         if len(tools) == 0:
             raise ValueError(f&#39;At least one tool must be provided.&#39;)
-        self._tool = tools
+        self._tools = tools
         self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
         self._score_threshold = score_threshold
+        self._last_score = 0
+        self._last_tool = &#39;&#39;
         for tool in self.tools:
             index = [tool.name, tool.description]
             data = dict(name=tool.name, description=tool.description)
-            self.vector_db.add_texts(index, metadata=data)
+            self.vectordb.add_texts(index, metadata=data)
 
     @property
     def tools(self) -&gt; List[Type[BaseTool]]:
@@ -136,6 +161,7 @@ class ToolSelector:
         Returns:
             List[Type[BaseTool]]: List of tools.
         &#34;&#34;&#34;
+        return self._tools
 
     @property
     def vectordb(self) -&gt; VectorDatabase:
@@ -155,6 +181,24 @@ class ToolSelector:
         &#34;&#34;&#34;
         return self._score_threshold
     
+    @property
+    def last_score(self) -&gt; float:
+        &#34;&#34;&#34;The last similarity score when using get_tool.
+
+        Returns:
+            float: The last similarity score when using get_tool.
+        &#34;&#34;&#34;
+        return self._last_score
+    
+    @property
+    def last_tool(self) -&gt; str:
+        &#34;&#34;&#34;The last tool picked regardless of the score.
+
+        Returns:
+            str: The last tool picked regardless of the score.
+        &#34;&#34;&#34;
+        return self._last_tool
+    
     def set_score_threshold(self, score_threshold: float) -&gt; None:
         &#34;&#34;&#34;Set a new score threshold.
 
@@ -173,14 +217,60 @@ class ToolSelector:
             Optional[BaseTool]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
         tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+        self._last_score = tool[&#39;score&#39;]
+        self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
         if tool[&#39;score&#39;] &gt;= self.score_threshold:
-            tool = list(filter(lambda x: x.name == tool[&#39;name&#39;], self.tools))[0]
+            tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
             return tool
         else:
             return None</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.last_score"><code class="name">var <span class="ident">last_score</span> : float</code></dt>
+<dd>
+<div class="desc"><p>The last similarity score when using get_tool.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>float</code></dt>
+<dd>The last similarity score when using get_tool.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def last_score(self) -&gt; float:
+    &#34;&#34;&#34;The last similarity score when using get_tool.
+
+    Returns:
+        float: The last similarity score when using get_tool.
+    &#34;&#34;&#34;
+    return self._last_score</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.last_tool"><code class="name">var <span class="ident">last_tool</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The last tool picked regardless of the score.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The last tool picked regardless of the score.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def last_tool(self) -&gt; str:
+    &#34;&#34;&#34;The last tool picked regardless of the score.
+
+    Returns:
+        str: The last tool picked regardless of the score.
+    &#34;&#34;&#34;
+    return self._last_tool</code></pre>
+</details>
+</dd>
 <dt id="llmplus.Tools.tool_selection.ToolSelector.score_threshold"><code class="name">var <span class="ident">score_threshold</span> : float</code></dt>
 <dd>
 <div class="desc"><p>Score threshold for retrieving tools from vector database.</p>
@@ -221,7 +311,8 @@ def tools(self) -&gt; List[Type[BaseTool]]:
 
     Returns:
         List[Type[BaseTool]]: List of tools.
-    &#34;&#34;&#34;</code></pre>
+    &#34;&#34;&#34;
+    return self._tools</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Tools.tool_selection.ToolSelector.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmplus.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmplus.Data.vector_database.VectorDatabase">VectorDatabase</a></code></dt>
@@ -278,8 +369,10 @@ def vectordb(self) -&gt; VectorDatabase:
         Optional[BaseTool]: Selected tool or None if no tool is found or required.
     &#34;&#34;&#34;
     tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+    self._last_score = tool[&#39;score&#39;]
+    self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
     if tool[&#39;score&#39;] &gt;= self.score_threshold:
-        tool = list(filter(lambda x: x.name == tool[&#39;name&#39;], self.tools))[0]
+        tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
         return tool
     else:
         return None</code></pre>
@@ -328,8 +421,10 @@ def vectordb(self) -&gt; VectorDatabase:
 <ul>
 <li>
 <h4><code><a title="llmplus.Tools.tool_selection.ToolSelector" href="#llmplus.Tools.tool_selection.ToolSelector">ToolSelector</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.get_tool" href="#llmplus.Tools.tool_selection.ToolSelector.get_tool">get_tool</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.last_score" href="#llmplus.Tools.tool_selection.ToolSelector.last_score">last_score</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.last_tool" href="#llmplus.Tools.tool_selection.ToolSelector.last_tool">last_tool</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.score_threshold" href="#llmplus.Tools.tool_selection.ToolSelector.score_threshold">score_threshold</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.set_score_threshold" href="#llmplus.Tools.tool_selection.ToolSelector.set_score_threshold">set_score_threshold</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.tools" href="#llmplus.Tools.tool_selection.ToolSelector.tools">tools</a></code></li>

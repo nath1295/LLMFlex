@@ -178,28 +178,9 @@ class LlmFactory:
         Returns:
             BaseLLM: An LLM.
         &#34;&#34;&#34;
-        if self.model_type == &#39;gguf&#39;:
-            from ..Cores.llamacpp_core import LlamaCppLLM
-            return LlamaCppLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type in [&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]:
-            from ..Cores.huggingface_core import HuggingfaceLLM
-            return HuggingfaceLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type == &#39;openai&#39;:
-            from ..Cores.openai_core import OpenAILLM
-            return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type == &#39;exl2&#39;:
-            from ..Cores.exllamav2_core import Exl2LLM
-            return Exl2LLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type ==&#39;debug&#39;:
-            from ..Cores.base_core import DebugLLM
-            return DebugLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        else:
-            raise ValueError(f&#39;Model type &#34;{self.model_type}&#34; not supported.&#39;)</code></pre>
+        from ..Cores.base_core import GenericLLM
+        return GenericLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)</code></pre>
 </details>
 </section>
 <section>
@@ -417,28 +398,9 @@ Defaults to dict().</dd>
         Returns:
             BaseLLM: An LLM.
         &#34;&#34;&#34;
-        if self.model_type == &#39;gguf&#39;:
-            from ..Cores.llamacpp_core import LlamaCppLLM
-            return LlamaCppLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type in [&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]:
-            from ..Cores.huggingface_core import HuggingfaceLLM
-            return HuggingfaceLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type == &#39;openai&#39;:
-            from ..Cores.openai_core import OpenAILLM
-            return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type == &#39;exl2&#39;:
-            from ..Cores.exllamav2_core import Exl2LLM
-            return Exl2LLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type ==&#39;debug&#39;:
-            from ..Cores.base_core import DebugLLM
-            return DebugLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        else:
-            raise ValueError(f&#39;Model type &#34;{self.model_type}&#34; not supported.&#39;)</code></pre>
+        from ..Cores.base_core import GenericLLM
+        return GenericLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -581,28 +543,9 @@ def prompt_template(self) -&gt; PromptTemplate:
     Returns:
         BaseLLM: An LLM.
     &#34;&#34;&#34;
-    if self.model_type == &#39;gguf&#39;:
-        from ..Cores.llamacpp_core import LlamaCppLLM
-        return LlamaCppLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                             top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-    elif self.model_type in [&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]:
-        from ..Cores.huggingface_core import HuggingfaceLLM
-        return HuggingfaceLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                             top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-    elif self.model_type == &#39;openai&#39;:
-        from ..Cores.openai_core import OpenAILLM
-        return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                             top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-    elif self.model_type == &#39;exl2&#39;:
-        from ..Cores.exllamav2_core import Exl2LLM
-        return Exl2LLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                             top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-    elif self.model_type ==&#39;debug&#39;:
-        from ..Cores.base_core import DebugLLM
-        return DebugLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                             top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-    else:
-        raise ValueError(f&#39;Model type &#34;{self.model_type}&#34; not supported.&#39;)</code></pre>
+    from ..Cores.base_core import GenericLLM
+    return GenericLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+                             top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)</code></pre>
 </details>
 </dd>
 </dl>

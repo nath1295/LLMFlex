@@ -2,9 +2,10 @@ from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
 from ...Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
-from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple
+from abc import ABC, abstractmethod
+from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple, Literal
 
-class BaseCore:
+class BaseCore(ABC):
     """Base class of Core object to store the llm model and tokenizer.
     """
     def __init__(self, model_id: str = 'gpt2', **kwargs) -> None:
@@ -17,6 +18,7 @@ class BaseCore:
         self._model_id = model_id
         self._core_type = 'BaseCore'
         self._tokenizer = AutoTokenizer.from_pretrained(model_id)
+        self._tokenizer_type = 'transformers'
         self._model = None
 
     @property
@@ -36,6 +38,15 @@ class BaseCore:
             Any: Tokenizer of the model.
         """
         return self._tokenizer
+    
+    @property
+    def tokenizer_type(self) -> Literal['transformers', 'llamacpp', 'openai']:
+        """Type of tokenizer.
+
+        Returns:
+            Literal['transformers', 'llamacpp', 'openai']: Type of tokenizer.
+        """
+        return self._tokenizer_type
     
     @property
     def core_type(self) -> str:
@@ -89,6 +100,28 @@ class BaseCore:
         """
         return self.tokenizer.decode(token_ids=token_ids, skip_special_tokens=True)
     
+    @abstractmethod
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -> Union[str, Iterator[str]]:
+        """Generate the output with the given prompt.
+
+        Args:
+            prompt (str): The prompt for the text generation.
+            temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+
+        Returns:
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
+        """
+        pass
+    
     def unload(self) -> None:
         """Unload the model from ram."""
         import gc
@@ -137,23 +170,19 @@ class BaseLLM(LLM):
         Yields:
             Iterator[str]: The next generated token.
         """
-        output = 'This is a testing llm. '
-        tokens = (output * 5).split(' ')
-
-        stream = False
-        if 'stream' in kwargs.keys():
-            stream = kwargs['stream']
-
-        if stream:
-            import time
-            def test_stream():
-                for i in tokens:
-                    time.sleep(0.05)
-                    yield i + ' '
-            return test_stream()
-        
-        else:
-            return output
+        from .utils import get_stop_words
+        gen_config = dict(
+            temperature=kwargs.pop('temperature', self.generation_config['temperature']),
+            max_new_tokens=kwargs.pop('max_new_tokens', self.generation_config['max_new_tokens']),
+            top_p=kwargs.pop('top_p', self.generation_config['top_p']),
+            top_k=kwargs.pop('top_k', self.generation_config['top_k']),
+            repetition_penalty=kwargs.pop('repetition_penalty', self.generation_config['repetition_penalty']),
+            stop=self.stop if stop is None else get_stop_words(stop, tokenizer=self.core.tokenizer, 
+                                                               add_newline_version=kwargs.pop('stop_newline_version', False), tokenizer_type=self.core.tokenizer_type),
+            stream=kwargs.pop('stream', False)
+        )
+        gen_config.update(kwargs)
+        return self.core.generate(prompt=prompt, **gen_config)
         
     def stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) -> Iterator[str]:
         """Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
@@ -166,7 +195,20 @@ class BaseLLM(LLM):
         Yields:
             Iterator[str]: The next generated token.
         """
-        return self._call(prompt=input, stop=stop, stream=True)
+        from .utils import get_stop_words
+        gen_config = dict(
+            temperature=kwargs.pop('temperature', self.generation_config['temperature']),
+            max_new_tokens=kwargs.pop('max_new_tokens', self.generation_config['max_new_tokens']),
+            top_p=kwargs.pop('top_p', self.generation_config['top_p']),
+            top_k=kwargs.pop('top_k', self.generation_config['top_k']),
+            repetition_penalty=kwargs.pop('repetition_penalty', self.generation_config['repetition_penalty']),
+            stop=self.stop if stop is None else get_stop_words(stop, tokenizer=self.core.tokenizer, 
+                                                               add_newline_version=kwargs.pop('stop_newline_version', False), tokenizer_type=self.core.tokenizer_type),
+            stream=True
+        )
+        gen_config.update(kwargs)
+        gen_config['stream'] = True
+        return self.core.generate(prompt=input, **gen_config)
     
     def get_num_tokens(self, text: str) -> int:
         """Get the number of tokens given the text string.
@@ -191,7 +233,7 @@ class BaseLLM(LLM):
         return self.core.encode(text=text)
     
     def chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, 
-            system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -> Union[str, Iterator[str]]:
+            system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) -> Union[str, Iterator[str]]:
         """Chat with the llm given the input.
 
         Args:
@@ -220,19 +262,19 @@ class BaseLLM(LLM):
         """
         return 'BaseLLM'
 
-class DebugLLM(BaseLLM):
-    """Base LLM class for llmplus, using the LLM class from langchain.
+class GenericLLM(BaseLLM):
+    """Generic LLM class for llmplus, using the LLM class from langchain.
     """
     core: BaseCore
     generation_config: Dict[str, Any]
     stop: List[str]
 
-    def __init__(self, core: BaseCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+    def __init__(self, core: Type[BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
                  repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -> None:
         """Initialising the LLM.
 
         Args:
-            core (BaseCore): The BaseCore core.
+            core (Type[BaseCore]): The LLM model core.
             temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -250,7 +292,7 @@ class DebugLLM(BaseLLM):
             repetition_penalty = repetition_penalty
         )
 
-        stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version)
+        stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=core.tokenizer_type)
         super().__init__(core=core, generation_config=generation_config, stop=stop)
         self.core = core
         self.generation_config = generation_config
@@ -262,7 +304,7 @@ class DebugLLM(BaseLLM):
         Returns:
             str: LLM type.
         """
-        return 'DebugLLM'
+        return 'GenericLLM'
     
     
 

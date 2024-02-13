@@ -79,6 +79,7 @@ class LlamaCppCore(BaseCore):
         load_kwargs.update(kwargs)
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
+        self._tokenizer_type = 'llamacpp'
         preset = detect_prompt_template_by_id(self.model_id)
         preset = _chat_formats_map.get(self._model.chat_format, 'Default') if preset == 'Default' else preset
         self._prompt_template = PromptTemplate.from_preset(preset)
@@ -105,18 +106,13 @@ class LlamaCppCore(BaseCore):
         """
         return self.tokenizer.detokenize(token_ids).decode()
     
-class LlamaCppLLM(BaseLLM):
-    '''Custom implementation of streaming for models loaded with `llama-cpp-python`, Used in the Llm factory to get new llm from the model.'''
-    core: LlamaCppCore
-    generation_config: Dict[str, Any]
-    stop: List[str]
-
-    def __init__(self, core: LlamaCppCore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -> None:
-        """Initialising the llm.
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -> Union[str, Iterator[str]]:
+        """Generate the output with the given prompt.
 
         Args:
-            core (LlamaCppCore): The LlamaCppCore core.
+            prompt (str): The prompt for the text generation.
             temperature (float, optional): Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -124,83 +120,37 @@ class LlamaCppLLM(BaseLLM):
             repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
-        """
-        from .utils import get_stop_words
-        stop = get_stop_words(stop, core.tokenizer, stop_newline_version, 'llamacpp')
-
-        generation_config = dict(
-            temperature = temperature,
-            max_new_tokens = max_new_tokens,
-            top_p = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        super().__init__(core=core, generation_config=generation_config, stop=stop)
-        self.generation_config = generation_config
-        self.core = core
-        self.stop = stop
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Dict[str, Any],
-    ) -> Union[str, Iterator[str]]:
-        """Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
-
-        Args:
-            prompt (str): The prompt to the llm.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-            run_manager (Optional[CallbackManagerForLLMRun], optional): Not used. Defaults to None.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
 
         Returns:
-            Union[str, Iterator]: The output string or a python generator, depending on if it's in stream mode.
-
-        Yields:
-            Iterator[str]: The next generated token.
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         """
         from .utils import get_stop_words
         import warnings
         warnings.filterwarnings('ignore')
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type='llamacpp') if stop is not None else self.stop
-        stream = kwargs.get('stream', False)
-        gen_config = self.generation_config.copy()
-        gen_config['stop'] = stop
-        for k, v in kwargs.items():
-            if k in ['temperature', 'max_new_tokens', 'top_p', 'top_k', 'repetition_penalty']:
-                gen_config[k] = v
-
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
         if stream:
             def generate():
-                for i in self.core.model(
+                for i in self.model(
                     prompt=prompt,
-                    temperature=gen_config['temperature'],
-                    top_k=gen_config['top_k'],
-                    top_p=gen_config['top_p'],
-                    repeat_penalty=gen_config['repetition_penalty'],
-                    max_tokens=gen_config['max_new_tokens'],
+                    temperature=temperature,
+                    top_k=top_k,
+                    top_p=top_p,
+                    repeat_penalty=repetition_penalty,
+                    max_tokens=max_new_tokens,
                     stop=stop,
                     stream=True
                 ):
                     yield i['choices'][0]['text']
             return generate()
         else:
-            return self.core.model(
+            return self.model(
                 prompt=prompt,
-                temperature=gen_config['temperature'],
-                top_k=gen_config['top_k'],
-                top_p=gen_config['top_p'],
-                repeat_penalty=gen_config['repetition_penalty'],
-                max_tokens=gen_config['max_new_tokens'],
+                temperature=temperature,
+                top_k=top_k,
+                top_p=top_p,
+                repeat_penalty=repetition_penalty,
+                max_tokens=max_new_tokens,
                 stop=stop
             )['choices'][0]['text']
     
-    def _llm_type(self) -> str:
-        """LLM type.
-
-        Returns:
-            str: LLM type.
-        """
-        return 'LlamaCppLLM'

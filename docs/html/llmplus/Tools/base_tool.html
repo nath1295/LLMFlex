@@ -51,6 +51,16 @@ class BaseTool(ABC):
         return self._name
     
     @property
+    def pretty_name(self) -&gt; str:
+        &#34;&#34;&#34;Pretty name of the tool.
+
+        Returns:
+            str: Pretty name of the tool.
+        &#34;&#34;&#34;
+        pretty = self.name.replace(&#39;_&#39;, &#39; &#39;)
+        return pretty.title()
+    
+    @property
     def description(self) -&gt; str:
         &#34;&#34;&#34;Description of the tool.
 
@@ -191,13 +201,14 @@ class BaseTool(ABC):
             self.print(&#39;\n&#39;)
             var_space.update(output_dict)
         final = var_space[&#39;final_output&#39;]
-        if ((&#39;footnote&#39; in var_space.keys() &amp; add_footnote)):
+        if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
             final += f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
         return final
 
     
     def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
-            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, add_footnote: bool = True, **kwargs) -&gt; Iterator[Union[str, Iterator[str]]]:
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+            add_footnote: bool = True, **kwargs) -&gt; Iterator[Union[str, Tuple[str, str], Iterator[str]]]:
         &#34;&#34;&#34;Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
 
         Args:
@@ -220,17 +231,16 @@ class BaseTool(ABC):
             history = history
         )
         var_space.update(kwargs)
-        info_format = &#39;&lt;details&gt;\n&lt;summary&gt;{header}&lt;/summary&gt;\n{info}\n&lt;/details&gt;&#39;
         info = []
         name = self.name.replace(&#39;_&#39;, &#39; &#39;).title()
         header = f&#39;Running &#34;{name}&#34;...&#39;
-        yield info_format.format(header=header, info=&#39;\n&#39;.join(info))
+        yield (header, &#39;\n&#39;.join(info))
 
         for k, v in self._tool_schema().items():
             input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
             output_dict = dict()
             info.append(f&#39;{k}:  &#39;)
-            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+            yield (header + k, &#39;\n&#39;.join(info))
             if len(v[&#39;output&#39;]) == 0:
                 self._execute_step(k, **input_dict)
             elif len(v[&#39;output&#39;]) == 1:
@@ -248,12 +258,12 @@ class BaseTool(ABC):
                     info.append(f&#39;\t{s}: {output}  &#39;)
             info.append(&#39;\n&#39;)
             var_space.update(output_dict)
-            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
-        yield info_format.format(header=f&#39;&#34;{name}&#34; completed.&#39;, info=&#39;\n&#39;.join(info))
+            yield (header + k, &#39;\n&#39;.join(info))
+        yield (f&#39;&#34;{name}&#34; completed.&#39;, &#39;\n&#39;.join(info))
         yield var_space[&#39;final_output&#39;]
 
-        if ((&#39;footnote&#39; in var_space.keys() &amp; add_footnote)):
-            yield f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
+        if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
+            yield var_space[&#34;footnote&#34;]
 
         </code></pre>
 </details>
@@ -298,6 +308,16 @@ class BaseTool(ABC):
         return self._name
     
     @property
+    def pretty_name(self) -&gt; str:
+        &#34;&#34;&#34;Pretty name of the tool.
+
+        Returns:
+            str: Pretty name of the tool.
+        &#34;&#34;&#34;
+        pretty = self.name.replace(&#39;_&#39;, &#39; &#39;)
+        return pretty.title()
+    
+    @property
     def description(self) -&gt; str:
         &#34;&#34;&#34;Description of the tool.
 
@@ -438,13 +458,14 @@ class BaseTool(ABC):
             self.print(&#39;\n&#39;)
             var_space.update(output_dict)
         final = var_space[&#39;final_output&#39;]
-        if ((&#39;footnote&#39; in var_space.keys() &amp; add_footnote)):
+        if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
             final += f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
         return final
 
     
     def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
-            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, add_footnote: bool = True, **kwargs) -&gt; Iterator[Union[str, Iterator[str]]]:
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+            add_footnote: bool = True, **kwargs) -&gt; Iterator[Union[str, Tuple[str, str], Iterator[str]]]:
         &#34;&#34;&#34;Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
 
         Args:
@@ -467,17 +488,16 @@ class BaseTool(ABC):
             history = history
         )
         var_space.update(kwargs)
-        info_format = &#39;&lt;details&gt;\n&lt;summary&gt;{header}&lt;/summary&gt;\n{info}\n&lt;/details&gt;&#39;
         info = []
         name = self.name.replace(&#39;_&#39;, &#39; &#39;).title()
         header = f&#39;Running &#34;{name}&#34;...&#39;
-        yield info_format.format(header=header, info=&#39;\n&#39;.join(info))
+        yield (header, &#39;\n&#39;.join(info))
 
         for k, v in self._tool_schema().items():
             input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
             output_dict = dict()
             info.append(f&#39;{k}:  &#39;)
-            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+            yield (header + k, &#39;\n&#39;.join(info))
             if len(v[&#39;output&#39;]) == 0:
                 self._execute_step(k, **input_dict)
             elif len(v[&#39;output&#39;]) == 1:
@@ -495,12 +515,12 @@ class BaseTool(ABC):
                     info.append(f&#39;\t{s}: {output}  &#39;)
             info.append(&#39;\n&#39;)
             var_space.update(output_dict)
-            yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
-        yield info_format.format(header=f&#39;&#34;{name}&#34; completed.&#39;, info=&#39;\n&#39;.join(info))
+            yield (header + k, &#39;\n&#39;.join(info))
+        yield (f&#39;&#34;{name}&#34; completed.&#39;, &#39;\n&#39;.join(info))
         yield var_space[&#39;final_output&#39;]
 
-        if ((&#39;footnote&#39; in var_space.keys() &amp; add_footnote)):
-            yield f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;</code></pre>
+        if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
+            yield var_space[&#34;footnote&#34;]</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -556,6 +576,29 @@ def name(self) -&gt; str:
         str: Name of the tool.
     &#34;&#34;&#34;
     return self._name</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.base_tool.BaseTool.pretty_name"><code class="name">var <span class="ident">pretty_name</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Pretty name of the tool.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Pretty name of the tool.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def pretty_name(self) -&gt; str:
+    &#34;&#34;&#34;Pretty name of the tool.
+
+    Returns:
+        str: Pretty name of the tool.
+    &#34;&#34;&#34;
+    pretty = self.name.replace(&#39;_&#39;, &#39; &#39;)
+    return pretty.title()</code></pre>
 </details>
 </dd>
 </dl>
@@ -660,13 +703,13 @@ def name(self) -&gt; str:
         self.print(&#39;\n&#39;)
         var_space.update(output_dict)
     final = var_space[&#39;final_output&#39;]
-    if ((&#39;footnote&#39; in var_space.keys() &amp; add_footnote)):
+    if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
         final += f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
     return final</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Tools.base_tool.BaseTool.run_with_chat"><code class="name flex">
-<span>def <span class="ident">run_with_chat</span></span>(<span>self, tool_input: str, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, add_footnote: bool = True, **kwargs) ‑> Iterator[Union[str, Iterator[str]]]</span>
+<span>def <span class="ident">run_with_chat</span></span>(<span>self, tool_input: str, llm: Type[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, add_footnote: bool = True, **kwargs) ‑> Iterator[Union[str, Tuple[str, str], Iterator[str]]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.</p>
@@ -695,7 +738,8 @@ def name(self) -&gt; str:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
-        stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, add_footnote: bool = True, **kwargs) -&gt; Iterator[Union[str, Iterator[str]]]:
+        stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+        add_footnote: bool = True, **kwargs) -&gt; Iterator[Union[str, Tuple[str, str], Iterator[str]]]:
     &#34;&#34;&#34;Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
 
     Args:
@@ -718,17 +762,16 @@ def name(self) -&gt; str:
         history = history
     )
     var_space.update(kwargs)
-    info_format = &#39;&lt;details&gt;\n&lt;summary&gt;{header}&lt;/summary&gt;\n{info}\n&lt;/details&gt;&#39;
     info = []
     name = self.name.replace(&#39;_&#39;, &#39; &#39;).title()
     header = f&#39;Running &#34;{name}&#34;...&#39;
-    yield info_format.format(header=header, info=&#39;\n&#39;.join(info))
+    yield (header, &#39;\n&#39;.join(info))
 
     for k, v in self._tool_schema().items():
         input_dict = {i: var_space[i] for i in v[&#39;input&#39;]}
         output_dict = dict()
         info.append(f&#39;{k}:  &#39;)
-        yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
+        yield (header + k, &#39;\n&#39;.join(info))
         if len(v[&#39;output&#39;]) == 0:
             self._execute_step(k, **input_dict)
         elif len(v[&#39;output&#39;]) == 1:
@@ -746,12 +789,12 @@ def name(self) -&gt; str:
                 info.append(f&#39;\t{s}: {output}  &#39;)
         info.append(&#39;\n&#39;)
         var_space.update(output_dict)
-        yield info_format.format(header=header + k, info=&#39;\n&#39;.join(info))
-    yield info_format.format(header=f&#39;&#34;{name}&#34; completed.&#39;, info=&#39;\n&#39;.join(info))
+        yield (header + k, &#39;\n&#39;.join(info))
+    yield (f&#39;&#34;{name}&#34; completed.&#39;, &#39;\n&#39;.join(info))
     yield var_space[&#39;final_output&#39;]
 
-    if ((&#39;footnote&#39; in var_space.keys() &amp; add_footnote)):
-        yield f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;</code></pre>
+    if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
+        yield var_space[&#34;footnote&#34;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -774,9 +817,10 @@ def name(self) -&gt; str:
 <ul>
 <li>
 <h4><code><a title="llmplus.Tools.base_tool.BaseTool" href="#llmplus.Tools.base_tool.BaseTool">BaseTool</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.description" href="#llmplus.Tools.base_tool.BaseTool.description">description</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.name" href="#llmplus.Tools.base_tool.BaseTool.name">name</a></code></li>
+<li><code><a title="llmplus.Tools.base_tool.BaseTool.pretty_name" href="#llmplus.Tools.base_tool.BaseTool.pretty_name">pretty_name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.print" href="#llmplus.Tools.base_tool.BaseTool.print">print</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.run" href="#llmplus.Tools.base_tool.BaseTool.run">run</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.run_with_chat" href="#llmplus.Tools.base_tool.BaseTool.run_with_chat">run_with_chat</a></code></li>

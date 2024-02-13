@@ -23,6 +23,16 @@ class BaseTool(ABC):
         return self._name
     
     @property
+    def pretty_name(self) -> str:
+        """Pretty name of the tool.
+
+        Returns:
+            str: Pretty name of the tool.
+        """
+        pretty = self.name.replace('_', ' ')
+        return pretty.title()
+    
+    @property
     def description(self) -> str:
         """Description of the tool.
 
@@ -163,13 +173,14 @@ class BaseTool(ABC):
             self.print('\n')
             var_space.update(output_dict)
         final = var_space['final_output']
-        if (('footnote' in var_space.keys() & add_footnote)):
+        if (('footnote' in var_space.keys()) & add_footnote):
             final += f'\n\n---\n{var_space["footnote"]}'
         return final
 
     
     def run_with_chat(self, tool_input: str, llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None, 
-            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, add_footnote: bool = True, **kwargs) -> Iterator[Union[str, Iterator[str]]]:
+            stream: bool = False, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+            add_footnote: bool = True, **kwargs) -> Iterator[Union[str, Tuple[str, str], Iterator[str]]]:
         """Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
 
         Args:
@@ -192,17 +203,16 @@ class BaseTool(ABC):
             history = history
         )
         var_space.update(kwargs)
-        info_format = '<details>\n<summary>{header}</summary>\n{info}\n</details>'
         info = []
         name = self.name.replace('_', ' ').title()
         header = f'Running "{name}"...'
-        yield info_format.format(header=header, info='\n'.join(info))
+        yield (header, '\n'.join(info))
 
         for k, v in self._tool_schema().items():
             input_dict = {i: var_space[i] for i in v['input']}
             output_dict = dict()
             info.append(f'{k}:  ')
-            yield info_format.format(header=header + k, info='\n'.join(info))
+            yield (header + k, '\n'.join(info))
             if len(v['output']) == 0:
                 self._execute_step(k, **input_dict)
             elif len(v['output']) == 1:
@@ -220,11 +230,11 @@ class BaseTool(ABC):
                     info.append(f'\t{s}: {output}  ')
             info.append('\n')
             var_space.update(output_dict)
-            yield info_format.format(header=header + k, info='\n'.join(info))
-        yield info_format.format(header=f'"{name}" completed.', info='\n'.join(info))
+            yield (header + k, '\n'.join(info))
+        yield (f'"{name}" completed.', '\n'.join(info))
         yield var_space['final_output']
 
-        if (('footnote' in var_space.keys() & add_footnote)):
-            yield f'\n\n---\n{var_space["footnote"]}'
+        if (('footnote' in var_space.keys()) & add_footnote):
+            yield var_space["footnote"]
 
         

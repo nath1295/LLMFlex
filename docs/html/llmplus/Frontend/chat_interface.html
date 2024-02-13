@@ -157,7 +157,7 @@ class ChatInterface:
         &#34;&#34;&#34;
         btns = []
         for k, v in self.config_dict.items():
-            if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; k != &#39;send&#39;):
+            if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; (k != &#39;send&#39;)):
                 btns.append(k)
         return btns
 
@@ -746,7 +746,7 @@ class ChatInterface:
         &#34;&#34;&#34;
         btns = []
         for k, v in self.config_dict.items():
-            if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; k != &#39;send&#39;):
+            if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; (k != &#39;send&#39;)):
                 btns.append(k)
         return btns
 
@@ -1213,7 +1213,7 @@ def buttons(self) -&gt; List[str]:
     &#34;&#34;&#34;
     btns = []
     for k, v in self.config_dict.items():
-        if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; k != &#39;send&#39;):
+        if ((v[&#39;obj&#39;] == &#39;btn&#39;) &amp; (k != &#39;send&#39;)):
             btns.append(k)
     return btns</code></pre>
 </details>

@@ -32,6 +32,12 @@ Classes
         Returns:
             str: Name of the tool.
 
+    `pretty_name: str`
+    :   Pretty name of the tool.
+        
+        Returns:
+            str: Pretty name of the tool.
+
     ### Methods
 
     `print(self, text: str, **kwargs) ‑> None`
@@ -54,7 +60,7 @@ Classes
         Returns:
             Union[str, Iterator[str]]: Output of the tool.
 
-    `run_with_chat(self, tool_input: str, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, add_footnote: bool = True, **kwargs) ‑> Iterator[Union[str, Iterator[str]]]`
+    `run_with_chat(self, tool_input: str, llm: Type[llmplus.Models.Cores.base_core.BaseLLM], prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, add_footnote: bool = True, **kwargs) ‑> Iterator[Union[str, Tuple[str, str], Iterator[str]]]`
     :   Running tool with chat, it will yield the markdown friendly string of tool info for each steps and the final output, along with any extra information after the final output.
         
         Args:

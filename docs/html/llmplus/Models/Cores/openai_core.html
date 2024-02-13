@@ -58,9 +58,11 @@ class OpenAICore(BaseCore):
             os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
             from transformers import AutoTokenizer
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
+            self._tokenizer_type = &#39;transformers&#39;
         elif self._is_openai:
             import tiktoken
             self._tokenizer = tiktoken.encoding_for_model(self._model_id)
+            self._tokenizer_type = &#39;openai&#39;
         else:
             raise ValueError(f&#39;Cannot infer tokenizer, please specify the tokenizer_id.&#39;)
     
@@ -90,18 +92,13 @@ class OpenAICore(BaseCore):
             return self._tokenizer.decode(token_ids)
         return self.tokenizer.decode(token_ids=token_ids, skip_special_tokens=True)
     
-class OpenAILLM(BaseLLM):
-    &#39;&#39;&#39;Custom implementation of streaming for models from OpenAI api. Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
-    core: OpenAICore
-    generation_config: Dict[str, Any]
-    stop: List[str]
-
-    def __init__(self, core: OpenAICore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -&gt; None:
-        &#34;&#34;&#34;Initialising the llm.
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generate the output with the given prompt.
 
         Args:
-            core (OpenAICore): The OpenAICore core.
+            prompt (str): The prompt for the text generation.
             temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
             max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
@@ -109,64 +106,24 @@ class OpenAILLM(BaseLLM):
             repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
             stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
             stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
-        &#34;&#34;&#34;
-        from .utils import get_stop_words
-        tokenizer_type = &#39;openai&#39; if core._is_openai else &#39;transformers&#39;
-        stop = get_stop_words(stop, core.tokenizer, stop_newline_version, tokenizer_type)
-
-        generation_config = dict(
-            temperature = temperature,
-            max_new_tokens = max_new_tokens,
-            top_p = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        super().__init__(core=core, generation_config=generation_config, stop=stop)
-        self.generation_config = generation_config
-        self.core = core
-        self.stop = stop
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Dict[str, Any],
-    ) -&gt; Union[str, Iterator[str]]:
-        &#34;&#34;&#34;Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
-
-        Args:
-            prompt (str): The prompt to the llm.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-            run_manager (Optional[CallbackManagerForLLMRun], optional): Not used. Defaults to None.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
 
         Returns:
-            Union[str, Iterator]: The output string or a python generator, depending on if it&#39;s in stream mode.
-
-        Yields:
-            Iterator[str]: The next generated token.
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         &#34;&#34;&#34;
         import warnings
         from .utils import get_stop_words, textgen_iterator
         warnings.filterwarnings(&#39;ignore&#39;)
-        tokenizer_type = &#39;openai&#39; if self.core._is_openai else &#39;transformers&#39;
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=tokenizer_type) if stop is not None else self.stop
-        stream = kwargs.get(&#39;stream&#39;, False)
-        gen_config = self.generation_config.copy()
-        gen_config[&#39;stop&#39;] = stop
-        for k, v in kwargs.items():
-            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
-                gen_config[k] = v
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
         if stream:
             def generate():
-                for i in self.core._model.completions.create(
-                    model=self.core.model_id,
+                for i in self._model.completions.create(
+                    model=self.model_id,
                     prompt=prompt,
-                    temperature=gen_config[&#39;temperature&#39;],
-                    top_p=gen_config[&#39;top_p&#39;],
-                    frequency_penalty=gen_config[&#39;repetition_penalty&#39;],
-                    max_tokens=gen_config[&#39;max_new_tokens&#39;],
+                    temperature=temperature,
+                    top_p=top_p,
+                    frequency_penalty=repetition_penalty,
+                    max_tokens=max_new_tokens,
                     stop=stop,
                     stream=True
                 ):
@@ -174,25 +131,17 @@ class OpenAILLM(BaseLLM):
             return textgen_iterator(generate(), stop=stop)
         else:
             from langchain.llms.utils import enforce_stop_tokens
-            output = self.core._model.completions.create(
-                model=self.core.model_id,
+            output = self._model.completions.create(
+                model=self.model_id,
                 prompt=prompt,
-                temperature=gen_config[&#39;temperature&#39;],
-                top_p=gen_config[&#39;top_p&#39;],
-                frequency_penalty=gen_config[&#39;repetition_penalty&#39;],
-                max_tokens=gen_config[&#39;max_new_tokens&#39;],
+                temperature=temperature,
+                top_p=top_p,
+                frequency_penalty=repetition_penalty,
+                max_tokens=max_new_tokens,
                 stop=stop
             ).choices[0].text
             output = enforce_stop_tokens(output, stop=stop)
-            return output
-
-    def _llm_type(self) -&gt; str:
-        &#34;&#34;&#34;LLM type.
-
-        Returns:
-            str: LLM type.
-        &#34;&#34;&#34;
-        return &#39;OpenAILLM&#39;</code></pre>
+            return output</code></pre>
 </details>
 </section>
 <section>
@@ -255,9 +204,11 @@ class OpenAILLM(BaseLLM):
             os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
             from transformers import AutoTokenizer
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
+            self._tokenizer_type = &#39;transformers&#39;
         elif self._is_openai:
             import tiktoken
             self._tokenizer = tiktoken.encoding_for_model(self._model_id)
+            self._tokenizer_type = &#39;openai&#39;
         else:
             raise ValueError(f&#39;Cannot infer tokenizer, please specify the tokenizer_id.&#39;)
     
@@ -285,11 +236,63 @@ class OpenAILLM(BaseLLM):
         &#34;&#34;&#34;
         if self._is_openai:
             return self._tokenizer.decode(token_ids)
-        return self.tokenizer.decode(token_ids=token_ids, skip_special_tokens=True)</code></pre>
+        return self.tokenizer.decode(token_ids=token_ids, skip_special_tokens=True)
+    
+    def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generate the output with the given prompt.
+
+        Args:
+            prompt (str): The prompt for the text generation.
+            temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+
+        Returns:
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
+        &#34;&#34;&#34;
+        import warnings
+        from .utils import get_stop_words, textgen_iterator
+        warnings.filterwarnings(&#39;ignore&#39;)
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        if stream:
+            def generate():
+                for i in self._model.completions.create(
+                    model=self.model_id,
+                    prompt=prompt,
+                    temperature=temperature,
+                    top_p=top_p,
+                    frequency_penalty=repetition_penalty,
+                    max_tokens=max_new_tokens,
+                    stop=stop,
+                    stream=True
+                ):
+                    yield i.choices[0].text
+            return textgen_iterator(generate(), stop=stop)
+        else:
+            from langchain.llms.utils import enforce_stop_tokens
+            output = self._model.completions.create(
+                model=self.model_id,
+                prompt=prompt,
+                temperature=temperature,
+                top_p=top_p,
+                frequency_penalty=repetition_penalty,
+                max_tokens=max_new_tokens,
+                stop=stop
+            ).choices[0].text
+            output = enforce_stop_tokens(output, stop=stop)
+            return output</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="llmplus.Models.Cores.base_core.BaseCore" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore">BaseCore</a></li>
+<li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -298,186 +301,13 @@ class OpenAILLM(BaseLLM):
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.core_type" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.core_type">core_type</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.decode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.decode">decode</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.encode" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.generate" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.generate">generate</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.model_id" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.prompt_template" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer">tokenizer</a></code></li>
+<li><code><a title="llmplus.Models.Cores.base_core.BaseCore.tokenizer_type" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.tokenizer_type">tokenizer_type</a></code></li>
 <li><code><a title="llmplus.Models.Cores.base_core.BaseCore.unload" href="base_core.html#llmplus.Models.Cores.base_core.BaseCore.unload">unload</a></code></li>
-</ul>
-</li>
-</ul>
-</dd>
-<dt id="llmplus.Models.Cores.openai_core.OpenAILLM"><code class="flex name class">
-<span>class <span class="ident">OpenAILLM</span></span>
-<span>(</span><span>core: <a title="llmplus.Models.Cores.openai_core.OpenAICore" href="#llmplus.Models.Cores.openai_core.OpenAICore">OpenAICore</a>, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Custom implementation of streaming for models from OpenAI api. Used in the Llm factory to get new llm from the model.</p>
-<p>Initialising the llm.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>core</code></strong> :&ensp;<code><a title="llmplus.Models.Cores.openai_core.OpenAICore" href="#llmplus.Models.Cores.openai_core.OpenAICore">OpenAICore</a></code></dt>
-<dd>The OpenAICore core.</dd>
-<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.</dd>
-<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Maximum number of tokens to generate by the llm. Defaults to 2048.</dd>
-<dt><strong><code>top_p</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.</dd>
-<dt><strong><code>top_k</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.</dd>
-<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>The value to penalise the model for generating repetitive text. Defaults to 1.1.</dd>
-<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
-<dd>List of strings to stop the generation of the llm. Defaults to None.</dd>
-<dt><strong><code>stop_newline_version</code></strong> :&ensp;<code>bool</code>, optional</dt>
-<dd>Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class OpenAILLM(BaseLLM):
-    &#39;&#39;&#39;Custom implementation of streaming for models from OpenAI api. Used in the Llm factory to get new llm from the model.&#39;&#39;&#39;
-    core: OpenAICore
-    generation_config: Dict[str, Any]
-    stop: List[str]
-
-    def __init__(self, core: OpenAICore, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -&gt; None:
-        &#34;&#34;&#34;Initialising the llm.
-
-        Args:
-            core (OpenAICore): The OpenAICore core.
-            temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
-            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
-            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
-            top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
-            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
-            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
-        &#34;&#34;&#34;
-        from .utils import get_stop_words
-        tokenizer_type = &#39;openai&#39; if core._is_openai else &#39;transformers&#39;
-        stop = get_stop_words(stop, core.tokenizer, stop_newline_version, tokenizer_type)
-
-        generation_config = dict(
-            temperature = temperature,
-            max_new_tokens = max_new_tokens,
-            top_p = top_p,
-            top_k = top_k,
-            repetition_penalty = repetition_penalty
-        )
-
-        super().__init__(core=core, generation_config=generation_config, stop=stop)
-        self.generation_config = generation_config
-        self.core = core
-        self.stop = stop
-
-    def _call(
-        self,
-        prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
-        **kwargs: Dict[str, Any],
-    ) -&gt; Union[str, Iterator[str]]:
-        &#34;&#34;&#34;Text generation of the llm. Return the generated string given the prompt. If set `stream=True`, return a python generator that yield the tokens one by one.
-
-        Args:
-            prompt (str): The prompt to the llm.
-            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. If provided, it will overide the original llm stop list. Defaults to None.
-            run_manager (Optional[CallbackManagerForLLMRun], optional): Not used. Defaults to None.
-
-        Returns:
-            Union[str, Iterator]: The output string or a python generator, depending on if it&#39;s in stream mode.
-
-        Yields:
-            Iterator[str]: The next generated token.
-        &#34;&#34;&#34;
-        import warnings
-        from .utils import get_stop_words, textgen_iterator
-        warnings.filterwarnings(&#39;ignore&#39;)
-        tokenizer_type = &#39;openai&#39; if self.core._is_openai else &#39;transformers&#39;
-        stop = get_stop_words(stop, tokenizer=self.core.tokenizer, add_newline_version=False, tokenizer_type=tokenizer_type) if stop is not None else self.stop
-        stream = kwargs.get(&#39;stream&#39;, False)
-        gen_config = self.generation_config.copy()
-        gen_config[&#39;stop&#39;] = stop
-        for k, v in kwargs.items():
-            if k in [&#39;temperature&#39;, &#39;max_new_tokens&#39;, &#39;top_p&#39;, &#39;top_k&#39;, &#39;repetition_penalty&#39;]:
-                gen_config[k] = v
-        if stream:
-            def generate():
-                for i in self.core._model.completions.create(
-                    model=self.core.model_id,
-                    prompt=prompt,
-                    temperature=gen_config[&#39;temperature&#39;],
-                    top_p=gen_config[&#39;top_p&#39;],
-                    frequency_penalty=gen_config[&#39;repetition_penalty&#39;],
-                    max_tokens=gen_config[&#39;max_new_tokens&#39;],
-                    stop=stop,
-                    stream=True
-                ):
-                    yield i.choices[0].text
-            return textgen_iterator(generate(), stop=stop)
-        else:
-            from langchain.llms.utils import enforce_stop_tokens
-            output = self.core._model.completions.create(
-                model=self.core.model_id,
-                prompt=prompt,
-                temperature=gen_config[&#39;temperature&#39;],
-                top_p=gen_config[&#39;top_p&#39;],
-                frequency_penalty=gen_config[&#39;repetition_penalty&#39;],
-                max_tokens=gen_config[&#39;max_new_tokens&#39;],
-                stop=stop
-            ).choices[0].text
-            output = enforce_stop_tokens(output, stop=stop)
-            return output
-
-    def _llm_type(self) -&gt; str:
-        &#34;&#34;&#34;LLM type.
-
-        Returns:
-            str: LLM type.
-        &#34;&#34;&#34;
-        return &#39;OpenAILLM&#39;</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></li>
-<li>langchain_core.language_models.llms.LLM</li>
-<li>langchain_core.language_models.llms.BaseLLM</li>
-<li>langchain_core.language_models.base.BaseLanguageModel</li>
-<li>langchain_core.runnables.base.RunnableSerializable</li>
-<li>langchain_core.load.serializable.Serializable</li>
-<li>pydantic.v1.main.BaseModel</li>
-<li>pydantic.v1.utils.Representation</li>
-<li>langchain_core.runnables.base.Runnable</li>
-<li>typing.Generic</li>
-<li>abc.ABC</li>
-</ul>
-<h3>Class variables</h3>
-<dl>
-<dt id="llmplus.Models.Cores.openai_core.OpenAILLM.core"><code class="name">var <span class="ident">core</span> : <a title="llmplus.Models.Cores.openai_core.OpenAICore" href="#llmplus.Models.Cores.openai_core.OpenAICore">OpenAICore</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="llmplus.Models.Cores.openai_core.OpenAILLM.generation_config"><code class="name">var <span class="ident">generation_config</span> : Dict[str, Any]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="llmplus.Models.Cores.openai_core.OpenAILLM.stop"><code class="name">var <span class="ident">stop</span> : List[str]</code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-</dl>
-<h3>Inherited members</h3>
-<ul class="hlist">
-<li><code><b><a title="llmplus.Models.Cores.base_core.BaseLLM" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a></b></code>:
-<ul class="hlist">
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.chat" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.chat">chat</a></code></li>
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_num_tokens">get_num_tokens</a></code></li>
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.get_token_ids" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.get_token_ids">get_token_ids</a></code></li>
-<li><code><a title="llmplus.Models.Cores.base_core.BaseLLM.stream" href="base_core.html#llmplus.Models.Cores.base_core.BaseLLM.stream">stream</a></code></li>
 </ul>
 </li>
 </ul>
@@ -500,14 +330,6 @@ class OpenAILLM(BaseLLM):
 <ul>
 <li>
 <h4><code><a title="llmplus.Models.Cores.openai_core.OpenAICore" href="#llmplus.Models.Cores.openai_core.OpenAICore">OpenAICore</a></code></h4>
-</li>
-<li>
-<h4><code><a title="llmplus.Models.Cores.openai_core.OpenAILLM" href="#llmplus.Models.Cores.openai_core.OpenAILLM">OpenAILLM</a></code></h4>
-<ul class="">
-<li><code><a title="llmplus.Models.Cores.openai_core.OpenAILLM.core" href="#llmplus.Models.Cores.openai_core.OpenAILLM.core">core</a></code></li>
-<li><code><a title="llmplus.Models.Cores.openai_core.OpenAILLM.generation_config" href="#llmplus.Models.Cores.openai_core.OpenAILLM.generation_config">generation_config</a></code></li>
-<li><code><a title="llmplus.Models.Cores.openai_core.OpenAILLM.stop" href="#llmplus.Models.Cores.openai_core.OpenAILLM.stop">stop</a></code></li>
-</ul>
 </li>
 </ul>
 </li>

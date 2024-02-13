@@ -150,25 +150,6 @@ class LlmFactory:
         Returns:
             BaseLLM: An LLM.
         """
-        if self.model_type == 'gguf':
-            from ..Cores.llamacpp_core import LlamaCppLLM
-            return LlamaCppLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
+        from ..Cores.base_core import GenericLLM
+        return GenericLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
                                  top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type in ['default', 'awq', 'gptq']:
-            from ..Cores.huggingface_core import HuggingfaceLLM
-            return HuggingfaceLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type == 'openai':
-            from ..Cores.openai_core import OpenAILLM
-            return OpenAILLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type == 'exl2':
-            from ..Cores.exllamav2_core import Exl2LLM
-            return Exl2LLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        elif self.model_type =='debug':
-            from ..Cores.base_core import DebugLLM
-            return DebugLLM(core=self.core, temperature=temperature, max_new_tokens=max_new_tokens, 
-                                 top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=newline)
-        else:
-            raise ValueError(f'Model type "{self.model_type}" not supported.')
