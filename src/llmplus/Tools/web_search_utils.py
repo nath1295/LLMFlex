@@ -373,11 +373,11 @@ def process_element(element: Union[BeautifulSoup, Tag, NavigableString], sep: st
         final = list(map(lambda x: x + end, final))
         return sep.join(final)
     
-def create_content_chunks(contents: List[str], llm: LLM, chunk_size: int = 400) -> List[str]:
+def create_content_chunks(contents: Optional[List[str]], llm: LLM, chunk_size: int = 400) -> List[str]:
     """Create a list of strings of chunks limited by the count of tokens.
 
     Args:
-        contents (List[str]): List of contents to aggregate.
+        contents (Optional[List[str]]): List of contents to aggregate.
         llm (LLM): LLM to count tokens.
         chunk_size (int, optional): Token limit of each chunk. Defaults to 400.
 
@@ -387,6 +387,8 @@ def create_content_chunks(contents: List[str], llm: LLM, chunk_size: int = 400) 
     chunks = []
     current = []
     current_count = 0
+    if contents is None:
+        return chunks
     for c in contents:
         count = llm.get_num_tokens(c)
         if current_count + count <= chunk_size:
