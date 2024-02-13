@@ -168,12 +168,17 @@ memory = memory.save_interaction(user_input=tool_input, assistant_output=tool_ou
 ```
 
 ### 5. Chat with the model in Gradio web app
-Or if you just want a GUI to start chatting with your LLM model with both long term and short term memory, type this command in the terminal:
+If you just want a GUI to start chatting with your LLM model with both long term and short term memory, type this command in the terminal:
 ```bash
-llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embeddings thenlper/gte-large
+llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embeddings thenlper/gte-small
 ```
-You will see a gradio frontend, use it to chat with the LLM model.  
-![Gradio GUI](imgs/chat_gui.png)
+if you want to chat with the web search tool:
+```bash
+# Use a model with longer context for web search
+llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF --embeddings thenlper/gte-small --web_search --extras "model_file='openhermes-2.5-mistral-7b-16k.Q6_K.gguf', context_length=16384"
+```
+You will see a streamlit frontend, use it to chat with the LLM model.  
+![Gradio GUI](imgs/CHAT_GUI.png)
 
 ### 6. Serve an OpenAI API with a GGUF model
 To serve a GGUF model with OpenAI API:

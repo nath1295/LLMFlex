@@ -24,6 +24,8 @@ dependencies = [
     "tiktoken",
     "protobuf",
     "beautifulsoup4",
+    "streamlit",
+    "watchdog"
 ]
 
 [project.urls]
@@ -56,4 +58,3 @@ version = {attr = "llmplus.__version__"}  # Update this with the path to your __
 
 [tool.setuptools.packages.find]
 where = ["src"]
-

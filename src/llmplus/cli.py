@@ -54,26 +54,24 @@ def config() -> None:
 @cli.command()
 @click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')
 @click.option('--embeddings', default='thenlper/gte-small', help='Embeddings model ID to use.')
+@click.option('--web_search', is_flag=True, help='Whether to use web search in the interface or not.')
 @click.option('--model_type', default='auto', help='LLM model type.')
-@click.option('--mobile', is_flag=True, help='Whether to launch the mobile interface or not.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
-@click.option('--share', is_flag=True, help='Whether to create a public link or not.')
 @click.option('--extras', default='', help='Extra arugments for loading the model.')
 def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
               embeddings: str = 'thenlper/gte-small', 
+              web_search: bool = False,
               model_type: str = 'auto',
-              mobile: bool = False, auth: Optional[Tuple[str, str]] = None,
-              share: bool = False,
+              auth: Optional[Tuple[str, str]] = None, 
               extras: str = "") -> None:
-    """Launch the Gradio Chat GUI.
+    """Launch the Streamlit Chat GUI.
     """
-    from . import HuggingfaceEmbeddingsToolkit, LlmFactory
-    from .Frontend.chat_interface import ChatInterface
+    from .Frontend.streamlit_interface import run_streamlit_interface
     model_id = None if model_id == 'None' else model_id
-    model = LlmFactory(model_id=model_id, model_type=model_type, **args_from_string(extras))
-    embeddings = HuggingfaceEmbeddingsToolkit(model_id=embeddings)
-    app = ChatInterface(model=model, embeddings=embeddings)
-    app.launch(mobile=mobile, auth=auth, share=share)
+    model = dict(model_id=model_id, model_type=model_type, **args_from_string(extras))
+    embeddings = dict(embeddings_class='HuggingfaceEmbeddingsToolkit', model_id=embeddings)
+    tools = [dict(tool_class='WebSearchTool', embeddings=True, verbose=False)] if web_search else []
+    app = run_streamlit_interface(model_kwargs=model, embeddings_kwargs=embeddings, tool_kwargs=tools, auth=auth, debug=False)
 
 @cli.command()
 @click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')

@@ -1,10 +1,10 @@
-Module llmplus.Frontend.chat_interface
-======================================
+Module llmplus.Frontend.gradio_interface
+========================================
 
 Classes
 -------
 
-`ChatInterface(model: llmplus.Models.Factory.llm_factory.LlmFactory, embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit])`
+`GradioInterface(model: llmplus.Models.Factory.llm_factory.LlmFactory, embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit])`
 :   
 
     ### Instance variables
@@ -82,7 +82,7 @@ Classes
         Args:
             template (str): Preset name from the dropdown menu.
 
-    `generation(self, bot: List[List[str]]) ‑> List[List[str]]`
+    `generation(self, bot: List[List[str]]) ‑> Iterator[List[List[str]]]`
     :   Text generation.
         
         Args:

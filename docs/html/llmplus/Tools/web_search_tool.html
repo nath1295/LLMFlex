@@ -70,7 +70,7 @@ class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
     &#34;&#34;&#34;
     def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
-                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
+                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, key_phrases: List[str] = [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;],
                  search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialise the web search tool.
 
@@ -78,10 +78,11 @@ class WebSearchTool(BaseTool):
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
             name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
+            key_phrases (List[str], optional): List of key phrases to trigger the tool in the chat setup. Defaults to [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;].
             search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
             verbose: Whether to print logs while running the tool. Defaults to True.
         &#34;&#34;&#34;
-        super().__init__(name, description, verbose)
+        super().__init__(name=name, description=description, verbose=verbose, key_phrases=key_phrases)
         self.search_engine = search_engine
         self.embeddings = embeddings
 
@@ -293,7 +294,7 @@ class WebSearchTool(BaseTool):
 <dl>
 <dt id="llmplus.Tools.web_search_tool.WebSearchTool"><code class="flex name class">
 <span>class <span class="ident">WebSearchTool</span></span>
-<span>(</span><span>embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query or your question. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)</span>
+<span>(</span><span>embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query or your question. \nOutput of this tool is the answer of your input question.', key_phrases: List[str] = ['use the browser', 'check online', 'search the internet'], search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the tool class for doing web search.</p>
@@ -306,6 +307,8 @@ class WebSearchTool(BaseTool):
 <dd>Name of the tool. Defaults to 'web_search'.</dd>
 <dt><strong><code>description</code></strong> :&ensp;<code>str</code>, optional</dt>
 <dd>Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.</dd>
+<dt><strong><code>key_phrases</code></strong> :&ensp;<code>List[str]</code>, optional</dt>
+<dd>List of key phrases to trigger the tool in the chat setup. Defaults to ['use the browser', 'check online', 'search the internet'].</dd>
 <dt>search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.</dt>
 <dt><strong><code>verbose</code></strong></dt>
 <dd>Whether to print logs while running the tool. Defaults to True.</dd>
@@ -318,7 +321,7 @@ class WebSearchTool(BaseTool):
     &#34;&#34;&#34;This is the tool class for doing web search.
     &#34;&#34;&#34;
     def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
-                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
+                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, key_phrases: List[str] = [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;],
                  search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialise the web search tool.
 
@@ -326,10 +329,11 @@ class WebSearchTool(BaseTool):
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
             name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
+            key_phrases (List[str], optional): List of key phrases to trigger the tool in the chat setup. Defaults to [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;].
             search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
             verbose: Whether to print logs while running the tool. Defaults to True.
         &#34;&#34;&#34;
-        super().__init__(name, description, verbose)
+        super().__init__(name=name, description=description, verbose=verbose, key_phrases=key_phrases)
         self.search_engine = search_engine
         self.embeddings = embeddings
 
@@ -727,6 +731,7 @@ class WebSearchTool(BaseTool):
 <li><code><b><a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a></b></code>:
 <ul class="hlist">
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.description" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.description">description</a></code></li>
+<li><code><a title="llmplus.Tools.base_tool.BaseTool.key_phrases" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.key_phrases">key_phrases</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.name" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.name">name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.pretty_name" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.pretty_name">pretty_name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.print" href="base_tool.html#llmplus.Tools.base_tool.BaseTool.print">print</a></code></li>

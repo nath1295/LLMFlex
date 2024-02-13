@@ -4,7 +4,7 @@ Module llmplus.Tools.base_tool
 Classes
 -------
 
-`BaseTool(name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True)`
+`BaseTool(name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', key_phrases: List[str] = [], verbose: bool = True)`
 :   This is a base class for tools for LLMs.
         
     
@@ -25,6 +25,12 @@ Classes
         
         Returns:
             str: Description of the tool.
+
+    `key_phrases: List[str]`
+    :   List of words to trigger the tool in a chat setup.
+        
+        Returns:
+            List[str]: List of words to trigger the tool in a chat setup.
 
     `name: str`
     :   Name of the tool.

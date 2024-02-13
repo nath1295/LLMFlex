@@ -19,7 +19,7 @@ Functions
 Classes
 -------
 
-`WebSearchTool(embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query or your question. \nOutput of this tool is the answer of your input question.', search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)`
+`WebSearchTool(embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query or your question. \nOutput of this tool is the answer of your input question.', key_phrases: List[str] = ['use the browser', 'check online', 'search the internet'], search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)`
 :   This is the tool class for doing web search.
         
     
@@ -29,6 +29,7 @@ Classes
         embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
         name (str, optional): Name of the tool. Defaults to 'web_search'.
         description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
+        key_phrases (List[str], optional): List of key phrases to trigger the tool in the chat setup. Defaults to ['use the browser', 'check online', 'search the internet'].
         search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.
         verbose: Whether to print logs while running the tool. Defaults to True.
 

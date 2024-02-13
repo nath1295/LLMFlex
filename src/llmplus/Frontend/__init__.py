@@ -1,1 +1,1 @@
-from .chat_interface import ChatInterface
+from .gradio_interface import GradioInterface

@@ -15,7 +15,7 @@ class ToolSelector:
         self._last_score = 0
         self._last_tool = ''
         for tool in self.tools:
-            index = [tool.name, tool.description]
+            index = [tool.name, tool.description] + tool.key_phrases
             data = dict(name=tool.name, description=tool.description)
             self.vectordb.add_texts(index, metadata=data)
 

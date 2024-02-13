@@ -1,10 +1,10 @@
 import os
 from ..Models.Factory.llm_factory import LlmFactory
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from typing import Dict, Any, Union, List, Tuple, Type
+from typing import Dict, Any, Union, List, Tuple, Type, Iterator
 
 
-class ChatInterface:
+class GradioInterface:
 
     def __init__(self, model: LlmFactory, embeddings: Type[BaseEmbeddingsToolkit]) -> None:
         from ..Memory.long_short_memory import LongShortTermChatMemory
@@ -320,7 +320,7 @@ class ChatInterface:
             ] + [gr.Button(interactive=True)] * len(self.buttons)
         return tuple(returns)
 
-    def generation(self, bot: List[List[str]]) -> List[List[str]]:
+    def generation(self, bot: List[List[str]]) -> Iterator[List[List[str]]]:
         """Text generation.
 
         Args:

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>llmplus.Frontend.chat_interface API documentation</title>
+<title>llmplus.Frontend.gradio_interface API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>llmplus.Frontend.chat_interface</code></h1>
+<h1 class="title">Module <code>llmplus.Frontend.gradio_interface</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -29,10 +29,10 @@
 <pre><code class="python">import os
 from ..Models.Factory.llm_factory import LlmFactory
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from typing import Dict, Any, Union, List, Tuple, Type
+from typing import Dict, Any, Union, List, Tuple, Type, Iterator
 
 
-class ChatInterface:
+class GradioInterface:
 
     def __init__(self, model: LlmFactory, embeddings: Type[BaseEmbeddingsToolkit]) -&gt; None:
         from ..Memory.long_short_memory import LongShortTermChatMemory
@@ -348,7 +348,7 @@ class ChatInterface:
             ] + [gr.Button(interactive=True)] * len(self.buttons)
         return tuple(returns)
 
-    def generation(self, bot: List[List[str]]) -&gt; List[List[str]]:
+    def generation(self, bot: List[List[str]]) -&gt; Iterator[List[List[str]]]:
         &#34;&#34;&#34;Text generation.
 
         Args:
@@ -611,8 +611,8 @@ class ChatInterface:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface"><code class="flex name class">
-<span>class <span class="ident">ChatInterface</span></span>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface"><code class="flex name class">
+<span>class <span class="ident">GradioInterface</span></span>
 <span>(</span><span>model: <a title="llmplus.Models.Factory.llm_factory.LlmFactory" href="../Models/Factory/llm_factory.html#llmplus.Models.Factory.llm_factory.LlmFactory">LlmFactory</a>, embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>])</span>
 </code></dt>
 <dd>
@@ -621,7 +621,7 @@ class ChatInterface:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class ChatInterface:
+<pre><code class="python">class GradioInterface:
 
     def __init__(self, model: LlmFactory, embeddings: Type[BaseEmbeddingsToolkit]) -&gt; None:
         from ..Memory.long_short_memory import LongShortTermChatMemory
@@ -937,7 +937,7 @@ class ChatInterface:
             ] + [gr.Button(interactive=True)] * len(self.buttons)
         return tuple(returns)
 
-    def generation(self, bot: List[List[str]]) -&gt; List[List[str]]:
+    def generation(self, bot: List[List[str]]) -&gt; Iterator[List[List[str]]]:
         &#34;&#34;&#34;Text generation.
 
         Args:
@@ -1192,7 +1192,7 @@ class ChatInterface:
 </details>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.buttons"><code class="name">var <span class="ident">buttons</span> : List[str]</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.buttons"><code class="name">var <span class="ident">buttons</span> : List[str]</code></dt>
 <dd>
 <div class="desc"><p>List of buttons except send.</p>
 <h2 id="returns">Returns</h2>
@@ -1218,7 +1218,7 @@ def buttons(self) -&gt; List[str]:
     return btns</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.config_dict"><code class="name">var <span class="ident">config_dict</span> : Dict[str, Any]</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.config_dict"><code class="name">var <span class="ident">config_dict</span> : Dict[str, Any]</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1271,7 +1271,7 @@ def config_dict(self) -&gt; Dict[str, Any]:
     return config</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.current_title"><code class="name">var <span class="ident">current_title</span> : str</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.current_title"><code class="name">var <span class="ident">current_title</span> : str</code></dt>
 <dd>
 <div class="desc"><p>Current memory chat title.</p>
 <h2 id="returns">Returns</h2>
@@ -1293,7 +1293,7 @@ def current_title(self) -&gt; str:
     return self.memory.title</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.history"><code class="name">var <span class="ident">history</span> : List[List[str]]</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.history"><code class="name">var <span class="ident">history</span> : List[List[str]]</code></dt>
 <dd>
 <div class="desc"><p>Current conversation history.</p>
 <h2 id="returns">Returns</h2>
@@ -1315,7 +1315,7 @@ def history(self) -&gt; List[List[str]]:
     return self.memory.history</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.mobile_config_dict"><code class="name">var <span class="ident">mobile_config_dict</span> : Dict[str, Any]</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.mobile_config_dict"><code class="name">var <span class="ident">mobile_config_dict</span> : Dict[str, Any]</code></dt>
 <dd>
 <div class="desc"></div>
 <details class="source">
@@ -1338,7 +1338,7 @@ def mobile_config_dict(self) -&gt; Dict[str, Any]:
     return config</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.presets"><code class="name">var <span class="ident">presets</span> : List[str]</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.presets"><code class="name">var <span class="ident">presets</span> : List[str]</code></dt>
 <dd>
 <div class="desc"><p>List of prompt templates presets.</p>
 <h2 id="returns">Returns</h2>
@@ -1361,7 +1361,7 @@ def presets(self) -&gt; List[str]:
     return list(presets.keys())</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.titles"><code class="name">var <span class="ident">titles</span> : List[str]</code></dt>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.titles"><code class="name">var <span class="ident">titles</span> : List[str]</code></dt>
 <dd>
 <div class="desc"><p>All existing chat titles.</p>
 <h2 id="returns">Returns</h2>
@@ -1387,7 +1387,7 @@ def titles(self) -&gt; List[str]:
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.change_llm_setting"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.change_llm_setting"><code class="name flex">
 <span>def <span class="ident">change_llm_setting</span></span>(<span>self, temperature: float, max_tokens: int, repeat_penalty: float, top_p: float, top_k: int) ‑> str</span>
 </code></dt>
 <dd>
@@ -1430,7 +1430,7 @@ def titles(self) -&gt; List[str]:
     return self.get_llm_settings()</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.change_memory"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.change_memory"><code class="name flex">
 <span>def <span class="ident">change_memory</span></span>(<span>self, btn: str, title: str) ‑> Tuple[Any]</span>
 </code></dt>
 <dd>
@@ -1484,7 +1484,7 @@ def titles(self) -&gt; List[str]:
     return gr.Textbox(value=&#39;&#39;), gr.Dropdown(choices=self.titles, value=None), gr.Chatbot(value=self.history, label=self.current_title), gr.Textbox(value=system, interactive=True), self.get_memory_settings()</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.change_memory_setting"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.change_memory_setting"><code class="name flex">
 <span>def <span class="ident">change_memory_setting</span></span>(<span>self, system: str, long_limit: int, short_limit: int, sim_score: float) ‑> str</span>
 </code></dt>
 <dd>
@@ -1522,7 +1522,7 @@ def titles(self) -&gt; List[str]:
     return self.get_memory_settings()</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.change_prompt_format"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.change_prompt_format"><code class="name flex">
 <span>def <span class="ident">change_prompt_format</span></span>(<span>self, template: str) ‑> str</span>
 </code></dt>
 <dd>
@@ -1547,8 +1547,8 @@ def titles(self) -&gt; List[str]:
     return self.get_prompt_settings()</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.generation"><code class="name flex">
-<span>def <span class="ident">generation</span></span>(<span>self, bot: List[List[str]]) ‑> List[List[str]]</span>
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.generation"><code class="name flex">
+<span>def <span class="ident">generation</span></span>(<span>self, bot: List[List[str]]) ‑> Iterator[List[List[str]]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Text generation.</p>
@@ -1566,7 +1566,7 @@ def titles(self) -&gt; List[str]:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def generation(self, bot: List[List[str]]) -&gt; List[List[str]]:
+<pre><code class="python">def generation(self, bot: List[List[str]]) -&gt; Iterator[List[List[str]]]:
     &#34;&#34;&#34;Text generation.
 
     Args:
@@ -1596,7 +1596,7 @@ def titles(self) -&gt; List[str]:
         yield bot</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.get_llm_settings"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.get_llm_settings"><code class="name flex">
 <span>def <span class="ident">get_llm_settings</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
@@ -1617,7 +1617,7 @@ def titles(self) -&gt; List[str]:
     return &#39;\n&#39;.join(settings)</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.get_memory_settings"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.get_memory_settings"><code class="name flex">
 <span>def <span class="ident">get_memory_settings</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
@@ -1637,7 +1637,7 @@ def titles(self) -&gt; List[str]:
     return &#39;\n&#39;.join(settings)</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.get_prompt"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.get_prompt"><code class="name flex">
 <span>def <span class="ident">get_prompt</span></span>(<span>self, user_input: str, ai_start: str = '') ‑> str</span>
 </code></dt>
 <dd>
@@ -1661,7 +1661,7 @@ def titles(self) -&gt; List[str]:
     return prompt</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.get_prompt_settings"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.get_prompt_settings"><code class="name flex">
 <span>def <span class="ident">get_prompt_settings</span></span>(<span>self) ‑> str</span>
 </code></dt>
 <dd>
@@ -1678,7 +1678,7 @@ def titles(self) -&gt; List[str]:
     return &#39;\n&#39;.join(settings)</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.input_handler"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.input_handler"><code class="name flex">
 <span>def <span class="ident">input_handler</span></span>(<span>self, btn: str, user: str, start: str, bot: List[List[str]]) ‑> Tuple[Any]</span>
 </code></dt>
 <dd>
@@ -1760,7 +1760,7 @@ def titles(self) -&gt; List[str]:
     return tuple(returns)</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.launch"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.launch"><code class="name flex">
 <span>def <span class="ident">launch</span></span>(<span>self, mobile: bool = False, **kwargs) ‑> None</span>
 </code></dt>
 <dd>
@@ -1782,7 +1782,7 @@ def titles(self) -&gt; List[str]:
     self.frame.launch(**default_config)</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.output_map"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.output_map"><code class="name flex">
 <span>def <span class="ident">output_map</span></span>(<span>self, keys: Union[str, List[str]]) ‑> List[Any]</span>
 </code></dt>
 <dd>
@@ -1797,7 +1797,7 @@ def titles(self) -&gt; List[str]:
     return list(map(lambda x: self.bot[x], keys))</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.postgen_handler"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.postgen_handler"><code class="name flex">
 <span>def <span class="ident">postgen_handler</span></span>(<span>self) ‑> List[Any]</span>
 </code></dt>
 <dd>
@@ -1821,7 +1821,7 @@ def titles(self) -&gt; List[str]:
     return [gr.Button(value=&#39;Send&#39;, variant=&#39;primary&#39;, interactive=True)] + ([gr.Button(interactive=True)] * len(self.buttons))</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.remove_last"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.remove_last"><code class="name flex">
 <span>def <span class="ident">remove_last</span></span>(<span>self) ‑> List[List[str]]</span>
 </code></dt>
 <dd>
@@ -1846,7 +1846,7 @@ def titles(self) -&gt; List[str]:
     return self.history</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Frontend.chat_interface.ChatInterface.vars"><code class="name flex">
+<dt id="llmplus.Frontend.gradio_interface.GradioInterface.vars"><code class="name flex">
 <span>def <span class="ident">vars</span></span>(<span>self, var_name: str, **kwargs: Dict[str, Any]) ‑> Any</span>
 </code></dt>
 <dd>
@@ -1907,30 +1907,30 @@ def titles(self) -&gt; List[str]:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="llmplus.Frontend.chat_interface.ChatInterface" href="#llmplus.Frontend.chat_interface.ChatInterface">ChatInterface</a></code></h4>
+<h4><code><a title="llmplus.Frontend.gradio_interface.GradioInterface" href="#llmplus.Frontend.gradio_interface.GradioInterface">GradioInterface</a></code></h4>
 <ul class="">
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.buttons" href="#llmplus.Frontend.chat_interface.ChatInterface.buttons">buttons</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_llm_setting" href="#llmplus.Frontend.chat_interface.ChatInterface.change_llm_setting">change_llm_setting</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_memory" href="#llmplus.Frontend.chat_interface.ChatInterface.change_memory">change_memory</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_memory_setting" href="#llmplus.Frontend.chat_interface.ChatInterface.change_memory_setting">change_memory_setting</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.change_prompt_format" href="#llmplus.Frontend.chat_interface.ChatInterface.change_prompt_format">change_prompt_format</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.config_dict" href="#llmplus.Frontend.chat_interface.ChatInterface.config_dict">config_dict</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.current_title" href="#llmplus.Frontend.chat_interface.ChatInterface.current_title">current_title</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.generation" href="#llmplus.Frontend.chat_interface.ChatInterface.generation">generation</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.get_llm_settings" href="#llmplus.Frontend.chat_interface.ChatInterface.get_llm_settings">get_llm_settings</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.get_memory_settings" href="#llmplus.Frontend.chat_interface.ChatInterface.get_memory_settings">get_memory_settings</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.get_prompt" href="#llmplus.Frontend.chat_interface.ChatInterface.get_prompt">get_prompt</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.get_prompt_settings" href="#llmplus.Frontend.chat_interface.ChatInterface.get_prompt_settings">get_prompt_settings</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.history" href="#llmplus.Frontend.chat_interface.ChatInterface.history">history</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.input_handler" href="#llmplus.Frontend.chat_interface.ChatInterface.input_handler">input_handler</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.launch" href="#llmplus.Frontend.chat_interface.ChatInterface.launch">launch</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.mobile_config_dict" href="#llmplus.Frontend.chat_interface.ChatInterface.mobile_config_dict">mobile_config_dict</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.output_map" href="#llmplus.Frontend.chat_interface.ChatInterface.output_map">output_map</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.postgen_handler" href="#llmplus.Frontend.chat_interface.ChatInterface.postgen_handler">postgen_handler</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.presets" href="#llmplus.Frontend.chat_interface.ChatInterface.presets">presets</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.remove_last" href="#llmplus.Frontend.chat_interface.ChatInterface.remove_last">remove_last</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.titles" href="#llmplus.Frontend.chat_interface.ChatInterface.titles">titles</a></code></li>
-<li><code><a title="llmplus.Frontend.chat_interface.ChatInterface.vars" href="#llmplus.Frontend.chat_interface.ChatInterface.vars">vars</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.buttons" href="#llmplus.Frontend.gradio_interface.GradioInterface.buttons">buttons</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.change_llm_setting" href="#llmplus.Frontend.gradio_interface.GradioInterface.change_llm_setting">change_llm_setting</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.change_memory" href="#llmplus.Frontend.gradio_interface.GradioInterface.change_memory">change_memory</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.change_memory_setting" href="#llmplus.Frontend.gradio_interface.GradioInterface.change_memory_setting">change_memory_setting</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.change_prompt_format" href="#llmplus.Frontend.gradio_interface.GradioInterface.change_prompt_format">change_prompt_format</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.config_dict" href="#llmplus.Frontend.gradio_interface.GradioInterface.config_dict">config_dict</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.current_title" href="#llmplus.Frontend.gradio_interface.GradioInterface.current_title">current_title</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.generation" href="#llmplus.Frontend.gradio_interface.GradioInterface.generation">generation</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.get_llm_settings" href="#llmplus.Frontend.gradio_interface.GradioInterface.get_llm_settings">get_llm_settings</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.get_memory_settings" href="#llmplus.Frontend.gradio_interface.GradioInterface.get_memory_settings">get_memory_settings</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.get_prompt" href="#llmplus.Frontend.gradio_interface.GradioInterface.get_prompt">get_prompt</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.get_prompt_settings" href="#llmplus.Frontend.gradio_interface.GradioInterface.get_prompt_settings">get_prompt_settings</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.history" href="#llmplus.Frontend.gradio_interface.GradioInterface.history">history</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.input_handler" href="#llmplus.Frontend.gradio_interface.GradioInterface.input_handler">input_handler</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.launch" href="#llmplus.Frontend.gradio_interface.GradioInterface.launch">launch</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.mobile_config_dict" href="#llmplus.Frontend.gradio_interface.GradioInterface.mobile_config_dict">mobile_config_dict</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.output_map" href="#llmplus.Frontend.gradio_interface.GradioInterface.output_map">output_map</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.postgen_handler" href="#llmplus.Frontend.gradio_interface.GradioInterface.postgen_handler">postgen_handler</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.presets" href="#llmplus.Frontend.gradio_interface.GradioInterface.presets">presets</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.remove_last" href="#llmplus.Frontend.gradio_interface.GradioInterface.remove_last">remove_last</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.titles" href="#llmplus.Frontend.gradio_interface.GradioInterface.titles">titles</a></code></li>
+<li><code><a title="llmplus.Frontend.gradio_interface.GradioInterface.vars" href="#llmplus.Frontend.gradio_interface.GradioInterface.vars">vars</a></code></li>
 </ul>
 </li>
 </ul>

@@ -34,12 +34,14 @@ from typing import List, Iterator, Optional, Union, Type, Tuple, Any, Dict
 class BaseTool(ABC):
     &#34;&#34;&#34;This is a base class for tools for LLMs.
     &#34;&#34;&#34;
-    def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, verbose: bool = True) -&gt; None:
+    def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, 
+                 key_phrases: List[str] = [], verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialising the tool.
         &#34;&#34;&#34;
         self._name = name
         self._description = description
         self._verbose = verbose
+        self._key_phrases = key_phrases
 
     @property
     def name(self) -&gt; str:
@@ -70,6 +72,15 @@ class BaseTool(ABC):
         import re
         newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
         return newlines.sub(&#39; &#39;, self._description)
+    
+    @property
+    def key_phrases(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of words to trigger the tool in a chat setup.
+
+        Returns:
+            List[str]: List of words to trigger the tool in a chat setup.
+        &#34;&#34;&#34;
+        return self._key_phrases
     
     @property
     def _avail_steps(self) -&gt; List[str]:
@@ -170,6 +181,7 @@ class BaseTool(ABC):
         Returns:
             Union[str, Iterator[str]]: Output of the tool.
         &#34;&#34;&#34;
+        import gc
         self._validate_schema(**kwargs)
         var_space = dict(
             tool_input = tool_input,
@@ -203,6 +215,8 @@ class BaseTool(ABC):
         final = var_space[&#39;final_output&#39;]
         if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
             final += f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
+        del var_space
+        gc.collect()
         return final
 
     
@@ -279,7 +293,7 @@ class BaseTool(ABC):
 <dl>
 <dt id="llmplus.Tools.base_tool.BaseTool"><code class="flex name class">
 <span>class <span class="ident">BaseTool</span></span>
-<span>(</span><span>name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True)</span>
+<span>(</span><span>name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', key_phrases: List[str] = [], verbose: bool = True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is a base class for tools for LLMs.</p>
@@ -291,12 +305,14 @@ class BaseTool(ABC):
 <pre><code class="python">class BaseTool(ABC):
     &#34;&#34;&#34;This is a base class for tools for LLMs.
     &#34;&#34;&#34;
-    def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, verbose: bool = True) -&gt; None:
+    def __init__(self, name: str = &#39;base_tool&#39;, description: str = &#39;This is a tool from the base tool class. It does not do anything.&#39;, 
+                 key_phrases: List[str] = [], verbose: bool = True) -&gt; None:
         &#34;&#34;&#34;Initialising the tool.
         &#34;&#34;&#34;
         self._name = name
         self._description = description
         self._verbose = verbose
+        self._key_phrases = key_phrases
 
     @property
     def name(self) -&gt; str:
@@ -327,6 +343,15 @@ class BaseTool(ABC):
         import re
         newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
         return newlines.sub(&#39; &#39;, self._description)
+    
+    @property
+    def key_phrases(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of words to trigger the tool in a chat setup.
+
+        Returns:
+            List[str]: List of words to trigger the tool in a chat setup.
+        &#34;&#34;&#34;
+        return self._key_phrases
     
     @property
     def _avail_steps(self) -&gt; List[str]:
@@ -427,6 +452,7 @@ class BaseTool(ABC):
         Returns:
             Union[str, Iterator[str]]: Output of the tool.
         &#34;&#34;&#34;
+        import gc
         self._validate_schema(**kwargs)
         var_space = dict(
             tool_input = tool_input,
@@ -460,6 +486,8 @@ class BaseTool(ABC):
         final = var_space[&#39;final_output&#39;]
         if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
             final += f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
+        del var_space
+        gc.collect()
         return final
 
     
@@ -554,6 +582,28 @@ def description(self) -&gt; str:
     import re
     newlines = re.compile(r&#39;[\s\r\n\t]+&#39;)
     return newlines.sub(&#39; &#39;, self._description)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Tools.base_tool.BaseTool.key_phrases"><code class="name">var <span class="ident">key_phrases</span> : List[str]</code></dt>
+<dd>
+<div class="desc"><p>List of words to trigger the tool in a chat setup.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of words to trigger the tool in a chat setup.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def key_phrases(self) -&gt; List[str]:
+    &#34;&#34;&#34;List of words to trigger the tool in a chat setup.
+
+    Returns:
+        List[str]: List of words to trigger the tool in a chat setup.
+    &#34;&#34;&#34;
+    return self._key_phrases</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Tools.base_tool.BaseTool.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
@@ -672,6 +722,7 @@ def pretty_name(self) -&gt; str:
     Returns:
         Union[str, Iterator[str]]: Output of the tool.
     &#34;&#34;&#34;
+    import gc
     self._validate_schema(**kwargs)
     var_space = dict(
         tool_input = tool_input,
@@ -705,6 +756,8 @@ def pretty_name(self) -&gt; str:
     final = var_space[&#39;final_output&#39;]
     if ((&#39;footnote&#39; in var_space.keys()) &amp; add_footnote):
         final += f&#39;\n\n---\n{var_space[&#34;footnote&#34;]}&#39;
+    del var_space
+    gc.collect()
     return final</code></pre>
 </details>
 </dd>
@@ -819,6 +872,7 @@ def pretty_name(self) -&gt; str:
 <h4><code><a title="llmplus.Tools.base_tool.BaseTool" href="#llmplus.Tools.base_tool.BaseTool">BaseTool</a></code></h4>
 <ul class="two-column">
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.description" href="#llmplus.Tools.base_tool.BaseTool.description">description</a></code></li>
+<li><code><a title="llmplus.Tools.base_tool.BaseTool.key_phrases" href="#llmplus.Tools.base_tool.BaseTool.key_phrases">key_phrases</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.name" href="#llmplus.Tools.base_tool.BaseTool.name">name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.pretty_name" href="#llmplus.Tools.base_tool.BaseTool.pretty_name">pretty_name</a></code></li>
 <li><code><a title="llmplus.Tools.base_tool.BaseTool.print" href="#llmplus.Tools.base_tool.BaseTool.print">print</a></code></li>

@@ -42,7 +42,7 @@ class WebSearchTool(BaseTool):
     """This is the tool class for doing web search.
     """
     def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
-                 name: str = 'web_search', description: str = WEB_SEARCH_TOOL_DESCRIPTION, 
+                 name: str = 'web_search', description: str = WEB_SEARCH_TOOL_DESCRIPTION, key_phrases: List[str] = ['use the browser', 'check online', 'search the internet'],
                  search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True) -> None:
         """Initialise the web search tool.
 
@@ -50,10 +50,11 @@ class WebSearchTool(BaseTool):
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
             name (str, optional): Name of the tool. Defaults to 'web_search'.
             description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
+            key_phrases (List[str], optional): List of key phrases to trigger the tool in the chat setup. Defaults to ['use the browser', 'check online', 'search the internet'].
             search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.
             verbose: Whether to print logs while running the tool. Defaults to True.
         """
-        super().__init__(name, description, verbose)
+        super().__init__(name=name, description=description, verbose=verbose, key_phrases=key_phrases)
         self.search_engine = search_engine
         self.embeddings = embeddings
 

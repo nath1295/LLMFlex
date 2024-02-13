@@ -6,12 +6,14 @@ from typing import List, Iterator, Optional, Union, Type, Tuple, Any, Dict
 class BaseTool(ABC):
     """This is a base class for tools for LLMs.
     """
-    def __init__(self, name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', verbose: bool = True) -> None:
+    def __init__(self, name: str = 'base_tool', description: str = 'This is a tool from the base tool class. It does not do anything.', 
+                 key_phrases: List[str] = [], verbose: bool = True) -> None:
         """Initialising the tool.
         """
         self._name = name
         self._description = description
         self._verbose = verbose
+        self._key_phrases = key_phrases
 
     @property
     def name(self) -> str:
@@ -42,6 +44,15 @@ class BaseTool(ABC):
         import re
         newlines = re.compile(r'[\s\r\n\t]+')
         return newlines.sub(' ', self._description)
+    
+    @property
+    def key_phrases(self) -> List[str]:
+        """List of words to trigger the tool in a chat setup.
+
+        Returns:
+            List[str]: List of words to trigger the tool in a chat setup.
+        """
+        return self._key_phrases
     
     @property
     def _avail_steps(self) -> List[str]:
@@ -142,6 +153,7 @@ class BaseTool(ABC):
         Returns:
             Union[str, Iterator[str]]: Output of the tool.
         """
+        import gc
         self._validate_schema(**kwargs)
         var_space = dict(
             tool_input = tool_input,
@@ -175,6 +187,8 @@ class BaseTool(ABC):
         final = var_space['final_output']
         if (('footnote' in var_space.keys()) & add_footnote):
             final += f'\n\n---\n{var_space["footnote"]}'
+        del var_space
+        gc.collect()
         return final
 
     
