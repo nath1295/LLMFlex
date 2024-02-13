@@ -4,7 +4,7 @@ Module llmplus.Tools.tool_selection
 Classes
 -------
 
-`ToolSelector(tools: List[Type[llmplus.Tools.base_tool.BaseTool]], embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], score_threshold: float = 0.75)`
+`ToolSelector(tools: List[Type[llmplus.Tools.base_tool.BaseTool]], model: Union[llmplus.Models.Factory.llm_factory.LlmFactory, Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit]], score_threshold: float = 0.75)`
 :   Class to select the appropriate tool given the user input.
 
     ### Instance variables
@@ -21,6 +21,12 @@ Classes
         Returns:
             str: The last tool picked regardless of the score.
 
+    `llm: Optional[llmplus.Models.Cores.base_core.BaseLLM]`
+    :   LLM used for tool selection.
+        
+        Returns:
+            Optional[BaseLLM]: LLM used for tool selection.
+
     `score_threshold: float`
     :   Score threshold for retrieving tools from vector database.
         
@@ -33,7 +39,7 @@ Classes
         Returns:
             List[Type[BaseTool]]: List of tools.
 
-    `vectordb: llmplus.Data.vector_database.VectorDatabase`
+    `vectordb: Optional[llmplus.Data.vector_database.VectorDatabase]`
     :   Vector database for that store tools information.
         
         Returns:

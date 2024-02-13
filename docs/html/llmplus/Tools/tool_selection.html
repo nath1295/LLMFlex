@@ -29,23 +29,74 @@
 <pre><code class="python">from .base_tool import BaseTool
 from ..Data.vector_database import VectorDatabase
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from typing import Type, Optional, List
+from ..Models.Factory.llm_factory import LlmFactory
+from ..Models.Cores.base_core import BaseLLM
+from typing import Type, Optional, List, Union
+
+TOOL_SELECTION_PROMPT = &#34;&#34;&#34;Given a user request, your task is to select the most appropriate tool from the list provided below that can best address the request. If you believe the user&#39;s request can be adequately addressed without the use of any specific tool, indicate &#34;no_tool_required&#34;. Please provide your response in JSON format, including a &#34;toolName&#34; for the selected tool name.
+
+Below are a few examples of how to structure your response:
+
+{examples}Please follow the above examples to structure your response for the user request.
+
+These are the available tools and their respective description:
+{tools}
+
+Your response should be in JSON format, based on the tools available for above. If no tool is required, indicate &#34;no_tool_required&#34;.
+
+Here is the latest user request:
+
+User Request: &#34;{user_input}&#34;
+Response:
+```json
+{
+    &#34;toolName&#34;: &#34;&#34;&#34;
+
+TOOL_INFO = &#34;&#34;&#34;Tool Name: &#34;{tool_name}&#34;
+Description: &#34;{description}&#34;
+
+&#34;&#34;&#34;
+
+EXAMPLE_SHOT = &#34;&#34;&#34;User Request: &#34;[User request here]&#34;
+Response:
+```json
+{
+    &#34;toolName&#34;: &#34;{tool_name}&#34;
+}
+```
+
+&#34;&#34;&#34;
 
 class ToolSelector:
     &#34;&#34;&#34;Class to select the appropriate tool given the user input.&#34;&#34;&#34;
 
-    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.75) -&gt; None:
+    def __init__(self, tools: List[Type[BaseTool]], model: Union[LlmFactory, Type[BaseEmbeddingsToolkit]], score_threshold: float = 0.75) -&gt; None:
         if len(tools) == 0:
             raise ValueError(f&#39;At least one tool must be provided.&#39;)
         self._tools = tools
-        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._vectordb = VectorDatabase.from_empty(embeddings=model) if isinstance(model, BaseEmbeddingsToolkit) else None
+        self._llm = model(temperature=0, max_new_tokens=128, stop=model.prompt_template.stop + [&#39;```&#39;]) if isinstance(model, LlmFactory) else None
         self._score_threshold = score_threshold
         self._last_score = 0
         self._last_tool = &#39;&#39;
-        for tool in self.tools:
-            index = [tool.name, tool.description] + tool.key_phrases
-            data = dict(name=tool.name, description=tool.description)
-            self.vectordb.add_texts(index, metadata=data)
+        if self.llm is None:
+            for tool in self.tools:
+                index = [tool.name, tool.description] + tool.key_phrases
+                data = dict(name=tool.name, description=tool.description)
+                self.vectordb.add_texts(index, metadata=data)
+        else:
+            example_count = 0
+            examples = &#39;&#39;
+            tool_info = &#39;&#39;
+            for i, tool in enumerate(self.tools):
+                if example_count &lt; 2:
+                    example_count += 1
+                    examples += EXAMPLE_SHOT.replace(&#39;{tool_name}&#39;, tool.name)
+                tool_info += f&#39;{i + 1}. &#39; + TOOL_INFO.replace(&#39;{tool_name}&#39;, tool.name).replace(&#34;{description}&#34;, tool.description)
+            examples += EXAMPLE_SHOT.replace(&#39;{tool_name}&#39;, &#39;no_tool_required&#39;)
+            self._examples = examples
+            self._tool_info = tool_info
+
 
     @property
     def tools(self) -&gt; List[Type[BaseTool]]:
@@ -57,13 +108,22 @@ class ToolSelector:
         return self._tools
 
     @property
-    def vectordb(self) -&gt; VectorDatabase:
+    def vectordb(self) -&gt; Optional[VectorDatabase]:
         &#34;&#34;&#34;Vector database for that store tools information.
 
         Returns:
             VectorDatabase: Vector database for that store tools information.
         &#34;&#34;&#34;
         return self._vectordb
+    
+    @property
+    def llm(self) -&gt; Optional[BaseLLM]:
+        &#34;&#34;&#34;LLM used for tool selection.
+
+        Returns:
+            Optional[BaseLLM]: LLM used for tool selection.
+        &#34;&#34;&#34;
+        return self._llm
 
     @property
     def score_threshold(self) -&gt; float:
@@ -109,14 +169,34 @@ class ToolSelector:
         Returns:
             Optional[BaseTool]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
-        tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-        self._last_score = tool[&#39;score&#39;]
-        self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
-        if tool[&#39;score&#39;] &gt;= self.score_threshold:
-            tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-            return tool
+        if self.llm is None:
+            tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+            self._last_score = tool[&#39;score&#39;]
+            self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
+            if tool[&#39;score&#39;] &gt;= self.score_threshold:
+                tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
+                return tool
+            else:
+                return None
         else:
-            return None</code></pre>
+            import json
+            prompt = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input) + &#39;&#34;&#39;
+            output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
+            try:
+                tool = json.loads(output)[&#39;tool&#39;]
+            except:
+                print(&#39;Tool selection unsuccessful.&#39;)
+                tool = &#39;no_tool_required&#39;
+            if tool == &#39;no_tool_required&#39;:
+                return None
+            elif tool not in list(map(lambda x: x.name, self.tools)):
+                print(&#39;Tool selection not in tool list.&#39;)
+                return None
+            else:
+                self._last_tool = tool
+                return list(filter(lambda x: x.name==tool, self.tools))[0]
+
+            </code></pre>
 </details>
 </section>
 <section>
@@ -130,7 +210,7 @@ class ToolSelector:
 <dl>
 <dt id="llmplus.Tools.tool_selection.ToolSelector"><code class="flex name class">
 <span>class <span class="ident">ToolSelector</span></span>
-<span>(</span><span>tools: List[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]], embeddings: Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], score_threshold: float = 0.75)</span>
+<span>(</span><span>tools: List[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]], model: Union[<a title="llmplus.Models.Factory.llm_factory.LlmFactory" href="../Models/Factory/llm_factory.html#llmplus.Models.Factory.llm_factory.LlmFactory">LlmFactory</a>, Type[<a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>]], score_threshold: float = 0.75)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class to select the appropriate tool given the user input.</p></div>
@@ -141,18 +221,33 @@ class ToolSelector:
 <pre><code class="python">class ToolSelector:
     &#34;&#34;&#34;Class to select the appropriate tool given the user input.&#34;&#34;&#34;
 
-    def __init__(self, tools: List[Type[BaseTool]], embeddings: Type[BaseEmbeddingsToolkit], score_threshold: float = 0.75) -&gt; None:
+    def __init__(self, tools: List[Type[BaseTool]], model: Union[LlmFactory, Type[BaseEmbeddingsToolkit]], score_threshold: float = 0.75) -&gt; None:
         if len(tools) == 0:
             raise ValueError(f&#39;At least one tool must be provided.&#39;)
         self._tools = tools
-        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._vectordb = VectorDatabase.from_empty(embeddings=model) if isinstance(model, BaseEmbeddingsToolkit) else None
+        self._llm = model(temperature=0, max_new_tokens=128, stop=model.prompt_template.stop + [&#39;```&#39;]) if isinstance(model, LlmFactory) else None
         self._score_threshold = score_threshold
         self._last_score = 0
         self._last_tool = &#39;&#39;
-        for tool in self.tools:
-            index = [tool.name, tool.description] + tool.key_phrases
-            data = dict(name=tool.name, description=tool.description)
-            self.vectordb.add_texts(index, metadata=data)
+        if self.llm is None:
+            for tool in self.tools:
+                index = [tool.name, tool.description] + tool.key_phrases
+                data = dict(name=tool.name, description=tool.description)
+                self.vectordb.add_texts(index, metadata=data)
+        else:
+            example_count = 0
+            examples = &#39;&#39;
+            tool_info = &#39;&#39;
+            for i, tool in enumerate(self.tools):
+                if example_count &lt; 2:
+                    example_count += 1
+                    examples += EXAMPLE_SHOT.replace(&#39;{tool_name}&#39;, tool.name)
+                tool_info += f&#39;{i + 1}. &#39; + TOOL_INFO.replace(&#39;{tool_name}&#39;, tool.name).replace(&#34;{description}&#34;, tool.description)
+            examples += EXAMPLE_SHOT.replace(&#39;{tool_name}&#39;, &#39;no_tool_required&#39;)
+            self._examples = examples
+            self._tool_info = tool_info
+
 
     @property
     def tools(self) -&gt; List[Type[BaseTool]]:
@@ -164,13 +259,22 @@ class ToolSelector:
         return self._tools
 
     @property
-    def vectordb(self) -&gt; VectorDatabase:
+    def vectordb(self) -&gt; Optional[VectorDatabase]:
         &#34;&#34;&#34;Vector database for that store tools information.
 
         Returns:
             VectorDatabase: Vector database for that store tools information.
         &#34;&#34;&#34;
         return self._vectordb
+    
+    @property
+    def llm(self) -&gt; Optional[BaseLLM]:
+        &#34;&#34;&#34;LLM used for tool selection.
+
+        Returns:
+            Optional[BaseLLM]: LLM used for tool selection.
+        &#34;&#34;&#34;
+        return self._llm
 
     @property
     def score_threshold(self) -&gt; float:
@@ -216,14 +320,32 @@ class ToolSelector:
         Returns:
             Optional[BaseTool]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
-        tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-        self._last_score = tool[&#39;score&#39;]
-        self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
-        if tool[&#39;score&#39;] &gt;= self.score_threshold:
-            tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-            return tool
+        if self.llm is None:
+            tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+            self._last_score = tool[&#39;score&#39;]
+            self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
+            if tool[&#39;score&#39;] &gt;= self.score_threshold:
+                tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
+                return tool
+            else:
+                return None
         else:
-            return None</code></pre>
+            import json
+            prompt = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input) + &#39;&#34;&#39;
+            output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
+            try:
+                tool = json.loads(output)[&#39;tool&#39;]
+            except:
+                print(&#39;Tool selection unsuccessful.&#39;)
+                tool = &#39;no_tool_required&#39;
+            if tool == &#39;no_tool_required&#39;:
+                return None
+            elif tool not in list(map(lambda x: x.name, self.tools)):
+                print(&#39;Tool selection not in tool list.&#39;)
+                return None
+            else:
+                self._last_tool = tool
+                return list(filter(lambda x: x.name==tool, self.tools))[0]</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -271,6 +393,28 @@ def last_tool(self) -&gt; str:
     return self._last_tool</code></pre>
 </details>
 </dd>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.llm"><code class="name">var <span class="ident">llm</span> : Optional[<a title="llmplus.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmplus.Models.Cores.base_core.BaseLLM">BaseLLM</a>]</code></dt>
+<dd>
+<div class="desc"><p>LLM used for tool selection.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[BaseLLM]</code></dt>
+<dd>LLM used for tool selection.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def llm(self) -&gt; Optional[BaseLLM]:
+    &#34;&#34;&#34;LLM used for tool selection.
+
+    Returns:
+        Optional[BaseLLM]: LLM used for tool selection.
+    &#34;&#34;&#34;
+    return self._llm</code></pre>
+</details>
+</dd>
 <dt id="llmplus.Tools.tool_selection.ToolSelector.score_threshold"><code class="name">var <span class="ident">score_threshold</span> : float</code></dt>
 <dd>
 <div class="desc"><p>Score threshold for retrieving tools from vector database.</p>
@@ -315,7 +459,7 @@ def tools(self) -&gt; List[Type[BaseTool]]:
     return self._tools</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Tools.tool_selection.ToolSelector.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmplus.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmplus.Data.vector_database.VectorDatabase">VectorDatabase</a></code></dt>
+<dt id="llmplus.Tools.tool_selection.ToolSelector.vectordb"><code class="name">var <span class="ident">vectordb</span> : Optional[<a title="llmplus.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmplus.Data.vector_database.VectorDatabase">VectorDatabase</a>]</code></dt>
 <dd>
 <div class="desc"><p>Vector database for that store tools information.</p>
 <h2 id="returns">Returns</h2>
@@ -328,7 +472,7 @@ def tools(self) -&gt; List[Type[BaseTool]]:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def vectordb(self) -&gt; VectorDatabase:
+def vectordb(self) -&gt; Optional[VectorDatabase]:
     &#34;&#34;&#34;Vector database for that store tools information.
 
     Returns:
@@ -368,14 +512,32 @@ def vectordb(self) -&gt; VectorDatabase:
     Returns:
         Optional[BaseTool]: Selected tool or None if no tool is found or required.
     &#34;&#34;&#34;
-    tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-    self._last_score = tool[&#39;score&#39;]
-    self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
-    if tool[&#39;score&#39;] &gt;= self.score_threshold:
-        tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-        return tool
+    if self.llm is None:
+        tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+        self._last_score = tool[&#39;score&#39;]
+        self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
+        if tool[&#39;score&#39;] &gt;= self.score_threshold:
+            tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
+            return tool
+        else:
+            return None
     else:
-        return None</code></pre>
+        import json
+        prompt = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input) + &#39;&#34;&#39;
+        output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
+        try:
+            tool = json.loads(output)[&#39;tool&#39;]
+        except:
+            print(&#39;Tool selection unsuccessful.&#39;)
+            tool = &#39;no_tool_required&#39;
+        if tool == &#39;no_tool_required&#39;:
+            return None
+        elif tool not in list(map(lambda x: x.name, self.tools)):
+            print(&#39;Tool selection not in tool list.&#39;)
+            return None
+        else:
+            self._last_tool = tool
+            return list(filter(lambda x: x.name==tool, self.tools))[0]</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Tools.tool_selection.ToolSelector.set_score_threshold"><code class="name flex">
@@ -425,6 +587,7 @@ def vectordb(self) -&gt; VectorDatabase:
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.get_tool" href="#llmplus.Tools.tool_selection.ToolSelector.get_tool">get_tool</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.last_score" href="#llmplus.Tools.tool_selection.ToolSelector.last_score">last_score</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.last_tool" href="#llmplus.Tools.tool_selection.ToolSelector.last_tool">last_tool</a></code></li>
+<li><code><a title="llmplus.Tools.tool_selection.ToolSelector.llm" href="#llmplus.Tools.tool_selection.ToolSelector.llm">llm</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.score_threshold" href="#llmplus.Tools.tool_selection.ToolSelector.score_threshold">score_threshold</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.set_score_threshold" href="#llmplus.Tools.tool_selection.ToolSelector.set_score_threshold">set_score_threshold</a></code></li>
 <li><code><a title="llmplus.Tools.tool_selection.ToolSelector.tools" href="#llmplus.Tools.tool_selection.ToolSelector.tools">tools</a></code></li>

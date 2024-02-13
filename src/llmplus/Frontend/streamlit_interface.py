@@ -28,7 +28,7 @@ class InterfaceState:
         self.short_limit = 600
         self.long_limit = 500
         self.score_threshold = 0.5
-        self.tool_selector = ToolSelector(tools, embeddings=self.embeddings) if len(tools) > 0 else None
+        self.tool_selector = ToolSelector(tools, model=self.model) if len(tools) > 0 else None
 
     @property
     def titles(self) -> List[str]:
@@ -167,6 +167,8 @@ class StreamlitInterface:
 
     def get_tool(self, user_input: str) -> Optional[Type[BaseTool]]:
         if self.backend.tool_selector is None:
+            return None
+        if sum(list(self.tool_states.values())) == 0:
             return None
         self.backend.tool_selector.set_score_threshold(self.tool_threshold)
         tool = self.backend.tool_selector.get_tool(user_input=user_input)
