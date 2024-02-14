@@ -167,12 +167,12 @@ for token in output_generator:
 memory = memory.save_interaction(user_input=tool_input, assistant_output=tool_output)
 ```
 
-### 5. Chat with the model in Gradio web app
+### 5. Chat with the model in a Streamlit web app
 If you just want a GUI to start chatting with your LLM model with both long term and short term memory, type this command in the terminal:
 ```bash
 llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embeddings thenlper/gte-small
 ```
-if you want to chat with the web search tool:
+If you want to chat with the web search tool:
 ```bash
 # Use a model with longer context for web search
 llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF --embeddings thenlper/gte-small --web_search --extras "model_file='openhermes-2.5-mistral-7b-16k.Q6_K.gguf', context_length=16384"
