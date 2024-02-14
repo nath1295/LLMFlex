@@ -746,7 +746,8 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
                  embeddings_kwargs: Dict[str, Any],
                  tool_kwargs: List[Dict[str, Any]] = [],
                  auth: Optional[Tuple[str, str]] = None, 
-                 debug: bool = False) -> None:
+                 debug: bool = False,
+                 app_name: str = 'LLMPlus') -> None:
     """Run the streamlit interface.
 
     Args:
@@ -755,11 +756,13 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
         tool_kwargs (List[Dict[str, Any]], optional): List of kwargs to initialise the tools. Defaults to [].
         auth (Optional[Tuple[str, str]], optional): Tuple of username and password. Defaults to None.
         debug (bool, optional): Whether to display the debug buttons. Defaults to False.
+        app_name (str, optional): name of the streamlit script created. Defaults to "LLMPlus".
     """
     import subprocess
     import os
     from ..utils import get_config
-    script_dir = os.path.join(get_config()['llmplus_home'], '.streamlit_script.py')
+    script_dir = os.path.join(get_config()['llmplus_home'], '.streamlit_scripts',f'{app_name}.py')
+    os.makedirs(os.path.dirname(script_dir), exist_ok=True)
     with open(script_dir, 'w') as f:
         f.write(create_streamlit_script(model_kwargs, embeddings_kwargs, tool_kwargs, auth, debug))
     os.system('streamlit run '+ script_dir)

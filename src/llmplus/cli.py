@@ -57,12 +57,14 @@ def config() -> None:
 @click.option('--web_search', is_flag=True, help='Whether to use web search in the interface or not.')
 @click.option('--model_type', default='auto', help='LLM model type.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
+@click.option('--appname', default='LLMPlus', help='Name of the webapp.')
 @click.option('--extras', default='', help='Extra arugments for loading the model.')
 def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
               embeddings: str = 'thenlper/gte-small', 
               web_search: bool = False,
               model_type: str = 'auto',
               auth: Optional[Tuple[str, str]] = None, 
+              appname: str = 'LLMPlus',
               extras: str = "") -> None:
     """Launch the Streamlit Chat GUI.
     """
@@ -71,7 +73,7 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
     model = dict(model_id=model_id, model_type=model_type, **args_from_string(extras))
     embeddings = dict(embeddings_class='HuggingfaceEmbeddingsToolkit', model_id=embeddings)
     tools = [dict(tool_class='WebSearchTool', embeddings=True, verbose=False)] if web_search else []
-    app = run_streamlit_interface(model_kwargs=model, embeddings_kwargs=embeddings, tool_kwargs=tools, auth=auth, debug=False)
+    app = run_streamlit_interface(model_kwargs=model, embeddings_kwargs=embeddings, tool_kwargs=tools, auth=auth, debug=False, app_name=appname)
 
 @cli.command()
 @click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')
