@@ -28,7 +28,7 @@ class InterfaceState:
         self.short_limit = 600
         self.long_limit = 500
         self.score_threshold = 0.5
-        self.tool_selector = ToolSelector(tools, model=self.model) if len(tools) > 0 else None
+        self.tool_selector = ToolSelector(tools, model=self.model, embeddings=self.embeddings) if len(tools) > 0 else None
 
     @property
     def titles(self) -> List[str]:

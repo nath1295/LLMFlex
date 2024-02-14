@@ -4,7 +4,7 @@ Module llmplus.Tools.tool_selection
 Classes
 -------
 
-`ToolSelector(tools: List[Type[llmplus.Tools.base_tool.BaseTool]], model: Union[llmplus.Models.Factory.llm_factory.LlmFactory, Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit]], score_threshold: float = 0.75)`
+`ToolSelector(tools: List[Type[llmplus.Tools.base_tool.BaseTool]], model: llmplus.Models.Factory.llm_factory.LlmFactory, embeddings: Type[llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit], score_threshold: float = 0.7)`
 :   Class to select the appropriate tool given the user input.
 
     ### Instance variables
