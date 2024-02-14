@@ -119,6 +119,7 @@ class Exl2Core(BaseCore):
         Returns:
             Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         &#34;&#34;&#34;
+        from langchain.llms.utils import enforce_stop_tokens
         from exllamav2.generator import ExLlamaV2Sampler
         from .utils import get_stop_words, textgen_iterator
         settings = ExLlamaV2Sampler.Settings()
@@ -139,14 +140,14 @@ class Exl2Core(BaseCore):
             def stream_generator():
                 cont = True
                 generated_tokens = 0
+                output = &#39;&#39;
                 while cont:
                     chunk, eos, _ = self.model[&#39;streamer&#39;].stream()
                     generated_tokens += 1
-                    if eos or generated_tokens == max_new_tokens:
+                    output += chunk
+                    if (eos | (generated_tokens == max_new_tokens) | any(s in output for s in stop)):
                         cont = False
-                        yield &#39;&#39;
-                    else:
-                        yield chunk
+                    yield chunk
             return textgen_iterator(stream_generator(), stop)
 
         else:
@@ -154,7 +155,8 @@ class Exl2Core(BaseCore):
             self.model[&#39;default&#39;].set_stop_conditions(stop)
 
             output = self.model[&#39;default&#39;].generate_simple(prompt=prompt, gen_settings=self.settings, num_tokens=max_new_tokens, stop_token=stop)
-            return output
+            output = output.lstrip(prompt)
+            return enforce_stop_tokens(output)
 
     def unload(self) -&gt; None:
         &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;
@@ -312,6 +314,7 @@ class Exl2Core(BaseCore):
         Returns:
             Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         &#34;&#34;&#34;
+        from langchain.llms.utils import enforce_stop_tokens
         from exllamav2.generator import ExLlamaV2Sampler
         from .utils import get_stop_words, textgen_iterator
         settings = ExLlamaV2Sampler.Settings()
@@ -332,14 +335,14 @@ class Exl2Core(BaseCore):
             def stream_generator():
                 cont = True
                 generated_tokens = 0
+                output = &#39;&#39;
                 while cont:
                     chunk, eos, _ = self.model[&#39;streamer&#39;].stream()
                     generated_tokens += 1
-                    if eos or generated_tokens == max_new_tokens:
+                    output += chunk
+                    if (eos | (generated_tokens == max_new_tokens) | any(s in output for s in stop)):
                         cont = False
-                        yield &#39;&#39;
-                    else:
-                        yield chunk
+                    yield chunk
             return textgen_iterator(stream_generator(), stop)
 
         else:
@@ -347,7 +350,8 @@ class Exl2Core(BaseCore):
             self.model[&#39;default&#39;].set_stop_conditions(stop)
 
             output = self.model[&#39;default&#39;].generate_simple(prompt=prompt, gen_settings=self.settings, num_tokens=max_new_tokens, stop_token=stop)
-            return output
+            output = output.lstrip(prompt)
+            return enforce_stop_tokens(output)
 
     def unload(self) -&gt; None:
         &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;

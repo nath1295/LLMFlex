@@ -1,1 +1,2 @@
 from .gradio_interface import GradioInterface
+from .streamlit_interface import run_streamlit_interface
