@@ -29,9 +29,10 @@
 <pre><code class="python">from .base_tool import BaseTool
 from ..Data.vector_database import VectorDatabase
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from ..Models.Factory.llm_factory import LlmFactory
 from ..Models.Cores.base_core import BaseLLM
-from typing import Type, Optional, List, Union
+from typing import Type, Optional, List, Union, Optional
 
 TOOL_SELECTION_PROMPT = &#34;&#34;&#34;Given a user request, your task is to select the most appropriate tool from the list provided below that can best address the request. If you believe the user&#39;s request can be adequately addressed without the use of any specific tool, indicate &#34;no_tool_required&#34;. Please provide your response in JSON format, including a &#34;toolName&#34; for the selected tool name.
 
@@ -47,10 +48,10 @@ Your response should be in JSON format, based on the tools available for above. 
 Here is the latest user request:
 
 User Request: &#34;{user_input}&#34;
-Response:
-```json
+&#34;&#34;&#34;
+TOOL_RPOMPT_START = &#34;&#34;&#34;```json
 {
-    &#34;toolName&#34;: &#34;&#34;&#34;
+    &#34;&#34;toolName&#34;: &#34;&#34;&#34; + &#39;&#34;&#39;
 
 TOOL_INFO = &#34;&#34;&#34;Tool Name: &#34;{tool_name}&#34;
 Description: &#34;{description}&#34;
@@ -157,46 +158,42 @@ class ToolSelector:
         &#34;&#34;&#34;
         self._score_threshold = score_threshold
 
-    def get_tool(self, user_input: str) -&gt; Optional[Type[BaseTool]]:
+    def get_tool(self, user_input: str, 
+                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[Type[BaseTool]]:
         &#34;&#34;&#34;Select the most appropriate tool for a given user input.
 
         Args:
             user_input (str): User input string.
+            history (Union[List[str], List[List[str]]], optional): Current conversation history. Defaults to [].
+            prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is provide, the llm prompt template will be used. Defaults to None.
+            system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
         Returns:
-            Optional[BaseTool]: Selected tool or None if no tool is found or required.
+            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
-        if self.llm is None:
-            tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-            self._last_score = tool[&#39;score&#39;]
-            self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
-            if tool[&#39;score&#39;] &gt;= self.score_threshold:
-                tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-                return tool
-            else:
-                return None
+        import json
+        prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
+        input = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input)
+        prompt = prompt_template.create_prompt(user=input, system=system, history=history) + TOOL_RPOMPT_START
+        output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
+        try:
+            tool = json.loads(output)[&#39;tool&#39;]
+        except:
+            print(&#39;Tool selection unsuccessful.&#39;)
+            tool = &#39;no_tool_required&#39;
+        if tool == &#39;no_tool_required&#39;:
+            return None
+        elif tool not in list(map(lambda x: x.name, self.tools)):
+            print(&#39;Tool selection not in tool list.&#39;)
+            return None
         else:
-            import json
-            prompt = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input) + &#39;&#34;&#39;
-            output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
-            try:
-                tool = json.loads(output)[&#39;tool&#39;]
-            except:
-                print(&#39;Tool selection unsuccessful.&#39;)
-                tool = &#39;no_tool_required&#39;
-            if tool == &#39;no_tool_required&#39;:
-                return None
-            elif tool not in list(map(lambda x: x.name, self.tools)):
-                print(&#39;Tool selection not in tool list.&#39;)
-                return None
-            else:
-                etool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-                self._last_score = etool[&#39;score&#39;]
-                self._last_tool = tool
-                if ((etool[&#39;score&#39;] &gt;= self.score_threshold) &amp; (etool[&#39;metadata&#39;][&#39;name&#39;] == tool)):
-                    tool = list(filter(lambda x: x.name == etool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-                    return tool
-                return None
+            etool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+            self._last_score = etool[&#39;score&#39;]
+            self._last_tool = tool
+            if ((etool[&#39;score&#39;] &gt;= self.score_threshold) &amp; (etool[&#39;metadata&#39;][&#39;name&#39;] == tool)):
+                tool = list(filter(lambda x: x.name == etool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
+                return tool
+            return None
 
             </code></pre>
 </details>
@@ -310,46 +307,42 @@ class ToolSelector:
         &#34;&#34;&#34;
         self._score_threshold = score_threshold
 
-    def get_tool(self, user_input: str) -&gt; Optional[Type[BaseTool]]:
+    def get_tool(self, user_input: str, 
+                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[Type[BaseTool]]:
         &#34;&#34;&#34;Select the most appropriate tool for a given user input.
 
         Args:
             user_input (str): User input string.
+            history (Union[List[str], List[List[str]]], optional): Current conversation history. Defaults to [].
+            prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is provide, the llm prompt template will be used. Defaults to None.
+            system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
         Returns:
-            Optional[BaseTool]: Selected tool or None if no tool is found or required.
+            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
-        if self.llm is None:
-            tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-            self._last_score = tool[&#39;score&#39;]
-            self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
-            if tool[&#39;score&#39;] &gt;= self.score_threshold:
-                tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-                return tool
-            else:
-                return None
+        import json
+        prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
+        input = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input)
+        prompt = prompt_template.create_prompt(user=input, system=system, history=history) + TOOL_RPOMPT_START
+        output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
+        try:
+            tool = json.loads(output)[&#39;tool&#39;]
+        except:
+            print(&#39;Tool selection unsuccessful.&#39;)
+            tool = &#39;no_tool_required&#39;
+        if tool == &#39;no_tool_required&#39;:
+            return None
+        elif tool not in list(map(lambda x: x.name, self.tools)):
+            print(&#39;Tool selection not in tool list.&#39;)
+            return None
         else:
-            import json
-            prompt = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input) + &#39;&#34;&#39;
-            output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
-            try:
-                tool = json.loads(output)[&#39;tool&#39;]
-            except:
-                print(&#39;Tool selection unsuccessful.&#39;)
-                tool = &#39;no_tool_required&#39;
-            if tool == &#39;no_tool_required&#39;:
-                return None
-            elif tool not in list(map(lambda x: x.name, self.tools)):
-                print(&#39;Tool selection not in tool list.&#39;)
-                return None
-            else:
-                etool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-                self._last_score = etool[&#39;score&#39;]
-                self._last_tool = tool
-                if ((etool[&#39;score&#39;] &gt;= self.score_threshold) &amp; (etool[&#39;metadata&#39;][&#39;name&#39;] == tool)):
-                    tool = list(filter(lambda x: x.name == etool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-                    return tool
-                return None</code></pre>
+            etool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+            self._last_score = etool[&#39;score&#39;]
+            self._last_tool = tool
+            if ((etool[&#39;score&#39;] &gt;= self.score_threshold) &amp; (etool[&#39;metadata&#39;][&#39;name&#39;] == tool)):
+                tool = list(filter(lambda x: x.name == etool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
+                return tool
+            return None</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -489,7 +482,7 @@ def vectordb(self) -&gt; Optional[VectorDatabase]:
 <h3>Methods</h3>
 <dl>
 <dt id="llmplus.Tools.tool_selection.ToolSelector.get_tool"><code class="name flex">
-<span>def <span class="ident">get_tool</span></span>(<span>self, user_input: str) ‑> Optional[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]]</span>
+<span>def <span class="ident">get_tool</span></span>(<span>self, user_input: str, history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[<a title="llmplus.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmplus.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, system: str = 'This is a conversation between a human user and a helpful AI assistant.') ‑> Optional[Type[<a title="llmplus.Tools.base_tool.BaseTool" href="base_tool.html#llmplus.Tools.base_tool.BaseTool">BaseTool</a>]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Select the most appropriate tool for a given user input.</p>
@@ -497,56 +490,58 @@ def vectordb(self) -&gt; Optional[VectorDatabase]:
 <dl>
 <dt><strong><code>user_input</code></strong> :&ensp;<code>str</code></dt>
 <dd>User input string.</dd>
+<dt><strong><code>history</code></strong> :&ensp;<code>Union[List[str], List[List[str]]]</code>, optional</dt>
+<dd>Current conversation history. Defaults to [].</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>Prompt template to format the prompt. If None is provide, the llm prompt template will be used. Defaults to None.</dd>
+<dt><strong><code>system</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Optional[BaseTool]</code></dt>
+<dt><code>Optional[Type[BaseTool]]</code></dt>
 <dd>Selected tool or None if no tool is found or required.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_tool(self, user_input: str) -&gt; Optional[Type[BaseTool]]:
+<pre><code class="python">def get_tool(self, user_input: str, 
+             history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[Type[BaseTool]]:
     &#34;&#34;&#34;Select the most appropriate tool for a given user input.
 
     Args:
         user_input (str): User input string.
+        history (Union[List[str], List[List[str]]], optional): Current conversation history. Defaults to [].
+        prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is provide, the llm prompt template will be used. Defaults to None.
+        system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
     Returns:
-        Optional[BaseTool]: Selected tool or None if no tool is found or required.
+        Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
     &#34;&#34;&#34;
-    if self.llm is None:
-        tool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-        self._last_score = tool[&#39;score&#39;]
-        self._last_tool = tool[&#39;metadata&#39;][&#39;name&#39;]
-        if tool[&#39;score&#39;] &gt;= self.score_threshold:
-            tool = list(filter(lambda x: x.name == tool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-            return tool
-        else:
-            return None
+    import json
+    prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
+    input = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input)
+    prompt = prompt_template.create_prompt(user=input, system=system, history=history) + TOOL_RPOMPT_START
+    output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
+    try:
+        tool = json.loads(output)[&#39;tool&#39;]
+    except:
+        print(&#39;Tool selection unsuccessful.&#39;)
+        tool = &#39;no_tool_required&#39;
+    if tool == &#39;no_tool_required&#39;:
+        return None
+    elif tool not in list(map(lambda x: x.name, self.tools)):
+        print(&#39;Tool selection not in tool list.&#39;)
+        return None
     else:
-        import json
-        prompt = TOOL_SELECTION_PROMPT.replace(&#34;{examples}&#34;, self._examples).replace(&#34;{tools}&#34;, self._tool_info).replace(&#34;{user_input}&#34;, user_input) + &#39;&#34;&#39;
-        output = &#39;{&#34;tool&#34;: &#34;&#39; + self.llm.invoke(prompt)
-        try:
-            tool = json.loads(output)[&#39;tool&#39;]
-        except:
-            print(&#39;Tool selection unsuccessful.&#39;)
-            tool = &#39;no_tool_required&#39;
-        if tool == &#39;no_tool_required&#39;:
-            return None
-        elif tool not in list(map(lambda x: x.name, self.tools)):
-            print(&#39;Tool selection not in tool list.&#39;)
-            return None
-        else:
-            etool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
-            self._last_score = etool[&#39;score&#39;]
-            self._last_tool = tool
-            if ((etool[&#39;score&#39;] &gt;= self.score_threshold) &amp; (etool[&#39;metadata&#39;][&#39;name&#39;] == tool)):
-                tool = list(filter(lambda x: x.name == etool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
-                return tool
-            return None</code></pre>
+        etool = self.vectordb.search(user_input, top_k=1, index_only=False)[0]
+        self._last_score = etool[&#39;score&#39;]
+        self._last_tool = tool
+        if ((etool[&#39;score&#39;] &gt;= self.score_threshold) &amp; (etool[&#39;metadata&#39;][&#39;name&#39;] == tool)):
+            tool = list(filter(lambda x: x.name == etool[&#39;metadata&#39;][&#39;name&#39;], self.tools))[0]
+            return tool
+        return None</code></pre>
 </details>
 </dd>
 <dt id="llmplus.Tools.tool_selection.ToolSelector.set_score_threshold"><code class="name flex">

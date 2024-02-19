@@ -171,7 +171,9 @@ class StreamlitInterface:
         if sum(list(self.tool_states.values())) == 0:
             return None
         self.backend.tool_selector.set_score_threshold(self.tool_threshold)
-        tool = self.backend.tool_selector.get_tool(user_input=user_input)
+        history = self.backend.memory.get_token_memory(llm=self.backend.llm, token_limit=self.backend.short_limit)
+        system = self.backend.system
+        tool = self.backend.tool_selector.get_tool(user_input=user_input, history=history, system=system)
         print(f'Tool: {self.backend.tool_selector.last_tool}\nScore: {self.backend.tool_selector.last_score}')
         if tool is not None:
             if not self.tool_states[tool.name]:

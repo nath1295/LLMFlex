@@ -47,14 +47,17 @@ Classes
 
     ### Methods
 
-    `get_tool(self, user_input: str) ‑> Optional[Type[llmplus.Tools.base_tool.BaseTool]]`
+    `get_tool(self, user_input: str, history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[llmplus.Prompts.prompt_template.PromptTemplate] = None, system: str = 'This is a conversation between a human user and a helpful AI assistant.') ‑> Optional[Type[llmplus.Tools.base_tool.BaseTool]]`
     :   Select the most appropriate tool for a given user input.
         
         Args:
             user_input (str): User input string.
+            history (Union[List[str], List[List[str]]], optional): Current conversation history. Defaults to [].
+            prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is provide, the llm prompt template will be used. Defaults to None.
+            system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
         
         Returns:
-            Optional[BaseTool]: Selected tool or None if no tool is found or required.
+            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
 
     `set_score_threshold(self, score_threshold: float) ‑> None`
     :   Set a new score threshold.
