@@ -25,7 +25,8 @@ dependencies = [
     "protobuf",
     "beautifulsoup4",
     "streamlit",
-    "watchdog"
+    "watchdog",
+    "spacy"
 ]
 
 [project.urls]
