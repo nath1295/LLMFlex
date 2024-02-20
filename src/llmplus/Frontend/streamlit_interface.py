@@ -16,12 +16,14 @@ class InterfaceState:
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit.
             tools (List[Type[BaseTool]], optional): List of tools. Defaults to [].
         """
-        from ..Memory.long_short_memory import LongShortTermChatMemory
+        from ..Memory.assistant_long_term_memory import AssistantLongTermChatMemory
         from ..Tools.tool_selection import ToolSelector
+        from ..TextSplitters.sentence_token_text_splitter import SentenceTokenTextSplitter
         from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE
         self.model = model
         self.embeddings = embeddings
-        self.memory = LongShortTermChatMemory(title='Untitled 0', embeddings=self.embeddings, from_exist=False)
+        self.text_splitter = SentenceTokenTextSplitter(count_token_fn=model().get_num_tokens, chunk_size=200, chunk_overlap=40)
+        self.memory = AssistantLongTermChatMemory(title='Untitled 0', embeddings=self.embeddings, text_splitter=self.text_splitter, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
         self.template = self.model.prompt_template
         self.llm = self.model(stop=self.template.stop + ['#####'])
@@ -228,9 +230,9 @@ class StreamlitInterface:
             if title == '':
                 pass
             else:
-                from ..Memory.long_short_memory import LongShortTermChatMemory
+                from ..Memory.assistant_long_term_memory import AssistantLongTermChatMemory
                 from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE
-                self.backend.memory = LongShortTermChatMemory(title, embeddings=self.backend.embeddings, from_exist=True)
+                self.backend.memory = AssistantLongTermChatMemory(title, embeddings=self.backend.embeddings, text_splitter=self.backend.text_splitter, from_exist=True)
                 self.backend.system = self.backend.memory.vectordb._info.get('system', DEFAULT_SYSTEM_MESSAGE)
                 self.backend.memory.vectordb._info['system'] = self.backend.system
                 self.backend.memory.save()
@@ -238,7 +240,7 @@ class StreamlitInterface:
 
     def switch_chat(self, title: str) -> None:
         if not self.generating:
-            from ..Memory.long_short_memory import LongShortTermChatMemory
+            from ..Memory.assistant_long_term_memory import AssistantLongTermChatMemory
             from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE
             st.session_state.generating = True
             self.set_time_info()
@@ -247,7 +249,7 @@ class StreamlitInterface:
             else:
                 print(f'Switch to: {title}')
                 from_exist = title != 'Untitled 0'
-                self.backend.memory = LongShortTermChatMemory(title=title, embeddings=self.backend.embeddings, from_exist=from_exist)
+                self.backend.memory = AssistantLongTermChatMemory(title=title, embeddings=self.backend.embeddings, text_splitter=self.backend.text_splitter, from_exist=from_exist)
                 self.backend.system = self.backend.memory.info.get('system', DEFAULT_SYSTEM_MESSAGE)
                 self.backend.memory.save()
             st.session_state.generating = False
@@ -260,8 +262,8 @@ class StreamlitInterface:
                 rmtree(self.backend.memory.chat_dir)
                 self.switch_chat('Untitled 0')
             else:
-                from ..Memory.long_short_memory import LongShortTermChatMemory
-                mem = LongShortTermChatMemory(title, embeddings=self.backend.embeddings, from_exist=False)
+                from ..Memory.assistant_long_term_memory import AssistantLongTermChatMemory
+                mem = AssistantLongTermChatMemory(title, embeddings=self.backend.embeddings, text_splitter=self.backend.text_splitter, from_exist=False)
                 rmtree(mem.chat_dir)
         
     def toggle_exeperimental(self) -> None:
@@ -345,9 +347,9 @@ class StreamlitInterface:
         st.session_state.generation_config = gen_obj
 
     def get_generation_iterator(self) -> Iterator[str]:
-        from ..Memory.long_short_memory import create_long_short_prompt
+        from ..Memory.assistant_long_term_memory import create_long_assistant_memory_prompt
         config = self.generation_config
-        prompt = create_long_short_prompt(
+        prompt = create_long_assistant_memory_prompt(
             user=config['user_input'],
             prompt_template=self.backend.template,
             llm=self.backend.llm,

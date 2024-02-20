@@ -1,4 +1,4 @@
-from typing import List, Optional, Any, Literal, Tuple, Iterator
+from typing import List, Optional, Any, Literal, Tuple, Iterator, Dict
 
 def add_newline_char_to_stopwords(stop: List[str]) -> List[str]:
     """Create a duplicate of the stop words and add a new line character as a prefix to each of them if their prefixes are not new line characters.
@@ -145,5 +145,19 @@ def detect_prompt_template_by_id(model_id: str) -> str:
     return 'Default'
     
 
+def list_local_models() -> List[Dict[str, str]]:
+    """Check what you have in your local model cache directory.
 
-
+    Returns:
+        List[Dict[str, str]]: List of dictionarys of model details.
+    """
+    import os
+    from ...utils import get_config
+    model_dir = os.path.join(get_config()['hf_home'], 'hub')
+    repos = list(filter(lambda x: x.startswith('models--'), os.listdir(model_dir)))
+    repo_dirs = list(map(lambda x: os.path.join(model_dir, x, 'snapshots'), repos))
+    repos = list(map(lambda x: x.removeprefix('models--').replace('--', '/'), repos))
+    repo_dirs = list(map(lambda x: os.path.join(x, list(filter(lambda y: '.DS_Store' not in y, os.listdir(x)))[0]), repo_dirs))
+    repos = list(zip(repos, repo_dirs))
+    repos = list(map(lambda x: dict(repo_id=x[0], files=os.listdir(x[1])), repos))
+    return repos

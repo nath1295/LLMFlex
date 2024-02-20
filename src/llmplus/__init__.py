@@ -3,4 +3,4 @@ from .Embeddings.huggingface_embeddings import HuggingfaceEmbeddingsToolkit
 from .Data.vector_database import VectorDatabase
 
 
-__version__ = '0.0.21'
+__version__ = '0.0.22'
