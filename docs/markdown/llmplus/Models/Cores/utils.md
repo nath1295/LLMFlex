@@ -50,6 +50,13 @@ Functions
         List[str]: Updated list of stop words.
 
     
+`list_local_models() ‑> List[Dict[str, str]]`
+:   Check what you have in your local model cache directory.
+    
+    Returns:
+        List[Dict[str, str]]: List of dictionarys of model details.
+
+    
 `textgen_iterator(text_generator: Iterator[str], stop: List[str]) ‑> Iterator[str]`
 :   Make a text generator stop before spitting out the stop words.
     

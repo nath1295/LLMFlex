@@ -26,7 +26,7 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List, Optional, Any, Literal, Tuple, Iterator
+<pre><code class="python">from typing import List, Optional, Any, Literal, Tuple, Iterator, Dict
 
 def add_newline_char_to_stopwords(stop: List[str]) -&gt; List[str]:
     &#34;&#34;&#34;Create a duplicate of the stop words and add a new line character as a prefix to each of them if their prefixes are not new line characters.
@@ -171,7 +171,24 @@ def detect_prompt_template_by_id(model_id: str) -&gt; str:
         return base[keys[0][0]]
     
     return &#39;Default&#39;
-    </code></pre>
+    
+
+def list_local_models() -&gt; List[Dict[str, str]]:
+    &#34;&#34;&#34;Check what you have in your local model cache directory.
+
+    Returns:
+        List[Dict[str, str]]: List of dictionarys of model details.
+    &#34;&#34;&#34;
+    import os
+    from ...utils import get_config
+    model_dir = os.path.join(get_config()[&#39;hf_home&#39;], &#39;hub&#39;)
+    repos = list(filter(lambda x: x.startswith(&#39;models--&#39;), os.listdir(model_dir)))
+    repo_dirs = list(map(lambda x: os.path.join(model_dir, x, &#39;snapshots&#39;), repos))
+    repos = list(map(lambda x: x.removeprefix(&#39;models--&#39;).replace(&#39;--&#39;, &#39;/&#39;), repos))
+    repo_dirs = list(map(lambda x: os.path.join(x, list(filter(lambda y: &#39;.DS_Store&#39; not in y, os.listdir(x)))[0]), repo_dirs))
+    repos = list(zip(repos, repo_dirs))
+    repos = list(map(lambda x: dict(repo_id=x[0], files=os.listdir(x[1])), repos))
+    return repos</code></pre>
 </details>
 </section>
 <section>
@@ -385,6 +402,38 @@ def detect_prompt_template_by_id(model_id: str) -&gt; str:
         return list(set(stop))</code></pre>
 </details>
 </dd>
+<dt id="llmplus.Models.Cores.utils.list_local_models"><code class="name flex">
+<span>def <span class="ident">list_local_models</span></span>(<span>) ‑> List[Dict[str, str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check what you have in your local model cache directory.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Dict[str, str]]</code></dt>
+<dd>List of dictionarys of model details.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_local_models() -&gt; List[Dict[str, str]]:
+    &#34;&#34;&#34;Check what you have in your local model cache directory.
+
+    Returns:
+        List[Dict[str, str]]: List of dictionarys of model details.
+    &#34;&#34;&#34;
+    import os
+    from ...utils import get_config
+    model_dir = os.path.join(get_config()[&#39;hf_home&#39;], &#39;hub&#39;)
+    repos = list(filter(lambda x: x.startswith(&#39;models--&#39;), os.listdir(model_dir)))
+    repo_dirs = list(map(lambda x: os.path.join(model_dir, x, &#39;snapshots&#39;), repos))
+    repos = list(map(lambda x: x.removeprefix(&#39;models--&#39;).replace(&#39;--&#39;, &#39;/&#39;), repos))
+    repo_dirs = list(map(lambda x: os.path.join(x, list(filter(lambda y: &#39;.DS_Store&#39; not in y, os.listdir(x)))[0]), repo_dirs))
+    repos = list(zip(repos, repo_dirs))
+    repos = list(map(lambda x: dict(repo_id=x[0], files=os.listdir(x[1])), repos))
+    return repos</code></pre>
+</details>
+</dd>
 <dt id="llmplus.Models.Cores.utils.textgen_iterator"><code class="name flex">
 <span>def <span class="ident">textgen_iterator</span></span>(<span>text_generator: Iterator[str], stop: List[str]) ‑> Iterator[str]</span>
 </code></dt>
@@ -458,6 +507,7 @@ def detect_prompt_template_by_id(model_id: str) -&gt; str:
 <li><code><a title="llmplus.Models.Cores.utils.detect_prompt_template_by_id" href="#llmplus.Models.Cores.utils.detect_prompt_template_by_id">detect_prompt_template_by_id</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.find_roots" href="#llmplus.Models.Cores.utils.find_roots">find_roots</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.get_stop_words" href="#llmplus.Models.Cores.utils.get_stop_words">get_stop_words</a></code></li>
+<li><code><a title="llmplus.Models.Cores.utils.list_local_models" href="#llmplus.Models.Cores.utils.list_local_models">list_local_models</a></code></li>
 <li><code><a title="llmplus.Models.Cores.utils.textgen_iterator" href="#llmplus.Models.Cores.utils.textgen_iterator">textgen_iterator</a></code></li>
 </ul>
 </li>

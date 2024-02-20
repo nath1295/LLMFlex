@@ -47,6 +47,7 @@ Classes
 
     ### Descendants
 
+    * llmplus.Memory.assistant_long_term_memory.AssistantLongTermChatMemory
     * llmplus.Memory.long_short_memory.LongShortTermChatMemory
 
     ### Instance variables
