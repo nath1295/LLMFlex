@@ -1,6 +1,7 @@
 from .Models.Factory.llm_factory import LlmFactory
 from .Embeddings.huggingface_embeddings import HuggingfaceEmbeddingsToolkit
+from .Embeddings.llmplus_api_embeddings import APIEmbeddingsToolkit
 from .Data.vector_database import VectorDatabase
 
 
-__version__ = '0.0.22'
+__version__ = '0.0.23'

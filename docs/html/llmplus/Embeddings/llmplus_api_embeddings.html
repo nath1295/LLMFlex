@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmplus.Embeddings.llmplus_api_embeddings API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmplus.Embeddings.llmplus_api_embeddings</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from langchain.embeddings.base import Embeddings
+from .base_embeddings import BaseEmbeddingsToolkit
+from typing import Dict, Any, List, Optional
+import json, requests, os
+
+class APIEmbeddings(Embeddings):
+
+    def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -&gt; None:
+        self.base_url = base_url.removeprefix(&#39;/&#39;)
+        self.encode_kwargs = encode_kwargs
+        self.info = json.loads(requests.get(self.base_url + &#39;/info&#39;).content.decode())
+
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        &#34;&#34;&#34;embed search docs.
+
+        Args:
+            texts (List[str]): List of texts to embed.
+
+        Returns:
+            List[List[float]]: List of embeddings given the texts.
+        &#34;&#34;&#34;
+        show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
+        if show_progress:
+            from tqdm import tqdm
+            batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
+            num_text = len(texts)
+            num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+            batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+            embeddings = []
+            for b in tqdm(batches):
+                req_dict = dict(input_texts=texts[b[0]:b[1]])
+                req_dict.update(self.encode_kwargs)
+                content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
+                embeddings += json.loads(content)
+            return embeddings
+        else:
+            req_dict = dict(input_texts=texts)
+            req_dict.update(self.encode_kwargs)
+            content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
+            return json.loads(content)
+        
+    def embed_query(self, text: str) -&gt; List[float]:
+        &#34;&#34;&#34;Embed query text.
+
+        Args:
+            text (str): Text to embed.
+
+        Returns:
+            List[float]: Embeddings of the text.
+        &#34;&#34;&#34;
+        return self.embed_documents([text])[0]
+
+class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
+
+    def __init__(self, base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
+                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+        &#34;&#34;&#34;Initialising the self-hosted Huggingface API embeddings toolkit.
+
+        Args:
+            base_url (str): Model id (from Huggingface) to use.
+            chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
+            chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
+            encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
+            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading tokenizer. Defaults to dict().
+        &#34;&#34;&#34;
+        from ..utils import get_config
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
+        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
+        from transformers import AutoTokenizer
+        self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
+        self._name = self.embedding_model.info[&#39;model_id&#39;]
+        self._type = &#39;api_embeddings&#39;
+        self._embedding_size = self.embedding_model.info[&#39;embedding_dimension&#39;]
+        chunk_size = min(self.embedding_model.info[&#39;max_seq_length&#39;], 512) if not isinstance(chunk_size, int) else chunk_size
+        self._tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs)
+        self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
+            tokenizer = self._tokenizer,
+            chunk_size = chunk_size,
+            chunk_overlap = int(chunk_size * chunk_overlap_perc)
+        )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings"><code class="flex name class">
+<span>class <span class="ident">APIEmbeddings</span></span>
+<span>(</span><span>base_url: str, encode_kwargs: Dict[str, Any] = {})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Interface for embedding models.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class APIEmbeddings(Embeddings):
+
+    def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -&gt; None:
+        self.base_url = base_url.removeprefix(&#39;/&#39;)
+        self.encode_kwargs = encode_kwargs
+        self.info = json.loads(requests.get(self.base_url + &#39;/info&#39;).content.decode())
+
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        &#34;&#34;&#34;embed search docs.
+
+        Args:
+            texts (List[str]): List of texts to embed.
+
+        Returns:
+            List[List[float]]: List of embeddings given the texts.
+        &#34;&#34;&#34;
+        show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
+        if show_progress:
+            from tqdm import tqdm
+            batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
+            num_text = len(texts)
+            num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+            batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+            embeddings = []
+            for b in tqdm(batches):
+                req_dict = dict(input_texts=texts[b[0]:b[1]])
+                req_dict.update(self.encode_kwargs)
+                content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
+                embeddings += json.loads(content)
+            return embeddings
+        else:
+            req_dict = dict(input_texts=texts)
+            req_dict.update(self.encode_kwargs)
+            content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
+            return json.loads(content)
+        
+    def embed_query(self, text: str) -&gt; List[float]:
+        &#34;&#34;&#34;Embed query text.
+
+        Args:
+            text (str): Text to embed.
+
+        Returns:
+            List[float]: Embeddings of the text.
+        &#34;&#34;&#34;
+        return self.embed_documents([text])[0]</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>langchain_core.embeddings.Embeddings</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_documents"><code class="name flex">
+<span>def <span class="ident">embed_documents</span></span>(<span>self, texts: List[str]) ‑> List[List[float]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>embed search docs.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>texts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of texts to embed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[List[float]]</code></dt>
+<dd>List of embeddings given the texts.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+    &#34;&#34;&#34;embed search docs.
+
+    Args:
+        texts (List[str]): List of texts to embed.
+
+    Returns:
+        List[List[float]]: List of embeddings given the texts.
+    &#34;&#34;&#34;
+    show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
+    if show_progress:
+        from tqdm import tqdm
+        batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
+        num_text = len(texts)
+        num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+        batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+        embeddings = []
+        for b in tqdm(batches):
+            req_dict = dict(input_texts=texts[b[0]:b[1]])
+            req_dict.update(self.encode_kwargs)
+            content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
+            embeddings += json.loads(content)
+        return embeddings
+    else:
+        req_dict = dict(input_texts=texts)
+        req_dict.update(self.encode_kwargs)
+        content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
+        return json.loads(content)</code></pre>
+</details>
+</dd>
+<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_query"><code class="name flex">
+<span>def <span class="ident">embed_query</span></span>(<span>self, text: str) ‑> List[float]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed query text.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text to embed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[float]</code></dt>
+<dd>Embeddings of the text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def embed_query(self, text: str) -&gt; List[float]:
+    &#34;&#34;&#34;Embed query text.
+
+    Args:
+        text (str): Text to embed.
+
+    Returns:
+        List[float]: Embeddings of the text.
+    &#34;&#34;&#34;
+    return self.embed_documents([text])[0]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit"><code class="flex name class">
+<span>class <span class="ident">APIEmbeddingsToolkit</span></span>
+<span>(</span><span>base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128}, tokenizer_kwargs: Dict[str, Any] = {})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for storing the embedding model and the text splitter.</p>
+<p>Initialising the self-hosted Huggingface API embeddings toolkit.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>Model id (from Huggingface) to use.</dd>
+<dt><strong><code>chunk_size</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.</dd>
+<dt><strong><code>chunk_overlap_perc</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Number of tokens percentage overlap during text splitting. Defaults to 0.1.</dd>
+<dt><strong><code>encode_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
+<dd>Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).</dd>
+<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
+<dd>Keyword arguments for loading tokenizer. Defaults to dict().</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
+
+    def __init__(self, base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
+                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+        &#34;&#34;&#34;Initialising the self-hosted Huggingface API embeddings toolkit.
+
+        Args:
+            base_url (str): Model id (from Huggingface) to use.
+            chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
+            chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
+            encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
+            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading tokenizer. Defaults to dict().
+        &#34;&#34;&#34;
+        from ..utils import get_config
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
+        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
+        from transformers import AutoTokenizer
+        self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
+        self._name = self.embedding_model.info[&#39;model_id&#39;]
+        self._type = &#39;api_embeddings&#39;
+        self._embedding_size = self.embedding_model.info[&#39;embedding_dimension&#39;]
+        chunk_size = min(self.embedding_model.info[&#39;max_seq_length&#39;], 512) if not isinstance(chunk_size, int) else chunk_size
+        self._tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs)
+        self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
+            tokenizer = self._tokenizer,
+            chunk_size = chunk_size,
+            chunk_overlap = int(chunk_size * chunk_overlap_perc)
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model">embedding_model</a></code></li>
+<li><code><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size">embedding_size</a></code></li>
+<li><code><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name">name</a></code></li>
+<li><code><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter">text_splitter</a></code></li>
+<li><code><a title="llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type" href="base_embeddings.html#llmplus.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type">type</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmplus.Embeddings" href="index.html">llmplus.Embeddings</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings">APIEmbeddings</a></code></h4>
+<ul class="">
+<li><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_documents" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_documents">embed_documents</a></code></li>
+<li><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_query" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_query">embed_query</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit">APIEmbeddingsToolkit</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

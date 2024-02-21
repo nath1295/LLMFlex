@@ -53,7 +53,7 @@ def config() -> None:
 
 @cli.command()
 @click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')
-@click.option('--embeddings', default='thenlper/gte-small', help='Embeddings model ID to use.')
+@click.option('--embeddings', default='thenlper/gte-small', help='Embeddings model ID to use. If an url is provided, the APIEmbeddingsToolkit will be used instead.')
 @click.option('--web_search', is_flag=True, help='Whether to use web search in the interface or not.')
 @click.option('--model_type', default='auto', help='LLM model type.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
@@ -71,7 +71,8 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
     from .Frontend.streamlit_interface import run_streamlit_interface
     model_id = None if model_id == 'None' else model_id
     model = dict(model_id=model_id, model_type=model_type, **args_from_string(extras))
-    embeddings = dict(embeddings_class='HuggingfaceEmbeddingsToolkit', model_id=embeddings)
+    embeddings_class = 'APIEmbeddingsToolkit' if 'http' in embeddings else 'HuggingfaceEmbeddingsToolkit'
+    embeddings = dict(embeddings_class=embeddings_class, model_id=embeddings)
     tools = [dict(tool_class='WebSearchTool', embeddings=True, verbose=False)] if web_search else []
     app = run_streamlit_interface(model_kwargs=model, embeddings_kwargs=embeddings, tool_kwargs=tools, auth=auth, debug=False, app_name=appname)
 

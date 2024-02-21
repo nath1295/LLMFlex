@@ -29,6 +29,7 @@
 <pre><code class="python">from ..Models.Factory.llm_factory import LlmFactory
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..Embeddings.huggingface_embeddings import HuggingfaceEmbeddingsToolkit
+from ..Embeddings.llmplus_api_embeddings import APIEmbeddingsToolkit
 from ..Tools.base_tool import BaseTool
 import streamlit as st
 from typing import Dict, Any, Union, List, Tuple, Type, Optional, Literal, Iterator
@@ -721,7 +722,7 @@ def embeddings_loader(embeddings_kwargs: Dict[str, Any]) -&gt; BaseEmbeddingsToo
     Returns:
         BaseEmbeddingsToolkit: The embeddings toolkit.
     &#34;&#34;&#34;
-    mapper = {&#34;HuggingfaceEmbeddingsToolkit&#34;: HuggingfaceEmbeddingsToolkit}
+    mapper = {&#34;HuggingfaceEmbeddingsToolkit&#34;: HuggingfaceEmbeddingsToolkit, &#39;APIEmbeddingsToolkit&#39;: APIEmbeddingsToolkit}
     model_key = embeddings_kwargs.pop(&#39;embeddings_class&#39;, &#34;HuggingfaceEmbeddingsToolkit&#34;)
     return mapper.get(model_key)(**embeddings_kwargs)
 
@@ -890,7 +891,7 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
     Returns:
         BaseEmbeddingsToolkit: The embeddings toolkit.
     &#34;&#34;&#34;
-    mapper = {&#34;HuggingfaceEmbeddingsToolkit&#34;: HuggingfaceEmbeddingsToolkit}
+    mapper = {&#34;HuggingfaceEmbeddingsToolkit&#34;: HuggingfaceEmbeddingsToolkit, &#39;APIEmbeddingsToolkit&#39;: APIEmbeddingsToolkit}
     model_key = embeddings_kwargs.pop(&#39;embeddings_class&#39;, &#34;HuggingfaceEmbeddingsToolkit&#34;)
     return mapper.get(model_key)(**embeddings_kwargs)</code></pre>
 </details>
