@@ -64,6 +64,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading tokenizer. Defaults to dict().
         """
         from ..utils import get_config
+        from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from langchain.text_splitter import SentenceTransformersTokenTextSplitter
@@ -74,8 +75,6 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         self._embedding_size = self.embedding_model.info['embedding_dimension']
         chunk_size = min(self.embedding_model.info['max_seq_length'], 512) if not isinstance(chunk_size, int) else chunk_size
         self._tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs)
-        self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
-            tokenizer = self._tokenizer,
-            chunk_size = chunk_size,
-            chunk_overlap = int(chunk_size * chunk_overlap_perc)
-        )
+        encode_fn = lambda x: self._tokenizer.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: self._tokenizer.decode(x, skip_special_tokens=True)
+        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)

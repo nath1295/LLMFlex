@@ -72,7 +72,7 @@ def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF',
     model_id = None if model_id == 'None' else model_id
     model = dict(model_id=model_id, model_type=model_type, **args_from_string(extras))
     embeddings_class = 'APIEmbeddingsToolkit' if 'http' in embeddings else 'HuggingfaceEmbeddingsToolkit'
-    embeddings = dict(embeddings_class=embeddings_class, model_id=embeddings)
+    embeddings = dict(embeddings_class=embeddings_class, model_id=embeddings) if embeddings_class.startswith('Huggingface') else dict(embeddings_class=embeddings_class, base_url=embeddings)
     tools = [dict(tool_class='WebSearchTool', embeddings=True, verbose=False)] if web_search else []
     app = run_streamlit_interface(model_kwargs=model, embeddings_kwargs=embeddings, tool_kwargs=tools, auth=auth, debug=False, app_name=appname)
 

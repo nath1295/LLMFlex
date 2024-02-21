@@ -17,6 +17,7 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
         """
         from ..utils import get_config
+        from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ['SENTENCE_TRANSFORMERS_HOME'] = get_config()['st_home']
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
@@ -27,8 +28,6 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         self._type = 'huggingface_embeddings'
         self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
         chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
-        self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
-            tokenizer = self.embedding_model.client.tokenizer,
-            chunk_size = chunk_size,
-            chunk_overlap = int(chunk_size * chunk_overlap_perc)
-        )
+        encode_fn = lambda x: self.embedding_model.client.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: self.embedding_model.client.decode(x, skip_special_tokens=True)
+        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)

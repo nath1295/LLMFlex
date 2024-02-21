@@ -45,6 +45,7 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
         &#34;&#34;&#34;
         from ..utils import get_config
+        from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
@@ -55,11 +56,9 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         self._type = &#39;huggingface_embeddings&#39;
         self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
         chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
-        self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
-            tokenizer = self.embedding_model.client.tokenizer,
-            chunk_size = chunk_size,
-            chunk_overlap = int(chunk_size * chunk_overlap_perc)
-        )</code></pre>
+        encode_fn = lambda x: self.embedding_model.client.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: self.embedding_model.client.decode(x, skip_special_tokens=True)
+        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)</code></pre>
 </details>
 </section>
 <section>
@@ -110,6 +109,7 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
         &#34;&#34;&#34;
         from ..utils import get_config
+        from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
@@ -120,11 +120,9 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         self._type = &#39;huggingface_embeddings&#39;
         self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
         chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
-        self._text_splitter = SentenceTransformersTokenTextSplitter.from_huggingface_tokenizer(
-            tokenizer = self.embedding_model.client.tokenizer,
-            chunk_size = chunk_size,
-            chunk_overlap = int(chunk_size * chunk_overlap_perc)
-        )</code></pre>
+        encode_fn = lambda x: self.embedding_model.client.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: self.embedding_model.client.decode(x, skip_special_tokens=True)
+        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
