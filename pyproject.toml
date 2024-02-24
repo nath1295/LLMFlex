@@ -1,5 +1,5 @@
 [project]
-name = "llmplus"
+name = "llmflex"
 description = "A python package for developing AI applications with local LLMs."
 dynamic = ["version"]
 
@@ -33,10 +33,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/nath1295/LLMPlus/tree/master"
+Homepage = "https://github.com/nath1295/LLMFlex"
 
 [project.scripts]
-llmplus = "llmplus.cli:cli"
+llmflex = "llmflex.cli:cli"
 
 [project.optional-dependencies]
 cu121 = [
@@ -58,7 +58,7 @@ build-backend = "setuptools.build_meta"
 py-modules = []
 
 [tool.setuptools.dynamic]
-version = {attr = "llmplus.__version__"}
+version = {attr = "llmflex.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]

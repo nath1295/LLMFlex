@@ -1,6 +1,6 @@
-# LLMPlus
+# LLMFlex
 
-LLMPlus is a python package that allows python developers to work with different large language models (LLM) and do prompt engineering with a simple interface. It favours free and local resources instead of using paid APIs to develop truly local and private AI-powered solutions.
+LLMFlex is a python package that allows python developers to work with different large language models (LLM) and do prompt engineering with a simple interface. It favours free and local resources instead of using paid APIs to develop truly local and private AI-powered solutions.
 
 It provides classes to load LLM models, embedding models, and vector databases to create LLM powered applications with your own prompt engineering and RAG techniques. With a one-liner command, you can load a chatbot interface to chat with the LLM or serve a model as OpenAI API as well.
 
@@ -68,7 +68,7 @@ If you simply want to play with a model, there's a gradio frontend chatbot that 
 This is how you can start with any text generation model on HuggingFace with your machine.
 
 ```python
-from llmplus import LlmFactory
+from llmflex import LlmFactory
 
 # Load the model from Huggingface
 model = LlmFactory("TheBloke/OpenHermes-2.5-Mistral-7B-GGUF")
@@ -95,7 +95,7 @@ for token in llm.stream(prompt):
 To load an embedding model and use a vector database:
 
 ```python
-from llmplus import HuggingfaceEmbeddingsToolkit, VectorDatabase
+from llmflex import HuggingfaceEmbeddingsToolkit, VectorDatabase
 
 # Loading the embedding model toolkit
 embeddings = HuggingfaceEmbeddingsToolkit(model_id="thenlper/gte-large")
@@ -111,8 +111,8 @@ print(vectordb.search("Beef"))
 ### 3. Use memory and prompt template to create a chatbot
 Use the Memory classes and the `PromptTemplate` class to create a chatbot.
 ```python
-from llmplus.Memory import LongShortTermChatMemory, create_long_short_prompt
-from llmplus.Prompts import PromptTemplate
+from llmflex.Memory import LongShortTermChatMemory, create_long_short_prompt
+from llmflex.Prompts import PromptTemplate
 
 # Create the memory with the embeddings toolkit created earlier
 memory = LongShortTermChatMemory(title="My first conversation with OpenHermes", embeddings=embeddings, from_exist=False)
@@ -144,7 +144,7 @@ memory.save_interaction(user_input=user_input, assistant_output=output)
 ### 4. Use tools
 A `WebSearchTool` class is implemented as an example to build a tool with LLMPlus. The tool is using __DuckDuckGo__ by default. Here is how you can use it:
 ```python
-from llmplus.Tools import WebSearchTool
+from llmflex.Tools import WebSearchTool
 
 # Create a web search tool with the embeddings toolkit created earlier
 tool = WebSearchTool(embeddings=embeddings, verbose=True)
@@ -170,12 +170,12 @@ memory = memory.save_interaction(user_input=tool_input, assistant_output=tool_ou
 ### 5. Chat with the model in a Streamlit web app
 If you just want a GUI to start chatting with your LLM model with both long term and short term memory, type this command in the terminal:
 ```bash
-llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embeddings thenlper/gte-small
+llmflex interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embeddings thenlper/gte-small
 ```
 If you want to chat with the web search tool:
 ```bash
 # Use a model with longer context for web search
-llmplus interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF --embeddings thenlper/gte-small --web_search --extras "model_file='openhermes-2.5-mistral-7b-16k.Q6_K.gguf', context_length=16384"
+llmflex interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF --embeddings thenlper/gte-small --web_search --extras "model_file='openhermes-2.5-mistral-7b-16k.Q6_K.gguf', context_length=16384"
 ```
 You will see a streamlit frontend, use it to chat with the LLM model.  
 ![Streamlit GUI](imgs/chat_gui_streamlit.png)
@@ -183,7 +183,7 @@ You will see a streamlit frontend, use it to chat with the LLM model.
 ### 6. Serve an OpenAI API with a GGUF model
 To serve a GGUF model with OpenAI API:
 ```bash
-llmplus serve --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --model_file openhermes-2.5-mistral-7b.Q6_K.gguf --context_size 4096
+llmflex serve --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --model_file openhermes-2.5-mistral-7b.Q6_K.gguf --context_size 4096
 ```
 
 ## Documentations

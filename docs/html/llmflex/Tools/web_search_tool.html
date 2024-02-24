@@ -1,0 +1,784 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmflex.Tools.web_search_tool API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Tools.web_search_tool</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from ..Models.Cores.base_core import BaseLLM
+from ..Prompts.prompt_template import PromptTemplate
+from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from ..Data.vector_database import VectorDatabase
+from .base_tool import BaseTool
+from typing import Iterator, List, Dict, Any, Optional, Union, Literal, Type, Tuple
+
+WEB_SEARCH_TOOL_DESCRIPTION = &#34;&#34;&#34;This tool is for doing searches on the internet for facts or most updated information via a search engine.
+Input of this tool should be a search query or your question. 
+Output of this tool is the answer of your input question.&#34;&#34;&#34;
+
+QUERY_GENERATION_SYS_RPOMPT = &#34;&#34;&#34;You are an AI assistant who is analysing the conversation you are having with the user. You need to use a search engine to search for the most relevant information that can help you to give the user the most accurate and coherent respond. The user is asking you to generate the most appropriate search query for the latest user request.
+
+Here are the most recent conversations you have with the user:
+&#34;&#34;&#34;
+
+SEARCH_RESPONSE_SYS_RPOMPT = &#34;&#34;&#34;You are a helpful AI assistant having a conversation with a user. You have just used a search engine to get some relevant information that might help you to respond to the user&#39;s latest request. Here are some relevant chunks of contents that you found with the search engine. Use them to respond to the users if they are useful.
+
+Relevant chunks of contents:
+
+&#34;&#34;&#34;
+
+def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+    &#34;&#34;&#34;Search with DuckDuckGo.
+
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+    &#34;&#34;&#34;
+    from duckduckgo_search import DDGS
+    with DDGS() as ddgs:
+        results = [r for r in ddgs.text(query, max_results=n, **kwargs)]
+    if urls_only:
+        results = list(map(lambda x: x[&#39;href&#39;], results))
+    return results
+    
+class WebSearchTool(BaseTool):
+    &#34;&#34;&#34;This is the tool class for doing web search.
+    &#34;&#34;&#34;
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
+                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, key_phrases: List[str] = [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;],
+                 search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
+        &#34;&#34;&#34;Initialise the web search tool.
+
+        Args:
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
+            name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
+            description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
+            key_phrases (List[str], optional): List of key phrases to trigger the tool in the chat setup. Defaults to [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;].
+            search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
+            verbose: Whether to print logs while running the tool. Defaults to True.
+        &#34;&#34;&#34;
+        super().__init__(name=name, description=description, verbose=verbose, key_phrases=key_phrases)
+        self.search_engine = search_engine
+        self.embeddings = embeddings
+
+    def create_search_query(self, tool_input: str, 
+            llm: Optional[Type[BaseLLM]] = None, 
+            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+            prompt_template: Optional[PromptTemplate] = None) -&gt; str:
+        &#34;&#34;&#34;Creating the search query for the search engine given the user input.
+
+        Args:
+            tool_input (str): User input.
+            llm (Optional[Type[BaseLLM]], optional): LLM to create the search query. If not given, the search query will be the user input. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Recent conversation history as extra context for creating search query. Defaults to None.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template for structuring the prompt to create search query. Defaults to None.
+
+        Returns:
+            str: Search query.
+        &#34;&#34;&#34;
+        tool_input = tool_input.strip(&#39; \n\r\t&#39;)
+        generate_query = True if llm is not None else False
+        if not generate_query:
+            query = tool_input
+            self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
+        else:
+            if ((history is not None) &amp; (prompt_template is not None)):
+                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+            else:
+                prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+                if history is not None:
+                    conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                else:
+                    conversation = prompt_template.human_prefix + tool_input
+            request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
+            query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
+            query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
+            query = &#39;{&#34;Search query&#34;: &#34;&#39; + llm.invoke(query_prompt, stop=[&#39;```&#39;], temperature=0)
+            query = query.rstrip(&#39;`&#39;)
+            try:
+                import json
+                query = json.loads(query)[&#39;Search query&#39;]
+            except:
+                self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
+                query = tool_input
+        return query
+
+    def search(self, query: str, n: int = 5, urls_only: bool = False, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+        &#34;&#34;&#34;Search with the given query.
+
+        Args:
+            query (str): Search query.
+            n (int, optional): Maximum number of results. Defaults to 5.
+            urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+        Returns:
+            List[Union[str, Dict[str, Any]]]: List of search results.
+        &#34;&#34;&#34;
+        if self.search_engine == &#39;duckduckgo&#39;:
+            return ddg_search(query=query, n=n, urls_only=urls_only, **kwargs)
+        else:
+            raise ValueError(f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;)
+        
+    def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; VectorDatabase:
+        &#34;&#34;&#34;Creating a temporary vector database of the search result contents.
+
+        Args:
+            results (List[Dict[str, Any]]): Search results from the search engine.
+            llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
+
+        Returns:
+            VectorDatabase: The temporary vector database.
+        &#34;&#34;&#34;
+        from .web_search_utils import get_markdown, create_content_chunks
+        from langchain.schema.document import Document
+
+        urls = list(map(lambda x: x[&#39;href&#39;], results))
+        vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
+
+        if llm is None:
+            contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
+            docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+            vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
+        else:
+            contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
+            contents = list(map(lambda x: create_content_chunks(x, llm), contents))
+            docs = list(zip(contents, results))
+            docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+            docs = sum(docs, [])
+            vectordb.add_documents(docs=docs, split_text=False)
+        return vectordb
+    
+    def create_relevant_content_chunks(self, query: str, vectordb: VectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
+        &#34;&#34;&#34;Return the relevant chunks of contents from the vector database.
+
+        Args:
+            query (str): Search query.
+            vectordb (VectorDatabase): Vector database of search result contents.
+
+        Returns:
+            Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
+        &#34;&#34;&#34;
+        chunks = vectordb.search(query=query, top_k=3, index_only=False)
+        links = list(set(list(map(lambda x: x[&#39;metadata&#39;][&#39;href&#39;], chunks))))
+        link_str = []
+        for i, link in enumerate(links):
+            link_str.append(f&#39;{i + 1}. {link}  &#39;)
+        links = &#39;Sources:  \n&#39; + &#39;\n&#39;.join(link_str)
+        return chunks, links
+    
+    def generate_response(self, tool_input: str,  
+                          chunks: List[Dict[str, Any]], 
+                          llm: Type[BaseLLM],
+                          history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+                          stream: bool = False, 
+                          prompt_template: Optional[PromptTemplate] = None) -&gt; Union[str, Iterator[str]]:
+        
+        rel_info = list(map(lambda x: x[&#39;index&#39;], chunks))
+        rel_info = &#39;\n\n&#39;.join(rel_info) + &#39;\n&#39;
+
+        prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+        prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
+        from ..Models.Cores.utils import add_newline_char_to_stopwords
+        stop = add_newline_char_to_stopwords(prompt_template.stop)
+        if llm is None:
+            raise ValueError(f&#39;A llm has to be provided to generate response.&#39;)
+        if stream:
+            return llm.stream(prompt, stop=stop)
+        else:
+            return llm.invoke(prompt, stop=stop)
+
+    def _tool_schema(self) -&gt; Dict[str, Any]:
+        schema = {
+            &#39;create_search_query&#39; : dict(
+                input=[&#39;tool_input&#39;, &#39;llm&#39;, &#39;history&#39;, &#39;prompt_template&#39;],
+                output=[&#39;query&#39;]
+            ),
+            &#39;search&#39; : dict(
+                input=[&#39;query&#39;],
+                output=[&#39;results&#39;]
+            ),
+            &#39;create_vectordb&#39; : dict(
+                input=[&#39;results&#39;, &#39;llm&#39;],
+                output=[&#39;vectordb&#39;]
+            ),
+            &#39;create_relevant_content_chunks&#39; : dict(
+                input=[&#39;query&#39;, &#39;vectordb&#39;],
+                output=[&#39;chunks&#39;, &#39;footnote&#39;]
+            ),
+            &#39;generate_response&#39; : dict(
+                input=[&#39;tool_input&#39;, &#39;chunks&#39;, &#39;llm&#39;, &#39;history&#39;, &#39;stream&#39;, &#39;prompt_template&#39;],
+                output=[&#39;final_output&#39;]
+            )
+        }
+        return schema</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Tools.web_search_tool.ddg_search"><code class="name flex">
+<span>def <span class="ident">ddg_search</span></span>(<span>query: str, n: int = 5, urls_only: bool = True, **kwargs) ‑> List[Union[str, Dict[str, Any]]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Search with DuckDuckGo.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>Search query.</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of results. Defaults to 5.</dd>
+<dt><strong><code>urls_only</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Only return the list of urls or return other information as well. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Union[str, Dict[str, Any]]]</code></dt>
+<dd>List of search results.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+    &#34;&#34;&#34;Search with DuckDuckGo.
+
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+    &#34;&#34;&#34;
+    from duckduckgo_search import DDGS
+    with DDGS() as ddgs:
+        results = [r for r in ddgs.text(query, max_results=n, **kwargs)]
+    if urls_only:
+        results = list(map(lambda x: x[&#39;href&#39;], results))
+    return results</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Tools.web_search_tool.WebSearchTool"><code class="flex name class">
+<span>class <span class="ident">WebSearchTool</span></span>
+<span>(</span><span>embeddings: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], name: str = 'web_search', description: str = 'This tool is for doing searches on the internet for facts or most updated information via a search engine.\nInput of this tool should be a search query or your question. \nOutput of this tool is the answer of your input question.', key_phrases: List[str] = ['use the browser', 'check online', 'search the internet'], search_engine: Literal['duckduckgo'] = 'duckduckgo', verbose: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This is the tool class for doing web search.</p>
+<p>Initialise the web search tool.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>Type[BaseEmbeddingsToolkit]</code></dt>
+<dd>Embeddings to use for creating template</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Name of the tool. Defaults to 'web_search'.</dd>
+<dt><strong><code>description</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.</dd>
+<dt><strong><code>key_phrases</code></strong> :&ensp;<code>List[str]</code>, optional</dt>
+<dd>List of key phrases to trigger the tool in the chat setup. Defaults to ['use the browser', 'check online', 'search the internet'].</dd>
+<dt>search_engine (Literal[&#39;duckduckgo&#39;], optional): Name of the search engine of the tool. Defaults to 'duckduckgo'.</dt>
+<dt><strong><code>verbose</code></strong></dt>
+<dd>Whether to print logs while running the tool. Defaults to True.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WebSearchTool(BaseTool):
+    &#34;&#34;&#34;This is the tool class for doing web search.
+    &#34;&#34;&#34;
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], 
+                 name: str = &#39;web_search&#39;, description: str = WEB_SEARCH_TOOL_DESCRIPTION, key_phrases: List[str] = [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;],
+                 search_engine: Literal[&#39;duckduckgo&#39;] = &#39;duckduckgo&#39;, verbose: bool = True) -&gt; None:
+        &#34;&#34;&#34;Initialise the web search tool.
+
+        Args:
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings to use for creating template
+            name (str, optional): Name of the tool. Defaults to &#39;web_search&#39;.
+            description (str, optional): Description of the tool. Defaults to WEB_SEARCH_TOOL_DESCRIPTION.
+            key_phrases (List[str], optional): List of key phrases to trigger the tool in the chat setup. Defaults to [&#39;use the browser&#39;, &#39;check online&#39;, &#39;search the internet&#39;].
+            search_engine (Literal[&amp;#39;duckduckgo&amp;#39;], optional): Name of the search engine of the tool. Defaults to &#39;duckduckgo&#39;.
+            verbose: Whether to print logs while running the tool. Defaults to True.
+        &#34;&#34;&#34;
+        super().__init__(name=name, description=description, verbose=verbose, key_phrases=key_phrases)
+        self.search_engine = search_engine
+        self.embeddings = embeddings
+
+    def create_search_query(self, tool_input: str, 
+            llm: Optional[Type[BaseLLM]] = None, 
+            history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+            prompt_template: Optional[PromptTemplate] = None) -&gt; str:
+        &#34;&#34;&#34;Creating the search query for the search engine given the user input.
+
+        Args:
+            tool_input (str): User input.
+            llm (Optional[Type[BaseLLM]], optional): LLM to create the search query. If not given, the search query will be the user input. Defaults to None.
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Recent conversation history as extra context for creating search query. Defaults to None.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template for structuring the prompt to create search query. Defaults to None.
+
+        Returns:
+            str: Search query.
+        &#34;&#34;&#34;
+        tool_input = tool_input.strip(&#39; \n\r\t&#39;)
+        generate_query = True if llm is not None else False
+        if not generate_query:
+            query = tool_input
+            self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
+        else:
+            if ((history is not None) &amp; (prompt_template is not None)):
+                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+            else:
+                prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+                if history is not None:
+                    conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                else:
+                    conversation = prompt_template.human_prefix + tool_input
+            request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
+            query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
+            query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
+            query = &#39;{&#34;Search query&#34;: &#34;&#39; + llm.invoke(query_prompt, stop=[&#39;```&#39;], temperature=0)
+            query = query.rstrip(&#39;`&#39;)
+            try:
+                import json
+                query = json.loads(query)[&#39;Search query&#39;]
+            except:
+                self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
+                query = tool_input
+        return query
+
+    def search(self, query: str, n: int = 5, urls_only: bool = False, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+        &#34;&#34;&#34;Search with the given query.
+
+        Args:
+            query (str): Search query.
+            n (int, optional): Maximum number of results. Defaults to 5.
+            urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+        Returns:
+            List[Union[str, Dict[str, Any]]]: List of search results.
+        &#34;&#34;&#34;
+        if self.search_engine == &#39;duckduckgo&#39;:
+            return ddg_search(query=query, n=n, urls_only=urls_only, **kwargs)
+        else:
+            raise ValueError(f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;)
+        
+    def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; VectorDatabase:
+        &#34;&#34;&#34;Creating a temporary vector database of the search result contents.
+
+        Args:
+            results (List[Dict[str, Any]]): Search results from the search engine.
+            llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
+
+        Returns:
+            VectorDatabase: The temporary vector database.
+        &#34;&#34;&#34;
+        from .web_search_utils import get_markdown, create_content_chunks
+        from langchain.schema.document import Document
+
+        urls = list(map(lambda x: x[&#39;href&#39;], results))
+        vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
+
+        if llm is None:
+            contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
+            docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+            vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
+        else:
+            contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
+            contents = list(map(lambda x: create_content_chunks(x, llm), contents))
+            docs = list(zip(contents, results))
+            docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+            docs = sum(docs, [])
+            vectordb.add_documents(docs=docs, split_text=False)
+        return vectordb
+    
+    def create_relevant_content_chunks(self, query: str, vectordb: VectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
+        &#34;&#34;&#34;Return the relevant chunks of contents from the vector database.
+
+        Args:
+            query (str): Search query.
+            vectordb (VectorDatabase): Vector database of search result contents.
+
+        Returns:
+            Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
+        &#34;&#34;&#34;
+        chunks = vectordb.search(query=query, top_k=3, index_only=False)
+        links = list(set(list(map(lambda x: x[&#39;metadata&#39;][&#39;href&#39;], chunks))))
+        link_str = []
+        for i, link in enumerate(links):
+            link_str.append(f&#39;{i + 1}. {link}  &#39;)
+        links = &#39;Sources:  \n&#39; + &#39;\n&#39;.join(link_str)
+        return chunks, links
+    
+    def generate_response(self, tool_input: str,  
+                          chunks: List[Dict[str, Any]], 
+                          llm: Type[BaseLLM],
+                          history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+                          stream: bool = False, 
+                          prompt_template: Optional[PromptTemplate] = None) -&gt; Union[str, Iterator[str]]:
+        
+        rel_info = list(map(lambda x: x[&#39;index&#39;], chunks))
+        rel_info = &#39;\n\n&#39;.join(rel_info) + &#39;\n&#39;
+
+        prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+        prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
+        from ..Models.Cores.utils import add_newline_char_to_stopwords
+        stop = add_newline_char_to_stopwords(prompt_template.stop)
+        if llm is None:
+            raise ValueError(f&#39;A llm has to be provided to generate response.&#39;)
+        if stream:
+            return llm.stream(prompt, stop=stop)
+        else:
+            return llm.invoke(prompt, stop=stop)
+
+    def _tool_schema(self) -&gt; Dict[str, Any]:
+        schema = {
+            &#39;create_search_query&#39; : dict(
+                input=[&#39;tool_input&#39;, &#39;llm&#39;, &#39;history&#39;, &#39;prompt_template&#39;],
+                output=[&#39;query&#39;]
+            ),
+            &#39;search&#39; : dict(
+                input=[&#39;query&#39;],
+                output=[&#39;results&#39;]
+            ),
+            &#39;create_vectordb&#39; : dict(
+                input=[&#39;results&#39;, &#39;llm&#39;],
+                output=[&#39;vectordb&#39;]
+            ),
+            &#39;create_relevant_content_chunks&#39; : dict(
+                input=[&#39;query&#39;, &#39;vectordb&#39;],
+                output=[&#39;chunks&#39;, &#39;footnote&#39;]
+            ),
+            &#39;generate_response&#39; : dict(
+                input=[&#39;tool_input&#39;, &#39;chunks&#39;, &#39;llm&#39;, &#39;history&#39;, &#39;stream&#39;, &#39;prompt_template&#39;],
+                output=[&#39;final_output&#39;]
+            )
+        }
+        return schema</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.Tools.base_tool.BaseTool" href="base_tool.html#llmflex.Tools.base_tool.BaseTool">BaseTool</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Tools.web_search_tool.WebSearchTool.create_relevant_content_chunks"><code class="name flex">
+<span>def <span class="ident">create_relevant_content_chunks</span></span>(<span>self, query: str, vectordb: <a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a>) ‑> Tuple[List[Dict[str, Any]], str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the relevant chunks of contents from the vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>Search query.</dd>
+<dt><strong><code>vectordb</code></strong> :&ensp;<code>VectorDatabase</code></dt>
+<dd>Vector database of search result contents.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tuple[List[Dict[str, Any]], str]</code></dt>
+<dd>List of relevant chunks of contents and their links.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_relevant_content_chunks(self, query: str, vectordb: VectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
+    &#34;&#34;&#34;Return the relevant chunks of contents from the vector database.
+
+    Args:
+        query (str): Search query.
+        vectordb (VectorDatabase): Vector database of search result contents.
+
+    Returns:
+        Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
+    &#34;&#34;&#34;
+    chunks = vectordb.search(query=query, top_k=3, index_only=False)
+    links = list(set(list(map(lambda x: x[&#39;metadata&#39;][&#39;href&#39;], chunks))))
+    link_str = []
+    for i, link in enumerate(links):
+        link_str.append(f&#39;{i + 1}. {link}  &#39;)
+    links = &#39;Sources:  \n&#39; + &#39;\n&#39;.join(link_str)
+    return chunks, links</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.web_search_tool.WebSearchTool.create_search_query"><code class="name flex">
+<span>def <span class="ident">create_search_query</span></span>(<span>self, tool_input: str, llm: Optional[Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None, history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creating the search query for the search engine given the user input.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tool_input</code></strong> :&ensp;<code>str</code></dt>
+<dd>User input.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Optional[Type[BaseLLM]]</code>, optional</dt>
+<dd>LLM to create the search query. If not given, the search query will be the user input. Defaults to None.</dd>
+<dt><strong><code>history</code></strong> :&ensp;<code>Optional[Union[List[str], List[Tuple[str, str]]]]</code>, optional</dt>
+<dd>Recent conversation history as extra context for creating search query. Defaults to None.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>Prompt template for structuring the prompt to create search query. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Search query.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_search_query(self, tool_input: str, 
+        llm: Optional[Type[BaseLLM]] = None, 
+        history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+        prompt_template: Optional[PromptTemplate] = None) -&gt; str:
+    &#34;&#34;&#34;Creating the search query for the search engine given the user input.
+
+    Args:
+        tool_input (str): User input.
+        llm (Optional[Type[BaseLLM]], optional): LLM to create the search query. If not given, the search query will be the user input. Defaults to None.
+        history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): Recent conversation history as extra context for creating search query. Defaults to None.
+        prompt_template (Optional[PromptTemplate], optional): Prompt template for structuring the prompt to create search query. Defaults to None.
+
+    Returns:
+        str: Search query.
+    &#34;&#34;&#34;
+    tool_input = tool_input.strip(&#39; \n\r\t&#39;)
+    generate_query = True if llm is not None else False
+    if not generate_query:
+        query = tool_input
+        self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
+    else:
+        if ((history is not None) &amp; (prompt_template is not None)):
+            conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+        else:
+            prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+            if history is not None:
+                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+            else:
+                conversation = prompt_template.human_prefix + tool_input
+        request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
+        query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
+        query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
+        query = &#39;{&#34;Search query&#34;: &#34;&#39; + llm.invoke(query_prompt, stop=[&#39;```&#39;], temperature=0)
+        query = query.rstrip(&#39;`&#39;)
+        try:
+            import json
+            query = json.loads(query)[&#39;Search query&#39;]
+        except:
+            self.print(f&#39;Generation of query failed, fall back to use the raw tool_input &#34;{tool_input}&#34;.&#39;)
+            query = tool_input
+    return query</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.web_search_tool.WebSearchTool.create_vectordb"><code class="name flex">
+<span>def <span class="ident">create_vectordb</span></span>(<span>self, results: List[Dict[str, Any]], llm: Optional[Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None) ‑> <a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creating a temporary vector database of the search result contents.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>results</code></strong> :&ensp;<code>List[Dict[str, Any]]</code></dt>
+<dd>Search results from the search engine.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Optional[Type[BaseLLM]]</code>, optional</dt>
+<dd>LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>VectorDatabase</code></dt>
+<dd>The temporary vector database.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; VectorDatabase:
+    &#34;&#34;&#34;Creating a temporary vector database of the search result contents.
+
+    Args:
+        results (List[Dict[str, Any]]): Search results from the search engine.
+        llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
+
+    Returns:
+        VectorDatabase: The temporary vector database.
+    &#34;&#34;&#34;
+    from .web_search_utils import get_markdown, create_content_chunks
+    from langchain.schema.document import Document
+
+    urls = list(map(lambda x: x[&#39;href&#39;], results))
+    vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
+
+    if llm is None:
+        contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
+        docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+        vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
+    else:
+        contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
+        contents = list(map(lambda x: create_content_chunks(x, llm), contents))
+        docs = list(zip(contents, results))
+        docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+        docs = sum(docs, [])
+        vectordb.add_documents(docs=docs, split_text=False)
+    return vectordb</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.web_search_tool.WebSearchTool.generate_response"><code class="name flex">
+<span>def <span class="ident">generate_response</span></span>(<span>self, tool_input: str, chunks: List[Dict[str, Any]], llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, stream: bool = False, prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None) ‑> Union[str, Iterator[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_response(self, tool_input: str,  
+                      chunks: List[Dict[str, Any]], 
+                      llm: Type[BaseLLM],
+                      history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, 
+                      stream: bool = False, 
+                      prompt_template: Optional[PromptTemplate] = None) -&gt; Union[str, Iterator[str]]:
+    
+    rel_info = list(map(lambda x: x[&#39;index&#39;], chunks))
+    rel_info = &#39;\n\n&#39;.join(rel_info) + &#39;\n&#39;
+
+    prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+    prompt = prompt_template.create_prompt(user=tool_input, system=SEARCH_RESPONSE_SYS_RPOMPT + rel_info, history=history if history is not None else [])
+    from ..Models.Cores.utils import add_newline_char_to_stopwords
+    stop = add_newline_char_to_stopwords(prompt_template.stop)
+    if llm is None:
+        raise ValueError(f&#39;A llm has to be provided to generate response.&#39;)
+    if stream:
+        return llm.stream(prompt, stop=stop)
+    else:
+        return llm.invoke(prompt, stop=stop)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.web_search_tool.WebSearchTool.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>self, query: str, n: int = 5, urls_only: bool = False, **kwargs) ‑> List[Union[str, Dict[str, Any]]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Search with the given query.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>Search query.</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of results. Defaults to 5.</dd>
+<dt><strong><code>urls_only</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Only return the list of urls or return other information as well. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Union[str, Dict[str, Any]]]</code></dt>
+<dd>List of search results.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def search(self, query: str, n: int = 5, urls_only: bool = False, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+    &#34;&#34;&#34;Search with the given query.
+
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+    &#34;&#34;&#34;
+    if self.search_engine == &#39;duckduckgo&#39;:
+        return ddg_search(query=query, n=n, urls_only=urls_only, **kwargs)
+    else:
+        raise ValueError(f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.Tools.base_tool.BaseTool" href="base_tool.html#llmflex.Tools.base_tool.BaseTool">BaseTool</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.description" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.description">description</a></code></li>
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.key_phrases" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.key_phrases">key_phrases</a></code></li>
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.name" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.name">name</a></code></li>
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.pretty_name" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.pretty_name">pretty_name</a></code></li>
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.print" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.print">print</a></code></li>
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.run" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.run">run</a></code></li>
+<li><code><a title="llmflex.Tools.base_tool.BaseTool.run_with_chat" href="base_tool.html#llmflex.Tools.base_tool.BaseTool.run_with_chat">run_with_chat</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Tools" href="index.html">llmflex.Tools</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Tools.web_search_tool.ddg_search" href="#llmflex.Tools.web_search_tool.ddg_search">ddg_search</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Tools.web_search_tool.WebSearchTool" href="#llmflex.Tools.web_search_tool.WebSearchTool">WebSearchTool</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Tools.web_search_tool.WebSearchTool.create_relevant_content_chunks" href="#llmflex.Tools.web_search_tool.WebSearchTool.create_relevant_content_chunks">create_relevant_content_chunks</a></code></li>
+<li><code><a title="llmflex.Tools.web_search_tool.WebSearchTool.create_search_query" href="#llmflex.Tools.web_search_tool.WebSearchTool.create_search_query">create_search_query</a></code></li>
+<li><code><a title="llmflex.Tools.web_search_tool.WebSearchTool.create_vectordb" href="#llmflex.Tools.web_search_tool.WebSearchTool.create_vectordb">create_vectordb</a></code></li>
+<li><code><a title="llmflex.Tools.web_search_tool.WebSearchTool.generate_response" href="#llmflex.Tools.web_search_tool.WebSearchTool.generate_response">generate_response</a></code></li>
+<li><code><a title="llmflex.Tools.web_search_tool.WebSearchTool.search" href="#llmflex.Tools.web_search_tool.WebSearchTool.search">search</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

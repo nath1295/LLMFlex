@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmflex.Memory.base_memory API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Memory.base_memory</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+from ..utils import get_config
+from ..Models.Cores.base_core import BaseLLM
+from typing import List, Dict, Any, Type, Tuple
+
+
+def chat_memory_home() -&gt; str:
+    &#34;&#34;&#34;Return the default directory for saving chat memories.
+
+    Returns:
+        str: The default directory for saving chat memories.
+    &#34;&#34;&#34;
+    history_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;chat_memories&#39;)
+    os.makedirs(history_dir, exist_ok=True)
+    return history_dir
+
+def list_chat_dirs() -&gt; List[str]:
+    &#34;&#34;&#34;List the directories of all chat memories.
+
+    Returns:
+        List[str]: List of directories of all chat memories.
+    &#34;&#34;&#34;
+    chats_dir = chat_memory_home()
+    dirs = list(map(lambda x: os.path.join(chats_dir, x), os.listdir(chats_dir)))
+    dirs = list(filter(lambda x: os.path.basename(x).startswith(&#39;chat_&#39;), dirs))
+    dirs = list(filter(lambda x: ((os.path.isdir(x)) &amp; (&#39;info.json&#39; in os.listdir(x))), dirs))
+    return dirs
+
+def title_dir_map() -&gt; Dict[str, str]:
+    &#34;&#34;&#34;Return a dictionary with chat titles as keys and their respective directories as values.
+
+    Returns:
+        Dict[str, str]: A dictionary with chat titles as keys and their respective directories as values.
+    &#34;&#34;&#34;
+    from ..utils import read_json
+    dirs = list_chat_dirs()
+    titles = list(map(lambda x: read_json(os.path.join(x, &#39;info.json&#39;))[&#39;title&#39;], dirs))
+    return dict(zip(titles, dirs))
+
+def list_titles() -&gt; List[str]:
+    &#34;&#34;&#34;Return a list of chat titles.
+
+    Returns:
+        List[str]: List of chat titles, sorted by last update descendingly.
+    &#34;&#34;&#34;
+    from ..utils import read_json
+    mapper = list(title_dir_map().items())
+    mapper = list(map(lambda x: (x[0], read_json(os.path.join(x[1], &#39;info.json&#39;))[&#39;last_update&#39;]), mapper))
+    mapper.sort(key=lambda x: x[1], reverse=True)
+    return list(map(lambda x: x[0], mapper))   
+
+class BaseChatMemory:
+    &#34;&#34;&#34;Base class for chat memory.
+    &#34;&#34;&#34;
+    def __init__(self, title: str, from_exist: bool = True) -&gt; None:
+        &#34;&#34;&#34;Initialising the memory class.
+
+        Args:
+            title (str): Title of the chat.
+            from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
+        &#34;&#34;&#34;
+        title = title.strip(&#39; \n\r\t&#39;)
+        if title == &#39;&#39;:
+            raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
+        self._title = title
+        self._init_memory(from_exist=from_exist)
+
+    @property
+    def title(self) -&gt; str:
+        &#34;&#34;&#34;Chat title.
+
+        Returns:
+            str: Chat title.
+        &#34;&#34;&#34;
+        return self._title
+    
+    @property
+    def chat_dir(self) -&gt; str:
+        &#34;&#34;&#34;Directory of the chat.
+
+        Returns:
+            str: Directory of the chat.
+        &#34;&#34;&#34;
+        mapper = title_dir_map()
+        if hasattr(self, &#39;_chat_dir&#39;):
+            return self._chat_dir
+        elif self.title in list(mapper.keys()):
+            self._chat_dir = mapper[self.title]
+            return self._chat_dir
+        elif len(list(mapper.keys())) == 0:
+            self._chat_dir = os.path.join(chat_memory_home(), &#39;chat_0&#39;)
+            os.makedirs(self._chat_dir, exist_ok=True)
+            return self._chat_dir
+        else:
+            dirs = list(mapper.values())
+            new = max(list(map(lambda x: int(os.path.basename(x).removeprefix(&#39;chat_&#39;)), dirs))) + 1
+            self._chat_dir = os.path.join(chat_memory_home(), f&#39;chat_{new}&#39;)
+            os.makedirs(self._chat_dir, exist_ok=True)
+            return self._chat_dir
+    
+    @property
+    def info(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Information of the chat.
+
+        Returns:
+            Dict[str, Any]: Information of the chat.
+        &#34;&#34;&#34;
+        if hasattr(self, &#39;_info&#39;):
+            return self._info
+        elif &#39;info.json&#39; in os.listdir(self.chat_dir):
+            from ..utils import read_json
+            self._info = read_json(os.path.join(self.chat_dir, &#39;info.json&#39;))
+            return self._info
+        else:
+            from ..utils import save_json, current_time
+            self._info = dict(title=self.title, last_update=current_time())
+            save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
+            return self._info
+
+    @property    
+    def history(self) -&gt; List[Tuple[str, str]]:
+        &#34;&#34;&#34;Entire chat history.
+
+        Returns:
+            List[Tuple[str, str]]: Entire chat history.
+        &#34;&#34;&#34;
+        history = list(map(lambda x: [x[&#39;metadata&#39;][&#39;user&#39;], x[&#39;metadata&#39;][&#39;assistant&#39;], x[&#39;metadata&#39;][&#39;order&#39;]], self._data))
+        if len(history) == 0:
+            return []
+        count = max(list(map(lambda x: x[2], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[2], reverse=False)
+        return list(map(lambda x: tuple(x[:2]), history))
+
+    @property
+    def interaction_count(self) -&gt; int:
+        &#34;&#34;&#34;Number of interactions.
+
+        Returns:
+            int: Number of interactions.
+        &#34;&#34;&#34;
+        return len(self.history)
+
+    def _init_memory(self, from_exist: bool = True) -&gt; None:
+        &#34;&#34;&#34;Method to initialise the components in the memory.
+
+        Args:
+            from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
+        &#34;&#34;&#34;
+        if ((from_exist) &amp; (self.title in list_titles())):
+            from ..utils import read_json
+            self._data = read_json(os.path.join(self.chat_dir, &#39;data.json&#39;))
+
+        else:
+            self._data = list()
+            self.save()
+
+    def save(self) -&gt; None:
+        &#34;&#34;&#34;Save the current state of the memory.
+        &#34;&#34;&#34;
+        from ..utils import save_json, current_time
+        self.info
+        self._info[&#39;last_update&#39;] = current_time()
+        save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
+        save_json(self._data, os.path.join(self.chat_dir, &#39;data.json&#39;))
+
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Saving an interaction to the memory.
+
+        Args:
+            user_input (str): User input.
+            assistant_output (str): Chatbot output.
+        &#34;&#34;&#34;
+        user_input = user_input.strip(&#39; \n\r\t&#39;)
+        assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+                metadata[k] = v
+        self._data.append(dict(
+            index=f&#39;{user_input}\n\n{assistant_output}&#39;,
+            metadata=metadata
+        ))
+        self.save()
+
+    def remove_last_interaction(self) -&gt; None:
+        &#34;&#34;&#34;Remove the latest interaction.
+        &#34;&#34;&#34;
+        if len(self._data) != 0:
+            self._data = self._data[:-1]
+            self.save()
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Empty the whole chat history.
+        &#34;&#34;&#34;
+        self._init_memory(from_exist=False)
+
+    def get_recent_memory(self, k: int = 3) -&gt; List[Tuple[str, str]]:
+        &#34;&#34;&#34;Get the last k interactions as a list.
+
+        Args:
+            k (int, optional): Maximum number of latest interactions. Defaults to 3.
+
+        Returns:
+            List[Tuple[str, str]]: List of interactions.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        history = self.history
+        results = history if len(history) &lt;= k else history[-k:]
+        return deepcopy(results)
+
+    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[str]:
+        &#34;&#34;&#34;Get the latest conversation limited by number of tokens.
+
+        Args:
+            llm (Type[BaseLLM]): LLM to count tokens.
+            token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
+
+        Returns:
+            List[str]: List of most recent messages.
+        &#34;&#34;&#34;
+        if len(self.history) == 0:
+            return []
+        tk_count = 0
+        history = sum(list(map(list, self.history)), [])
+        history = list(reversed(history))
+        results = list()
+        for m in history:
+            msg_count = llm.get_num_tokens(m)
+            if (((msg_count + tk_count) &lt;= token_limit) | (len(results) &lt; 2)):
+                results = [m] + results
+                tk_count += msg_count
+            else:
+                break
+        return results</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Memory.base_memory.chat_memory_home"><code class="name flex">
+<span>def <span class="ident">chat_memory_home</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the default directory for saving chat memories.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The default directory for saving chat memories.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def chat_memory_home() -&gt; str:
+    &#34;&#34;&#34;Return the default directory for saving chat memories.
+
+    Returns:
+        str: The default directory for saving chat memories.
+    &#34;&#34;&#34;
+    history_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;chat_memories&#39;)
+    os.makedirs(history_dir, exist_ok=True)
+    return history_dir</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.list_chat_dirs"><code class="name flex">
+<span>def <span class="ident">list_chat_dirs</span></span>(<span>) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List the directories of all chat memories.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of directories of all chat memories.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_chat_dirs() -&gt; List[str]:
+    &#34;&#34;&#34;List the directories of all chat memories.
+
+    Returns:
+        List[str]: List of directories of all chat memories.
+    &#34;&#34;&#34;
+    chats_dir = chat_memory_home()
+    dirs = list(map(lambda x: os.path.join(chats_dir, x), os.listdir(chats_dir)))
+    dirs = list(filter(lambda x: os.path.basename(x).startswith(&#39;chat_&#39;), dirs))
+    dirs = list(filter(lambda x: ((os.path.isdir(x)) &amp; (&#39;info.json&#39; in os.listdir(x))), dirs))
+    return dirs</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.list_titles"><code class="name flex">
+<span>def <span class="ident">list_titles</span></span>(<span>) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a list of chat titles.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of chat titles, sorted by last update descendingly.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_titles() -&gt; List[str]:
+    &#34;&#34;&#34;Return a list of chat titles.
+
+    Returns:
+        List[str]: List of chat titles, sorted by last update descendingly.
+    &#34;&#34;&#34;
+    from ..utils import read_json
+    mapper = list(title_dir_map().items())
+    mapper = list(map(lambda x: (x[0], read_json(os.path.join(x[1], &#39;info.json&#39;))[&#39;last_update&#39;]), mapper))
+    mapper.sort(key=lambda x: x[1], reverse=True)
+    return list(map(lambda x: x[0], mapper))   </code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.title_dir_map"><code class="name flex">
+<span>def <span class="ident">title_dir_map</span></span>(<span>) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a dictionary with chat titles as keys and their respective directories as values.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, str]</code></dt>
+<dd>A dictionary with chat titles as keys and their respective directories as values.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def title_dir_map() -&gt; Dict[str, str]:
+    &#34;&#34;&#34;Return a dictionary with chat titles as keys and their respective directories as values.
+
+    Returns:
+        Dict[str, str]: A dictionary with chat titles as keys and their respective directories as values.
+    &#34;&#34;&#34;
+    from ..utils import read_json
+    dirs = list_chat_dirs()
+    titles = list(map(lambda x: read_json(os.path.join(x, &#39;info.json&#39;))[&#39;title&#39;], dirs))
+    return dict(zip(titles, dirs))</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory"><code class="flex name class">
+<span>class <span class="ident">BaseChatMemory</span></span>
+<span>(</span><span>title: str, from_exist: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for chat memory.</p>
+<p>Initialising the memory class.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Title of the chat.</dd>
+<dt><strong><code>from_exist</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Initialising the chat memory from existing files if the title exists. Defaults to True.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseChatMemory:
+    &#34;&#34;&#34;Base class for chat memory.
+    &#34;&#34;&#34;
+    def __init__(self, title: str, from_exist: bool = True) -&gt; None:
+        &#34;&#34;&#34;Initialising the memory class.
+
+        Args:
+            title (str): Title of the chat.
+            from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
+        &#34;&#34;&#34;
+        title = title.strip(&#39; \n\r\t&#39;)
+        if title == &#39;&#39;:
+            raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
+        self._title = title
+        self._init_memory(from_exist=from_exist)
+
+    @property
+    def title(self) -&gt; str:
+        &#34;&#34;&#34;Chat title.
+
+        Returns:
+            str: Chat title.
+        &#34;&#34;&#34;
+        return self._title
+    
+    @property
+    def chat_dir(self) -&gt; str:
+        &#34;&#34;&#34;Directory of the chat.
+
+        Returns:
+            str: Directory of the chat.
+        &#34;&#34;&#34;
+        mapper = title_dir_map()
+        if hasattr(self, &#39;_chat_dir&#39;):
+            return self._chat_dir
+        elif self.title in list(mapper.keys()):
+            self._chat_dir = mapper[self.title]
+            return self._chat_dir
+        elif len(list(mapper.keys())) == 0:
+            self._chat_dir = os.path.join(chat_memory_home(), &#39;chat_0&#39;)
+            os.makedirs(self._chat_dir, exist_ok=True)
+            return self._chat_dir
+        else:
+            dirs = list(mapper.values())
+            new = max(list(map(lambda x: int(os.path.basename(x).removeprefix(&#39;chat_&#39;)), dirs))) + 1
+            self._chat_dir = os.path.join(chat_memory_home(), f&#39;chat_{new}&#39;)
+            os.makedirs(self._chat_dir, exist_ok=True)
+            return self._chat_dir
+    
+    @property
+    def info(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Information of the chat.
+
+        Returns:
+            Dict[str, Any]: Information of the chat.
+        &#34;&#34;&#34;
+        if hasattr(self, &#39;_info&#39;):
+            return self._info
+        elif &#39;info.json&#39; in os.listdir(self.chat_dir):
+            from ..utils import read_json
+            self._info = read_json(os.path.join(self.chat_dir, &#39;info.json&#39;))
+            return self._info
+        else:
+            from ..utils import save_json, current_time
+            self._info = dict(title=self.title, last_update=current_time())
+            save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
+            return self._info
+
+    @property    
+    def history(self) -&gt; List[Tuple[str, str]]:
+        &#34;&#34;&#34;Entire chat history.
+
+        Returns:
+            List[Tuple[str, str]]: Entire chat history.
+        &#34;&#34;&#34;
+        history = list(map(lambda x: [x[&#39;metadata&#39;][&#39;user&#39;], x[&#39;metadata&#39;][&#39;assistant&#39;], x[&#39;metadata&#39;][&#39;order&#39;]], self._data))
+        if len(history) == 0:
+            return []
+        count = max(list(map(lambda x: x[2], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[2], reverse=False)
+        return list(map(lambda x: tuple(x[:2]), history))
+
+    @property
+    def interaction_count(self) -&gt; int:
+        &#34;&#34;&#34;Number of interactions.
+
+        Returns:
+            int: Number of interactions.
+        &#34;&#34;&#34;
+        return len(self.history)
+
+    def _init_memory(self, from_exist: bool = True) -&gt; None:
+        &#34;&#34;&#34;Method to initialise the components in the memory.
+
+        Args:
+            from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
+        &#34;&#34;&#34;
+        if ((from_exist) &amp; (self.title in list_titles())):
+            from ..utils import read_json
+            self._data = read_json(os.path.join(self.chat_dir, &#39;data.json&#39;))
+
+        else:
+            self._data = list()
+            self.save()
+
+    def save(self) -&gt; None:
+        &#34;&#34;&#34;Save the current state of the memory.
+        &#34;&#34;&#34;
+        from ..utils import save_json, current_time
+        self.info
+        self._info[&#39;last_update&#39;] = current_time()
+        save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
+        save_json(self._data, os.path.join(self.chat_dir, &#39;data.json&#39;))
+
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Saving an interaction to the memory.
+
+        Args:
+            user_input (str): User input.
+            assistant_output (str): Chatbot output.
+        &#34;&#34;&#34;
+        user_input = user_input.strip(&#39; \n\r\t&#39;)
+        assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+                metadata[k] = v
+        self._data.append(dict(
+            index=f&#39;{user_input}\n\n{assistant_output}&#39;,
+            metadata=metadata
+        ))
+        self.save()
+
+    def remove_last_interaction(self) -&gt; None:
+        &#34;&#34;&#34;Remove the latest interaction.
+        &#34;&#34;&#34;
+        if len(self._data) != 0:
+            self._data = self._data[:-1]
+            self.save()
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Empty the whole chat history.
+        &#34;&#34;&#34;
+        self._init_memory(from_exist=False)
+
+    def get_recent_memory(self, k: int = 3) -&gt; List[Tuple[str, str]]:
+        &#34;&#34;&#34;Get the last k interactions as a list.
+
+        Args:
+            k (int, optional): Maximum number of latest interactions. Defaults to 3.
+
+        Returns:
+            List[Tuple[str, str]]: List of interactions.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        history = self.history
+        results = history if len(history) &lt;= k else history[-k:]
+        return deepcopy(results)
+
+    def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[str]:
+        &#34;&#34;&#34;Get the latest conversation limited by number of tokens.
+
+        Args:
+            llm (Type[BaseLLM]): LLM to count tokens.
+            token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
+
+        Returns:
+            List[str]: List of most recent messages.
+        &#34;&#34;&#34;
+        if len(self.history) == 0:
+            return []
+        tk_count = 0
+        history = sum(list(map(list, self.history)), [])
+        history = list(reversed(history))
+        results = list()
+        for m in history:
+            msg_count = llm.get_num_tokens(m)
+            if (((msg_count + tk_count) &lt;= token_limit) | (len(results) &lt; 2)):
+                results = [m] + results
+                tk_count += msg_count
+            else:
+                break
+        return results</code></pre>
+</details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory" href="assistant_long_term_memory.html#llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory">AssistantLongTermChatMemory</a></li>
+<li><a title="llmflex.Memory.long_short_memory.LongShortTermChatMemory" href="long_short_memory.html#llmflex.Memory.long_short_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.chat_dir"><code class="name">var <span class="ident">chat_dir</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Directory of the chat.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Directory of the chat.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def chat_dir(self) -&gt; str:
+    &#34;&#34;&#34;Directory of the chat.
+
+    Returns:
+        str: Directory of the chat.
+    &#34;&#34;&#34;
+    mapper = title_dir_map()
+    if hasattr(self, &#39;_chat_dir&#39;):
+        return self._chat_dir
+    elif self.title in list(mapper.keys()):
+        self._chat_dir = mapper[self.title]
+        return self._chat_dir
+    elif len(list(mapper.keys())) == 0:
+        self._chat_dir = os.path.join(chat_memory_home(), &#39;chat_0&#39;)
+        os.makedirs(self._chat_dir, exist_ok=True)
+        return self._chat_dir
+    else:
+        dirs = list(mapper.values())
+        new = max(list(map(lambda x: int(os.path.basename(x).removeprefix(&#39;chat_&#39;)), dirs))) + 1
+        self._chat_dir = os.path.join(chat_memory_home(), f&#39;chat_{new}&#39;)
+        os.makedirs(self._chat_dir, exist_ok=True)
+        return self._chat_dir</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.history"><code class="name">var <span class="ident">history</span> : List[Tuple[str, str]]</code></dt>
+<dd>
+<div class="desc"><p>Entire chat history.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Tuple[str, str]]</code></dt>
+<dd>Entire chat history.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property    
+def history(self) -&gt; List[Tuple[str, str]]:
+    &#34;&#34;&#34;Entire chat history.
+
+    Returns:
+        List[Tuple[str, str]]: Entire chat history.
+    &#34;&#34;&#34;
+    history = list(map(lambda x: [x[&#39;metadata&#39;][&#39;user&#39;], x[&#39;metadata&#39;][&#39;assistant&#39;], x[&#39;metadata&#39;][&#39;order&#39;]], self._data))
+    if len(history) == 0:
+        return []
+    count = max(list(map(lambda x: x[2], history))) + 1
+    history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
+    history.sort(key=lambda x: x[2], reverse=False)
+    return list(map(lambda x: tuple(x[:2]), history))</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.info"><code class="name">var <span class="ident">info</span> : Dict[str, Any]</code></dt>
+<dd>
+<div class="desc"><p>Information of the chat.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>Information of the chat.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def info(self) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Information of the chat.
+
+    Returns:
+        Dict[str, Any]: Information of the chat.
+    &#34;&#34;&#34;
+    if hasattr(self, &#39;_info&#39;):
+        return self._info
+    elif &#39;info.json&#39; in os.listdir(self.chat_dir):
+        from ..utils import read_json
+        self._info = read_json(os.path.join(self.chat_dir, &#39;info.json&#39;))
+        return self._info
+    else:
+        from ..utils import save_json, current_time
+        self._info = dict(title=self.title, last_update=current_time())
+        save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
+        return self._info</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.interaction_count"><code class="name">var <span class="ident">interaction_count</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Number of interactions.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Number of interactions.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def interaction_count(self) -&gt; int:
+    &#34;&#34;&#34;Number of interactions.
+
+    Returns:
+        int: Number of interactions.
+    &#34;&#34;&#34;
+    return len(self.history)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.title"><code class="name">var <span class="ident">title</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Chat title.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Chat title.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def title(self) -&gt; str:
+    &#34;&#34;&#34;Chat title.
+
+    Returns:
+        str: Chat title.
+    &#34;&#34;&#34;
+    return self._title</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Empty the whole chat history.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Empty the whole chat history.
+    &#34;&#34;&#34;
+    self._init_memory(from_exist=False)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory"><code class="name flex">
+<span>def <span class="ident">get_recent_memory</span></span>(<span>self, k: int = 3) ‑> List[Tuple[str, str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the last k interactions as a list.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>k</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of latest interactions. Defaults to 3.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Tuple[str, str]]</code></dt>
+<dd>List of interactions.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_recent_memory(self, k: int = 3) -&gt; List[Tuple[str, str]]:
+    &#34;&#34;&#34;Get the last k interactions as a list.
+
+    Args:
+        k (int, optional): Maximum number of latest interactions. Defaults to 3.
+
+    Returns:
+        List[Tuple[str, str]]: List of interactions.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    history = self.history
+    results = history if len(history) &lt;= k else history[-k:]
+    return deepcopy(results)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.get_token_memory"><code class="name flex">
+<span>def <span class="ident">get_token_memory</span></span>(<span>self, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], token_limit: int = 400) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the latest conversation limited by number of tokens.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM to count tokens.</dd>
+<dt><strong><code>token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of tokens allowed. Defaults to 400.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of most recent messages.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_token_memory(self, llm: Type[BaseLLM], token_limit: int = 400) -&gt; List[str]:
+    &#34;&#34;&#34;Get the latest conversation limited by number of tokens.
+
+    Args:
+        llm (Type[BaseLLM]): LLM to count tokens.
+        token_limit (int, optional): Maximum number of tokens allowed. Defaults to 400.
+
+    Returns:
+        List[str]: List of most recent messages.
+    &#34;&#34;&#34;
+    if len(self.history) == 0:
+        return []
+    tk_count = 0
+    history = sum(list(map(list, self.history)), [])
+    history = list(reversed(history))
+    results = list()
+    for m in history:
+        msg_count = llm.get_num_tokens(m)
+        if (((msg_count + tk_count) &lt;= token_limit) | (len(results) &lt; 2)):
+            results = [m] + results
+            tk_count += msg_count
+        else:
+            break
+    return results</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction"><code class="name flex">
+<span>def <span class="ident">remove_last_interaction</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove the latest interaction.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_last_interaction(self) -&gt; None:
+    &#34;&#34;&#34;Remove the latest interaction.
+    &#34;&#34;&#34;
+    if len(self._data) != 0:
+        self._data = self._data[:-1]
+        self.save()</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.save"><code class="name flex">
+<span>def <span class="ident">save</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Save the current state of the memory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save(self) -&gt; None:
+    &#34;&#34;&#34;Save the current state of the memory.
+    &#34;&#34;&#34;
+    from ..utils import save_json, current_time
+    self.info
+    self._info[&#39;last_update&#39;] = current_time()
+    save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
+    save_json(self._data, os.path.join(self.chat_dir, &#39;data.json&#39;))</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.save_interaction"><code class="name flex">
+<span>def <span class="ident">save_interaction</span></span>(<span>self, user_input: str, assistant_output: str, **kwargs) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Saving an interaction to the memory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_input</code></strong> :&ensp;<code>str</code></dt>
+<dd>User input.</dd>
+<dt><strong><code>assistant_output</code></strong> :&ensp;<code>str</code></dt>
+<dd>Chatbot output.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
+    &#34;&#34;&#34;Saving an interaction to the memory.
+
+    Args:
+        user_input (str): User input.
+        assistant_output (str): Chatbot output.
+    &#34;&#34;&#34;
+    user_input = user_input.strip(&#39; \n\r\t&#39;)
+    assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+    metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+    for k, v in kwargs.items():
+        if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;]:
+            metadata[k] = v
+    self._data.append(dict(
+        index=f&#39;{user_input}\n\n{assistant_output}&#39;,
+        metadata=metadata
+    ))
+    self.save()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Memory" href="index.html">llmflex.Memory</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Memory.base_memory.chat_memory_home" href="#llmflex.Memory.base_memory.chat_memory_home">chat_memory_home</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.list_chat_dirs" href="#llmflex.Memory.base_memory.list_chat_dirs">list_chat_dirs</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.list_titles" href="#llmflex.Memory.base_memory.list_titles">list_titles</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.title_dir_map" href="#llmflex.Memory.base_memory.title_dir_map">title_dir_map</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Memory.base_memory.BaseChatMemory" href="#llmflex.Memory.base_memory.BaseChatMemory">BaseChatMemory</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.chat_dir" href="#llmflex.Memory.base_memory.BaseChatMemory.chat_dir">chat_dir</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.clear" href="#llmflex.Memory.base_memory.BaseChatMemory.clear">clear</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory" href="#llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory">get_recent_memory</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_token_memory" href="#llmflex.Memory.base_memory.BaseChatMemory.get_token_memory">get_token_memory</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.history" href="#llmflex.Memory.base_memory.BaseChatMemory.history">history</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.info" href="#llmflex.Memory.base_memory.BaseChatMemory.info">info</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.interaction_count" href="#llmflex.Memory.base_memory.BaseChatMemory.interaction_count">interaction_count</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction" href="#llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction">remove_last_interaction</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.save" href="#llmflex.Memory.base_memory.BaseChatMemory.save">save</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.save_interaction" href="#llmflex.Memory.base_memory.BaseChatMemory.save_interaction">save_interaction</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.title" href="#llmflex.Memory.base_memory.BaseChatMemory.title">title</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
