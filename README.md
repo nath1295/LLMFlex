@@ -2,7 +2,25 @@
 
 LLMPlus is a python package that allows python developers to work with different large language models (LLM) and do prompt engineering with a simple interface. It favours free and local resources instead of using paid APIs to develop truly local and private AI-powered solutions.
 
-It provides classes to load LLM models, embedding models, and vector databases to create LLM powered applications with your own prompt engineering and RAG techniques. With a one-liner command, you can load a chatbot interface to chat with the LLM or serve a model as OpenAI API as well.  
+It provides classes to load LLM models, embedding models, and vector databases to create LLM powered applications with your own prompt engineering and RAG techniques. With a one-liner command, you can load a chatbot interface to chat with the LLM or serve a model as OpenAI API as well.
+
+## Prerequisites
+
+Before you begin, make sure your python version is >= 3.9. Creating a virtual python environment with conda is highly recommended before installing the package.
+
+### Pytorch
+It is highly recommended to install PyTorch before you go ahead to install LLMPlus. Install it with the official installation guidelines with your machine [here](https://pytorch.org/get-started/locally/).
+
+### Llama-cpp-python
+If you want to use GGUF models with this package, please install [llama-cpp-python](https://pypi.org/project/llama-cpp-python/) with the correct CMake arguments according to the llama-cpp-python installation guide. 
+
+## Installing LLMPlus
+
+You can install LLMPlus with pip easily.
+
+```
+pip install git+https://github.com/nath1295/LLMPlus.git
+```
 
 ## Features
 ### 1. Multilple LLMs with different genration configurations from one model 
@@ -43,24 +61,6 @@ A base class `BaseTool` for creating llm powered tools. A `WebSearchTool` powere
 
 ### 9. Chatbot frontend interface
 If you simply want to play with a model, there's a gradio frontend chatbot that allows you to chat with a model with different generation configurations. You can switch between chat histories and prompt format, and you can set your system prompt and other model text generation sampling configurations in the gradio webapp.
-
-## Prerequisites
-
-Before you begin, make sure your python version is >= 3.9. Creating a virtual python environment with conda is highly recommended before installing the package.
-
-### Pytorch
-It is highly recommended to install PyTorch before you go ahead to install LLMPlus. Install it with the official installation guidelines with your machine [here](https://pytorch.org/get-started/locally/).
-
-### Llama-cpp-python
-If you want to use GGUF models with this package, please install [llama-cpp-python](https://pypi.org/project/llama-cpp-python/) with the correct CMake arguments according to the llama-cpp-python installation guide. 
-
-## Installing LLMPlus
-
-You can install LLMPlus with pip easily.
-
-```
-pip install git+https://github.com/nath1295/LLMPlus.git
-```
 
 ## Using LLMPlus
 

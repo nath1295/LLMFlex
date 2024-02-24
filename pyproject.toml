@@ -45,7 +45,7 @@ cu121 = [
     "exllamav2"
 ]
 cu118 = [
-    "auto-gptq@https://huggingface.github.io/autogptq-index/whl/cu118",
+    "auto-gptq",
     "autoawq",
     "exllamav2"
 ]
@@ -58,7 +58,7 @@ build-backend = "setuptools.build_meta"
 py-modules = []
 
 [tool.setuptools.dynamic]
-version = {attr = "llmplus.__version__"}  # Update this with the path to your __version__ variable
+version = {attr = "llmplus.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
