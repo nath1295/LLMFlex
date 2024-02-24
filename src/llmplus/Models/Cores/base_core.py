@@ -171,16 +171,19 @@ class BaseLLM(LLM):
             Iterator[str]: The next generated token.
         """
         from .utils import get_stop_words
+        from copy import deepcopy
+        default_config = deepcopy(self.generation_config)
         gen_config = dict(
-            temperature=kwargs.pop('temperature', self.generation_config['temperature']),
-            max_new_tokens=kwargs.pop('max_new_tokens', self.generation_config['max_new_tokens']),
-            top_p=kwargs.pop('top_p', self.generation_config['top_p']),
-            top_k=kwargs.pop('top_k', self.generation_config['top_k']),
-            repetition_penalty=kwargs.pop('repetition_penalty', self.generation_config['repetition_penalty']),
+            temperature=kwargs.pop('temperature', default_config.pop('temperature', None)),
+            max_new_tokens=kwargs.pop('max_new_tokens', default_config.pop('max_new_tokens', None)),
+            top_p=kwargs.pop('top_p', default_config.pop('top_p', None)),
+            top_k=kwargs.pop('top_k', default_config.pop('top_k', None)),
+            repetition_penalty=kwargs.pop('repetition_penalty', default_config.pop('repetition_penalty', None)),
             stop=self.stop if stop is None else get_stop_words(stop, tokenizer=self.core.tokenizer, 
                                                                add_newline_version=kwargs.pop('stop_newline_version', False), tokenizer_type=self.core.tokenizer_type),
             stream=kwargs.pop('stream', False)
         )
+        gen_config.update(default_config)
         gen_config.update(kwargs)
         return self.core.generate(prompt=prompt, **gen_config)
         
@@ -196,16 +199,19 @@ class BaseLLM(LLM):
             Iterator[str]: The next generated token.
         """
         from .utils import get_stop_words
+        from copy import deepcopy
+        default_config = deepcopy(self.generation_config)
         gen_config = dict(
-            temperature=kwargs.pop('temperature', self.generation_config['temperature']),
-            max_new_tokens=kwargs.pop('max_new_tokens', self.generation_config['max_new_tokens']),
-            top_p=kwargs.pop('top_p', self.generation_config['top_p']),
-            top_k=kwargs.pop('top_k', self.generation_config['top_k']),
-            repetition_penalty=kwargs.pop('repetition_penalty', self.generation_config['repetition_penalty']),
+            temperature=kwargs.pop('temperature', default_config.pop('temperature', None)),
+            max_new_tokens=kwargs.pop('max_new_tokens', default_config.pop('max_new_tokens', None)),
+            top_p=kwargs.pop('top_p', default_config.pop('top_p', None)),
+            top_k=kwargs.pop('top_k', default_config.pop('top_k', None)),
+            repetition_penalty=kwargs.pop('repetition_penalty', default_config.pop('repetition_penalty', None)),
             stop=self.stop if stop is None else get_stop_words(stop, tokenizer=self.core.tokenizer, 
                                                                add_newline_version=kwargs.pop('stop_newline_version', False), tokenizer_type=self.core.tokenizer_type),
             stream=True
         )
+        gen_config.update(default_config)
         gen_config.update(kwargs)
         gen_config['stream'] = True
         return self.core.generate(prompt=input, **gen_config)
