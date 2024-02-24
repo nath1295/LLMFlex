@@ -9,17 +9,17 @@ It provides classes to load LLM models, embedding models, and vector databases t
 Before you begin, make sure your python version is >= 3.9. Creating a virtual python environment with conda is highly recommended before installing the package.
 
 ### Pytorch
-It is highly recommended to install PyTorch before you go ahead to install LLMPlus. Install it with the official installation guidelines with your machine [here](https://pytorch.org/get-started/locally/).
+It is highly recommended to install PyTorch before you go ahead to install LLMFlex. Install it with the official installation guidelines with your machine [here](https://pytorch.org/get-started/locally/).
 
 ### Llama-cpp-python
 If you want to use GGUF models with this package, please install [llama-cpp-python](https://pypi.org/project/llama-cpp-python/) with the correct CMake arguments according to the llama-cpp-python installation guide. 
 
-## Installing LLMPlus
+## Installing LLMFlex
 
-You can install LLMPlus with pip easily.
+You can install LLMFlex with pip easily.
 
 ```
-pip install git+https://github.com/nath1295/LLMPlus.git
+pip install llmflex
 ```
 
 ## Features
@@ -62,7 +62,7 @@ A base class `BaseTool` for creating llm powered tools. A `WebSearchTool` powere
 ### 9. Chatbot frontend interface
 If you simply want to play with a model, there's a gradio frontend chatbot that allows you to chat with a model with different generation configurations. You can switch between chat histories and prompt format, and you can set your system prompt and other model text generation sampling configurations in the gradio webapp.
 
-## Using LLMPlus
+## Using LLMFlex
 
 ### 1. Create LLMs
 This is how you can start with any text generation model on HuggingFace with your machine.
@@ -142,7 +142,7 @@ for token in chat_llm.stream(prompt):
 memory.save_interaction(user_input=user_input, assistant_output=output)
 ```
 ### 4. Use tools
-A `WebSearchTool` class is implemented as an example to build a tool with LLMPlus. The tool is using __DuckDuckGo__ by default. Here is how you can use it:
+A `WebSearchTool` class is implemented as an example to build a tool with LLMFlex. The tool is using __DuckDuckGo__ by default. Here is how you can use it:
 ```python
 from llmflex.Tools import WebSearchTool
 
