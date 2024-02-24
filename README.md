@@ -4,23 +4,15 @@ LLMFlex is a python package that allows python developers to work with different
 
 It provides classes to load LLM models, embedding models, and vector databases to create LLM powered applications with your own prompt engineering and RAG techniques. With a one-liner command, you can load a chatbot interface to chat with the LLM or serve a model as OpenAI API as well.
 
-## Prerequisites
-
-Before you begin, make sure your python version is >= 3.9. Creating a virtual python environment with conda is highly recommended before installing the package.
-
-### Pytorch
-It is highly recommended to install PyTorch before you go ahead to install LLMFlex. Install it with the official installation guidelines with your machine [here](https://pytorch.org/get-started/locally/).
-
-### Llama-cpp-python
-If you want to use GGUF models with this package, please install [llama-cpp-python](https://pypi.org/project/llama-cpp-python/) with the correct CMake arguments according to the llama-cpp-python installation guide. 
-
 ## Installing LLMFlex
+Creating a virtual environment before installing the package is highly recommended. Also make sure you have installed [Pytorch](https://pytorch.org/get-started/locally/) and [llama-cpp-python](https://pypi.org/project/llama-cpp-python/) with the correct installation method according to your hardware configuration before installing LLMFlex. Please visit the links provided for the respective packages for more detailed installation guides.
 
-You can install LLMFlex with pip easily.
-
+After you have done the above steps, you can easily install llmflex with `pip`.
 ```
 pip install llmflex
 ```
+
+You can also install [ExLlamaV2](https://github.com/turboderp/exllamav2), [AutoAWQ](https://pypi.org/project/autoawq/0.1.1/), and [AutoGPTQ](https://pypi.org/project/auto-gptq/) if you have CUDA devices. Please visit the links provided for the respective packages for more detailed installation guides.
 
 ## Features
 ### 1. Multilple LLMs with different genration configurations from one model 
