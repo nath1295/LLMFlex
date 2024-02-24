@@ -298,7 +298,7 @@ class GenericLLM(BaseLLM):
     stop: List[str]
 
     def __init__(self, core: Type[BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -&gt; None:
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialising the LLM.
 
         Args:
@@ -319,6 +319,7 @@ class GenericLLM(BaseLLM):
             top_k = top_k,
             repetition_penalty = repetition_penalty
         )
+        generation_config.update(kwargs)
 
         stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=core.tokenizer_type)
         super().__init__(core=core, generation_config=generation_config, stop=stop)
@@ -1128,7 +1129,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 </dd>
 <dt id="llmplus.Models.Cores.base_core.GenericLLM"><code class="flex name class">
 <span>class <span class="ident">GenericLLM</span></span>
-<span>(</span><span>core: Type[<a title="llmplus.Models.Cores.base_core.BaseCore" href="#llmplus.Models.Cores.base_core.BaseCore">BaseCore</a>], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)</span>
+<span>(</span><span>core: Type[<a title="llmplus.Models.Cores.base_core.BaseCore" href="#llmplus.Models.Cores.base_core.BaseCore">BaseCore</a>], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Generic LLM class for llmplus, using the LLM class from langchain.</p>
@@ -1164,7 +1165,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
     stop: List[str]
 
     def __init__(self, core: Type[BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -&gt; None:
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialising the LLM.
 
         Args:
@@ -1185,6 +1186,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
             top_k = top_k,
             repetition_penalty = repetition_penalty
         )
+        generation_config.update(kwargs)
 
         stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=core.tokenizer_type)
         super().__init__(core=core, generation_config=generation_config, stop=stop)

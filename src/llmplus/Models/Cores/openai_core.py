@@ -87,30 +87,31 @@ class OpenAICore(BaseCore):
         from .utils import get_stop_words, textgen_iterator
         warnings.filterwarnings('ignore')
         stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        gen_config = dict(
+            temperature=temperature,
+            top_p=top_p,
+            frequency_penalty=repetition_penalty,
+            max_tokens=max_new_tokens,
+            stop=stop
+        )
+        gen_config.update(kwargs)
         if stream:
+            gen_config['stream'] = True
             def generate():
                 for i in self._model.completions.create(
                     model=self.model_id,
                     prompt=prompt,
-                    temperature=temperature,
-                    top_p=top_p,
-                    frequency_penalty=repetition_penalty,
-                    max_tokens=max_new_tokens,
-                    stop=stop,
-                    stream=True
+                    **gen_config
                 ):
                     yield i.choices[0].text
             return textgen_iterator(generate(), stop=stop)
         else:
             from langchain.llms.utils import enforce_stop_tokens
+            gen_config['stream'] = False
             output = self._model.completions.create(
                 model=self.model_id,
                 prompt=prompt,
-                temperature=temperature,
-                top_p=top_p,
-                frequency_penalty=repetition_penalty,
-                max_tokens=max_new_tokens,
-                stop=stop
+                **gen_config
             ).choices[0].text
             output = enforce_stop_tokens(output, stop=stop)
             return output

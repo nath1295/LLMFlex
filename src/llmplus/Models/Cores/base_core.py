@@ -270,7 +270,7 @@ class GenericLLM(BaseLLM):
     stop: List[str]
 
     def __init__(self, core: Type[BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
-                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True) -> None:
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs) -> None:
         """Initialising the LLM.
 
         Args:
@@ -291,6 +291,7 @@ class GenericLLM(BaseLLM):
             top_k = top_k,
             repetition_penalty = repetition_penalty
         )
+        generation_config.update(kwargs)
 
         stop = get_stop_words(stop, tokenizer=core.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=core.tokenizer_type)
         super().__init__(core=core, generation_config=generation_config, stop=stop)

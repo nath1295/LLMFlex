@@ -185,7 +185,7 @@ Classes
         Yields:
             Iterator[str]: The next generated token.
 
-`GenericLLM(core: Type[llmplus.Models.Cores.base_core.BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True)`
+`GenericLLM(core: Type[llmplus.Models.Cores.base_core.BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs)`
 :   Generic LLM class for llmplus, using the LLM class from langchain.
         
     

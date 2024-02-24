@@ -115,17 +115,10 @@ def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4
     &#34;&#34;&#34;Serve a llm with GGUF format from HuggingFace.
     &#34;&#34;&#34;
     from .Models.Cores.llamacpp_core import get_model_dir
-    from .utils import get_config
     import os
 
     model_dir = get_model_dir(model_id=model_id, model_file=model_file)
-    kobold_dir = get_config()[&#39;llmplus_home&#39;] if kobold_dir is None else kobold_dir
-    kobold_dir = os.path.join(kobold_dir, &#39;koboldcpp&#39;, &#39;koboldcpp.py&#39;)
-    if not os.path.exists(kobold_dir):
-        print(f&#39;Cannot find the script &#34;{kobold_dir}&#34;. Falling back to use llama-cpp-python for serving.&#39;)
-        os.system(f&#39;python -m llama_cpp.server --model {model_dir} --n_ctx {context_size} --use_mlock True --port {port} {extras}&#39;)
-    else:
-        os.system(f&#39;python {kobold_dir} {model_dir} --smartcontext --contextsize {context_size} --port {port} {extras}&#39;)
+    os.system(f&#39;python -m llama_cpp.server --model {model_dir} --n_ctx {context_size} --use_mlock True --port {port} {extras}&#39;)
     
     
 

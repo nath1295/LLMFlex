@@ -101,6 +101,7 @@ class Exl2Core(BaseCore):
         settings.token_repetition_penalty = repetition_penalty
         settings.disallow_tokens(self.tokenizer, [self.tokenizer.eos_token_id])
         settings.top_a = kwargs.get('top_a', 0.0)
+        settings.__dict__.update(kwargs)
         stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
 
         if stream:

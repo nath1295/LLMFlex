@@ -129,28 +129,28 @@ class LlamaCppCore(BaseCore):
         import warnings
         warnings.filterwarnings('ignore')
         stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        gen_config = dict(
+            temperature=temperature,
+            top_k=top_k,
+            top_p=top_p,
+            repeat_penalty=repetition_penalty,
+            max_tokens=max_new_tokens,
+            stop=stop  
+        )
+        gen_config.update(kwargs)
         if stream:
+            gen_config['stream'] = True
             def generate():
                 for i in self.model(
                     prompt=prompt,
-                    temperature=temperature,
-                    top_k=top_k,
-                    top_p=top_p,
-                    repeat_penalty=repetition_penalty,
-                    max_tokens=max_new_tokens,
-                    stop=stop,
-                    stream=True
+                    **gen_config
                 ):
                     yield i['choices'][0]['text']
             return generate()
         else:
+            gen_config['stream'] = False
             return self.model(
                 prompt=prompt,
-                temperature=temperature,
-                top_k=top_k,
-                top_p=top_p,
-                repeat_penalty=repetition_penalty,
-                max_tokens=max_new_tokens,
-                stop=stop
+                **gen_config
             )['choices'][0]['text']
     
