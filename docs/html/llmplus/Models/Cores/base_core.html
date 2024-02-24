@@ -160,7 +160,7 @@ class BaseCore(ABC):
         gc.collect()
     
 class BaseLLM(LLM):
-    &#34;&#34;&#34;Base LLM class for llmplus, using the LLM class from langchain.
+    &#34;&#34;&#34;Base LLM class, using the LLM class from langchain.
     &#34;&#34;&#34;
     core: Type[BaseCore]
     generation_config: Dict[str, Any]
@@ -297,7 +297,7 @@ class BaseLLM(LLM):
         return &#39;BaseLLM&#39;
 
 class GenericLLM(BaseLLM):
-    &#34;&#34;&#34;Generic LLM class for llmplus, using the LLM class from langchain.
+    &#34;&#34;&#34;Generic LLM class, using the LLM class from langchain.
     &#34;&#34;&#34;
     core: BaseCore
     generation_config: Dict[str, Any]
@@ -789,7 +789,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 <span>(</span><span>core: Type[<a title="llmplus.Models.Cores.base_core.BaseCore" href="#llmplus.Models.Cores.base_core.BaseCore">BaseCore</a>], generation_config: Dict[str, Any], stop: List[str])</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Base LLM class for llmplus, using the LLM class from langchain.</p>
+<div class="desc"><p>Base LLM class, using the LLM class from langchain.</p>
 <p>Initialising the LLM.</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -805,7 +805,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class BaseLLM(LLM):
-    &#34;&#34;&#34;Base LLM class for llmplus, using the LLM class from langchain.
+    &#34;&#34;&#34;Base LLM class, using the LLM class from langchain.
     &#34;&#34;&#34;
     core: Type[BaseCore]
     generation_config: Dict[str, Any]
@@ -1147,7 +1147,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 <span>(</span><span>core: Type[<a title="llmplus.Models.Cores.base_core.BaseCore" href="#llmplus.Models.Cores.base_core.BaseCore">BaseCore</a>], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Generic LLM class for llmplus, using the LLM class from langchain.</p>
+<div class="desc"><p>Generic LLM class, using the LLM class from langchain.</p>
 <p>Initialising the LLM.</p>
 <h2 id="args">Args</h2>
 <dl>
@@ -1173,7 +1173,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class GenericLLM(BaseLLM):
-    &#34;&#34;&#34;Generic LLM class for llmplus, using the LLM class from langchain.
+    &#34;&#34;&#34;Generic LLM class, using the LLM class from langchain.
     &#34;&#34;&#34;
     core: BaseCore
     generation_config: Dict[str, Any]

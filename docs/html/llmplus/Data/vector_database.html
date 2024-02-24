@@ -41,7 +41,7 @@ def default_vectordb_dir() -&gt; str:
         str: Default home directory of vector databases.
     &#34;&#34;&#34;
     from ..utils import get_config
-    home = os.path.join(get_config()[&#39;llmplus_home&#39;], &#39;vector_databases&#39;)
+    home = os.path.join(get_config()[&#39;package_home&#39;], &#39;vector_databases&#39;)
     if not os.path.exists(home):
         os.makedirs(home)
     return home
@@ -460,7 +460,7 @@ class VectorDatabase:
         str: Default home directory of vector databases.
     &#34;&#34;&#34;
     from ..utils import get_config
-    home = os.path.join(get_config()[&#39;llmplus_home&#39;], &#39;vector_databases&#39;)
+    home = os.path.join(get_config()[&#39;package_home&#39;], &#39;vector_databases&#39;)
     if not os.path.exists(home):
         os.makedirs(home)
     return home</code></pre>

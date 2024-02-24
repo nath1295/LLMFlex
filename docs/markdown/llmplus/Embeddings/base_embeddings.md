@@ -12,8 +12,8 @@ Classes
 
     ### Descendants
 
+    * llmplus.Embeddings.api_embeddings.APIEmbeddingsToolkit
     * llmplus.Embeddings.huggingface_embeddings.HuggingfaceEmbeddingsToolkit
-    * llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit
 
     ### Instance variables
 

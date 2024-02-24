@@ -118,36 +118,36 @@ def current_time() -> float:
 ### Package configuration
 
 ## Defaults
-package_fullname = 'LlmPlus'
-package_name = 'llmplus'
+PACKAGE_DISPLAY_NAME = 'LlmPlus'
+PACKAGE_NAME = 'llmplus'
 
 colab_home = '/content/drive/MyDrive'
 
 user_home = colab_home if is_colab() else os.path.expanduser('~')
 
-home_dir = os.path.join(colab_home, package_fullname) if is_colab() else os.getcwd()
+home_dir = os.path.join(colab_home, PACKAGE_DISPLAY_NAME) if is_colab() else os.getcwd()
 
 def get_config_dir() -> str:
-    """Get the configuration file path of llmplus.
+    """Get the configuration file path of the package.
 
     Returns:
         str: configuration file path.
     """
-    config_dir = os.path.join(user_home, '.config', package_name, env_name())
+    config_dir = os.path.join(user_home, '.config', PACKAGE_NAME, env_name())
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
     return os.path.join(config_dir, 'config.json')
 
 def get_config() -> Dict[str, Any]:
-    """Get the configuration of llmplus.
+    """Get the configuration of the package.
 
     Returns:
-        Dict[str, Any]: Configuration of llmplus.
+        Dict[str, Any]: Configuration of the package.
     """
     config_dir = get_config_dir()
 
     default_config = dict(
-        llmplus_home = home_dir,
+        package_home = home_dir,
         hf_home = os.path.join(home_dir, 'hf_home') if is_colab() else os.path.join(user_home, '.cache', 'huggingface'),
         st_home = os.path.join(home_dir, 'st_home') if is_colab() else os.path.join(user_home, '.cache', 'torch', 'sentence_transformers')
     )
@@ -172,17 +172,17 @@ def get_config() -> Dict[str, Any]:
 
     return config
 
-def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -> None:
-    """Setting paths for llmplus.
+def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -> None:
+    """Setting paths for the package.
 
     Args:
-        llmplus_home (Optional[str], optional): Home directory for llmplus if a path is provided. Defaults to None.
+        package_home (Optional[str], optional): Home directory for the package if a path is provided. Defaults to None.
         hf_home (Optional[str], optional): Home directory for Huggingface if a path is provided. Defaults to None.
         st_home (Optional[str], optional): Home directory for sentence-transformer if a path is provided. Defaults to None.
     """
     config = get_config()
-    if isinstance(llmplus_home, str):
-        config['llmplus_home'] = os.path.abspath(llmplus_home)
+    if isinstance(package_home, str):
+        config['package_home'] = os.path.abspath(package_home)
     if isinstance(hf_home, str):
         config['hf_home'] = os.path.abspath(hf_home)
     if isinstance(st_home, str):

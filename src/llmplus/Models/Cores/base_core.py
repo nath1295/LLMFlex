@@ -132,7 +132,7 @@ class BaseCore(ABC):
         gc.collect()
     
 class BaseLLM(LLM):
-    """Base LLM class for llmplus, using the LLM class from langchain.
+    """Base LLM class, using the LLM class from langchain.
     """
     core: Type[BaseCore]
     generation_config: Dict[str, Any]
@@ -269,7 +269,7 @@ class BaseLLM(LLM):
         return 'BaseLLM'
 
 class GenericLLM(BaseLLM):
-    """Generic LLM class for llmplus, using the LLM class from langchain.
+    """Generic LLM class, using the LLM class from langchain.
     """
     core: BaseCore
     generation_config: Dict[str, Any]

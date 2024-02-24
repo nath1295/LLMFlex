@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>llmplus.Embeddings.llmplus_api_embeddings API documentation</title>
+<title>llmplus.Embeddings.api_embeddings API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>llmplus.Embeddings.llmplus_api_embeddings</code></h1>
+<h1 class="title">Module <code>llmplus.Embeddings.api_embeddings</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
@@ -48,24 +48,20 @@ class APIEmbeddings(Embeddings):
             List[List[float]]: List of embeddings given the texts.
         &#34;&#34;&#34;
         show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
-        if show_progress:
-            from tqdm import tqdm
-            batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
-            num_text = len(texts)
-            num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
-            batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
-            embeddings = []
-            for b in tqdm(batches):
-                req_dict = dict(input_texts=texts[b[0]:b[1]])
-                req_dict.update(self.encode_kwargs)
-                content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-                embeddings += json.loads(content)
-            return embeddings
-        else:
-            req_dict = dict(input_texts=texts)
+
+        from tqdm import tqdm
+        batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
+        num_text = len(texts)
+        num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+        batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+        embeddings = []
+        for b in tqdm(batches) if show_progress else batches:
+            req_dict = dict(input_texts=texts[b[0]:b[1]])
             req_dict.update(self.encode_kwargs)
             content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-            return json.loads(content)
+            embeddings += json.loads(content)
+        return embeddings
+
         
     def embed_query(self, text: str) -&gt; List[float]:
         &#34;&#34;&#34;Embed query text.
@@ -95,7 +91,6 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
-        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         from transformers import AutoTokenizer
         self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
         self._name = self.embedding_model.info[&#39;model_id&#39;]
@@ -117,7 +112,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings"><code class="flex name class">
+<dt id="llmplus.Embeddings.api_embeddings.APIEmbeddings"><code class="flex name class">
 <span>class <span class="ident">APIEmbeddings</span></span>
 <span>(</span><span>base_url: str, encode_kwargs: Dict[str, Any] = {})</span>
 </code></dt>
@@ -144,24 +139,20 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
             List[List[float]]: List of embeddings given the texts.
         &#34;&#34;&#34;
         show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
-        if show_progress:
-            from tqdm import tqdm
-            batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
-            num_text = len(texts)
-            num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
-            batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
-            embeddings = []
-            for b in tqdm(batches):
-                req_dict = dict(input_texts=texts[b[0]:b[1]])
-                req_dict.update(self.encode_kwargs)
-                content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-                embeddings += json.loads(content)
-            return embeddings
-        else:
-            req_dict = dict(input_texts=texts)
+
+        from tqdm import tqdm
+        batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
+        num_text = len(texts)
+        num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+        batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+        embeddings = []
+        for b in tqdm(batches) if show_progress else batches:
+            req_dict = dict(input_texts=texts[b[0]:b[1]])
             req_dict.update(self.encode_kwargs)
             content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-            return json.loads(content)
+            embeddings += json.loads(content)
+        return embeddings
+
         
     def embed_query(self, text: str) -&gt; List[float]:
         &#34;&#34;&#34;Embed query text.
@@ -181,7 +172,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_documents"><code class="name flex">
+<dt id="llmplus.Embeddings.api_embeddings.APIEmbeddings.embed_documents"><code class="name flex">
 <span>def <span class="ident">embed_documents</span></span>(<span>self, texts: List[str]) ‑> List[List[float]]</span>
 </code></dt>
 <dd>
@@ -210,27 +201,22 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         List[List[float]]: List of embeddings given the texts.
     &#34;&#34;&#34;
     show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
-    if show_progress:
-        from tqdm import tqdm
-        batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
-        num_text = len(texts)
-        num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
-        batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
-        embeddings = []
-        for b in tqdm(batches):
-            req_dict = dict(input_texts=texts[b[0]:b[1]])
-            req_dict.update(self.encode_kwargs)
-            content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-            embeddings += json.loads(content)
-        return embeddings
-    else:
-        req_dict = dict(input_texts=texts)
+
+    from tqdm import tqdm
+    batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
+    num_text = len(texts)
+    num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+    batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+    embeddings = []
+    for b in tqdm(batches) if show_progress else batches:
+        req_dict = dict(input_texts=texts[b[0]:b[1]])
         req_dict.update(self.encode_kwargs)
         content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-        return json.loads(content)</code></pre>
+        embeddings += json.loads(content)
+    return embeddings</code></pre>
 </details>
 </dd>
-<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_query"><code class="name flex">
+<dt id="llmplus.Embeddings.api_embeddings.APIEmbeddings.embed_query"><code class="name flex">
 <span>def <span class="ident">embed_query</span></span>(<span>self, text: str) ‑> List[float]</span>
 </code></dt>
 <dd>
@@ -263,7 +249,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 </dd>
 </dl>
 </dd>
-<dt id="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit"><code class="flex name class">
+<dt id="llmplus.Embeddings.api_embeddings.APIEmbeddingsToolkit"><code class="flex name class">
 <span>class <span class="ident">APIEmbeddingsToolkit</span></span>
 <span>(</span><span>base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128}, tokenizer_kwargs: Dict[str, Any] = {})</span>
 </code></dt>
@@ -304,7 +290,6 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
-        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         from transformers import AutoTokenizer
         self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
         self._name = self.embedding_model.info[&#39;model_id&#39;]
@@ -350,14 +335,14 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings">APIEmbeddings</a></code></h4>
+<h4><code><a title="llmplus.Embeddings.api_embeddings.APIEmbeddings" href="#llmplus.Embeddings.api_embeddings.APIEmbeddings">APIEmbeddings</a></code></h4>
 <ul class="">
-<li><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_documents" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_documents">embed_documents</a></code></li>
-<li><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_query" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddings.embed_query">embed_query</a></code></li>
+<li><code><a title="llmplus.Embeddings.api_embeddings.APIEmbeddings.embed_documents" href="#llmplus.Embeddings.api_embeddings.APIEmbeddings.embed_documents">embed_documents</a></code></li>
+<li><code><a title="llmplus.Embeddings.api_embeddings.APIEmbeddings.embed_query" href="#llmplus.Embeddings.api_embeddings.APIEmbeddings.embed_query">embed_query</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit" href="#llmplus.Embeddings.llmplus_api_embeddings.APIEmbeddingsToolkit">APIEmbeddingsToolkit</a></code></h4>
+<h4><code><a title="llmplus.Embeddings.api_embeddings.APIEmbeddingsToolkit" href="#llmplus.Embeddings.api_embeddings.APIEmbeddingsToolkit">APIEmbeddingsToolkit</a></code></h4>
 </li>
 </ul>
 </li>

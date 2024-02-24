@@ -38,7 +38,7 @@ def chat_memory_home() -&gt; str:
     Returns:
         str: The default directory for saving chat memories.
     &#34;&#34;&#34;
-    history_dir = os.path.join(get_config()[&#39;llmplus_home&#39;], &#39;chat_memories&#39;)
+    history_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;chat_memories&#39;)
     os.makedirs(history_dir, exist_ok=True)
     return history_dir
 
@@ -290,7 +290,7 @@ class BaseChatMemory:
     Returns:
         str: The default directory for saving chat memories.
     &#34;&#34;&#34;
-    history_dir = os.path.join(get_config()[&#39;llmplus_home&#39;], &#39;chat_memories&#39;)
+    history_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;chat_memories&#39;)
     os.makedirs(history_dir, exist_ok=True)
     return history_dir</code></pre>
 </details>

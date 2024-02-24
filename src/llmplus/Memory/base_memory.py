@@ -10,7 +10,7 @@ def chat_memory_home() -> str:
     Returns:
         str: The default directory for saving chat memories.
     """
-    history_dir = os.path.join(get_config()['llmplus_home'], 'chat_memories')
+    history_dir = os.path.join(get_config()['package_home'], 'chat_memories')
     os.makedirs(history_dir, exist_ok=True)
     return history_dir
 

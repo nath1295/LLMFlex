@@ -13,7 +13,7 @@ def default_vectordb_dir() -> str:
         str: Default home directory of vector databases.
     """
     from ..utils import get_config
-    home = os.path.join(get_config()['llmplus_home'], 'vector_databases')
+    home = os.path.join(get_config()['package_home'], 'vector_databases')
     if not os.path.exists(home):
         os.makedirs(home)
     return home

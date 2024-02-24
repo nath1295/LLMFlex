@@ -29,8 +29,9 @@
 <pre><code class="python">from ..Models.Factory.llm_factory import LlmFactory
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..Embeddings.huggingface_embeddings import HuggingfaceEmbeddingsToolkit
-from ..Embeddings.llmplus_api_embeddings import APIEmbeddingsToolkit
+from ..Embeddings.api_embeddings import APIEmbeddingsToolkit
 from ..Tools.base_tool import BaseTool
+from ..utils import PACKAGE_DISPLAY_NAME
 import streamlit as st
 from typing import Dict, Any, Union, List, Tuple, Type, Optional, Literal, Iterator
 
@@ -765,7 +766,8 @@ def create_streamlit_script(model_kwargs: Dict[str, Any],
     Returns:
         str: The streamlit script as a string.
     &#34;&#34;&#34;
-    script = [&#39;from llmplus.Frontend.streamlit_interface import StreamlitInterface&#39;, &#39;&#39;]
+    from ..utils import PACKAGE_NAME
+    script = [f&#39;from {PACKAGE_NAME}.Frontend.streamlit_interface import StreamlitInterface&#39;, &#39;&#39;]
     script.append(f&#39;model = {str(model_kwargs)}&#39;)
     script.append(f&#39;embeddings = {str(embeddings_kwargs)}&#39;)
     script.append(f&#39;tools = {str(tool_kwargs)}&#39;)
@@ -780,7 +782,7 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
                  tool_kwargs: List[Dict[str, Any]] = [],
                  auth: Optional[Tuple[str, str]] = None, 
                  debug: bool = False,
-                 app_name: str = &#39;LLMPlus&#39;) -&gt; None:
+                 app_name: str = PACKAGE_DISPLAY_NAME) -&gt; None:
     &#34;&#34;&#34;Run the streamlit interface.
 
     Args:
@@ -789,12 +791,12 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
         tool_kwargs (List[Dict[str, Any]], optional): List of kwargs to initialise the tools. Defaults to [].
         auth (Optional[Tuple[str, str]], optional): Tuple of username and password. Defaults to None.
         debug (bool, optional): Whether to display the debug buttons. Defaults to False.
-        app_name (str, optional): name of the streamlit script created. Defaults to &#34;LLMPlus&#34;.
+        app_name (str, optional): name of the streamlit script created. Defaults to PACKAGE_DISPLAY_NAME.
     &#34;&#34;&#34;
     import subprocess
     import os
     from ..utils import get_config
-    script_dir = os.path.join(get_config()[&#39;llmplus_home&#39;], &#39;.streamlit_scripts&#39;,f&#39;{app_name}.py&#39;)
+    script_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;.streamlit_scripts&#39;,f&#39;{app_name}.py&#39;)
     os.makedirs(os.path.dirname(script_dir), exist_ok=True)
     with open(script_dir, &#39;w&#39;) as f:
         f.write(create_streamlit_script(model_kwargs, embeddings_kwargs, tool_kwargs, auth, debug))
@@ -852,7 +854,8 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
     Returns:
         str: The streamlit script as a string.
     &#34;&#34;&#34;
-    script = [&#39;from llmplus.Frontend.streamlit_interface import StreamlitInterface&#39;, &#39;&#39;]
+    from ..utils import PACKAGE_NAME
+    script = [f&#39;from {PACKAGE_NAME}.Frontend.streamlit_interface import StreamlitInterface&#39;, &#39;&#39;]
     script.append(f&#39;model = {str(model_kwargs)}&#39;)
     script.append(f&#39;embeddings = {str(embeddings_kwargs)}&#39;)
     script.append(f&#39;tools = {str(tool_kwargs)}&#39;)
@@ -897,7 +900,7 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
 </details>
 </dd>
 <dt id="llmplus.Frontend.streamlit_interface.run_streamlit_interface"><code class="name flex">
-<span>def <span class="ident">run_streamlit_interface</span></span>(<span>model_kwargs: Dict[str, Any], embeddings_kwargs: Dict[str, Any], tool_kwargs: List[Dict[str, Any]] = [], auth: Optional[Tuple[str, str]] = None, debug: bool = False, app_name: str = 'LLMPlus') ‑> None</span>
+<span>def <span class="ident">run_streamlit_interface</span></span>(<span>model_kwargs: Dict[str, Any], embeddings_kwargs: Dict[str, Any], tool_kwargs: List[Dict[str, Any]] = [], auth: Optional[Tuple[str, str]] = None, debug: bool = False, app_name: str = 'LlmPlus') ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Run the streamlit interface.</p>
@@ -914,7 +917,7 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
 <dt><strong><code>debug</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Whether to display the debug buttons. Defaults to False.</dd>
 <dt><strong><code>app_name</code></strong> :&ensp;<code>str</code>, optional</dt>
-<dd>name of the streamlit script created. Defaults to "LLMPlus".</dd>
+<dd>name of the streamlit script created. Defaults to PACKAGE_DISPLAY_NAME.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -925,7 +928,7 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
                  tool_kwargs: List[Dict[str, Any]] = [],
                  auth: Optional[Tuple[str, str]] = None, 
                  debug: bool = False,
-                 app_name: str = &#39;LLMPlus&#39;) -&gt; None:
+                 app_name: str = PACKAGE_DISPLAY_NAME) -&gt; None:
     &#34;&#34;&#34;Run the streamlit interface.
 
     Args:
@@ -934,12 +937,12 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
         tool_kwargs (List[Dict[str, Any]], optional): List of kwargs to initialise the tools. Defaults to [].
         auth (Optional[Tuple[str, str]], optional): Tuple of username and password. Defaults to None.
         debug (bool, optional): Whether to display the debug buttons. Defaults to False.
-        app_name (str, optional): name of the streamlit script created. Defaults to &#34;LLMPlus&#34;.
+        app_name (str, optional): name of the streamlit script created. Defaults to PACKAGE_DISPLAY_NAME.
     &#34;&#34;&#34;
     import subprocess
     import os
     from ..utils import get_config
-    script_dir = os.path.join(get_config()[&#39;llmplus_home&#39;], &#39;.streamlit_scripts&#39;,f&#39;{app_name}.py&#39;)
+    script_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;.streamlit_scripts&#39;,f&#39;{app_name}.py&#39;)
     os.makedirs(os.path.dirname(script_dir), exist_ok=True)
     with open(script_dir, &#39;w&#39;) as f:
         f.write(create_streamlit_script(model_kwargs, embeddings_kwargs, tool_kwargs, auth, debug))

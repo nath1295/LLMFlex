@@ -1,4 +1,5 @@
 import click
+from .utils import PACKAGE_DISPLAY_NAME
 from typing import Optional, Tuple, Dict, Any
 
 def args_from_string(arg_string: str) -> Dict[str, Any]:
@@ -39,12 +40,12 @@ def cli() -> None:
 
 @cli.command()
 def config() -> None:
-    """Setting paths for LlmPlus.
+    """Setting paths for the package.
     """
     from .utils import set_config, get_config
     config = get_config()
     new_config = dict()
-    print('Setting paths for LlmPlus:')
+    print('Setting paths:')
     for k, v in config.items():
         new = input(f'{k} [{v}]: ')
         new_config[k] = new.strip() if new.strip() != '' else v
@@ -57,14 +58,14 @@ def config() -> None:
 @click.option('--web_search', is_flag=True, help='Whether to use web search in the interface or not.')
 @click.option('--model_type', default='auto', help='LLM model type.')
 @click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
-@click.option('--appname', default='LLMPlus', help='Name of the webapp.')
+@click.option('--appname', default=PACKAGE_DISPLAY_NAME, help='Name of the webapp.')
 @click.option('--extras', default='', help='Extra arugments for loading the model.')
 def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
               embeddings: str = 'thenlper/gte-small', 
               web_search: bool = False,
               model_type: str = 'auto',
               auth: Optional[Tuple[str, str]] = None, 
-              appname: str = 'LLMPlus',
+              appname: str = PACKAGE_DISPLAY_NAME,
               extras: str = "") -> None:
     """Launch the Streamlit Chat GUI.
     """

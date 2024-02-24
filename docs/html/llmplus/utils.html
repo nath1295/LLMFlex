@@ -146,36 +146,36 @@ def current_time() -&gt; float:
 ### Package configuration
 
 ## Defaults
-package_fullname = &#39;LlmPlus&#39;
-package_name = &#39;llmplus&#39;
+PACKAGE_DISPLAY_NAME = &#39;LlmPlus&#39;
+PACKAGE_NAME = &#39;llmplus&#39;
 
 colab_home = &#39;/content/drive/MyDrive&#39;
 
 user_home = colab_home if is_colab() else os.path.expanduser(&#39;~&#39;)
 
-home_dir = os.path.join(colab_home, package_fullname) if is_colab() else os.getcwd()
+home_dir = os.path.join(colab_home, PACKAGE_DISPLAY_NAME) if is_colab() else os.getcwd()
 
 def get_config_dir() -&gt; str:
-    &#34;&#34;&#34;Get the configuration file path of llmplus.
+    &#34;&#34;&#34;Get the configuration file path of the package.
 
     Returns:
         str: configuration file path.
     &#34;&#34;&#34;
-    config_dir = os.path.join(user_home, &#39;.config&#39;, package_name, env_name())
+    config_dir = os.path.join(user_home, &#39;.config&#39;, PACKAGE_NAME, env_name())
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
     return os.path.join(config_dir, &#39;config.json&#39;)
 
 def get_config() -&gt; Dict[str, Any]:
-    &#34;&#34;&#34;Get the configuration of llmplus.
+    &#34;&#34;&#34;Get the configuration of the package.
 
     Returns:
-        Dict[str, Any]: Configuration of llmplus.
+        Dict[str, Any]: Configuration of the package.
     &#34;&#34;&#34;
     config_dir = get_config_dir()
 
     default_config = dict(
-        llmplus_home = home_dir,
+        package_home = home_dir,
         hf_home = os.path.join(home_dir, &#39;hf_home&#39;) if is_colab() else os.path.join(user_home, &#39;.cache&#39;, &#39;huggingface&#39;),
         st_home = os.path.join(home_dir, &#39;st_home&#39;) if is_colab() else os.path.join(user_home, &#39;.cache&#39;, &#39;torch&#39;, &#39;sentence_transformers&#39;)
     )
@@ -200,17 +200,17 @@ def get_config() -&gt; Dict[str, Any]:
 
     return config
 
-def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -&gt; None:
-    &#34;&#34;&#34;Setting paths for llmplus.
+def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -&gt; None:
+    &#34;&#34;&#34;Setting paths for the package.
 
     Args:
-        llmplus_home (Optional[str], optional): Home directory for llmplus if a path is provided. Defaults to None.
+        package_home (Optional[str], optional): Home directory for the package if a path is provided. Defaults to None.
         hf_home (Optional[str], optional): Home directory for Huggingface if a path is provided. Defaults to None.
         st_home (Optional[str], optional): Home directory for sentence-transformer if a path is provided. Defaults to None.
     &#34;&#34;&#34;
     config = get_config()
-    if isinstance(llmplus_home, str):
-        config[&#39;llmplus_home&#39;] = os.path.abspath(llmplus_home)
+    if isinstance(package_home, str):
+        config[&#39;package_home&#39;] = os.path.abspath(package_home)
     if isinstance(hf_home, str):
         config[&#39;hf_home&#39;] = os.path.abspath(hf_home)
     if isinstance(st_home, str):
@@ -287,26 +287,26 @@ def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None
 <span>def <span class="ident">get_config</span></span>(<span>) ‑> Dict[str, Any]</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the configuration of llmplus.</p>
+<div class="desc"><p>Get the configuration of the package.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>Dict[str, Any]</code></dt>
-<dd>Configuration of llmplus.</dd>
+<dd>Configuration of the package.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_config() -&gt; Dict[str, Any]:
-    &#34;&#34;&#34;Get the configuration of llmplus.
+    &#34;&#34;&#34;Get the configuration of the package.
 
     Returns:
-        Dict[str, Any]: Configuration of llmplus.
+        Dict[str, Any]: Configuration of the package.
     &#34;&#34;&#34;
     config_dir = get_config_dir()
 
     default_config = dict(
-        llmplus_home = home_dir,
+        package_home = home_dir,
         hf_home = os.path.join(home_dir, &#39;hf_home&#39;) if is_colab() else os.path.join(user_home, &#39;.cache&#39;, &#39;huggingface&#39;),
         st_home = os.path.join(home_dir, &#39;st_home&#39;) if is_colab() else os.path.join(user_home, &#39;.cache&#39;, &#39;torch&#39;, &#39;sentence_transformers&#39;)
     )
@@ -336,7 +336,7 @@ def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None
 <span>def <span class="ident">get_config_dir</span></span>(<span>) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Get the configuration file path of llmplus.</p>
+<div class="desc"><p>Get the configuration file path of the package.</p>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>str</code></dt>
@@ -347,12 +347,12 @@ def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_config_dir() -&gt; str:
-    &#34;&#34;&#34;Get the configuration file path of llmplus.
+    &#34;&#34;&#34;Get the configuration file path of the package.
 
     Returns:
         str: configuration file path.
     &#34;&#34;&#34;
-    config_dir = os.path.join(user_home, &#39;.config&#39;, package_name, env_name())
+    config_dir = os.path.join(user_home, &#39;.config&#39;, PACKAGE_NAME, env_name())
     if not os.path.exists(config_dir):
         os.makedirs(config_dir)
     return os.path.join(config_dir, &#39;config.json&#39;)</code></pre>
@@ -537,14 +537,14 @@ def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None
 </details>
 </dd>
 <dt id="llmplus.utils.set_config"><code class="name flex">
-<span>def <span class="ident">set_config</span></span>(<span>llmplus_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) ‑> None</span>
+<span>def <span class="ident">set_config</span></span>(<span>package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Setting paths for llmplus.</p>
+<div class="desc"><p>Setting paths for the package.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>llmplus_home</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
-<dd>Home directory for llmplus if a path is provided. Defaults to None.</dd>
+<dt><strong><code>package_home</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Home directory for the package if a path is provided. Defaults to None.</dd>
 <dt><strong><code>hf_home</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>Home directory for Huggingface if a path is provided. Defaults to None.</dd>
 <dt><strong><code>st_home</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
@@ -554,17 +554,17 @@ def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -&gt; None:
-    &#34;&#34;&#34;Setting paths for llmplus.
+<pre><code class="python">def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -&gt; None:
+    &#34;&#34;&#34;Setting paths for the package.
 
     Args:
-        llmplus_home (Optional[str], optional): Home directory for llmplus if a path is provided. Defaults to None.
+        package_home (Optional[str], optional): Home directory for the package if a path is provided. Defaults to None.
         hf_home (Optional[str], optional): Home directory for Huggingface if a path is provided. Defaults to None.
         st_home (Optional[str], optional): Home directory for sentence-transformer if a path is provided. Defaults to None.
     &#34;&#34;&#34;
     config = get_config()
-    if isinstance(llmplus_home, str):
-        config[&#39;llmplus_home&#39;] = os.path.abspath(llmplus_home)
+    if isinstance(package_home, str):
+        config[&#39;package_home&#39;] = os.path.abspath(package_home)
     if isinstance(hf_home, str):
         config[&#39;hf_home&#39;] = os.path.abspath(hf_home)
     if isinstance(st_home, str):

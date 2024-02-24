@@ -20,24 +20,20 @@ class APIEmbeddings(Embeddings):
             List[List[float]]: List of embeddings given the texts.
         """
         show_progress = self.encode_kwargs.get('show_progress_bar', False)
-        if show_progress:
-            from tqdm import tqdm
-            batch_size = self.encode_kwargs.get('batch_size', self.info['default_batch_size'])
-            num_text = len(texts)
-            num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
-            batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
-            embeddings = []
-            for b in tqdm(batches):
-                req_dict = dict(input_texts=texts[b[0]:b[1]])
-                req_dict.update(self.encode_kwargs)
-                content = requests.get(self.base_url + '/embeddings', json=req_dict).content.decode()
-                embeddings += json.loads(content)
-            return embeddings
-        else:
-            req_dict = dict(input_texts=texts)
+
+        from tqdm import tqdm
+        batch_size = self.encode_kwargs.get('batch_size', self.info['default_batch_size'])
+        num_text = len(texts)
+        num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
+        batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
+        embeddings = []
+        for b in tqdm(batches) if show_progress else batches:
+            req_dict = dict(input_texts=texts[b[0]:b[1]])
             req_dict.update(self.encode_kwargs)
             content = requests.get(self.base_url + '/embeddings', json=req_dict).content.decode()
-            return json.loads(content)
+            embeddings += json.loads(content)
+        return embeddings
+
         
     def embed_query(self, text: str) -> List[float]:
         """Embed query text.
@@ -67,7 +63,6 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
-        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
         from transformers import AutoTokenizer
         self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
         self._name = self.embedding_model.info['model_id']

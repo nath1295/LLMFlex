@@ -1,5 +1,5 @@
-Module llmplus.Embeddings.llmplus_api_embeddings
-================================================
+Module llmplus.Embeddings.api_embeddings
+========================================
 
 Classes
 -------

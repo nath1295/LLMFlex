@@ -20,14 +20,14 @@ Functions
 
     
 `get_config() ‑> Dict[str, Any]`
-:   Get the configuration of llmplus.
+:   Get the configuration of the package.
     
     Returns:
-        Dict[str, Any]: Configuration of llmplus.
+        Dict[str, Any]: Configuration of the package.
 
     
 `get_config_dir() ‑> str`
-:   Get the configuration file path of llmplus.
+:   Get the configuration file path of the package.
     
     Returns:
         str: configuration file path.
@@ -78,10 +78,10 @@ Functions
         file_dir (str): Path (with filename) to save the content.
 
     
-`set_config(llmplus_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) ‑> None`
-:   Setting paths for llmplus.
+`set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) ‑> None`
+:   Setting paths for the package.
     
     Args:
-        llmplus_home (Optional[str], optional): Home directory for llmplus if a path is provided. Defaults to None.
+        package_home (Optional[str], optional): Home directory for the package if a path is provided. Defaults to None.
         hf_home (Optional[str], optional): Home directory for Huggingface if a path is provided. Defaults to None.
         st_home (Optional[str], optional): Home directory for sentence-transformer if a path is provided. Defaults to None.
