@@ -1,25 +1,49 @@
+from __future__ import annotations
 from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
 from ...Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractclassmethod
 from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple, Literal
 
 class BaseCore(ABC):
     """Base class of Core object to store the llm model and tokenizer.
     """
-    def __init__(self, model_id: str = 'gpt2', **kwargs) -> None:
+    def __init__(self, **kwargs) -> None:
         """Initialising the core instance.
 
         Args:
             model_id (str, optional): Model id (from Huggingface) to use. Defaults to 'gpt2'.
         """
+        self._init_config = kwargs
+        self._core_type = 'BaseCore'
+
+    @abstractclassmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str, **kwargs) -> BaseCore:
+        """Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+
+        Returns:
+            BaseCore: The initialised core.
+        """
+        pass
+
+    def _init_core(self, model_id: str, **kwargs) -> None:
+        """Initialise everything needed in the core.
+
+        Args:
+            model_id (str): The repo ID.
+        """
         from transformers import AutoTokenizer
         self._model_id = model_id
-        self._core_type = 'BaseCore'
         self._tokenizer = AutoTokenizer.from_pretrained(model_id)
         self._tokenizer_type = 'transformers'
         self._model = None
+
 
     @property
     def model(self) -> Any:
@@ -28,6 +52,8 @@ class BaseCore(ABC):
         Returns:
             Any: Model for llms.
         """
+        if not hasattr(self, '_model'):
+            self._init_core(**self._init_config)
         return self._model
     
     @property
@@ -37,6 +63,8 @@ class BaseCore(ABC):
         Returns:
             Any: Tokenizer of the model.
         """
+        if not hasattr(self, '_tokenizer'):
+            self._init_core(**self._init_config)
         return self._tokenizer
     
     @property
@@ -46,6 +74,8 @@ class BaseCore(ABC):
         Returns:
             Literal['transformers', 'llamacpp', 'openai']: Type of tokenizer.
         """
+        if not hasattr(self, '_tokenizer_type'):
+            self._init_core(**self._init_config)
         return self._tokenizer_type
     
     @property
@@ -64,6 +94,8 @@ class BaseCore(ABC):
         Returns:
             str: Model ID.
         """
+        if not hasattr(self, '_model_id'):
+            self._init_core(**self._init_config)
         return self._model_id
     
     @property
@@ -256,9 +288,9 @@ class BaseLLM(LLM):
         prompt = prompt_template.create_prompt(prompt, system=system, history=history)
         stop = prompt_template.stop
         if stream:
-            return self.stream(prompt, stop=stop)
+            return self.stream(prompt, stop=stop, **kwargs)
         else:
-            return self.invoke(prompt, stop=stop)
+            return self.invoke(prompt, stop=stop, **kwargs)
     
     def _llm_type(self) -> str:
         """LLM type.

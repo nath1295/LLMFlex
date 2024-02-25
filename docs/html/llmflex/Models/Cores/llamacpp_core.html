@@ -26,7 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">from __future__ import annotations
+import os
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator
@@ -89,11 +90,47 @@ class LlamaCppCore(BaseCore):
             context_length (int, optional): Context length of the model. Defaults to 4096.
             from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Defaults to False.
         &#34;&#34;&#34;
+        self._core_type = &#39;LlamaCppCore&#39;
+        self._init_config = dict(
+            model_id_or_path=model_id_or_path,
+            model_file=model_file,
+            context_length=context_length,
+            from_local=from_local
+        )
+        self._init_config.update(kwargs)
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Optional[Any] = None, model_id: str = &#39;Unknown&#39;) -&gt; LlamaCppCore:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object.
+
+        Args:
+            model (Any): The model object.
+            model_id (str): The model_id.
+            model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): The quantize type of the model.
+
+        Returns:
+            LlamaCppCore: The initialised core.
+        &#34;&#34;&#34;
+        core = cls(model_id_or_path=model_id)
+        core._model = model
+        core._tokenizer = model
+        core._tokenizer_type = &#39;llamacpp&#39;
+        core._model_id = model_id
+        return core
+
+    def _init_core(self, model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, from_local: bool = False, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialising the core.
+
+        Args:
+            model_id (str): Model id (from Huggingface) or model file path to use.
+            model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
+            context_length (int, optional): Context length of the model. Defaults to 4096.
+            from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Defaults to False.
+        &#34;&#34;&#34;
         from ...utils import is_cuda, os_name
         from .utils import detect_prompt_template_by_id
         from ...Prompts.prompt_template import PromptTemplate
         self._model_id = os.path.basename(model_id_or_path).removesuffix(&#39;.gguf&#39;).removesuffix(&#39;.GGUF&#39;) if from_local else model_id_or_path
-        self._core_type = &#39;LlamaCppCore&#39;
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not from_local else model_id_or_path
         from llama_cpp import Llama
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
@@ -290,11 +327,47 @@ class LlamaCppCore(BaseCore):
             context_length (int, optional): Context length of the model. Defaults to 4096.
             from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Defaults to False.
         &#34;&#34;&#34;
+        self._core_type = &#39;LlamaCppCore&#39;
+        self._init_config = dict(
+            model_id_or_path=model_id_or_path,
+            model_file=model_file,
+            context_length=context_length,
+            from_local=from_local
+        )
+        self._init_config.update(kwargs)
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Optional[Any] = None, model_id: str = &#39;Unknown&#39;) -&gt; LlamaCppCore:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object.
+
+        Args:
+            model (Any): The model object.
+            model_id (str): The model_id.
+            model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): The quantize type of the model.
+
+        Returns:
+            LlamaCppCore: The initialised core.
+        &#34;&#34;&#34;
+        core = cls(model_id_or_path=model_id)
+        core._model = model
+        core._tokenizer = model
+        core._tokenizer_type = &#39;llamacpp&#39;
+        core._model_id = model_id
+        return core
+
+    def _init_core(self, model_id_or_path: str, model_file: Optional[str] = None, context_length: int = 4096, from_local: bool = False, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialising the core.
+
+        Args:
+            model_id (str): Model id (from Huggingface) or model file path to use.
+            model_file (Optional[str], optional): Specific GGUF model to use. If None, the lowest quant will be used. Defaults to None.
+            context_length (int, optional): Context length of the model. Defaults to 4096.
+            from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Defaults to False.
+        &#34;&#34;&#34;
         from ...utils import is_cuda, os_name
         from .utils import detect_prompt_template_by_id
         from ...Prompts.prompt_template import PromptTemplate
         self._model_id = os.path.basename(model_id_or_path).removesuffix(&#39;.gguf&#39;).removesuffix(&#39;.GGUF&#39;) if from_local else model_id_or_path
-        self._core_type = &#39;LlamaCppCore&#39;
         model_dir = get_model_dir(model_id_or_path, model_file=model_file) if not from_local else model_id_or_path
         from llama_cpp import Llama
         load_kwargs = dict(model_path=model_dir, use_mlock=True, n_ctx=context_length)
@@ -388,6 +461,51 @@ class LlamaCppCore(BaseCore):
 <li><a title="llmflex.Models.Cores.base_core.BaseCore" href="base_core.html#llmflex.Models.Cores.base_core.BaseCore">BaseCore</a></li>
 <li>abc.ABC</li>
 </ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.Models.Cores.llamacpp_core.LlamaCppCore.from_model_object"><code class="name flex">
+<span>def <span class="ident">from_model_object</span></span>(<span>model: Any, tokenizer: Optional[Any] = None, model_id: str = 'Unknown') ‑> <a title="llmflex.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmflex.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a core directly from an already loaded model object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The model object.</dd>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The model_id.</dd>
+</dl>
+<p>model_type (Literal['default', 'awq', 'gptq']): The quantize type of the model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmflex.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></code></dt>
+<dd>The initialised core.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_model_object(cls, model: Any, tokenizer: Optional[Any] = None, model_id: str = &#39;Unknown&#39;) -&gt; LlamaCppCore:
+    &#34;&#34;&#34;Load a core directly from an already loaded model object.
+
+    Args:
+        model (Any): The model object.
+        model_id (str): The model_id.
+        model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): The quantize type of the model.
+
+    Returns:
+        LlamaCppCore: The initialised core.
+    &#34;&#34;&#34;
+    core = cls(model_id_or_path=model_id)
+    core._model = model
+    core._tokenizer = model
+    core._tokenizer_type = &#39;llamacpp&#39;
+    core._model_id = model_id
+    return core</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="llmflex.Models.Cores.base_core.BaseCore" href="base_core.html#llmflex.Models.Cores.base_core.BaseCore">BaseCore</a></b></code>:
@@ -429,6 +547,9 @@ class LlamaCppCore(BaseCore):
 <ul>
 <li>
 <h4><code><a title="llmflex.Models.Cores.llamacpp_core.LlamaCppCore" href="#llmflex.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Models.Cores.llamacpp_core.LlamaCppCore.from_model_object" href="#llmflex.Models.Cores.llamacpp_core.LlamaCppCore.from_model_object">from_model_object</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

@@ -1,3 +1,4 @@
+from __future__ import annotations
 from ..Cores.base_core import BaseCore, BaseLLM
 from ...Prompts.prompt_template import PromptTemplate
 from typing import Literal, Optional, Dict, List, Any, Type
@@ -39,6 +40,7 @@ class LlmFactory:
                 api_key: Optional[str] = None,
                 tokenizer_id: Optional[str] = None,
                 tokenizer_kwargs: Dict[str, Any] = dict(),
+                init_empty: bool = False,
                 **kwargs) -> None:
         """Initialise the model core to create LLMs.
 
@@ -54,27 +56,59 @@ class LlmFactory:
             api_key (Optional[str], optional): API key for OpenAI API. Defaults to None.
             tokenizer_id (Optional[str], optional): Model ID (from Huggingface) to load the tokenizer. Useful for model types "default", "gptq", "awq", and "openai". Defaults to None.
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Useful for model types "default", "gptq", "awq", and "openai".  Defaults to dict().
+            init_empty (bool, optional): Initialise without a model core. Should not be used for normal initialisation. Defaults to False.
         """
-        self._model_id = model_id
-        self._model_type = detect_model_type(model_id=model_id) if model_type=='auto' else model_type
-        if self.model_type == 'gguf':
-            from ..Cores.llamacpp_core import LlamaCppCore
-            self._core = LlamaCppCore(self.model_id, model_file=model_file, context_length=context_length,**kwargs)
-        elif self.model_type in ['default', 'awq', 'gptq']:
-            from ..Cores.huggingface_core import HuggingfaceCore
-            self._core = HuggingfaceCore(self.model_id, model_type=self.model_type, model_kwargs=model_kwargs, tokenizer_kwargs=tokenizer_kwargs)
-        elif self.model_type == 'openai':
-            from ..Cores.openai_core import OpenAICore
-            self._core = OpenAICore(base_url=base_url, api_key=api_key, model_id=model_id, tokenizer_id=tokenizer_id, tokenizer_kwargs=tokenizer_kwargs)
-            self._model_id = self.core.model_id
-        elif self.model_type == 'exl2':
-            from ..Cores.exllamav2_core import Exl2Core
-            self._core = Exl2Core(self.model_id, revision=revision, **kwargs)
-        elif self.model_type == 'debug':
-            self._core = BaseCore(model_id=self.model_id, **kwargs)
-        else:
-            raise ValueError(f'Model type "{self.model_type}" not supported.')
+        if not init_empty:
+            self._model_id = model_id
+            self._model_type = detect_model_type(model_id=model_id) if model_type=='auto' else model_type
+            if self.model_type == 'gguf':
+                from ..Cores.llamacpp_core import LlamaCppCore
+                self._core = LlamaCppCore(self.model_id, model_file=model_file, context_length=context_length, from_local=from_local, **kwargs)
+            elif self.model_type in ['default', 'awq', 'gptq']:
+                from ..Cores.huggingface_core import HuggingfaceCore
+                self._core = HuggingfaceCore(self.model_id, model_type=self.model_type, model_kwargs=model_kwargs, tokenizer_kwargs=tokenizer_kwargs)
+            elif self.model_type == 'openai':
+                from ..Cores.openai_core import OpenAICore
+                self._core = OpenAICore(base_url=base_url, api_key=api_key, model_id=model_id, tokenizer_id=tokenizer_id, tokenizer_kwargs=tokenizer_kwargs)
+                self._model_id = self.core.model_id
+            elif self.model_type == 'exl2':
+                from ..Cores.exllamav2_core import Exl2Core
+                self._core = Exl2Core(self.model_id, revision=revision, **kwargs)
+            elif self.model_type == 'debug':
+                self._core = BaseCore(model_id=self.model_id, **kwargs)
+            else:
+                raise ValueError(f'Model type "{self.model_type}" not supported.')
         
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_type: Literal['default', 'gptq', 'awq', 'gguf', 'openai', 'exl2'], model_id: str = 'Unknown', **kwargs) -> LlmFactory:
+        """Initialise the factory object with an already loaded model.
+
+        Args:
+            model (Any): The pre-loaded model.
+            tokenizer (Any): The pre-loaded tokenizer.
+            model_type (Literal[&#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;exl2&#39;]): Type of model format.
+            model_id (str, optional): Name to be given to the model, recommend to use the repo ID on HuggingFace. Defaults to 'Unknown'.
+
+        Returns:
+            LlmFactory: The initialised llm factory.
+        """
+        if model_type in ['default', 'gptq', 'awq']:
+            from ..Cores.huggingface_core import HuggingfaceCore
+            core = HuggingfaceCore.from_model_object(model=model, tokenizer=tokenizer, model_id=model_id, model_type=model_type)
+        elif model_type == 'gguf':
+            from ..Cores.llamacpp_core import LlamaCppCore
+            core = LlamaCppCore.from_model_object(model=model, tokenizer=tokenizer, model_id=model_id)
+        elif model_type == 'exl2':
+            from ..Cores.exllamav2_core import Exl2Core
+            core = Exl2Core.from_model_object(model=model, tokenizer=tokenizer, model_id=model_id)
+        elif model_type == 'openai':
+            from ..Cores.openai_core import OpenAICore
+            core = OpenAICore.from_model_object(model=model, tokenizer=tokenizer, model_id=model_id)
+        factory = cls(model_id='', nit_empty=True)
+        factory._core = core
+        factory._model_id = core.model_id
+        factory._model_type = model_type
+        return factory
 
     @property
     def model_id(self) -> str:

@@ -4,7 +4,7 @@ Module llmflex.Models.Cores.base_core
 Classes
 -------
 
-`BaseCore(model_id: str = 'gpt2', **kwargs)`
+`BaseCore(**kwargs)`
 :   Base class of Core object to store the llm model and tokenizer.
         
     
@@ -23,6 +23,19 @@ Classes
     * llmflex.Models.Cores.huggingface_core.HuggingfaceCore
     * llmflex.Models.Cores.llamacpp_core.LlamaCppCore
     * llmflex.Models.Cores.openai_core.OpenAICore
+
+    ### Static methods
+
+    `from_model_object(model: Any, tokenizer: Any, model_id: str, **kwargs) ‑> llmflex.Models.Cores.base_core.BaseCore`
+    :   Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+        
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+        
+        Returns:
+            BaseCore: The initialised core.
 
     ### Instance variables
 
@@ -102,7 +115,7 @@ Classes
     `unload(self) ‑> None`
     :   Unload the model from ram.
 
-`BaseLLM(core: Type[llmflex.Models.Cores.base_core.BaseCore], generation_config: Dict[str, Any], stop: List[str])`
+`BaseLLM(core: Type[BaseCore], generation_config: Dict[str, Any], stop: List[str])`
 :   Base LLM class, using the LLM class from langchain.
         
     
@@ -143,7 +156,7 @@ Classes
 
     ### Methods
 
-    `chat(self, prompt: str, prompt_template: Optional[llmflex.Prompts.prompt_template.PromptTemplate] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) ‑> Union[str, Iterator[str]]`
+    `chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) ‑> Union[str, Iterator[str]]`
     :   Chat with the llm given the input.
         
         Args:
@@ -174,7 +187,7 @@ Classes
         Returns:
             List[int]: List of token ids.
 
-    `stream(self, input: str, config: Optional[langchain_core.runnables.config.RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]`
+    `stream(self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]`
     :   Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.
         
         Args:
@@ -185,7 +198,7 @@ Classes
         Yields:
             Iterator[str]: The next generated token.
 
-`GenericLLM(core: Type[llmflex.Models.Cores.base_core.BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs)`
+`GenericLLM(core: Type[BaseCore], temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, **kwargs)`
 :   Generic LLM class, using the LLM class from langchain.
         
     

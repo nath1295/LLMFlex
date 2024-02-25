@@ -26,7 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import os
+<pre><code class="python">from __future__ import annotations
+import os
 from transformers import StoppingCriteria, StoppingCriteriaList
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from .base_core import BaseCore, BaseLLM
@@ -81,12 +82,46 @@ class HuggingfaceCore(BaseCore):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
+        self._core_type = &#39;HuggingfaceCore&#39;
+        self._init_config = dict(
+            model_id=model_id,
+            model_type=model_type,
+            model_kwargs=model_kwargs,
+            tokenizer_kwargs=tokenizer_kwargs
+        )
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unknown&#39;, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;] = &#39;default&#39;) -&gt; HuggingfaceCore:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+            model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): The quantize type of the model.
+
+        Returns:
+            BaseCore: The initialised core.
+        &#34;&#34;&#34;
+        core = cls(model_id=model_id, model_type=model_type)
+        core._model = model
+        core._tokenizer = tokenizer
+        core._tokenizer_type = &#39;transformers&#39;
+        core._model_id = model_id
+        core._model_type = model_type
+        return core
+
+    def _init_core(self, model_id: str, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+        &#34;&#34;&#34;Initialise everything needed in the core.
+
+        Args:
+            model_id (str): The repo ID.
+        &#34;&#34;&#34;
         from ...utils import get_config
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
-        self._core_type = &#39;HuggingfaceCore&#39;
         self._model_type = model_type
 
         if not hasattr(tokenizer_kwargs, &#39;pretrained_model_name_or_path&#39;):
@@ -106,6 +141,8 @@ class HuggingfaceCore(BaseCore):
         Returns:
             str: Format of the model.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_model_tpye&#39;):
+            self._init_core(**self._init_config)
         return self._model_type
     
     def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
@@ -180,6 +217,8 @@ class HuggingfaceCore(BaseCore):
     
     def unload(self) -&gt; None:
         &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;
+        if not hasattr(self, &#39;_model&#39;):
+            return
         device = self._model.device
         del self._model
         self._model = None
@@ -202,7 +241,7 @@ class HuggingfaceCore(BaseCore):
 <dl>
 <dt id="llmflex.Models.Cores.huggingface_core.HuggingfaceCore"><code class="flex name class">
 <span>class <span class="ident">HuggingfaceCore</span></span>
-<span>(</span><span>model_id: str, model_type: Literal['default', 'awq', 'gptq'], model_kwargs: Dict[str, Any] = {}, tokenizer_kwargs: Dict[str, Any] = {})</span>
+<span>(</span><span>model_id: str, model_type: "Literal['default', 'awq', 'gptq']", model_kwargs: Dict[str, Any] = {}, tokenizer_kwargs: Dict[str, Any] = {})</span>
 </code></dt>
 <dd>
 <div class="desc"><p>This is the core class of loading model in awq, gptq, or original format.</p>
@@ -233,12 +272,46 @@ class HuggingfaceCore(BaseCore):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
         &#34;&#34;&#34;
+        self._core_type = &#39;HuggingfaceCore&#39;
+        self._init_config = dict(
+            model_id=model_id,
+            model_type=model_type,
+            model_kwargs=model_kwargs,
+            tokenizer_kwargs=tokenizer_kwargs
+        )
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unknown&#39;, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;] = &#39;default&#39;) -&gt; HuggingfaceCore:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+            model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): The quantize type of the model.
+
+        Returns:
+            BaseCore: The initialised core.
+        &#34;&#34;&#34;
+        core = cls(model_id=model_id, model_type=model_type)
+        core._model = model
+        core._tokenizer = tokenizer
+        core._tokenizer_type = &#39;transformers&#39;
+        core._model_id = model_id
+        core._model_type = model_type
+        return core
+
+    def _init_core(self, model_id: str, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+        &#34;&#34;&#34;Initialise everything needed in the core.
+
+        Args:
+            model_id (str): The repo ID.
+        &#34;&#34;&#34;
         from ...utils import get_config
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
-        self._core_type = &#39;HuggingfaceCore&#39;
         self._model_type = model_type
 
         if not hasattr(tokenizer_kwargs, &#39;pretrained_model_name_or_path&#39;):
@@ -258,6 +331,8 @@ class HuggingfaceCore(BaseCore):
         Returns:
             str: Format of the model.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_model_tpye&#39;):
+            self._init_core(**self._init_config)
         return self._model_type
     
     def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
@@ -332,6 +407,8 @@ class HuggingfaceCore(BaseCore):
     
     def unload(self) -&gt; None:
         &#34;&#34;&#34;Unload the model from ram.&#34;&#34;&#34;
+        if not hasattr(self, &#39;_model&#39;):
+            return
         device = self._model.device
         del self._model
         self._model = None
@@ -346,6 +423,55 @@ class HuggingfaceCore(BaseCore):
 <li><a title="llmflex.Models.Cores.base_core.BaseCore" href="base_core.html#llmflex.Models.Cores.base_core.BaseCore">BaseCore</a></li>
 <li>abc.ABC</li>
 </ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.Models.Cores.huggingface_core.HuggingfaceCore.from_model_object"><code class="name flex">
+<span>def <span class="ident">from_model_object</span></span>(<span>model: Any, tokenizer: Any, model_id: str = 'Unknown', model_type: "Literal['default', 'awq', 'gptq']" = 'default') ‑> <a title="llmflex.Models.Cores.huggingface_core.HuggingfaceCore" href="#llmflex.Models.Cores.huggingface_core.HuggingfaceCore">HuggingfaceCore</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a core directly from an already loaded model object and a tokenizer object for the supported formats.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The model object.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The tokenizer object.</dd>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The model_id.</dd>
+</dl>
+<p>model_type (Literal['default', 'awq', 'gptq']): The quantize type of the model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseCore</code></dt>
+<dd>The initialised core.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unknown&#39;, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;] = &#39;default&#39;) -&gt; HuggingfaceCore:
+    &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+    Args:
+        model (Any): The model object.
+        tokenizer (Any): The tokenizer object.
+        model_id (str): The model_id.
+        model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): The quantize type of the model.
+
+    Returns:
+        BaseCore: The initialised core.
+    &#34;&#34;&#34;
+    core = cls(model_id=model_id, model_type=model_type)
+    core._model = model
+    core._tokenizer = tokenizer
+    core._tokenizer_type = &#39;transformers&#39;
+    core._model_id = model_id
+    core._model_type = model_type
+    return core</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Instance variables</h3>
 <dl>
 <dt id="llmflex.Models.Cores.huggingface_core.HuggingfaceCore.model_type"><code class="name">var <span class="ident">model_type</span> : str</code></dt>
@@ -367,6 +493,8 @@ def model_type(self) -&gt; str:
     Returns:
         str: Format of the model.
     &#34;&#34;&#34;
+    if not hasattr(self, &#39;_model_tpye&#39;):
+        self._init_core(**self._init_config)
     return self._model_type</code></pre>
 </details>
 </dd>
@@ -494,6 +622,7 @@ def model_type(self) -&gt; str:
 <li>
 <h4><code><a title="llmflex.Models.Cores.huggingface_core.HuggingfaceCore" href="#llmflex.Models.Cores.huggingface_core.HuggingfaceCore">HuggingfaceCore</a></code></h4>
 <ul class="">
+<li><code><a title="llmflex.Models.Cores.huggingface_core.HuggingfaceCore.from_model_object" href="#llmflex.Models.Cores.huggingface_core.HuggingfaceCore.from_model_object">from_model_object</a></code></li>
 <li><code><a title="llmflex.Models.Cores.huggingface_core.HuggingfaceCore.model_type" href="#llmflex.Models.Cores.huggingface_core.HuggingfaceCore.model_type">model_type</a></code></li>
 </ul>
 </li>

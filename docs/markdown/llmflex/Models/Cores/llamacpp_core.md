@@ -34,3 +34,16 @@ Classes
 
     * llmflex.Models.Cores.base_core.BaseCore
     * abc.ABC
+
+    ### Static methods
+
+    `from_model_object(model: Any, tokenizer: Optional[Any] = None, model_id: str = 'Unknown') ‑> llmflex.Models.Cores.llamacpp_core.LlamaCppCore`
+    :   Load a core directly from an already loaded model object.
+        
+        Args:
+            model (Any): The model object.
+            model_id (str): The model_id.
+            model_type (Literal['default', 'awq', 'gptq']): The quantize type of the model.
+        
+        Returns:
+            LlamaCppCore: The initialised core.

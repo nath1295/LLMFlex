@@ -21,3 +21,16 @@ Classes
 
     * llmflex.Models.Cores.base_core.BaseCore
     * abc.ABC
+
+    ### Static methods
+
+    `from_model_object(model: Any, tokenizer: Any, model_id: Optional[str] = None, **kwargs) ‑> llmflex.Models.Cores.openai_core.OpenAICore`
+    :   Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+        
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (Optional[str], optional): The model_id. Defaults to None.
+        
+        Returns:
+            OpenAICore: The initialised core.

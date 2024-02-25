@@ -4,7 +4,7 @@ Module llmflex.Models.Cores.huggingface_core
 Classes
 -------
 
-`HuggingfaceCore(model_id: str, model_type: Literal['default', 'awq', 'gptq'], model_kwargs: Dict[str, Any] = {}, tokenizer_kwargs: Dict[str, Any] = {})`
+`HuggingfaceCore(model_id: str, model_type: "Literal['default', 'awq', 'gptq']", model_kwargs: Dict[str, Any] = {}, tokenizer_kwargs: Dict[str, Any] = {})`
 :   This is the core class of loading model in awq, gptq, or original format.
         
     
@@ -20,6 +20,20 @@ Classes
 
     * llmflex.Models.Cores.base_core.BaseCore
     * abc.ABC
+
+    ### Static methods
+
+    `from_model_object(model: Any, tokenizer: Any, model_id: str = 'Unknown', model_type: "Literal['default', 'awq', 'gptq']" = 'default') ‑> llmflex.Models.Cores.huggingface_core.HuggingfaceCore`
+    :   Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+        
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+            model_type (Literal['default', 'awq', 'gptq']): The quantize type of the model.
+        
+        Returns:
+            BaseCore: The initialised core.
 
     ### Instance variables
 

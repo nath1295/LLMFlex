@@ -18,7 +18,7 @@ Functions
 Classes
 -------
 
-`Exl2Core(repo_id: str, revision: Optional[str] = None, **kwargs)`
+`Exl2Core(model_id: str, revision: Optional[str] = None, **kwargs)`
 :   Base class of Core object to store the llm model and tokenizer.
         
     
@@ -32,6 +32,20 @@ Classes
 
     * llmflex.Models.Cores.base_core.BaseCore
     * abc.ABC
+
+    ### Static methods
+
+    `from_model_object(model: Any, tokenizer: Any, model_id: str = 'Unknown', **kwargs) ‑> llmflex.Models.Cores.exllamav2_core.Exl2Core`
+    :   Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+        
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            config (Any): The config for initialising cache.
+            model_id (str, optional): The model_id. Defaults to "Unknown".
+        
+        Returns:
+            Exl2Core: The initialised core.
 
     ### Methods
 

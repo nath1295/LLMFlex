@@ -26,9 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.schema.runnable import RunnableConfig
-from .base_core import BaseCore, BaseLLM
+<pre><code class="python">from __future__ import annotations
+from .base_core import BaseCore
 from typing import Optional, List, Dict, Any, Union, Iterator
 
 
@@ -47,7 +46,48 @@ def get_exl2_model_dir(repo_id: str, revision: Optional[str] = None) -&gt; str:
 
 class Exl2Core(BaseCore):
 
-    def __init__(self, repo_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
+    def __init__(self, model_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialise the exl2 model core.
+
+        Args:
+            repo_id (str): Huggingface model ID.
+            revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._core_type = &#39;Exl2Core&#39;
+        self._init_config = dict(
+            model_id=model_id,
+            revision=revision
+        )
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unknown&#39;, **kwargs) -&gt; Exl2Core:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            config (Any): The config for initialising cache.
+            model_id (str, optional): The model_id. Defaults to &#34;Unknown&#34;.
+
+        Returns:
+            Exl2Core: The initialised core.
+        &#34;&#34;&#34;
+        from exllamav2 import(
+            ExLlamaV2Cache,
+        )
+        from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
+        cache = ExLlamaV2Cache(model, lazy = True)
+        model.load_autosplit(cache)
+        core = cls(model_id)
+        core._tokenizer = tokenizer
+        core._model = dict(
+            default=ExLlamaV2BaseGenerator(model, cache, core._tokenizer),
+            streamer=ExLlamaV2StreamingGenerator(model, cache, core._tokenizer)
+            )
+        core._tokenizer_type = &#39;transformers&#39;
+        return core
+
+    def _init_core(self, model_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise the exl2 model core.
 
         Args:
@@ -61,9 +101,9 @@ class Exl2Core(BaseCore):
             ExLlamaV2Tokenizer,
         )
         from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
-        self._model_id = repo_id
+        self._model_id = model_id
         config = ExLlamaV2Config()
-        config.model_dir = get_exl2_model_dir(repo_id, revision)
+        config.model_dir = get_exl2_model_dir(model_id, revision)
         config.prepare()
 
         model = ExLlamaV2(config)
@@ -76,7 +116,6 @@ class Exl2Core(BaseCore):
             default=ExLlamaV2BaseGenerator(model, cache, self._tokenizer),
             streamer=ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
             )
-        self._core_type = &#39;Exl2Core&#39;
 
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -225,7 +264,7 @@ class Exl2Core(BaseCore):
 <dl>
 <dt id="llmflex.Models.Cores.exllamav2_core.Exl2Core"><code class="flex name class">
 <span>class <span class="ident">Exl2Core</span></span>
-<span>(</span><span>repo_id: str, revision: Optional[str] = None, **kwargs)</span>
+<span>(</span><span>model_id: str, revision: Optional[str] = None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class of Core object to store the llm model and tokenizer.</p>
@@ -243,7 +282,48 @@ class Exl2Core(BaseCore):
 </summary>
 <pre><code class="python">class Exl2Core(BaseCore):
 
-    def __init__(self, repo_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
+    def __init__(self, model_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialise the exl2 model core.
+
+        Args:
+            repo_id (str): Huggingface model ID.
+            revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._core_type = &#39;Exl2Core&#39;
+        self._init_config = dict(
+            model_id=model_id,
+            revision=revision
+        )
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unknown&#39;, **kwargs) -&gt; Exl2Core:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            config (Any): The config for initialising cache.
+            model_id (str, optional): The model_id. Defaults to &#34;Unknown&#34;.
+
+        Returns:
+            Exl2Core: The initialised core.
+        &#34;&#34;&#34;
+        from exllamav2 import(
+            ExLlamaV2Cache,
+        )
+        from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
+        cache = ExLlamaV2Cache(model, lazy = True)
+        model.load_autosplit(cache)
+        core = cls(model_id)
+        core._tokenizer = tokenizer
+        core._model = dict(
+            default=ExLlamaV2BaseGenerator(model, cache, core._tokenizer),
+            streamer=ExLlamaV2StreamingGenerator(model, cache, core._tokenizer)
+            )
+        core._tokenizer_type = &#39;transformers&#39;
+        return core
+
+    def _init_core(self, model_id: str, revision: Optional[str] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise the exl2 model core.
 
         Args:
@@ -257,9 +337,9 @@ class Exl2Core(BaseCore):
             ExLlamaV2Tokenizer,
         )
         from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
-        self._model_id = repo_id
+        self._model_id = model_id
         config = ExLlamaV2Config()
-        config.model_dir = get_exl2_model_dir(repo_id, revision)
+        config.model_dir = get_exl2_model_dir(model_id, revision)
         config.prepare()
 
         model = ExLlamaV2(config)
@@ -272,7 +352,6 @@ class Exl2Core(BaseCore):
             default=ExLlamaV2BaseGenerator(model, cache, self._tokenizer),
             streamer=ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
             )
-        self._core_type = &#39;Exl2Core&#39;
 
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -376,6 +455,63 @@ class Exl2Core(BaseCore):
 <li><a title="llmflex.Models.Cores.base_core.BaseCore" href="base_core.html#llmflex.Models.Cores.base_core.BaseCore">BaseCore</a></li>
 <li>abc.ABC</li>
 </ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.Models.Cores.exllamav2_core.Exl2Core.from_model_object"><code class="name flex">
+<span>def <span class="ident">from_model_object</span></span>(<span>model: Any, tokenizer: Any, model_id: str = 'Unknown', **kwargs) ‑> <a title="llmflex.Models.Cores.exllamav2_core.Exl2Core" href="#llmflex.Models.Cores.exllamav2_core.Exl2Core">Exl2Core</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a core directly from an already loaded model object and a tokenizer object for the supported formats.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The model object.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The tokenizer object.</dd>
+<dt><strong><code>config</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The config for initialising cache.</dd>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The model_id. Defaults to "Unknown".</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Models.Cores.exllamav2_core.Exl2Core" href="#llmflex.Models.Cores.exllamav2_core.Exl2Core">Exl2Core</a></code></dt>
+<dd>The initialised core.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@classmethod
+def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unknown&#39;, **kwargs) -&gt; Exl2Core:
+    &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+    Args:
+        model (Any): The model object.
+        tokenizer (Any): The tokenizer object.
+        config (Any): The config for initialising cache.
+        model_id (str, optional): The model_id. Defaults to &#34;Unknown&#34;.
+
+    Returns:
+        Exl2Core: The initialised core.
+    &#34;&#34;&#34;
+    from exllamav2 import(
+        ExLlamaV2Cache,
+    )
+    from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
+    cache = ExLlamaV2Cache(model, lazy = True)
+    model.load_autosplit(cache)
+    core = cls(model_id)
+    core._tokenizer = tokenizer
+    core._model = dict(
+        default=ExLlamaV2BaseGenerator(model, cache, core._tokenizer),
+        streamer=ExLlamaV2StreamingGenerator(model, cache, core._tokenizer)
+        )
+    core._tokenizer_type = &#39;transformers&#39;
+    return core</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="llmflex.Models.Cores.exllamav2_core.Exl2Core.decode"><code class="name flex">
@@ -452,6 +588,7 @@ class Exl2Core(BaseCore):
 <h4><code><a title="llmflex.Models.Cores.exllamav2_core.Exl2Core" href="#llmflex.Models.Cores.exllamav2_core.Exl2Core">Exl2Core</a></code></h4>
 <ul class="">
 <li><code><a title="llmflex.Models.Cores.exllamav2_core.Exl2Core.decode" href="#llmflex.Models.Cores.exllamav2_core.Exl2Core.decode">decode</a></code></li>
+<li><code><a title="llmflex.Models.Cores.exllamav2_core.Exl2Core.from_model_object" href="#llmflex.Models.Cores.exllamav2_core.Exl2Core.from_model_object">from_model_object</a></code></li>
 </ul>
 </li>
 </ul>

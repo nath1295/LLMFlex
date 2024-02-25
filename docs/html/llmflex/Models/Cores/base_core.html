@@ -26,28 +26,52 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from langchain.llms.base import LLM
+<pre><code class="python">from __future__ import annotations
+from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
 from ...Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
-from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod, abstractclassmethod
 from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple, Literal
 
 class BaseCore(ABC):
     &#34;&#34;&#34;Base class of Core object to store the llm model and tokenizer.
     &#34;&#34;&#34;
-    def __init__(self, model_id: str = &#39;gpt2&#39;, **kwargs) -&gt; None:
+    def __init__(self, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialising the core instance.
 
         Args:
             model_id (str, optional): Model id (from Huggingface) to use. Defaults to &#39;gpt2&#39;.
         &#34;&#34;&#34;
+        self._init_config = kwargs
+        self._core_type = &#39;BaseCore&#39;
+
+    @abstractclassmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str, **kwargs) -&gt; BaseCore:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+
+        Returns:
+            BaseCore: The initialised core.
+        &#34;&#34;&#34;
+        pass
+
+    def _init_core(self, model_id: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialise everything needed in the core.
+
+        Args:
+            model_id (str): The repo ID.
+        &#34;&#34;&#34;
         from transformers import AutoTokenizer
         self._model_id = model_id
-        self._core_type = &#39;BaseCore&#39;
         self._tokenizer = AutoTokenizer.from_pretrained(model_id)
         self._tokenizer_type = &#39;transformers&#39;
         self._model = None
+
 
     @property
     def model(self) -&gt; Any:
@@ -56,6 +80,8 @@ class BaseCore(ABC):
         Returns:
             Any: Model for llms.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_model&#39;):
+            self._init_core(**self._init_config)
         return self._model
     
     @property
@@ -65,6 +91,8 @@ class BaseCore(ABC):
         Returns:
             Any: Tokenizer of the model.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_tokenizer&#39;):
+            self._init_core(**self._init_config)
         return self._tokenizer
     
     @property
@@ -74,6 +102,8 @@ class BaseCore(ABC):
         Returns:
             Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;]: Type of tokenizer.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_tokenizer_type&#39;):
+            self._init_core(**self._init_config)
         return self._tokenizer_type
     
     @property
@@ -92,6 +122,8 @@ class BaseCore(ABC):
         Returns:
             str: Model ID.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_model_id&#39;):
+            self._init_core(**self._init_config)
         return self._model_id
     
     @property
@@ -284,9 +316,9 @@ class BaseLLM(LLM):
         prompt = prompt_template.create_prompt(prompt, system=system, history=history)
         stop = prompt_template.stop
         if stream:
-            return self.stream(prompt, stop=stop)
+            return self.stream(prompt, stop=stop, **kwargs)
         else:
-            return self.invoke(prompt, stop=stop)
+            return self.invoke(prompt, stop=stop, **kwargs)
     
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
@@ -355,7 +387,7 @@ class GenericLLM(BaseLLM):
 <dl>
 <dt id="llmflex.Models.Cores.base_core.BaseCore"><code class="flex name class">
 <span>class <span class="ident">BaseCore</span></span>
-<span>(</span><span>model_id: str = 'gpt2', **kwargs)</span>
+<span>(</span><span>**kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class of Core object to store the llm model and tokenizer.</p>
@@ -372,18 +404,41 @@ class GenericLLM(BaseLLM):
 <pre><code class="python">class BaseCore(ABC):
     &#34;&#34;&#34;Base class of Core object to store the llm model and tokenizer.
     &#34;&#34;&#34;
-    def __init__(self, model_id: str = &#39;gpt2&#39;, **kwargs) -&gt; None:
+    def __init__(self, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialising the core instance.
 
         Args:
             model_id (str, optional): Model id (from Huggingface) to use. Defaults to &#39;gpt2&#39;.
         &#34;&#34;&#34;
+        self._init_config = kwargs
+        self._core_type = &#39;BaseCore&#39;
+
+    @abstractclassmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str, **kwargs) -&gt; BaseCore:
+        &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+
+        Returns:
+            BaseCore: The initialised core.
+        &#34;&#34;&#34;
+        pass
+
+    def _init_core(self, model_id: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initialise everything needed in the core.
+
+        Args:
+            model_id (str): The repo ID.
+        &#34;&#34;&#34;
         from transformers import AutoTokenizer
         self._model_id = model_id
-        self._core_type = &#39;BaseCore&#39;
         self._tokenizer = AutoTokenizer.from_pretrained(model_id)
         self._tokenizer_type = &#39;transformers&#39;
         self._model = None
+
 
     @property
     def model(self) -&gt; Any:
@@ -392,6 +447,8 @@ class GenericLLM(BaseLLM):
         Returns:
             Any: Model for llms.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_model&#39;):
+            self._init_core(**self._init_config)
         return self._model
     
     @property
@@ -401,6 +458,8 @@ class GenericLLM(BaseLLM):
         Returns:
             Any: Tokenizer of the model.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_tokenizer&#39;):
+            self._init_core(**self._init_config)
         return self._tokenizer
     
     @property
@@ -410,6 +469,8 @@ class GenericLLM(BaseLLM):
         Returns:
             Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;]: Type of tokenizer.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_tokenizer_type&#39;):
+            self._init_core(**self._init_config)
         return self._tokenizer_type
     
     @property
@@ -428,6 +489,8 @@ class GenericLLM(BaseLLM):
         Returns:
             str: Model ID.
         &#34;&#34;&#34;
+        if not hasattr(self, &#39;_model_id&#39;):
+            self._init_core(**self._init_config)
         return self._model_id
     
     @property
@@ -506,6 +569,47 @@ class GenericLLM(BaseLLM):
 <li><a title="llmflex.Models.Cores.llamacpp_core.LlamaCppCore" href="llamacpp_core.html#llmflex.Models.Cores.llamacpp_core.LlamaCppCore">LlamaCppCore</a></li>
 <li><a title="llmflex.Models.Cores.openai_core.OpenAICore" href="openai_core.html#llmflex.Models.Cores.openai_core.OpenAICore">OpenAICore</a></li>
 </ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.Models.Cores.base_core.BaseCore.from_model_object"><code class="name flex">
+<span>def <span class="ident">from_model_object</span></span>(<span>model: Any, tokenizer: Any, model_id: str, **kwargs) ‑> <a title="llmflex.Models.Cores.base_core.BaseCore" href="#llmflex.Models.Cores.base_core.BaseCore">BaseCore</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a core directly from an already loaded model object and a tokenizer object for the supported formats.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The model object.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Any</code></dt>
+<dd>The tokenizer object.</dd>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>The model_id.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Models.Cores.base_core.BaseCore" href="#llmflex.Models.Cores.base_core.BaseCore">BaseCore</a></code></dt>
+<dd>The initialised core.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractclassmethod
+def from_model_object(cls, model: Any, tokenizer: Any, model_id: str, **kwargs) -&gt; BaseCore:
+    &#34;&#34;&#34;Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+    Args:
+        model (Any): The model object.
+        tokenizer (Any): The tokenizer object.
+        model_id (str): The model_id.
+
+    Returns:
+        BaseCore: The initialised core.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Instance variables</h3>
 <dl>
 <dt id="llmflex.Models.Cores.base_core.BaseCore.core_type"><code class="name">var <span class="ident">core_type</span> : str</code></dt>
@@ -549,6 +653,8 @@ def model(self) -&gt; Any:
     Returns:
         Any: Model for llms.
     &#34;&#34;&#34;
+    if not hasattr(self, &#39;_model&#39;):
+        self._init_core(**self._init_config)
     return self._model</code></pre>
 </details>
 </dd>
@@ -571,6 +677,8 @@ def model_id(self) -&gt; str:
     Returns:
         str: Model ID.
     &#34;&#34;&#34;
+    if not hasattr(self, &#39;_model_id&#39;):
+        self._init_core(**self._init_config)
     return self._model_id</code></pre>
 </details>
 </dd>
@@ -618,6 +726,8 @@ def tokenizer(self) -&gt; Any:
     Returns:
         Any: Tokenizer of the model.
     &#34;&#34;&#34;
+    if not hasattr(self, &#39;_tokenizer&#39;):
+        self._init_core(**self._init_config)
     return self._tokenizer</code></pre>
 </details>
 </dd>
@@ -637,6 +747,8 @@ def tokenizer_type(self) -&gt; Literal[&#39;transformers&#39;, &#39;llamacpp&#39
     Returns:
         Literal[&#39;transformers&#39;, &#39;llamacpp&#39;, &#39;openai&#39;]: Type of tokenizer.
     &#34;&#34;&#34;
+    if not hasattr(self, &#39;_tokenizer_type&#39;):
+        self._init_core(**self._init_config)
     return self._tokenizer_type</code></pre>
 </details>
 </dd>
@@ -929,9 +1041,9 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
         prompt = prompt_template.create_prompt(prompt, system=system, history=history)
         stop = prompt_template.stop
         if stream:
-            return self.stream(prompt, stop=stop)
+            return self.stream(prompt, stop=stop, **kwargs)
         else:
-            return self.invoke(prompt, stop=stop)
+            return self.invoke(prompt, stop=stop, **kwargs)
     
     def _llm_type(self) -&gt; str:
         &#34;&#34;&#34;LLM type.
@@ -976,7 +1088,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 <h3>Methods</h3>
 <dl>
 <dt id="llmflex.Models.Cores.base_core.BaseLLM.chat"><code class="name flex">
-<span>def <span class="ident">chat</span></span>(<span>self, prompt: str, prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) ‑> Union[str, Iterator[str]]</span>
+<span>def <span class="ident">chat</span></span>(<span>self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) ‑> Union[str, Iterator[str]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Chat with the llm given the input.</p>
@@ -1020,9 +1132,9 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
     prompt = prompt_template.create_prompt(prompt, system=system, history=history)
     stop = prompt_template.stop
     if stream:
-        return self.stream(prompt, stop=stop)
+        return self.stream(prompt, stop=stop, **kwargs)
     else:
-        return self.invoke(prompt, stop=stop)</code></pre>
+        return self.invoke(prompt, stop=stop, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Models.Cores.base_core.BaseLLM.get_num_tokens"><code class="name flex">
@@ -1088,7 +1200,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 </details>
 </dd>
 <dt id="llmflex.Models.Cores.base_core.BaseLLM.stream"><code class="name flex">
-<span>def <span class="ident">stream</span></span>(<span>self, input: str, config: Optional[langchain_core.runnables.config.RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]</span>
+<span>def <span class="ident">stream</span></span>(<span>self, input: str, config: Optional[RunnableConfig] = None, *, stop: Optional[List[str]] = None, **kwargs) ‑> Iterator[str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Text streaming of llm generation. Return a python generator of output tokens of the llm given the prompt.</p>
@@ -1280,6 +1392,7 @@ def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 20
 <li><code><a title="llmflex.Models.Cores.base_core.BaseCore.core_type" href="#llmflex.Models.Cores.base_core.BaseCore.core_type">core_type</a></code></li>
 <li><code><a title="llmflex.Models.Cores.base_core.BaseCore.decode" href="#llmflex.Models.Cores.base_core.BaseCore.decode">decode</a></code></li>
 <li><code><a title="llmflex.Models.Cores.base_core.BaseCore.encode" href="#llmflex.Models.Cores.base_core.BaseCore.encode">encode</a></code></li>
+<li><code><a title="llmflex.Models.Cores.base_core.BaseCore.from_model_object" href="#llmflex.Models.Cores.base_core.BaseCore.from_model_object">from_model_object</a></code></li>
 <li><code><a title="llmflex.Models.Cores.base_core.BaseCore.generate" href="#llmflex.Models.Cores.base_core.BaseCore.generate">generate</a></code></li>
 <li><code><a title="llmflex.Models.Cores.base_core.BaseCore.model" href="#llmflex.Models.Cores.base_core.BaseCore.model">model</a></code></li>
 <li><code><a title="llmflex.Models.Cores.base_core.BaseCore.model_id" href="#llmflex.Models.Cores.base_core.BaseCore.model_id">model_id</a></code></li>

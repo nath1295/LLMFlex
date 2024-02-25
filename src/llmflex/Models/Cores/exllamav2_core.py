@@ -1,6 +1,5 @@
-from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.schema.runnable import RunnableConfig
-from .base_core import BaseCore, BaseLLM
+from __future__ import annotations
+from .base_core import BaseCore
 from typing import Optional, List, Dict, Any, Union, Iterator
 
 
@@ -19,7 +18,48 @@ def get_exl2_model_dir(repo_id: str, revision: Optional[str] = None) -> str:
 
 class Exl2Core(BaseCore):
 
-    def __init__(self, repo_id: str, revision: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, model_id: str, revision: Optional[str] = None, **kwargs) -> None:
+        """Initialise the exl2 model core.
+
+        Args:
+            repo_id (str): Huggingface model ID.
+            revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        """
+        self._core_type = 'Exl2Core'
+        self._init_config = dict(
+            model_id=model_id,
+            revision=revision
+        )
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = 'Unknown', **kwargs) -> Exl2Core:
+        """Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            config (Any): The config for initialising cache.
+            model_id (str, optional): The model_id. Defaults to "Unknown".
+
+        Returns:
+            Exl2Core: The initialised core.
+        """
+        from exllamav2 import(
+            ExLlamaV2Cache,
+        )
+        from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
+        cache = ExLlamaV2Cache(model, lazy = True)
+        model.load_autosplit(cache)
+        core = cls(model_id)
+        core._tokenizer = tokenizer
+        core._model = dict(
+            default=ExLlamaV2BaseGenerator(model, cache, core._tokenizer),
+            streamer=ExLlamaV2StreamingGenerator(model, cache, core._tokenizer)
+            )
+        core._tokenizer_type = 'transformers'
+        return core
+
+    def _init_core(self, model_id: str, revision: Optional[str] = None, **kwargs) -> None:
         """Initialise the exl2 model core.
 
         Args:
@@ -33,9 +73,9 @@ class Exl2Core(BaseCore):
             ExLlamaV2Tokenizer,
         )
         from exllamav2.generator import ExLlamaV2StreamingGenerator, ExLlamaV2BaseGenerator
-        self._model_id = repo_id
+        self._model_id = model_id
         config = ExLlamaV2Config()
-        config.model_dir = get_exl2_model_dir(repo_id, revision)
+        config.model_dir = get_exl2_model_dir(model_id, revision)
         config.prepare()
 
         model = ExLlamaV2(config)
@@ -48,7 +88,6 @@ class Exl2Core(BaseCore):
             default=ExLlamaV2BaseGenerator(model, cache, self._tokenizer),
             streamer=ExLlamaV2StreamingGenerator(model, cache, self._tokenizer)
             )
-        self._core_type = 'Exl2Core'
 
     def encode(self, text: str) -> List[int]:
         """Tokenize the given text.

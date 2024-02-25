@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 from transformers import StoppingCriteria, StoppingCriteriaList
 from langchain.callbacks.manager import CallbackManagerForLLMRun
@@ -53,12 +54,46 @@ class HuggingfaceCore(BaseCore):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
             tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
         """
+        self._core_type = 'HuggingfaceCore'
+        self._init_config = dict(
+            model_id=model_id,
+            model_type=model_type,
+            model_kwargs=model_kwargs,
+            tokenizer_kwargs=tokenizer_kwargs
+        )
+
+    @classmethod
+    def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = 'Unknown', model_type: Literal['default', 'awq', 'gptq'] = 'default') -> HuggingfaceCore:
+        """Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
+
+        Args:
+            model (Any): The model object.
+            tokenizer (Any): The tokenizer object.
+            model_id (str): The model_id.
+            model_type (Literal['default', 'awq', 'gptq']): The quantize type of the model.
+
+        Returns:
+            BaseCore: The initialised core.
+        """
+        core = cls(model_id=model_id, model_type=model_type)
+        core._model = model
+        core._tokenizer = tokenizer
+        core._tokenizer_type = 'transformers'
+        core._model_id = model_id
+        core._model_type = model_type
+        return core
+
+    def _init_core(self, model_id: str, model_type: Literal['default', 'awq', 'gptq'], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -> None:
+        """Initialise everything needed in the core.
+
+        Args:
+            model_id (str): The repo ID.
+        """
         from ...utils import get_config
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
-        self._core_type = 'HuggingfaceCore'
         self._model_type = model_type
 
         if not hasattr(tokenizer_kwargs, 'pretrained_model_name_or_path'):
@@ -78,6 +113,8 @@ class HuggingfaceCore(BaseCore):
         Returns:
             str: Format of the model.
         """
+        if not hasattr(self, '_model_tpye'):
+            self._init_core(**self._init_config)
         return self._model_type
     
     def generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
@@ -152,6 +189,8 @@ class HuggingfaceCore(BaseCore):
     
     def unload(self) -> None:
         """Unload the model from ram."""
+        if not hasattr(self, '_model'):
+            return
         device = self._model.device
         del self._model
         self._model = None

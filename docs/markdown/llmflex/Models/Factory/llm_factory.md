@@ -17,7 +17,7 @@ Functions
 Classes
 -------
 
-`LlmFactory(model_id: str, model_type: Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'exl2', 'debug'] = 'auto', model_file: Optional[str] = None, model_kwargs: Dict[str, Any] = {}, revision: Optional[str] = None, from_local: bool = False, context_length: int = 4096, base_url: Optional[str] = None, api_key: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = {}, **kwargs)`
+`LlmFactory(model_id: str, model_type: "Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'exl2', 'debug']" = 'auto', model_file: Optional[str] = None, model_kwargs: Dict[str, Any] = {}, revision: Optional[str] = None, from_local: bool = False, context_length: int = 4096, base_url: Optional[str] = None, api_key: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = {}, init_empty: bool = False, **kwargs)`
 :   Initialise the model core to create LLMs.
     
     Args:
@@ -32,6 +32,21 @@ Classes
         api_key (Optional[str], optional): API key for OpenAI API. Defaults to None.
         tokenizer_id (Optional[str], optional): Model ID (from Huggingface) to load the tokenizer. Useful for model types "default", "gptq", "awq", and "openai". Defaults to None.
         tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Useful for model types "default", "gptq", "awq", and "openai".  Defaults to dict().
+        init_empty (bool, optional): Initialise without a model core. Should not be used for normal initialisation. Defaults to False.
+
+    ### Static methods
+
+    `from_model_object(model: Any, tokenizer: Any, model_type: "Literal['default', 'gptq', 'awq', 'gguf', 'openai', 'exl2']", model_id: str = 'Unknown', **kwargs) ‑> llmflex.Models.Factory.llm_factory.LlmFactory`
+    :   Initialise the factory object with an already loaded model.
+        
+        Args:
+            model (Any): The pre-loaded model.
+            tokenizer (Any): The pre-loaded tokenizer.
+            model_type (Literal[&#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;exl2&#39;]): Type of model format.
+            model_id (str, optional): Name to be given to the model, recommend to use the repo ID on HuggingFace. Defaults to 'Unknown'.
+        
+        Returns:
+            LlmFactory: The initialised llm factory.
 
     ### Instance variables
 
