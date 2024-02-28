@@ -90,7 +90,7 @@ class PromptTemplate:
             Union[str, List[Dict[str, str]]]: A full string of conversation history or a list of messages for the Jinja template to render.
         """
         if len(history) == 0:
-            return ''
+            return [] if return_list else ''
         elif not isinstance(history[0], str):
             body = list(map(lambda x: [dict(role='user', content=x[0]), dict(role='assistant', content=x[1])], history))
             body = sum(body, [])

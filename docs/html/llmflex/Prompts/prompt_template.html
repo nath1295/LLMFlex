@@ -118,7 +118,7 @@ class PromptTemplate:
             Union[str, List[Dict[str, str]]]: A full string of conversation history or a list of messages for the Jinja template to render.
         &#34;&#34;&#34;
         if len(history) == 0:
-            return &#39;&#39;
+            return [] if return_list else &#39;&#39;
         elif not isinstance(history[0], str):
             body = list(map(lambda x: [dict(role=&#39;user&#39;, content=x[0]), dict(role=&#39;assistant&#39;, content=x[1])], history))
             body = sum(body, [])
@@ -393,7 +393,7 @@ hidden_presets = {
             Union[str, List[Dict[str, str]]]: A full string of conversation history or a list of messages for the Jinja template to render.
         &#34;&#34;&#34;
         if len(history) == 0:
-            return &#39;&#39;
+            return [] if return_list else &#39;&#39;
         elif not isinstance(history[0], str):
             body = list(map(lambda x: [dict(role=&#39;user&#39;, content=x[0]), dict(role=&#39;assistant&#39;, content=x[1])], history))
             body = sum(body, [])
@@ -804,7 +804,7 @@ def template_name(self) -&gt; str:
         Union[str, List[Dict[str, str]]]: A full string of conversation history or a list of messages for the Jinja template to render.
     &#34;&#34;&#34;
     if len(history) == 0:
-        return &#39;&#39;
+        return [] if return_list else &#39;&#39;
     elif not isinstance(history[0], str):
         body = list(map(lambda x: [dict(role=&#39;user&#39;, content=x[0]), dict(role=&#39;assistant&#39;, content=x[1])], history))
         body = sum(body, [])
