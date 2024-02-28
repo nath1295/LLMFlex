@@ -80,13 +80,15 @@ class WebSearchTool(BaseTool):
             self.print(f'Search query: "{query}"')
         else:
             if ((history is not None) & (prompt_template is not None)):
-                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role='user', content=tool_input)]
             else:
                 prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
                 if history is not None:
-                    conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                    conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role='user', content=tool_input)]
                 else:
-                    conversation = prompt_template.human_prefix + tool_input
+                    conversation = [dict(role='user', content=tool_input)]
+            conversation = list(map(lambda x: x['role'].title() + ': ' + x['content'], conversation))
+            conversation = '\n'.join(conversation)
             request = f'This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.'
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
             query_prompt += '```json\n{"Search query": "'

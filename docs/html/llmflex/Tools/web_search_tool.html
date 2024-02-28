@@ -108,13 +108,15 @@ class WebSearchTool(BaseTool):
             self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
         else:
             if ((history is not None) &amp; (prompt_template is not None)):
-                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role=&#39;user&#39;, content=tool_input)]
             else:
                 prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
                 if history is not None:
-                    conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                    conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role=&#39;user&#39;, content=tool_input)]
                 else:
-                    conversation = prompt_template.human_prefix + tool_input
+                    conversation = [dict(role=&#39;user&#39;, content=tool_input)]
+            conversation = list(map(lambda x: x[&#39;role&#39;].title() + &#39;: &#39; + x[&#39;content&#39;], conversation))
+            conversation = &#39;\n&#39;.join(conversation)
             request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
             query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
@@ -359,13 +361,15 @@ class WebSearchTool(BaseTool):
             self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
         else:
             if ((history is not None) &amp; (prompt_template is not None)):
-                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role=&#39;user&#39;, content=tool_input)]
             else:
                 prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
                 if history is not None:
-                    conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                    conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role=&#39;user&#39;, content=tool_input)]
                 else:
-                    conversation = prompt_template.human_prefix + tool_input
+                    conversation = [dict(role=&#39;user&#39;, content=tool_input)]
+            conversation = list(map(lambda x: x[&#39;role&#39;].title() + &#39;: &#39; + x[&#39;content&#39;], conversation))
+            conversation = &#39;\n&#39;.join(conversation)
             request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
             query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
             query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
@@ -582,13 +586,15 @@ class WebSearchTool(BaseTool):
         self.print(f&#39;Search query: &#34;{query}&#34;&#39;)
     else:
         if ((history is not None) &amp; (prompt_template is not None)):
-            conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+            conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role=&#39;user&#39;, content=tool_input)]
         else:
             prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
             if history is not None:
-                conversation = prompt_template.format_history(history=history) + prompt_template.human_prefix + tool_input
+                conversation = prompt_template.format_history(history=history, return_list=True) + [dict(role=&#39;user&#39;, content=tool_input)]
             else:
-                conversation = prompt_template.human_prefix + tool_input
+                conversation = [dict(role=&#39;user&#39;, content=tool_input)]
+        conversation = list(map(lambda x: x[&#39;role&#39;].title() + &#39;: &#39; + x[&#39;content&#39;], conversation))
+        conversation = &#39;\n&#39;.join(conversation)
         request = f&#39;This is my latest request: {tool_input}\n\nGenerate the search query that helps you to search in the search engine and respond, in JSON format.&#39;
         query_prompt = prompt_template.create_prompt(user=request, system=QUERY_GENERATION_SYS_RPOMPT + conversation)
         query_prompt += &#39;```json\n{&#34;Search query&#34;: &#34;&#39;
