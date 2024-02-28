@@ -103,12 +103,14 @@ class HuggingfaceCore(BaseCore):
         Returns:
             BaseCore: The initialised core.
         &#34;&#34;&#34;
+        from .utils import get_prompt_template_by_jinja
         core = cls(model_id=model_id, model_type=model_type)
         core._model = model
         core._tokenizer = tokenizer
         core._tokenizer_type = &#39;transformers&#39;
         core._model_id = model_id
         core._model_type = model_type
+        core._prompt_template = get_prompt_template_by_jinja(model_id, tokenizer)
         return core
 
     def _init_core(self, model_id: str, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
@@ -118,6 +120,7 @@ class HuggingfaceCore(BaseCore):
             model_id (str): The repo ID.
         &#34;&#34;&#34;
         from ...utils import get_config
+        from .utils import get_prompt_template_by_jinja
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -128,6 +131,7 @@ class HuggingfaceCore(BaseCore):
             tokenizer_kwargs[&#39;pretrained_model_name_or_path&#39;] = model_id
         self._tokenizer = AutoTokenizer.from_pretrained(**tokenizer_kwargs)
         self._tokenizer_type = &#39;transformers&#39;
+        self._prompt_template = get_prompt_template_by_jinja(model_id, self.tokenizer)
 
         if not hasattr(model_kwargs, &#39;device_map&#39;):
             model_kwargs[&#39;device_map&#39;] = &#39;auto&#39;
@@ -293,12 +297,14 @@ class HuggingfaceCore(BaseCore):
         Returns:
             BaseCore: The initialised core.
         &#34;&#34;&#34;
+        from .utils import get_prompt_template_by_jinja
         core = cls(model_id=model_id, model_type=model_type)
         core._model = model
         core._tokenizer = tokenizer
         core._tokenizer_type = &#39;transformers&#39;
         core._model_id = model_id
         core._model_type = model_type
+        core._prompt_template = get_prompt_template_by_jinja(model_id, tokenizer)
         return core
 
     def _init_core(self, model_id: str, model_type: Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
@@ -308,6 +314,7 @@ class HuggingfaceCore(BaseCore):
             model_id (str): The repo ID.
         &#34;&#34;&#34;
         from ...utils import get_config
+        from .utils import get_prompt_template_by_jinja
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -318,6 +325,7 @@ class HuggingfaceCore(BaseCore):
             tokenizer_kwargs[&#39;pretrained_model_name_or_path&#39;] = model_id
         self._tokenizer = AutoTokenizer.from_pretrained(**tokenizer_kwargs)
         self._tokenizer_type = &#39;transformers&#39;
+        self._prompt_template = get_prompt_template_by_jinja(model_id, self.tokenizer)
 
         if not hasattr(model_kwargs, &#39;device_map&#39;):
             model_kwargs[&#39;device_map&#39;] = &#39;auto&#39;
@@ -462,12 +470,14 @@ def from_model_object(cls, model: Any, tokenizer: Any, model_id: str = &#39;Unkn
     Returns:
         BaseCore: The initialised core.
     &#34;&#34;&#34;
+    from .utils import get_prompt_template_by_jinja
     core = cls(model_id=model_id, model_type=model_type)
     core._model = model
     core._tokenizer = tokenizer
     core._tokenizer_type = &#39;transformers&#39;
     core._model_id = model_id
     core._model_type = model_type
+    core._prompt_template = get_prompt_template_by_jinja(model_id, tokenizer)
     return core</code></pre>
 </details>
 </dd>

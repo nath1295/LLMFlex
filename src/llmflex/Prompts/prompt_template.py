@@ -1,4 +1,5 @@
 from __future__ import annotations
+from jinja2 import Environment
 from typing import List, Dict, Any, Optional, Literal, Union, Tuple
 
 DEFAULT_SYSTEM_MESSAGE = """This is a conversation between a human user and a helpful AI assistant."""
@@ -8,67 +9,60 @@ class PromptTemplate:
     """
     def __init__(
             self,
-            system_prefix: str,
-            system_suffix: str,
-            human_prefix: str,
-            human_suffix: str,
-            ai_prefix: str,
-            ai_suffix: str,
-            wrapper: List[str],
-            stop: Optional[List[str]] = None
+            template: str,
+            eos_token: Optional[str],
+            bos_token: Optional[str],
+            stop: Optional[List[str]] = None,
+            force_real_template: bool = False
     ) -> None:
         """Initialising the chat prompt class.
 
         Args:
-            system_prefix (str): System message prefix.
-            system_suffix (str): System message suffix.
-            human_prefix (str): User message prefix.
-            human_suffix (str): User message suffix.
-            ai_prefix (str): Chatbot message prefix.
-            ai_suffix (str): Chatbot message suffix.
-            wrapper (List[str]): Wrapper for start and end of conversation history.
-            stop (Optional[List[str]], optional): List of stop strings for the llm. If None is given, the human_prefix will be used. Defaults to None.
+            template (str): Jinja2 template.
+            eos_token (Optional[str]): EOS token string.
+            bos_token (Optional[str]): BOS token string.
+            stop (Optional[List[str]], optional): List of stop strings for the llm. If None is given, the EOS token string will be used. Defaults to None.
+            force_real_template (bool, optional): Whether to render the given template. For most templates it has no effects. Only for some restrictive templates like llama2. Defaults to False.
         """
-        self._system_prefix = system_prefix
-        self._system_suffix = system_suffix
-        self._human_prefix = human_prefix
-        self._human_suffix = human_suffix
-        self._ai_prefix = ai_prefix
-        self._ai_suffix = ai_suffix
-        self._wrapper = wrapper
+        self._template = template
+        self._eos_token = eos_token
+        self._bos_token = bos_token
         self._stop = stop
+        self._force_real_template = force_real_template
 
     @property
-    def system_prefix(self) -> str:
-        return self._system_prefix
+    def template(self) -> str:
+        return self._template
     
     @property
-    def system_suffix(self) -> str:
-        return self._system_suffix
+    def _hidden_template(self) -> str:
+        """To fix issues with some default templates like llama 2.
+
+        Returns:
+            str: The actual template to be rendered.
+        """
+        config = hidden_presets.get(self.template_name)
+        return self.template if config is None else config['template']
     
     @property
-    def human_prefix(self) -> str:
-        return self._human_prefix
+    def rendered_template(self) -> Environment:
+        if not hasattr(self, '_rendered_template'):
+            from jinja2 import BaseLoader
+            template = self.template if self._force_real_template else self._hidden_template
+            self._rendered_template = Environment(loader=BaseLoader).from_string(template)
+        return self._rendered_template
+
+    @property
+    def eos_token(self) -> Optional[str]:
+        return self._eos_token
     
     @property
-    def human_suffix(self) -> str:
-        return self._human_suffix
-    
-    @property
-    def ai_prefix(self) -> str:
-        return self._ai_prefix
-    
-    @property
-    def ai_suffix(self) -> str:
-        return self._ai_suffix
-    
-    @property
-    def wrapper(self) -> List[str]:
-        return self._wrapper
+    def bos_token(self) -> Optional[str]:
+        return self._bos_token
 
     @property
     def stop(self) -> List[str]:
-        return self._stop if isinstance(self._stop, list) else [self.human_prefix, f'{self.ai_suffix}{self.human_prefix}']
+        return self._stop if isinstance(self._stop, list) else [self.eos_token] if self.eos_token is not None else []
     
     @property
     def template_name(self) -> str:
@@ -77,43 +71,39 @@ class PromptTemplate:
         Returns:
             str: Name of the template.
         """
-        return getattr(self, '_template_name', 'Unititled template')
+        if not hasattr(self, '_template_name'):
+            self._template_name = 'Unititled template'
+            for k, v in presets.items():
+                if self.template == v['template']:
+                    self._template_name = k
+                    break
+        return self._template_name
 
-    def format_history(self, history: Union[List[str], List[Tuple[str, str]]], use_wrapper: bool = True) -> str:
-        """Formatting a list of conversation history into a full string of conversation history.
+    def format_history(self, history: Union[List[str], List[Tuple[str, str]]], return_list: bool = False) -> Union[str, List[Dict[str, str]]]:
+        """Formatting a list of conversation history into a full string of conversation history or a list of messages for the Jinja template to render.
 
         Args:
             history (Union[List[str], List[Tuple[str, str]]]): List of conversation history. 
-            use_wrapper (bool, optional): Whether to format the conversation history with the wrappers. Defaults to True.
+            return_list (bool, optional): Whether to return a list of messages for the Jinja template to render. Defaults to False.
 
         Returns:
-            str: Full string of conversation history.
+            Union[str, List[Dict[str, str]]]: A full string of conversation history or a list of messages for the Jinja template to render.
         """
         if len(history) == 0:
             return ''
         elif not isinstance(history[0], str):
-            body = list(map(lambda x: f'{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}', history))
-            body = ''.join(body)
-            if use_wrapper:
-                body = self.wrapper[0] + body.removeprefix(self.human_prefix)
-                body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
+            body = list(map(lambda x: [dict(role='user', content=x[0]), dict(role='assistant', content=x[1])], history))
+            body = sum(body, [])
         else:
             length = len(history)
             is_even = length % 2 == 0
-            lead = history[0]
-            alt_history = history if is_even else history[1:]
-            alt_history = list(map(lambda x: (alt_history[x * 2], alt_history[x * 2 + 1]), range(len(alt_history) // 2)))
-            body = list(map(lambda x: f'{self.human_prefix}{x[0]}{self.human_suffix}{self.ai_prefix}{x[1]}{self.ai_suffix}', alt_history))
-            body = ''.join(body)
-            if not is_even:
-                body = f'{self.ai_prefix}{lead}{self.ai_suffix}' + body
-            if use_wrapper:
-                if is_even:
-                    body = self.wrapper[0] + body.removeprefix(self.human_prefix)
-                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
-                else:
-                    body = body.removesuffix(self.ai_suffix) + self.wrapper[1]
-        return body
+            half = int(length / 2) if is_even else int((length + 1) / 2)
+            roles = ['user', 'assistant'] * half
+            roles = roles if is_even else roles[1:]
+            body = list(map(lambda x: dict(role=x[0], content=x[1]), list(zip(roles, history))))
+        if return_list:
+            return body
+        return self.rendered_template.render(messages=body, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=False)
 
     def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -> str:
         """Creating the full chat prompt.
@@ -126,11 +116,23 @@ class PromptTemplate:
         Returns:
             str: The full prompt.
         """
-        head = f'{self.system_prefix}{system}{self.system_suffix}' if system.strip(' \n\r\t') != '' else ''
-        body = self.format_history(history=history, use_wrapper=(head==''))
-        tail = f'{self.human_prefix}{user}{self.human_suffix}{self.ai_prefix}'
+        head = [dict(role='system', content=system)] if system.strip(' \n\r\t') != '' else []
+        body = self.format_history(history=history, return_list=True)
+        tail = [dict(role='user', content=user)]
         prompt = head + body + tail
-        return prompt
+        return self.rendered_template.render(messages=prompt, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=True)
+    
+    def create_custom_prompt(self, messages: List[Dict[str, str]], add_generation_prompt: bool = True) -> str:
+        """Creating a custom prompt with your given list of messages. Each message should contain a dictionary with the key "role" and "content".
+
+        Args:
+            messages (List[Dict[str, str]]): List of messages. Each message should contain a dictionary with the key "role" and "content".
+            add_generation_prompt (bool, optional): Whether to add the assistant tokens at the end of the prompt. Defaults to True.
+
+        Returns:
+            str: The full prompt given your messages.
+        """
+        return self.rendered_template.render(messages=messages, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=add_generation_prompt)
     
     @classmethod
     def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -> PromptTemplate:
@@ -162,116 +164,83 @@ class PromptTemplate:
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal['Default', 'Default Instruct', 'Llama2', 'Vicuna', 'ChatML', 'Zephyr', 'OpenChat', 'Alpaca']) -> PromptTemplate:
+    def from_preset(cls, style: Literal['Default', 'Llama2', 'Vicuna', 'ChatML', 'Zephyr', 'OpenChat', 'Alpaca'], force_real_template: bool = False) -> PromptTemplate:
         """Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&#39;Default&#39;, &#39;Default Instruct&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;]): Format of the prompt.
+            style (Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;]): Format of the prompt.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
         """
-        return cls.from_dict(presets[style], template_name=style)
+        from copy import deepcopy
+        preset = deepcopy(presets[style])
+        preset['force_real_template'] = force_real_template
+        return cls.from_dict(preset, template_name=style)
     
-    def to_dict(self, return_raw_stop: bool = True) -> Dict[str, Any]:
+    def to_dict(self) -> Dict[str, Any]:
         """Export the class as a dictionary.
-
-        Args:
-            return_raw_stop (bool, optional): Whether to return the stop list or the raw input stop value of the PromptTemplate instance.
 
         Returns:
             Dict[str, Any]: Prompt format as a dictionary.
         """
         return dict(
-            system_prefix = self.system_prefix,
-            system_suffix = self.system_suffix,
-            human_prefix = self.human_prefix,
-            human_suffix = self.human_suffix,
-            ai_prefix = self.ai_prefix,
-            ai_suffix = self.ai_suffix,
-            wrapper = self.wrapper,
-            stop = self._stop if return_raw_stop else self.stop
+            template = self.template,
+            eos_token = self.eos_token,
+            bos_token = self.bos_token,
+            stop = self.stop if self.stop is not None else [self.eos_token]
         )
     
 presets = {
     'Default' : {
-        'system_prefix': 'SYSTEM:\n',
-        'system_suffix': '\n\nCurrent conversation:\n',
-        'human_prefix': 'USER: ',
-        'human_suffix': '\n',
-        'ai_prefix': 'ASSISTANT: ',
-        'ai_suffix': '\n',
-        'wrapper': ['USER: ', '\n'],
-        'stop': None
-    },
-    'Default Instruct' : {
-        'system_prefix': 'SYSTEM:\n',
-        'system_suffix': '\n\n',
-        'human_prefix': 'USER: ',
-        'human_suffix': '\n',
-        'ai_prefix': 'ASSISTANT: ',
-        'ai_suffix': '\n',
-        'wrapper': ['USER: ', '\n'],
-        'stop': None
+        'template': "{% if messages[0]['role'] == 'system' %}{% set loop_messages = messages[1:] %}{{ 'SYSTEM:\n' + messages[0]['content'].strip() + '\n\n' }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message['role'] == 'user' %}{{ 'USER: ' + message['content'].strip() + '\n' }}{% elif message['role'] == 'assistant' %}{{ 'ASSISTANT: ' + message['content'].strip() + '\n' }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ 'ASSISTANT:' }}{% endif %}",
+        'eos_token': '</s>',
+        'bos_token': '<s>',
+        'stop': ['\nASSISTANT', '\nUSER:', 'ASSISTANT:', 'USER:']
     },
     'Llama2' : {
-        'system_prefix': '[INST] <<SYS>>\n',
-        'system_suffix': '\n<</SYS>>\n\n',
-        'human_prefix': '',
-        'human_suffix': ' [/INST] ',
-        'ai_prefix': '',
-        'ai_suffix': ' </s><s>[INST] ',
-        'wrapper': ['<s>[INST] ', ' </s>'],
+        'template': "{% if messages[0]['role'] == 'system' %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0]['content'] %}{% elif false == true and not '<<SYS>>' in messages[0]['content'] %}{% set loop_messages = messages %}{% set system_message = 'You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\\n\\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don\\'t know the answer to a question, please don\\'t share false information.' %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if (message['role'] == 'user') != (loop.index0 % 2 == 0) %}{{ raise_exception('Conversation roles must alternate user/assistant/user/assistant/...') }}{% endif %}{% if loop.index0 == 0 and system_message != false %}{% set content = '<<SYS>>\\n' + system_message + '\\n<</SYS>>\\n\\n' + message['content'] %}{% else %}{% set content = message['content'] %}{% endif %}{% if message['role'] == 'user' %}{{ bos_token + '[INST] ' + content.strip() + ' [/INST]' }}{% elif message['role'] == 'system' %}{{ '<<SYS>>\\n' + content.strip() + '\\n<</SYS>>\\n\\n' }}{% elif message['role'] == 'assistant' %}{{ ' '  + content.strip() + ' ' + eos_token }}{% endif %}{% endfor %}",
+        'eos_token': '</s>',
+        'bos_token': '<s>',
         'stop': ['</s>', '</s><s>', '[INST]', '<s>[INST]']
     },
     'Vicuna' : {
-        'system_prefix': '',
-        'system_suffix': '\n\n',
-        'human_prefix': 'USER: ',
-        'human_suffix': '\n',
-        'ai_prefix': 'ASSISTANT: ',
-        'ai_suffix': '\n',
-        'wrapper': ['USER: ', '\n'],
-        'stop': None
+        'template': "{% if messages[0]['role'] == 'system' %}{% set loop_messages = messages[1:] %}{{ messages[0]['content'].strip() + '\n\n' }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message['role'] == 'user' %}{{ 'USER: ' + message['content'].strip() + '\n' }}{% elif message['role'] == 'assistant' %}{{ 'ASSISTANT: ' + message['content'].strip() + eos_token + '\n' }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ 'ASSISTANT:' }}{% endif %}",
+        'eos_token': '</s>',
+        'bos_token': '<s>',
+        'stop': ['\nASSISTANT', '\nUSER:', 'ASSISTANT:', 'USER:', '</s>']
     },
     'ChatML' : {
-        'system_prefix': '<|im_start|>system\n',
-        'system_suffix': '<|im_end|>\n',
-        'human_prefix': '<|im_start|>user\n',
-        'human_suffix': '<|im_end|>\n',
-        'ai_prefix': '<|im_start|>assistant\n',
-        'ai_suffix': '<|im_end|>\n',
-        'wrapper': ['<|im_start|>user\n', '<|im_end|>\n'],
+        'template': "{% for message in messages %}{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}{% endfor %}{% if add_generation_prompt %}{{ '<|im_start|>assistant\n' }}{% endif %}",
+        'eos_token': '<|im_end|>',
+        'bos_token': '<|endoftext|>',
         'stop': ['<|im_start|>', '<|im_end|>', '<|im_start|>user\n', '<|im_end|>\n<|im_start|>user\n']
     },
     'Zephyr' : {
-        'system_prefix': '<|system|>\n',
-        'system_suffix': '</s>\n',
-        'human_prefix': '<|user|>\n',
-        'human_suffix': '</s>\n',
-        'ai_prefix': '<|assistant|>\n',
-        'ai_suffix': '</s>\n',
-        'wrapper': ['<|user|>\n', '</s>\n'],
+        'template': "{% for message in messages %}\n{% if message['role'] == 'user' %}\n{{ '<|user|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'system' %}\n{{ '<|system|>\n' + message['content'] + eos_token }}\n{% elif message['role'] == 'assistant' %}\n{{ '<|assistant|>\n'  + message['content'] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ '<|assistant|>' }}\n{% endif %}\n{% endfor %}",
+        'eos_token': '</s>',
+        'bos_token': '<s>',
         'stop': ['</s>', '</s>\n', '<|user|>\n', '</s>\n<|user|>\n']
     },
     'OpenChat' : {
-        'system_prefix': 'GPT4 Correct System: ',
-        'system_suffix': '<|end_of_turn|>',
-        'human_prefix': 'GPT4 Correct User: ',
-        'human_suffix': '<|end_of_turn|>',
-        'ai_prefix': 'GPT4 Correct Assistant: ',
-        'ai_suffix': '<|end_of_turn|>',
-        'wrapper': ['GPT4 Correct User: ', '<|end_of_turn|>'],
+        'template': "{{ bos_token }}{% for message in messages %}{{ 'GPT4 Correct ' + message['role'].title() + ': ' + message['content'] + '<|end_of_turn|>'}}{% endfor %}{% if add_generation_prompt %}{{ 'GPT4 Correct Assistant:' }}{% endif %}",
+        'eos_token': '<|end_of_turn|>',
+        'bos_token': '<s>',
         'stop': ['</s>', '<|end_of_turn|>', '<|end_of_turn|>GPT4 Correct Assistant: ']
     },
     'Alpaca' : {
-        'system_prefix': '### Instruction: ',
-        'system_suffix': '\n',
-        'human_prefix': '### Input: ',
-        'human_suffix': '\n',
-        'ai_prefix': '### Response: ',
-        'ai_suffix': '\n',
-        'wrapper': ['### Input: ', '\n'],
+        'template': "{% for message in messages %}{% if message['role'] == 'system' %}{% if message['content']%}{{'### Instruction: ' + message['content']+'\n'}}{% endif %}{% elif message['role'] == 'user' %}{{'### Input: ' + message['content']+'\n'}}{% elif message['role'] == 'assistant' %}{{'### Response: '  + message['content'] + '\n'}}{% endif %}{% if loop.last and add_generation_prompt %}{{ '### Response:' }}{% endif %}{% endfor %}",
+        'eos_token': '<|end_of_turn|>',
+        'bos_token': '<s>',
         'stop': ['### Input: ', '\n### Input: ', '###']
     },
+}
+
+hidden_presets = {
+    'Llama2' : {
+        'template': "{% if messages[0]['role'] == 'system' %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0]['content'] %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if loop.index0 == 0 and system_message != false %}{% set content = '<<SYS>>\\n' + system_message + '\\n<</SYS>>\\n\\n' + message['content'] %}{% else %}{% set content = message['content'] %}{% endif %}{% if message['role'] == 'user' %}{% if loop.index0 == 0 %}{{ '[INST] ' + content.strip() + ' [/INST]' }}{% else %}{{ bos_token + '[INST] ' + content.strip() + ' [/INST]' }}{% endif %}{% elif message['role'] == 'system' %}{{ '<<SYS>>\\n' + content.strip() + '\\n<</SYS>>\\n\\n' }}{% elif message['role'] == 'assistant' %}{% if loop.index0 == 0 and system_message != false %}{% set prefix = '[INST]' + '<<SYS>>\\n' + system_message + '\\n<</SYS>>\\n\\n' + '[/INST] ' %}{% set content = message['content'] %}{% elif loop.index0 == 0 %}{% set prefix = '[INST][/INST] ' %}{% set content = message['content'] %}{% else %}{% set prefix = ' ' %}{% endif %}{{ prefix  + content.strip() + ' ' + eos_token }}{% endif %}{% endfor %}",
+        'eos_token': '</s>',
+        'bos_token': '<s>',
+        'stop': ['</s>', '</s><s>', '[INST]', '<s>[INST]']
+    }
 }

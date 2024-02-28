@@ -39,6 +39,7 @@ class OpenAICore(BaseCore):
             OpenAICore: The initialised core.
         """
         from transformers import PreTrainedTokenizerBase
+        from .utils import get_prompt_template_by_jinja
         core = cls()
         core._model = model
         core._tokenizer = tokenizer
@@ -46,6 +47,8 @@ class OpenAICore(BaseCore):
         core._model_id = model_id if model_id is not None else ('gpt-3.5-turbo' if 'gpt-3.5-turbo' in models else models[0])
         core._is_openai = 'gpt-3.5-turbo' in models
         core._tokenizer_type = 'transformers' if isinstance(tokenizer, PreTrainedTokenizerBase) else 'openai'
+        if isinstance(tokenizer, PreTrainedTokenizerBase):
+            core._prompt_template = get_prompt_template_by_jinja(core.model_id, tokenizer)
         return core
 
         
@@ -61,6 +64,7 @@ class OpenAICore(BaseCore):
             tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
         """
         from openai import OpenAI
+        from .utils import get_prompt_template_by_jinja
         api_key = os.environ.get('OPENAI_API_KEY', 'NOAPIKEY') if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
@@ -73,12 +77,22 @@ class OpenAICore(BaseCore):
             from transformers import AutoTokenizer
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
             self._tokenizer_type = 'transformers'
+            self._prompt_template = get_prompt_template_by_jinja(self.model_id, self.tokenizer)
         elif self._is_openai:
             import tiktoken
             self._tokenizer = tiktoken.encoding_for_model(self._model_id)
             self._tokenizer_type = 'openai'
         else:
             raise ValueError(f'Cannot infer tokenizer, please specify the tokenizer_id.')
+        
+    @property
+    def base_url(self) -> str:
+        """The base url of the API.
+
+        Returns:
+            str: The base url of the API.
+        """
+        return str(self.model.base_url._uri_reference)
     
     def encode(self, text: str) -> List[int]:
         """Tokenize the given text.

@@ -34,3 +34,11 @@ Classes
         
         Returns:
             OpenAICore: The initialised core.
+
+    ### Instance variables
+
+    `base_url: str`
+    :   The base url of the API.
+        
+        Returns:
+            str: The base url of the API.

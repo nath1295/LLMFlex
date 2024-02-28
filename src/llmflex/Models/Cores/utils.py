@@ -1,3 +1,4 @@
+from ...Prompts.prompt_template import PromptTemplate
 from typing import List, Optional, Any, Literal, Tuple, Iterator, Dict
 
 def add_newline_char_to_stopwords(stop: List[str]) -> List[str]:
@@ -144,6 +145,44 @@ def detect_prompt_template_by_id(model_id: str) -> str:
     
     return 'Default'
     
+def detect_prompt_template_by_jinja(jinja_template: str) -> str:
+    """Detect if the jinja template given is the same as one of the presets.
+
+    Args:
+        jinja_template (str): Jinja template to test.
+
+    Returns:
+        str: Prompt template preset.
+    """
+    from ...Prompts.prompt_template import presets
+    for k, v in presets.items():
+        if v['template'] == jinja_template:
+            return k
+    return 'Default'
+
+def get_prompt_template_by_jinja(model_id: str, tokenizer: Any) -> PromptTemplate:
+    """Getting the appropriate prompt template given the huggingface tokenizer.
+
+    Args:
+        model_id (str): Repo ID of the tokenizer.
+        tokenizer (Any): Huggingface tokenizer.
+
+    Returns:
+        PromptTemplate: The prompt template object.
+    """
+    if tokenizer.chat_template is not None:
+        jinja = tokenizer.chat_template
+        priority = True
+    else:
+        jinja = tokenizer.default_chat_template
+        priority = False
+    prompt_template = detect_prompt_template_by_jinja(jinja)
+    prompt_template = detect_prompt_template_by_id(model_id) if ((prompt_template == 'Default') and not priority) else prompt_template
+    if (priority and (prompt_template == 'Default')):
+        prompt_template = PromptTemplate(template=jinja, eos_token=tokenizer.eos_token, bos_token=tokenizer.bos_token, stop=[] if tokenizer.eos_token is None else [tokenizer.eos_token])
+    else:
+        prompt_template = PromptTemplate.from_preset(prompt_template)
+    return prompt_template
 
 def list_local_models() -> List[Dict[str, str]]:
     """Check what you have in your local model cache directory.

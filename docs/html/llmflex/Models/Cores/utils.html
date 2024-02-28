@@ -26,7 +26,8 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List, Optional, Any, Literal, Tuple, Iterator, Dict
+<pre><code class="python">from ...Prompts.prompt_template import PromptTemplate
+from typing import List, Optional, Any, Literal, Tuple, Iterator, Dict
 
 def add_newline_char_to_stopwords(stop: List[str]) -&gt; List[str]:
     &#34;&#34;&#34;Create a duplicate of the stop words and add a new line character as a prefix to each of them if their prefixes are not new line characters.
@@ -172,6 +173,44 @@ def detect_prompt_template_by_id(model_id: str) -&gt; str:
     
     return &#39;Default&#39;
     
+def detect_prompt_template_by_jinja(jinja_template: str) -&gt; str:
+    &#34;&#34;&#34;Detect if the jinja template given is the same as one of the presets.
+
+    Args:
+        jinja_template (str): Jinja template to test.
+
+    Returns:
+        str: Prompt template preset.
+    &#34;&#34;&#34;
+    from ...Prompts.prompt_template import presets
+    for k, v in presets.items():
+        if v[&#39;template&#39;] == jinja_template:
+            return k
+    return &#39;Default&#39;
+
+def get_prompt_template_by_jinja(model_id: str, tokenizer: Any) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Getting the appropriate prompt template given the huggingface tokenizer.
+
+    Args:
+        model_id (str): Repo ID of the tokenizer.
+        tokenizer (Any): Huggingface tokenizer.
+
+    Returns:
+        PromptTemplate: The prompt template object.
+    &#34;&#34;&#34;
+    if tokenizer.chat_template is not None:
+        jinja = tokenizer.chat_template
+        priority = True
+    else:
+        jinja = tokenizer.default_chat_template
+        priority = False
+    prompt_template = detect_prompt_template_by_jinja(jinja)
+    prompt_template = detect_prompt_template_by_id(model_id) if ((prompt_template == &#39;Default&#39;) and not priority) else prompt_template
+    if (priority and (prompt_template == &#39;Default&#39;)):
+        prompt_template = PromptTemplate(template=jinja, eos_token=tokenizer.eos_token, bos_token=tokenizer.bos_token, stop=[] if tokenizer.eos_token is None else [tokenizer.eos_token])
+    else:
+        prompt_template = PromptTemplate.from_preset(prompt_template)
+    return prompt_template
 
 def list_local_models() -&gt; List[Dict[str, str]]:
     &#34;&#34;&#34;Check what you have in your local model cache directory.
@@ -295,6 +334,41 @@ def list_local_models() -&gt; List[Dict[str, str]]:
     return &#39;Default&#39;</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Models.Cores.utils.detect_prompt_template_by_jinja"><code class="name flex">
+<span>def <span class="ident">detect_prompt_template_by_jinja</span></span>(<span>jinja_template: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Detect if the jinja template given is the same as one of the presets.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>jinja_template</code></strong> :&ensp;<code>str</code></dt>
+<dd>Jinja template to test.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Prompt template preset.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detect_prompt_template_by_jinja(jinja_template: str) -&gt; str:
+    &#34;&#34;&#34;Detect if the jinja template given is the same as one of the presets.
+
+    Args:
+        jinja_template (str): Jinja template to test.
+
+    Returns:
+        str: Prompt template preset.
+    &#34;&#34;&#34;
+    from ...Prompts.prompt_template import presets
+    for k, v in presets.items():
+        if v[&#39;template&#39;] == jinja_template:
+            return k
+    return &#39;Default&#39;</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Models.Cores.utils.find_roots"><code class="name flex">
 <span>def <span class="ident">find_roots</span></span>(<span>text: str, stop: List[str], stop_len: List[int]) ‑> Tuple[str, str]</span>
 </code></dt>
@@ -342,6 +416,52 @@ def list_local_models() -&gt; List[Dict[str, str]]:
             break
     text  = text[:-len(root)] if root else text
     return text, root</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Models.Cores.utils.get_prompt_template_by_jinja"><code class="name flex">
+<span>def <span class="ident">get_prompt_template_by_jinja</span></span>(<span>model_id: str, tokenizer: Any) ‑> <a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Getting the appropriate prompt template given the huggingface tokenizer.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>model_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Repo ID of the tokenizer.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Huggingface tokenizer.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PromptTemplate</code></dt>
+<dd>The prompt template object.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_prompt_template_by_jinja(model_id: str, tokenizer: Any) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Getting the appropriate prompt template given the huggingface tokenizer.
+
+    Args:
+        model_id (str): Repo ID of the tokenizer.
+        tokenizer (Any): Huggingface tokenizer.
+
+    Returns:
+        PromptTemplate: The prompt template object.
+    &#34;&#34;&#34;
+    if tokenizer.chat_template is not None:
+        jinja = tokenizer.chat_template
+        priority = True
+    else:
+        jinja = tokenizer.default_chat_template
+        priority = False
+    prompt_template = detect_prompt_template_by_jinja(jinja)
+    prompt_template = detect_prompt_template_by_id(model_id) if ((prompt_template == &#39;Default&#39;) and not priority) else prompt_template
+    if (priority and (prompt_template == &#39;Default&#39;)):
+        prompt_template = PromptTemplate(template=jinja, eos_token=tokenizer.eos_token, bos_token=tokenizer.bos_token, stop=[] if tokenizer.eos_token is None else [tokenizer.eos_token])
+    else:
+        prompt_template = PromptTemplate.from_preset(prompt_template)
+    return prompt_template</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Models.Cores.utils.get_stop_words"><code class="name flex">
@@ -505,7 +625,9 @@ def list_local_models() -&gt; List[Dict[str, str]]:
 <ul class="">
 <li><code><a title="llmflex.Models.Cores.utils.add_newline_char_to_stopwords" href="#llmflex.Models.Cores.utils.add_newline_char_to_stopwords">add_newline_char_to_stopwords</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.detect_prompt_template_by_id" href="#llmflex.Models.Cores.utils.detect_prompt_template_by_id">detect_prompt_template_by_id</a></code></li>
+<li><code><a title="llmflex.Models.Cores.utils.detect_prompt_template_by_jinja" href="#llmflex.Models.Cores.utils.detect_prompt_template_by_jinja">detect_prompt_template_by_jinja</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.find_roots" href="#llmflex.Models.Cores.utils.find_roots">find_roots</a></code></li>
+<li><code><a title="llmflex.Models.Cores.utils.get_prompt_template_by_jinja" href="#llmflex.Models.Cores.utils.get_prompt_template_by_jinja">get_prompt_template_by_jinja</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.get_stop_words" href="#llmflex.Models.Cores.utils.get_stop_words">get_stop_words</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.list_local_models" href="#llmflex.Models.Cores.utils.list_local_models">list_local_models</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.textgen_iterator" href="#llmflex.Models.Cores.utils.textgen_iterator">textgen_iterator</a></code></li>

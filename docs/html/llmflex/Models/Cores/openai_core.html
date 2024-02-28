@@ -67,6 +67,7 @@ class OpenAICore(BaseCore):
             OpenAICore: The initialised core.
         &#34;&#34;&#34;
         from transformers import PreTrainedTokenizerBase
+        from .utils import get_prompt_template_by_jinja
         core = cls()
         core._model = model
         core._tokenizer = tokenizer
@@ -74,6 +75,8 @@ class OpenAICore(BaseCore):
         core._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
         core._is_openai = &#39;gpt-3.5-turbo&#39; in models
         core._tokenizer_type = &#39;transformers&#39; if isinstance(tokenizer, PreTrainedTokenizerBase) else &#39;openai&#39;
+        if isinstance(tokenizer, PreTrainedTokenizerBase):
+            core._prompt_template = get_prompt_template_by_jinja(core.model_id, tokenizer)
         return core
 
         
@@ -89,6 +92,7 @@ class OpenAICore(BaseCore):
             tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
         &#34;&#34;&#34;
         from openai import OpenAI
+        from .utils import get_prompt_template_by_jinja
         api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;, &#39;NOAPIKEY&#39;) if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
@@ -101,12 +105,22 @@ class OpenAICore(BaseCore):
             from transformers import AutoTokenizer
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
             self._tokenizer_type = &#39;transformers&#39;
+            self._prompt_template = get_prompt_template_by_jinja(self.model_id, self.tokenizer)
         elif self._is_openai:
             import tiktoken
             self._tokenizer = tiktoken.encoding_for_model(self._model_id)
             self._tokenizer_type = &#39;openai&#39;
         else:
             raise ValueError(f&#39;Cannot infer tokenizer, please specify the tokenizer_id.&#39;)
+        
+    @property
+    def base_url(self) -&gt; str:
+        &#34;&#34;&#34;The base url of the API.
+
+        Returns:
+            str: The base url of the API.
+        &#34;&#34;&#34;
+        return str(self.model.base_url._uri_reference)
     
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -256,6 +270,7 @@ class OpenAICore(BaseCore):
             OpenAICore: The initialised core.
         &#34;&#34;&#34;
         from transformers import PreTrainedTokenizerBase
+        from .utils import get_prompt_template_by_jinja
         core = cls()
         core._model = model
         core._tokenizer = tokenizer
@@ -263,6 +278,8 @@ class OpenAICore(BaseCore):
         core._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
         core._is_openai = &#39;gpt-3.5-turbo&#39; in models
         core._tokenizer_type = &#39;transformers&#39; if isinstance(tokenizer, PreTrainedTokenizerBase) else &#39;openai&#39;
+        if isinstance(tokenizer, PreTrainedTokenizerBase):
+            core._prompt_template = get_prompt_template_by_jinja(core.model_id, tokenizer)
         return core
 
         
@@ -278,6 +295,7 @@ class OpenAICore(BaseCore):
             tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
         &#34;&#34;&#34;
         from openai import OpenAI
+        from .utils import get_prompt_template_by_jinja
         api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;, &#39;NOAPIKEY&#39;) if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
@@ -290,12 +308,22 @@ class OpenAICore(BaseCore):
             from transformers import AutoTokenizer
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
             self._tokenizer_type = &#39;transformers&#39;
+            self._prompt_template = get_prompt_template_by_jinja(self.model_id, self.tokenizer)
         elif self._is_openai:
             import tiktoken
             self._tokenizer = tiktoken.encoding_for_model(self._model_id)
             self._tokenizer_type = &#39;openai&#39;
         else:
             raise ValueError(f&#39;Cannot infer tokenizer, please specify the tokenizer_id.&#39;)
+        
+    @property
+    def base_url(self) -&gt; str:
+        &#34;&#34;&#34;The base url of the API.
+
+        Returns:
+            str: The base url of the API.
+        &#34;&#34;&#34;
+        return str(self.model.base_url._uri_reference)
     
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -418,6 +446,7 @@ def from_model_object(cls, model: Any, tokenizer: Any, model_id: Optional[str] =
         OpenAICore: The initialised core.
     &#34;&#34;&#34;
     from transformers import PreTrainedTokenizerBase
+    from .utils import get_prompt_template_by_jinja
     core = cls()
     core._model = model
     core._tokenizer = tokenizer
@@ -425,7 +454,34 @@ def from_model_object(cls, model: Any, tokenizer: Any, model_id: Optional[str] =
     core._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
     core._is_openai = &#39;gpt-3.5-turbo&#39; in models
     core._tokenizer_type = &#39;transformers&#39; if isinstance(tokenizer, PreTrainedTokenizerBase) else &#39;openai&#39;
+    if isinstance(tokenizer, PreTrainedTokenizerBase):
+        core._prompt_template = get_prompt_template_by_jinja(core.model_id, tokenizer)
     return core</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Models.Cores.openai_core.OpenAICore.base_url"><code class="name">var <span class="ident">base_url</span> : str</code></dt>
+<dd>
+<div class="desc"><p>The base url of the API.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The base url of the API.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def base_url(self) -&gt; str:
+    &#34;&#34;&#34;The base url of the API.
+
+    Returns:
+        str: The base url of the API.
+    &#34;&#34;&#34;
+    return str(self.model.base_url._uri_reference)</code></pre>
 </details>
 </dd>
 </dl>
@@ -466,6 +522,7 @@ def from_model_object(cls, model: Any, tokenizer: Any, model_id: Optional[str] =
 <li>
 <h4><code><a title="llmflex.Models.Cores.openai_core.OpenAICore" href="#llmflex.Models.Cores.openai_core.OpenAICore">OpenAICore</a></code></h4>
 <ul class="">
+<li><code><a title="llmflex.Models.Cores.openai_core.OpenAICore.base_url" href="#llmflex.Models.Cores.openai_core.OpenAICore.base_url">base_url</a></code></li>
 <li><code><a title="llmflex.Models.Cores.openai_core.OpenAICore.from_model_object" href="#llmflex.Models.Cores.openai_core.OpenAICore.from_model_object">from_model_object</a></code></li>
 </ul>
 </li>
