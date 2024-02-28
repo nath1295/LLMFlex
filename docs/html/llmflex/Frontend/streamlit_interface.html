@@ -441,7 +441,7 @@ class StreamlitInterface:
                        &#39;&#39;,
                        &#39;Current prompt format:&#39;,
                        f&#39;* {self.backend.template.template_name}&#39;]
-        st.header(&#39;LLM Plus&#39;, help=&#39;  \n&#39;.join(app_summary), divider=&#34;grey&#34;)
+        st.header(PACKAGE_DISPLAY_NAME.upper(), help=&#39;  \n&#39;.join(app_summary), divider=&#34;grey&#34;)
         st.subheader(&#39;:left_speech_bubble: Conversations&#39;)
         self.new_chat_form()
         with st.expander(label=&#39;Previous conversations&#39;):
@@ -1528,7 +1528,7 @@ def titles(self) -&gt; List[str]:
                        &#39;&#39;,
                        &#39;Current prompt format:&#39;,
                        f&#39;* {self.backend.template.template_name}&#39;]
-        st.header(&#39;LLM Plus&#39;, help=&#39;  \n&#39;.join(app_summary), divider=&#34;grey&#34;)
+        st.header(PACKAGE_DISPLAY_NAME.upper(), help=&#39;  \n&#39;.join(app_summary), divider=&#34;grey&#34;)
         st.subheader(&#39;:left_speech_bubble: Conversations&#39;)
         self.new_chat_form()
         with st.expander(label=&#39;Previous conversations&#39;):
@@ -2764,7 +2764,7 @@ def tool_states(self) -&gt; Dict[str, bool]:
                    &#39;&#39;,
                    &#39;Current prompt format:&#39;,
                    f&#39;* {self.backend.template.template_name}&#39;]
-    st.header(&#39;LLM Plus&#39;, help=&#39;  \n&#39;.join(app_summary), divider=&#34;grey&#34;)
+    st.header(PACKAGE_DISPLAY_NAME.upper(), help=&#39;  \n&#39;.join(app_summary), divider=&#34;grey&#34;)
     st.subheader(&#39;:left_speech_bubble: Conversations&#39;)
     self.new_chat_form()
     with st.expander(label=&#39;Previous conversations&#39;):

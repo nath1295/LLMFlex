@@ -413,7 +413,7 @@ class StreamlitInterface:
                        '',
                        'Current prompt format:',
                        f'* {self.backend.template.template_name}']
-        st.header('LLM Plus', help='  \n'.join(app_summary), divider="grey")
+        st.header(PACKAGE_DISPLAY_NAME.upper(), help='  \n'.join(app_summary), divider="grey")
         st.subheader(':left_speech_bubble: Conversations')
         self.new_chat_form()
         with st.expander(label='Previous conversations'):
