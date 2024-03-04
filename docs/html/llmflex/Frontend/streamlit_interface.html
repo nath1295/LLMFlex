@@ -328,13 +328,13 @@ class StreamlitInterface:
 
     def get_history(self, mem) -&gt; List[Dict[str, Any]]:
         history = list(map(lambda x: dict(
-            user=x[&#39;metadata&#39;][&#39;user&#39;], 
-            assistant=x[&#39;metadata&#39;][&#39;assistant&#39;], 
-            order=x[&#39;metadata&#39;][&#39;order&#39;],
-            tool_details=x[&#39;metadata&#39;].get(&#39;tool_details&#39;, None),
-            footnote=x[&#39;metadata&#39;].get(&#39;footnote&#39;, None),
-            tool_name=x[&#39;metadata&#39;].get(&#39;tool_name&#39;, None)
-        ), mem._data))
+            user=x.metadata[&#39;user&#39;], 
+            assistant=x.metadata[&#39;assistant&#39;], 
+            order=x.metadata[&#39;order&#39;],
+            tool_details=x.metadata.get(&#39;tool_details&#39;, None),
+            footnote=x.metadata.get(&#39;footnote&#39;, None),
+            tool_name=x.metadata.get(&#39;tool_name&#39;, None)
+        ), mem._data.values()))
         if len(history) == 0:
             return []
         count = max(list(map(lambda x: x[&#39;order&#39;], history))) + 1
@@ -1415,13 +1415,13 @@ def titles(self) -&gt; List[str]:
 
     def get_history(self, mem) -&gt; List[Dict[str, Any]]:
         history = list(map(lambda x: dict(
-            user=x[&#39;metadata&#39;][&#39;user&#39;], 
-            assistant=x[&#39;metadata&#39;][&#39;assistant&#39;], 
-            order=x[&#39;metadata&#39;][&#39;order&#39;],
-            tool_details=x[&#39;metadata&#39;].get(&#39;tool_details&#39;, None),
-            footnote=x[&#39;metadata&#39;].get(&#39;footnote&#39;, None),
-            tool_name=x[&#39;metadata&#39;].get(&#39;tool_name&#39;, None)
-        ), mem._data))
+            user=x.metadata[&#39;user&#39;], 
+            assistant=x.metadata[&#39;assistant&#39;], 
+            order=x.metadata[&#39;order&#39;],
+            tool_details=x.metadata.get(&#39;tool_details&#39;, None),
+            footnote=x.metadata.get(&#39;footnote&#39;, None),
+            tool_name=x.metadata.get(&#39;tool_name&#39;, None)
+        ), mem._data.values()))
         if len(history) == 0:
             return []
         count = max(list(map(lambda x: x[&#39;order&#39;], history))) + 1
@@ -2286,13 +2286,13 @@ def tool_states(self) -&gt; Dict[str, bool]:
 </summary>
 <pre><code class="python">def get_history(self, mem) -&gt; List[Dict[str, Any]]:
     history = list(map(lambda x: dict(
-        user=x[&#39;metadata&#39;][&#39;user&#39;], 
-        assistant=x[&#39;metadata&#39;][&#39;assistant&#39;], 
-        order=x[&#39;metadata&#39;][&#39;order&#39;],
-        tool_details=x[&#39;metadata&#39;].get(&#39;tool_details&#39;, None),
-        footnote=x[&#39;metadata&#39;].get(&#39;footnote&#39;, None),
-        tool_name=x[&#39;metadata&#39;].get(&#39;tool_name&#39;, None)
-    ), mem._data))
+        user=x.metadata[&#39;user&#39;], 
+        assistant=x.metadata[&#39;assistant&#39;], 
+        order=x.metadata[&#39;order&#39;],
+        tool_details=x.metadata.get(&#39;tool_details&#39;, None),
+        footnote=x.metadata.get(&#39;footnote&#39;, None),
+        tool_name=x.metadata.get(&#39;tool_name&#39;, None)
+    ), mem._data.values()))
     if len(history) == 0:
         return []
     count = max(list(map(lambda x: x[&#39;order&#39;], history))) + 1

@@ -29,8 +29,9 @@
 <pre><code class="python">import os
 from .base_memory import BaseChatMemory, list_titles, chat_memory_home
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from ..Models.Cores.base_core import BaseLLM
+from ..Schemas.documents import Document
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from typing import List, Dict, Any, Type, Union, Tuple
 
@@ -41,16 +42,16 @@ class LongShortTermChatMemory(BaseChatMemory):
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
         &#34;&#34;&#34;Embeddings toolkit.
 
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
         &#34;&#34;&#34;
         return self._embeddings
 
     @property
-    def vectordb(self) -&gt; VectorDatabase:
+    def vectordb(self) -&gt; FaissVectorDatabase:
         &#34;&#34;&#34;Vector database for saving the chat history.
 
         Returns:
@@ -59,11 +60,11 @@ class LongShortTermChatMemory(BaseChatMemory):
         return self._vectordb
 
     @property
-    def _data(self) -&gt; List[Dict[str, Any]]:
+    def _data(self) -&gt; Dict[int, Document]:
         &#34;&#34;&#34;Raw data from the vector database.
 
         Returns:
-            List[Dict[str, Any]]: Raw data from the vector database.
+            Dict[int, Document]: Raw data from the vector database.
         &#34;&#34;&#34;
         return self.vectordb.data
 
@@ -74,13 +75,14 @@ class LongShortTermChatMemory(BaseChatMemory):
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         &#34;&#34;&#34;
         if ((from_exist) &amp; (self.title in list_titles())):
-            self._vectordb = VectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
                                                        embeddings=self.embeddings, vectordb_dir=chat_memory_home())
 
         else:
-            self._vectordb = VectorDatabase.from_empty(embeddings=self.embeddings, 
-                                                       name=os.path.basename(self.chat_dir), 
-                                                       vectordb_dir=chat_memory_home(), save_raw=True)
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                docs=[],
+                                                name=os.path.basename(self.chat_dir), 
+                                                vectordb_dir=chat_memory_home())
             self.vectordb._info[&#39;title&#39;] = self.title
             self.save()
 
@@ -281,16 +283,16 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
         &#34;&#34;&#34;Embeddings toolkit.
 
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
         &#34;&#34;&#34;
         return self._embeddings
 
     @property
-    def vectordb(self) -&gt; VectorDatabase:
+    def vectordb(self) -&gt; FaissVectorDatabase:
         &#34;&#34;&#34;Vector database for saving the chat history.
 
         Returns:
@@ -299,11 +301,11 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
         return self._vectordb
 
     @property
-    def _data(self) -&gt; List[Dict[str, Any]]:
+    def _data(self) -&gt; Dict[int, Document]:
         &#34;&#34;&#34;Raw data from the vector database.
 
         Returns:
-            List[Dict[str, Any]]: Raw data from the vector database.
+            Dict[int, Document]: Raw data from the vector database.
         &#34;&#34;&#34;
         return self.vectordb.data
 
@@ -314,13 +316,14 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         &#34;&#34;&#34;
         if ((from_exist) &amp; (self.title in list_titles())):
-            self._vectordb = VectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
                                                        embeddings=self.embeddings, vectordb_dir=chat_memory_home())
 
         else:
-            self._vectordb = VectorDatabase.from_empty(embeddings=self.embeddings, 
-                                                       name=os.path.basename(self.chat_dir), 
-                                                       vectordb_dir=chat_memory_home(), save_raw=True)
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                docs=[],
+                                                name=os.path.basename(self.chat_dir), 
+                                                vectordb_dir=chat_memory_home())
             self.vectordb._info[&#39;title&#39;] = self.title
             self.save()
 
@@ -403,12 +406,12 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.Memory.long_short_memory.LongShortTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>]</code></dt>
+<dt id="llmflex.Memory.long_short_memory.LongShortTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : <a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></code></dt>
 <dd>
 <div class="desc"><p>Embeddings toolkit.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Type[BaseEmbeddingsToolkit]</code></dt>
+<dt><code>BaseEmbeddingsToolkit</code></dt>
 <dd>Embeddings toolkit.</dd>
 </dl></div>
 <details class="source">
@@ -416,16 +419,16 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
+def embeddings(self) -&gt; BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Embeddings toolkit.
 
     Returns:
-        Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+        BaseEmbeddingsToolkit: Embeddings toolkit.
     &#34;&#34;&#34;
     return self._embeddings</code></pre>
 </details>
 </dd>
-<dt id="llmflex.Memory.long_short_memory.LongShortTermChatMemory.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a></code></dt>
+<dt id="llmflex.Memory.long_short_memory.LongShortTermChatMemory.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase" href="../VectorDBs/faiss_vectordb.html#llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></code></dt>
 <dd>
 <div class="desc"><p>Vector database for saving the chat history.</p>
 <h2 id="returns">Returns</h2>
@@ -438,7 +441,7 @@ def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def vectordb(self) -&gt; VectorDatabase:
+def vectordb(self) -&gt; FaissVectorDatabase:
     &#34;&#34;&#34;Vector database for saving the chat history.
 
     Returns:

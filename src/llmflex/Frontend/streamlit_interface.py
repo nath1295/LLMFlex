@@ -300,13 +300,13 @@ class StreamlitInterface:
 
     def get_history(self, mem) -> List[Dict[str, Any]]:
         history = list(map(lambda x: dict(
-            user=x['metadata']['user'], 
-            assistant=x['metadata']['assistant'], 
-            order=x['metadata']['order'],
-            tool_details=x['metadata'].get('tool_details', None),
-            footnote=x['metadata'].get('footnote', None),
-            tool_name=x['metadata'].get('tool_name', None)
-        ), mem._data))
+            user=x.metadata['user'], 
+            assistant=x.metadata['assistant'], 
+            order=x.metadata['order'],
+            tool_details=x.metadata.get('tool_details', None),
+            footnote=x.metadata.get('footnote', None),
+            tool_name=x.metadata.get('tool_name', None)
+        ), mem._data.values()))
         if len(history) == 0:
             return []
         count = max(list(map(lambda x: x['order'], history))) + 1

@@ -5,32 +5,12 @@ Classes
 -------
 
 `APIEmbeddings(base_url: str, encode_kwargs: Dict[str, Any] = {})`
-:   Interface for embedding models.
+:   Base class for embeddings model.
 
     ### Ancestors (in MRO)
 
-    * langchain_core.embeddings.Embeddings
+    * llmflex.Embeddings.base_embeddings.BaseEmbeddings
     * abc.ABC
-
-    ### Methods
-
-    `embed_documents(self, texts: List[str]) ‑> List[List[float]]`
-    :   embed search docs.
-        
-        Args:
-            texts (List[str]): List of texts to embed.
-        
-        Returns:
-            List[List[float]]: List of embeddings given the texts.
-
-    `embed_query(self, text: str) ‑> List[float]`
-    :   Embed query text.
-        
-        Args:
-            text (str): Text to embed.
-        
-        Returns:
-            List[float]: Embeddings of the text.
 
 `APIEmbeddingsToolkit(base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128}, tokenizer_kwargs: Dict[str, Any] = {})`
 :   Base class for storing the embedding model and the text splitter.

@@ -27,8 +27,35 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">import os
-from .base_embeddings import BaseEmbeddingsToolkit
-from typing import Optional, Dict, Any
+from .base_embeddings import BaseEmbeddingsToolkit, BaseEmbeddings
+from typing import Optional, Dict, Any, List
+
+class HuggingFaceEmbeddings(BaseEmbeddings):
+    &#34;&#34;&#34;Embeddings model from HuggingFace using sentence transformers.&#34;&#34;&#34;
+    def __init__(self, model_id: str, model_kwargs: Dict[str, Any] = dict(), encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128)) -&gt; None:
+        from ..utils import get_config
+        from sentence_transformers import SentenceTransformer
+        os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
+        self._model = SentenceTransformer(model_id, **model_kwargs)
+        self._name = model_id
+        self._tokenizer = self._model.tokenizer
+        self._max_seq_length = self._model.max_seq_length
+        self._embedding_size = self._model.get_sentence_embedding_dimension()
+        self._encode_kwargs = encode_kwargs
+
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        &#34;&#34;&#34;Embed list of texts.
+
+        Args:
+            texts (List[str]): List of texts to embed.
+
+        Returns:
+            List[List[float]]: List of embedded vectors.
+        &#34;&#34;&#34;
+        embeddings = self._model.encode(texts, **self._encode_kwargs).tolist()
+        return embeddings
 
 class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
@@ -44,21 +71,16 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for the model. Defaults to dict().
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
         &#34;&#34;&#34;
-        from ..utils import get_config
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
-        os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
-        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
-        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
-        from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
-        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-        self._model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
-        self._name = model_id
-        self._type = &#39;huggingface_embeddings&#39;
-        self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
-        chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
-        encode_fn = lambda x: self.embedding_model.client.encode(x, add_special_tokens=False)
-        decode_fn = lambda x: self.embedding_model.client.decode(x, skip_special_tokens=True)
-        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)</code></pre>
+        embedding_model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
+        name = model_id
+        type = &#39;huggingface_embeddings&#39;
+        chunk_size = min(embedding_model._max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        encode_fn = lambda x: embedding_model._tokenizer.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: embedding_model._tokenizer.decode(x, skip_special_tokens=True)
+        text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+                         type = type, embedding_size = embedding_model._embedding_size, max_seq_length = embedding_model._max_seq_length)</code></pre>
 </details>
 </section>
 <section>
@@ -70,6 +92,58 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="llmflex.Embeddings.huggingface_embeddings.HuggingFaceEmbeddings"><code class="flex name class">
+<span>class <span class="ident">HuggingFaceEmbeddings</span></span>
+<span>(</span><span>model_id: str, model_kwargs: Dict[str, Any] = {}, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embeddings model from HuggingFace using sentence transformers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HuggingFaceEmbeddings(BaseEmbeddings):
+    &#34;&#34;&#34;Embeddings model from HuggingFace using sentence transformers.&#34;&#34;&#34;
+    def __init__(self, model_id: str, model_kwargs: Dict[str, Any] = dict(), encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128)) -&gt; None:
+        from ..utils import get_config
+        from sentence_transformers import SentenceTransformer
+        os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
+        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
+        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
+        self._model = SentenceTransformer(model_id, **model_kwargs)
+        self._name = model_id
+        self._tokenizer = self._model.tokenizer
+        self._max_seq_length = self._model.max_seq_length
+        self._embedding_size = self._model.get_sentence_embedding_dimension()
+        self._encode_kwargs = encode_kwargs
+
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        &#34;&#34;&#34;Embed list of texts.
+
+        Args:
+            texts (List[str]): List of texts to embed.
+
+        Returns:
+            List[List[float]]: List of embedded vectors.
+        &#34;&#34;&#34;
+        embeddings = self._model.encode(texts, **self._encode_kwargs).tolist()
+        return embeddings</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents">embed_documents</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query">embed_query</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="llmflex.Embeddings.huggingface_embeddings.HuggingfaceEmbeddingsToolkit"><code class="flex name class">
 <span>class <span class="ident">HuggingfaceEmbeddingsToolkit</span></span>
 <span>(</span><span>model_id: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, model_kwargs: Dict[str, Any] = {}, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128})</span>
@@ -108,21 +182,16 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             model_kwargs (Dict[str, Any], optional): Keyword arguments for the model. Defaults to dict().
             encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
         &#34;&#34;&#34;
-        from ..utils import get_config
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
-        os.environ[&#39;SENTENCE_TRANSFORMERS_HOME&#39;] = get_config()[&#39;st_home&#39;]
-        os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
-        os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
-        from langchain_community.embeddings.huggingface import HuggingFaceEmbeddings
-        from langchain.text_splitter import SentenceTransformersTokenTextSplitter
-        self._model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
-        self._name = model_id
-        self._type = &#39;huggingface_embeddings&#39;
-        self._embedding_size = self.embedding_model.client.get_sentence_embedding_dimension()
-        chunk_size = min(self.embedding_model.client.max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
-        encode_fn = lambda x: self.embedding_model.client.encode(x, add_special_tokens=False)
-        decode_fn = lambda x: self.embedding_model.client.decode(x, skip_special_tokens=True)
-        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)</code></pre>
+        embedding_model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
+        name = model_id
+        type = &#39;huggingface_embeddings&#39;
+        chunk_size = min(embedding_model._max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        encode_fn = lambda x: embedding_model._tokenizer.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: embedding_model._tokenizer.decode(x, skip_special_tokens=True)
+        text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+                         type = type, embedding_size = embedding_model._embedding_size, max_seq_length = embedding_model._max_seq_length)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -132,8 +201,12 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <ul class="hlist">
 <li><code><b><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></b></code>:
 <ul class="hlist">
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed">batch_embed</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed">embed</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model">embedding_model</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size">embedding_size</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings">langchain_embeddings</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length">max_seq_length</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name">name</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter">text_splitter</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type">type</a></code></li>
@@ -157,6 +230,9 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="llmflex.Embeddings.huggingface_embeddings.HuggingFaceEmbeddings" href="#llmflex.Embeddings.huggingface_embeddings.HuggingFaceEmbeddings">HuggingFaceEmbeddings</a></code></h4>
+</li>
 <li>
 <h4><code><a title="llmflex.Embeddings.huggingface_embeddings.HuggingfaceEmbeddingsToolkit" href="#llmflex.Embeddings.huggingface_embeddings.HuggingfaceEmbeddingsToolkit">HuggingfaceEmbeddingsToolkit</a></code></h4>
 </li>

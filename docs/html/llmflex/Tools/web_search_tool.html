@@ -29,7 +29,7 @@
 <pre><code class="python">from ..Models.Cores.base_core import BaseLLM
 from ..Prompts.prompt_template import PromptTemplate
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from .base_tool import BaseTool
 from typing import Iterator, List, Dict, Any, Optional, Union, Literal, Type, Tuple
 
@@ -146,7 +146,7 @@ class WebSearchTool(BaseTool):
         else:
             raise ValueError(f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;)
         
-    def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; VectorDatabase:
+    def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; FaissVectorDatabase:
         &#34;&#34;&#34;Creating a temporary vector database of the search result contents.
 
         Args:
@@ -154,33 +154,33 @@ class WebSearchTool(BaseTool):
             llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
 
         Returns:
-            VectorDatabase: The temporary vector database.
+            FaissVectorDatabase: The temporary vector database.
         &#34;&#34;&#34;
         from .web_search_utils import get_markdown, create_content_chunks
-        from langchain.schema.document import Document
+        from ..Schemas.documents import Document
 
         urls = list(map(lambda x: x[&#39;href&#39;], results))
-        vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
+        vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings, docs=[])
 
         if llm is None:
             contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
-            docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+            docs = list(map(lambda x: Document(index=x[0], metadata=x[1]), list(zip(contents, results))))
             vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
             contents = list(map(lambda x: create_content_chunks(x, llm), contents))
             docs = list(zip(contents, results))
-            docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+            docs = list(map(lambda x: list(map(lambda y: Document(index=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
             vectordb.add_documents(docs=docs, split_text=False)
         return vectordb
     
-    def create_relevant_content_chunks(self, query: str, vectordb: VectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
+    def create_relevant_content_chunks(self, query: str, vectordb: FaissVectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
         &#34;&#34;&#34;Return the relevant chunks of contents from the vector database.
 
         Args:
             query (str): Search query.
-            vectordb (VectorDatabase): Vector database of search result contents.
+            vectordb (FaissVectorDatabase): Vector database of search result contents.
 
         Returns:
             Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
@@ -399,7 +399,7 @@ class WebSearchTool(BaseTool):
         else:
             raise ValueError(f&#39;Search engine &#34;{self.search_engine}&#34; not supported.&#39;)
         
-    def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; VectorDatabase:
+    def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; FaissVectorDatabase:
         &#34;&#34;&#34;Creating a temporary vector database of the search result contents.
 
         Args:
@@ -407,33 +407,33 @@ class WebSearchTool(BaseTool):
             llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
 
         Returns:
-            VectorDatabase: The temporary vector database.
+            FaissVectorDatabase: The temporary vector database.
         &#34;&#34;&#34;
         from .web_search_utils import get_markdown, create_content_chunks
-        from langchain.schema.document import Document
+        from ..Schemas.documents import Document
 
         urls = list(map(lambda x: x[&#39;href&#39;], results))
-        vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
+        vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings, docs=[])
 
         if llm is None:
             contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
-            docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+            docs = list(map(lambda x: Document(index=x[0], metadata=x[1]), list(zip(contents, results))))
             vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
             contents = list(map(lambda x: create_content_chunks(x, llm), contents))
             docs = list(zip(contents, results))
-            docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+            docs = list(map(lambda x: list(map(lambda y: Document(index=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
             vectordb.add_documents(docs=docs, split_text=False)
         return vectordb
     
-    def create_relevant_content_chunks(self, query: str, vectordb: VectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
+    def create_relevant_content_chunks(self, query: str, vectordb: FaissVectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
         &#34;&#34;&#34;Return the relevant chunks of contents from the vector database.
 
         Args:
             query (str): Search query.
-            vectordb (VectorDatabase): Vector database of search result contents.
+            vectordb (FaissVectorDatabase): Vector database of search result contents.
 
         Returns:
             Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
@@ -500,7 +500,7 @@ class WebSearchTool(BaseTool):
 <h3>Methods</h3>
 <dl>
 <dt id="llmflex.Tools.web_search_tool.WebSearchTool.create_relevant_content_chunks"><code class="name flex">
-<span>def <span class="ident">create_relevant_content_chunks</span></span>(<span>self, query: str, vectordb: <a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a>) ‑> Tuple[List[Dict[str, Any]], str]</span>
+<span>def <span class="ident">create_relevant_content_chunks</span></span>(<span>self, query: str, vectordb: <a title="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase" href="../VectorDBs/faiss_vectordb.html#llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a>) ‑> Tuple[List[Dict[str, Any]], str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the relevant chunks of contents from the vector database.</p>
@@ -508,7 +508,7 @@ class WebSearchTool(BaseTool):
 <dl>
 <dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
 <dd>Search query.</dd>
-<dt><strong><code>vectordb</code></strong> :&ensp;<code>VectorDatabase</code></dt>
+<dt><strong><code>vectordb</code></strong> :&ensp;<code>FaissVectorDatabase</code></dt>
 <dd>Vector database of search result contents.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -520,12 +520,12 @@ class WebSearchTool(BaseTool):
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_relevant_content_chunks(self, query: str, vectordb: VectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
+<pre><code class="python">def create_relevant_content_chunks(self, query: str, vectordb: FaissVectorDatabase) -&gt; Tuple[List[Dict[str, Any]], str]:
     &#34;&#34;&#34;Return the relevant chunks of contents from the vector database.
 
     Args:
         query (str): Search query.
-        vectordb (VectorDatabase): Vector database of search result contents.
+        vectordb (FaissVectorDatabase): Vector database of search result contents.
 
     Returns:
         Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
@@ -610,7 +610,7 @@ class WebSearchTool(BaseTool):
 </details>
 </dd>
 <dt id="llmflex.Tools.web_search_tool.WebSearchTool.create_vectordb"><code class="name flex">
-<span>def <span class="ident">create_vectordb</span></span>(<span>self, results: List[Dict[str, Any]], llm: Optional[Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None) ‑> <a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a></span>
+<span>def <span class="ident">create_vectordb</span></span>(<span>self, results: List[Dict[str, Any]], llm: Optional[Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>]] = None) ‑> <a title="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase" href="../VectorDBs/faiss_vectordb.html#llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Creating a temporary vector database of the search result contents.</p>
@@ -623,14 +623,14 @@ class WebSearchTool(BaseTool):
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>VectorDatabase</code></dt>
+<dt><code>FaissVectorDatabase</code></dt>
 <dd>The temporary vector database.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; VectorDatabase:
+<pre><code class="python">def create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[BaseLLM]] = None) -&gt; FaissVectorDatabase:
     &#34;&#34;&#34;Creating a temporary vector database of the search result contents.
 
     Args:
@@ -638,23 +638,23 @@ class WebSearchTool(BaseTool):
         llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
 
     Returns:
-        VectorDatabase: The temporary vector database.
+        FaissVectorDatabase: The temporary vector database.
     &#34;&#34;&#34;
     from .web_search_utils import get_markdown, create_content_chunks
-    from langchain.schema.document import Document
+    from ..Schemas.documents import Document
 
     urls = list(map(lambda x: x[&#39;href&#39;], results))
-    vectordb = VectorDatabase.from_empty(embeddings=self.embeddings)
+    vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings, docs=[])
 
     if llm is None:
         contents = list(map(lambda x: get_markdown(x, as_list=False), urls))
-        docs = list(map(lambda x: Document(page_content=x[0], metadata=x[1]), list(zip(contents, results))))
+        docs = list(map(lambda x: Document(index=x[0], metadata=x[1]), list(zip(contents, results))))
         vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
     else:
         contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
         contents = list(map(lambda x: create_content_chunks(x, llm), contents))
         docs = list(zip(contents, results))
-        docs = list(map(lambda x: list(map(lambda y: Document(page_content=y, metadata=x[1]), x[0])), docs))
+        docs = list(map(lambda x: list(map(lambda y: Document(index=y, metadata=x[1]), x[0])), docs))
         docs = sum(docs, [])
         vectordb.add_documents(docs=docs, split_text=False)
     return vectordb</code></pre>

@@ -26,12 +26,11 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from langchain.embeddings.base import Embeddings
-from .base_embeddings import BaseEmbeddingsToolkit
+<pre><code class="python">from .base_embeddings import BaseEmbeddingsToolkit, BaseEmbeddings
 from typing import Dict, Any, List, Optional
 import json, requests, os
 
-class APIEmbeddings(Embeddings):
+class APIEmbeddings(BaseEmbeddings):
 
     def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -&gt; None:
         self.base_url = base_url.removeprefix(&#39;/&#39;)
@@ -39,13 +38,13 @@ class APIEmbeddings(Embeddings):
         self.info = json.loads(requests.get(self.base_url + &#39;/info&#39;).content.decode())
 
     def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
-        &#34;&#34;&#34;embed search docs.
+        &#34;&#34;&#34;Embed list of texts.
 
         Args:
             texts (List[str]): List of texts to embed.
 
         Returns:
-            List[List[float]]: List of embeddings given the texts.
+            List[List[float]]: List of embedded vectors.
         &#34;&#34;&#34;
         show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
 
@@ -61,18 +60,6 @@ class APIEmbeddings(Embeddings):
             content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
             embeddings += json.loads(content)
         return embeddings
-
-        
-    def embed_query(self, text: str) -&gt; List[float]:
-        &#34;&#34;&#34;Embed query text.
-
-        Args:
-            text (str): Text to embed.
-
-        Returns:
-            List[float]: Embeddings of the text.
-        &#34;&#34;&#34;
-        return self.embed_documents([text])[0]
 
 class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
@@ -92,15 +79,18 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoTokenizer
-        self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
-        self._name = self.embedding_model.info[&#39;model_id&#39;]
-        self._type = &#39;api_embeddings&#39;
-        self._embedding_size = self.embedding_model.info[&#39;embedding_dimension&#39;]
-        chunk_size = min(self.embedding_model.info[&#39;max_seq_length&#39;], 512) if not isinstance(chunk_size, int) else chunk_size
-        self._tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs)
-        encode_fn = lambda x: self._tokenizer.encode(x, add_special_tokens=False)
-        decode_fn = lambda x: self._tokenizer.decode(x, skip_special_tokens=True)
-        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)</code></pre>
+        embedding_model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
+        name = embedding_model.info[&#39;model_id&#39;]
+        type = &#39;api_embeddings&#39;
+        embedding_size = embedding_model.info[&#39;embedding_dimension&#39;]
+        max_seq_length = embedding_model.info[&#39;max_seq_length&#39;]
+        chunk_size = min(max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        tokenizer = AutoTokenizer.from_pretrained(name, **tokenizer_kwargs)
+        encode_fn = lambda x: tokenizer.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: tokenizer.decode(x, skip_special_tokens=True)
+        text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+                         type = type, embedding_size = embedding_size, max_seq_length = max_seq_length)</code></pre>
 </details>
 </section>
 <section>
@@ -117,12 +107,12 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <span>(</span><span>base_url: str, encode_kwargs: Dict[str, Any] = {})</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Interface for embedding models.</p></div>
+<div class="desc"><p>Base class for embeddings model.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class APIEmbeddings(Embeddings):
+<pre><code class="python">class APIEmbeddings(BaseEmbeddings):
 
     def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -&gt; None:
         self.base_url = base_url.removeprefix(&#39;/&#39;)
@@ -130,13 +120,13 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         self.info = json.loads(requests.get(self.base_url + &#39;/info&#39;).content.decode())
 
     def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
-        &#34;&#34;&#34;embed search docs.
+        &#34;&#34;&#34;Embed list of texts.
 
         Args:
             texts (List[str]): List of texts to embed.
 
         Returns:
-            List[List[float]]: List of embeddings given the texts.
+            List[List[float]]: List of embedded vectors.
         &#34;&#34;&#34;
         show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
 
@@ -151,103 +141,22 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
             req_dict.update(self.encode_kwargs)
             content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
             embeddings += json.loads(content)
-        return embeddings
-
-        
-    def embed_query(self, text: str) -&gt; List[float]:
-        &#34;&#34;&#34;Embed query text.
-
-        Args:
-            text (str): Text to embed.
-
-        Returns:
-            List[float]: Embeddings of the text.
-        &#34;&#34;&#34;
-        return self.embed_documents([text])[0]</code></pre>
+        return embeddings</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li>langchain_core.embeddings.Embeddings</li>
+<li><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></li>
 <li>abc.ABC</li>
 </ul>
-<h3>Methods</h3>
-<dl>
-<dt id="llmflex.Embeddings.api_embeddings.APIEmbeddings.embed_documents"><code class="name flex">
-<span>def <span class="ident">embed_documents</span></span>(<span>self, texts: List[str]) ‑> List[List[float]]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>embed search docs.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>texts</code></strong> :&ensp;<code>List[str]</code></dt>
-<dd>List of texts to embed.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>List[List[float]]</code></dt>
-<dd>List of embeddings given the texts.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
-    &#34;&#34;&#34;embed search docs.
-
-    Args:
-        texts (List[str]): List of texts to embed.
-
-    Returns:
-        List[List[float]]: List of embeddings given the texts.
-    &#34;&#34;&#34;
-    show_progress = self.encode_kwargs.get(&#39;show_progress_bar&#39;, False)
-
-    from tqdm import tqdm
-    batch_size = self.encode_kwargs.get(&#39;batch_size&#39;, self.info[&#39;default_batch_size&#39;])
-    num_text = len(texts)
-    num_batch = num_text // batch_size if (num_text // batch_size) == (num_text / batch_size) else (num_text // batch_size) + 1
-    batches = list(map(lambda x: (x * batch_size, min((x + 1) * batch_size, num_text)), range(num_batch)))
-    embeddings = []
-    for b in tqdm(batches) if show_progress else batches:
-        req_dict = dict(input_texts=texts[b[0]:b[1]])
-        req_dict.update(self.encode_kwargs)
-        content = requests.get(self.base_url + &#39;/embeddings&#39;, json=req_dict).content.decode()
-        embeddings += json.loads(content)
-    return embeddings</code></pre>
-</details>
-</dd>
-<dt id="llmflex.Embeddings.api_embeddings.APIEmbeddings.embed_query"><code class="name flex">
-<span>def <span class="ident">embed_query</span></span>(<span>self, text: str) ‑> List[float]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Embed query text.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
-<dd>Text to embed.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>List[float]</code></dt>
-<dd>Embeddings of the text.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def embed_query(self, text: str) -&gt; List[float]:
-    &#34;&#34;&#34;Embed query text.
-
-    Args:
-        text (str): Text to embed.
-
-    Returns:
-        List[float]: Embeddings of the text.
-    &#34;&#34;&#34;
-    return self.embed_documents([text])[0]</code></pre>
-</details>
-</dd>
-</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents">embed_documents</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query">embed_query</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 <dt id="llmflex.Embeddings.api_embeddings.APIEmbeddingsToolkit"><code class="flex name class">
 <span>class <span class="ident">APIEmbeddingsToolkit</span></span>
@@ -291,15 +200,18 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoTokenizer
-        self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
-        self._name = self.embedding_model.info[&#39;model_id&#39;]
-        self._type = &#39;api_embeddings&#39;
-        self._embedding_size = self.embedding_model.info[&#39;embedding_dimension&#39;]
-        chunk_size = min(self.embedding_model.info[&#39;max_seq_length&#39;], 512) if not isinstance(chunk_size, int) else chunk_size
-        self._tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs)
-        encode_fn = lambda x: self._tokenizer.encode(x, add_special_tokens=False)
-        decode_fn = lambda x: self._tokenizer.decode(x, skip_special_tokens=True)
-        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)</code></pre>
+        embedding_model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
+        name = embedding_model.info[&#39;model_id&#39;]
+        type = &#39;api_embeddings&#39;
+        embedding_size = embedding_model.info[&#39;embedding_dimension&#39;]
+        max_seq_length = embedding_model.info[&#39;max_seq_length&#39;]
+        chunk_size = min(max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        tokenizer = AutoTokenizer.from_pretrained(name, **tokenizer_kwargs)
+        encode_fn = lambda x: tokenizer.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: tokenizer.decode(x, skip_special_tokens=True)
+        text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+                         type = type, embedding_size = embedding_size, max_seq_length = max_seq_length)</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
@@ -309,8 +221,12 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <ul class="hlist">
 <li><code><b><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></b></code>:
 <ul class="hlist">
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed">batch_embed</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed">embed</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model">embedding_model</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size">embedding_size</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings">langchain_embeddings</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length">max_seq_length</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name">name</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter">text_splitter</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type" href="base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type">type</a></code></li>
@@ -336,10 +252,6 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <ul>
 <li>
 <h4><code><a title="llmflex.Embeddings.api_embeddings.APIEmbeddings" href="#llmflex.Embeddings.api_embeddings.APIEmbeddings">APIEmbeddings</a></code></h4>
-<ul class="">
-<li><code><a title="llmflex.Embeddings.api_embeddings.APIEmbeddings.embed_documents" href="#llmflex.Embeddings.api_embeddings.APIEmbeddings.embed_documents">embed_documents</a></code></li>
-<li><code><a title="llmflex.Embeddings.api_embeddings.APIEmbeddings.embed_query" href="#llmflex.Embeddings.api_embeddings.APIEmbeddings.embed_query">embed_query</a></code></li>
-</ul>
 </li>
 <li>
 <h4><code><a title="llmflex.Embeddings.api_embeddings.APIEmbeddingsToolkit" href="#llmflex.Embeddings.api_embeddings.APIEmbeddingsToolkit">APIEmbeddingsToolkit</a></code></h4>

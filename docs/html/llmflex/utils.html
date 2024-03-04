@@ -216,7 +216,21 @@ def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None
     if isinstance(st_home, str):
         config[&#39;st_home&#39;] = os.path.abspath(st_home)
 
-    save_json(config, get_config_dir())</code></pre>
+    save_json(config, get_config_dir())
+
+def validate_type(obj: Any, cls: Any) -&gt; Any:
+    &#34;&#34;&#34;Validate the type of the given object.
+
+    Args:
+        obj (Any): Object to validate.
+        cls (Any): Class info to validate.
+
+    Returns:
+        Any: Th original object if not error is raised.
+    &#34;&#34;&#34;
+    if not isinstance(obj, cls):
+        raise ValueError(f&#39;{obj} is not a {cls} instance.&#39;)
+    return obj</code></pre>
 </details>
 </section>
 <section>
@@ -573,6 +587,42 @@ def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None
     save_json(config, get_config_dir())</code></pre>
 </details>
 </dd>
+<dt id="llmflex.utils.validate_type"><code class="name flex">
+<span>def <span class="ident">validate_type</span></span>(<span>obj: Any, cls: Any) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Validate the type of the given object.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>obj</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Object to validate.</dd>
+<dt><strong><code>cls</code></strong> :&ensp;<code>Any</code></dt>
+<dd>Class info to validate.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>Th original object if not error is raised.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def validate_type(obj: Any, cls: Any) -&gt; Any:
+    &#34;&#34;&#34;Validate the type of the given object.
+
+    Args:
+        obj (Any): Object to validate.
+        cls (Any): Class info to validate.
+
+    Returns:
+        Any: Th original object if not error is raised.
+    &#34;&#34;&#34;
+    if not isinstance(obj, cls):
+        raise ValueError(f&#39;{obj} is not a {cls} instance.&#39;)
+    return obj</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -602,6 +652,7 @@ def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None
 <li><code><a title="llmflex.utils.read_json" href="#llmflex.utils.read_json">read_json</a></code></li>
 <li><code><a title="llmflex.utils.save_json" href="#llmflex.utils.save_json">save_json</a></code></li>
 <li><code><a title="llmflex.utils.set_config" href="#llmflex.utils.set_config">set_config</a></code></li>
+<li><code><a title="llmflex.utils.validate_type" href="#llmflex.utils.validate_type">validate_type</a></code></li>
 </ul>
 </li>
 </ul>

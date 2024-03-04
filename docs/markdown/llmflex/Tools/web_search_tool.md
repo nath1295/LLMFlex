@@ -40,12 +40,12 @@ Classes
 
     ### Methods
 
-    `create_relevant_content_chunks(self, query: str, vectordb: llmflex.Data.vector_database.VectorDatabase) ‑> Tuple[List[Dict[str, Any]], str]`
+    `create_relevant_content_chunks(self, query: str, vectordb: llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase) ‑> Tuple[List[Dict[str, Any]], str]`
     :   Return the relevant chunks of contents from the vector database.
         
         Args:
             query (str): Search query.
-            vectordb (VectorDatabase): Vector database of search result contents.
+            vectordb (FaissVectorDatabase): Vector database of search result contents.
         
         Returns:
             Tuple[List[Dict[str, Any]], str]: List of relevant chunks of contents and their links.
@@ -62,7 +62,7 @@ Classes
         Returns:
             str: Search query.
 
-    `create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[llmflex.Models.Cores.base_core.BaseLLM]] = None) ‑> llmflex.Data.vector_database.VectorDatabase`
+    `create_vectordb(self, results: List[Dict[str, Any]], llm: Optional[Type[llmflex.Models.Cores.base_core.BaseLLM]] = None) ‑> llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase`
     :   Creating a temporary vector database of the search result contents.
         
         Args:
@@ -70,7 +70,7 @@ Classes
             llm (Optional[Type[BaseLLM]], optional): LLM for counting tokens to split contents. If none is given, the embeddings toolkit text splitter will be used. Defaults to None.
         
         Returns:
-            VectorDatabase: The temporary vector database.
+            FaissVectorDatabase: The temporary vector database.
 
     `generate_response(self, tool_input: str, chunks: List[Dict[str, Any]], llm: Type[llmflex.Models.Cores.base_core.BaseLLM], history: Union[List[str], List[Tuple[str, str]], ForwardRef(None)] = None, stream: bool = False, prompt_template: Optional[llmflex.Prompts.prompt_template.PromptTemplate] = None) ‑> Union[str, Iterator[str]]`
     :

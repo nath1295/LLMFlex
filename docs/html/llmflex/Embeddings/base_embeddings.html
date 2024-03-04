@@ -26,37 +26,78 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from langchain.embeddings.base import Embeddings
-from langchain.text_splitter import TextSplitter
-from typing import Type
+<pre><code class="python">from ..TextSplitters.base_text_splitter import BaseTextSplitter
+from langchain.embeddings.base import Embeddings
+from abc import ABC, abstractmethod
+import numpy as np
+from typing import List, Type
+
+class BaseEmbeddings(ABC):
+    &#34;&#34;&#34;Base class for embeddings model.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        &#34;&#34;&#34;Embed list of texts.
+
+        Args:
+            texts (List[str]): List of texts to embed.
+
+        Returns:
+            List[List[float]]: List of embedded vectors.
+        &#34;&#34;&#34;
+        pass
+
+    def embed_query(self, text: str) -&gt; List[float]:
+        &#34;&#34;&#34;Embed one string.
+
+        Args:
+            text (str): String to embed.
+
+        Returns:
+            List[float]: embeddings of the string. 
+        &#34;&#34;&#34;
+        return self.embed_documents([text])[0]
+
+class LangchainEmbeddings(Embeddings):
+    &#34;&#34;&#34;Class for langchain compatible embeddings.
+    &#34;&#34;&#34;
+    def __init__(self, model: Type[BaseEmbeddings]) -&gt; None:
+        self._model = model
+
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        return self._model.embed_documents(texts=texts)
+    
+    def embed_query(self, text: str) -&gt; List[float]:
+        return self._model.embed_query(text=text)
 
 class BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Base class for storing the embedding model and the text splitter.
     &#34;&#34;&#34;
-    def __init__(self) -&gt; None:
-        &#34;&#34;&#34;Initialising the embedding toolkit.
-        &#34;&#34;&#34;
-        self._model = Embeddings()
-        self._text_splitter = TextSplitter()
-        self._name = &#39;base_embeddings&#39;
-        self._type = &#39;base_embeddings&#39;
-        self._embedding_size = 1024
+    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], name: str, type: str, embedding_size: int, max_seq_length: int) -&gt; None:
+        from ..utils import validate_type
+        self._embedding_model = validate_type(embedding_model, BaseEmbeddings)
+        self._text_splitter = validate_type(text_splitter, BaseTextSplitter)
+        self._name = validate_type(name, str)
+        self._type = validate_type(type, str)
+        self._embedding_size = validate_type(embedding_size, int)
+        self._max_seq_length = validate_type(max_seq_length, int)
 
     @property
-    def embedding_model(self) -&gt; Type[Embeddings]:
+    def embedding_model(self) -&gt; BaseEmbeddings:
         &#34;&#34;&#34;The embedding model.
 
         Returns:
-            Embeddings: The embedding model.
+            BaseEmbeddings: The embedding model.
         &#34;&#34;&#34;
-        return self._model
+        return self._embedding_model
     
     @property
-    def text_splitter(self) -&gt; Type[TextSplitter]:
+    def text_splitter(self) -&gt; BaseTextSplitter:
         &#34;&#34;&#34;The text splitter.
 
         Returns:
-            TextSplitter: The text splitter.
+            BaseTextSplitter: The text splitter.
         &#34;&#34;&#34;
         return self._text_splitter
     
@@ -68,6 +109,15 @@ class BaseEmbeddingsToolkit:
             int: The embedding model&#39;s output dimensions.
         &#34;&#34;&#34;
         return self._embedding_size
+    
+    @property
+    def max_seq_length(self) -&gt; int:
+        &#34;&#34;&#34;Maximum number of tokens used in each embedding vector.
+
+        Returns:
+            int: Maximum number of tokens used in each embedding vector.
+        &#34;&#34;&#34;
+        self._max_seq_length
     
     @property
     def type(self) -&gt; str:
@@ -85,7 +135,39 @@ class BaseEmbeddingsToolkit:
         Returns:
             str: Name of the embedding model.
         &#34;&#34;&#34;
-        return self._name</code></pre>
+        return self._name
+    
+    @property
+    def langchain_embeddings(self) -&gt; LangchainEmbeddings:
+        &#34;&#34;&#34;Langchain compatible embeddings model.
+
+        Returns:
+            LangchainEmbeddings: Langchain compatible embeddings model.
+        &#34;&#34;&#34;
+        return LangchainEmbeddings(self.embedding_model)
+    
+    def batch_embed(self, texts: List[str]) -&gt; np.ndarray[np.float32]:
+        &#34;&#34;&#34;Embed list of texts.
+
+        Args:
+            texts (List[str]): List of text to embed.
+
+        Returns:
+            np.ndarray[np.float32]: Array of embedding vectors of the list of texts.
+        &#34;&#34;&#34;
+        vectors = self.embedding_model.embed_documents(texts=texts)
+        return np.array(vectors, dtype=np.float32)
+    
+    def embed(self, text: str) -&gt; np.ndarray[np.float32]:
+        &#34;&#34;&#34;Embed a single string.
+
+        Args:
+            text (str): String to embed.
+
+        Returns:
+            np.ndarray[np.float32]: Vector of the embedded stirng.
+        &#34;&#34;&#34;
+        return self.batch_embed([text])[0]</code></pre>
 </details>
 </section>
 <section>
@@ -97,12 +179,124 @@ class BaseEmbeddingsToolkit:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit"><code class="flex name class">
-<span>class <span class="ident">BaseEmbeddingsToolkit</span></span>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddings"><code class="flex name class">
+<span>class <span class="ident">BaseEmbeddings</span></span>
 </code></dt>
 <dd>
-<div class="desc"><p>Base class for storing the embedding model and the text splitter.</p>
-<p>Initialising the embedding toolkit.</p></div>
+<div class="desc"><p>Base class for embeddings model.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseEmbeddings(ABC):
+    &#34;&#34;&#34;Base class for embeddings model.
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        &#34;&#34;&#34;Embed list of texts.
+
+        Args:
+            texts (List[str]): List of texts to embed.
+
+        Returns:
+            List[List[float]]: List of embedded vectors.
+        &#34;&#34;&#34;
+        pass
+
+    def embed_query(self, text: str) -&gt; List[float]:
+        &#34;&#34;&#34;Embed one string.
+
+        Args:
+            text (str): String to embed.
+
+        Returns:
+            List[float]: embeddings of the string. 
+        &#34;&#34;&#34;
+        return self.embed_documents([text])[0]</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="llmflex.Embeddings.api_embeddings.APIEmbeddings" href="api_embeddings.html#llmflex.Embeddings.api_embeddings.APIEmbeddings">APIEmbeddings</a></li>
+<li><a title="llmflex.Embeddings.huggingface_embeddings.HuggingFaceEmbeddings" href="huggingface_embeddings.html#llmflex.Embeddings.huggingface_embeddings.HuggingFaceEmbeddings">HuggingFaceEmbeddings</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents"><code class="name flex">
+<span>def <span class="ident">embed_documents</span></span>(<span>self, texts: List[str]) ‑> List[List[float]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed list of texts.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>texts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of texts to embed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[List[float]]</code></dt>
+<dd>List of embedded vectors.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+    &#34;&#34;&#34;Embed list of texts.
+
+    Args:
+        texts (List[str]): List of texts to embed.
+
+    Returns:
+        List[List[float]]: List of embedded vectors.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query"><code class="name flex">
+<span>def <span class="ident">embed_query</span></span>(<span>self, text: str) ‑> List[float]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed one string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>String to embed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[float]</code></dt>
+<dd>embeddings of the string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def embed_query(self, text: str) -&gt; List[float]:
+    &#34;&#34;&#34;Embed one string.
+
+    Args:
+        text (str): String to embed.
+
+    Returns:
+        List[float]: embeddings of the string. 
+    &#34;&#34;&#34;
+    return self.embed_documents([text])[0]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit"><code class="flex name class">
+<span>class <span class="ident">BaseEmbeddingsToolkit</span></span>
+<span>(</span><span>embedding_model: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a>], text_splitter: Type[<a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a>], name: str, type: str, embedding_size: int, max_seq_length: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for storing the embedding model and the text splitter.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -110,30 +304,30 @@ class BaseEmbeddingsToolkit:
 <pre><code class="python">class BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Base class for storing the embedding model and the text splitter.
     &#34;&#34;&#34;
-    def __init__(self) -&gt; None:
-        &#34;&#34;&#34;Initialising the embedding toolkit.
-        &#34;&#34;&#34;
-        self._model = Embeddings()
-        self._text_splitter = TextSplitter()
-        self._name = &#39;base_embeddings&#39;
-        self._type = &#39;base_embeddings&#39;
-        self._embedding_size = 1024
+    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], name: str, type: str, embedding_size: int, max_seq_length: int) -&gt; None:
+        from ..utils import validate_type
+        self._embedding_model = validate_type(embedding_model, BaseEmbeddings)
+        self._text_splitter = validate_type(text_splitter, BaseTextSplitter)
+        self._name = validate_type(name, str)
+        self._type = validate_type(type, str)
+        self._embedding_size = validate_type(embedding_size, int)
+        self._max_seq_length = validate_type(max_seq_length, int)
 
     @property
-    def embedding_model(self) -&gt; Type[Embeddings]:
+    def embedding_model(self) -&gt; BaseEmbeddings:
         &#34;&#34;&#34;The embedding model.
 
         Returns:
-            Embeddings: The embedding model.
+            BaseEmbeddings: The embedding model.
         &#34;&#34;&#34;
-        return self._model
+        return self._embedding_model
     
     @property
-    def text_splitter(self) -&gt; Type[TextSplitter]:
+    def text_splitter(self) -&gt; BaseTextSplitter:
         &#34;&#34;&#34;The text splitter.
 
         Returns:
-            TextSplitter: The text splitter.
+            BaseTextSplitter: The text splitter.
         &#34;&#34;&#34;
         return self._text_splitter
     
@@ -145,6 +339,15 @@ class BaseEmbeddingsToolkit:
             int: The embedding model&#39;s output dimensions.
         &#34;&#34;&#34;
         return self._embedding_size
+    
+    @property
+    def max_seq_length(self) -&gt; int:
+        &#34;&#34;&#34;Maximum number of tokens used in each embedding vector.
+
+        Returns:
+            int: Maximum number of tokens used in each embedding vector.
+        &#34;&#34;&#34;
+        self._max_seq_length
     
     @property
     def type(self) -&gt; str:
@@ -162,7 +365,39 @@ class BaseEmbeddingsToolkit:
         Returns:
             str: Name of the embedding model.
         &#34;&#34;&#34;
-        return self._name</code></pre>
+        return self._name
+    
+    @property
+    def langchain_embeddings(self) -&gt; LangchainEmbeddings:
+        &#34;&#34;&#34;Langchain compatible embeddings model.
+
+        Returns:
+            LangchainEmbeddings: Langchain compatible embeddings model.
+        &#34;&#34;&#34;
+        return LangchainEmbeddings(self.embedding_model)
+    
+    def batch_embed(self, texts: List[str]) -&gt; np.ndarray[np.float32]:
+        &#34;&#34;&#34;Embed list of texts.
+
+        Args:
+            texts (List[str]): List of text to embed.
+
+        Returns:
+            np.ndarray[np.float32]: Array of embedding vectors of the list of texts.
+        &#34;&#34;&#34;
+        vectors = self.embedding_model.embed_documents(texts=texts)
+        return np.array(vectors, dtype=np.float32)
+    
+    def embed(self, text: str) -&gt; np.ndarray[np.float32]:
+        &#34;&#34;&#34;Embed a single string.
+
+        Args:
+            text (str): String to embed.
+
+        Returns:
+            np.ndarray[np.float32]: Vector of the embedded stirng.
+        &#34;&#34;&#34;
+        return self.batch_embed([text])[0]</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -171,12 +406,12 @@ class BaseEmbeddingsToolkit:
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model"><code class="name">var <span class="ident">embedding_model</span> : Type[langchain_core.embeddings.Embeddings]</code></dt>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model"><code class="name">var <span class="ident">embedding_model</span> : <a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></code></dt>
 <dd>
 <div class="desc"><p>The embedding model.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Embeddings</code></dt>
+<dt><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></code></dt>
 <dd>The embedding model.</dd>
 </dl></div>
 <details class="source">
@@ -184,13 +419,13 @@ class BaseEmbeddingsToolkit:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def embedding_model(self) -&gt; Type[Embeddings]:
+def embedding_model(self) -&gt; BaseEmbeddings:
     &#34;&#34;&#34;The embedding model.
 
     Returns:
-        Embeddings: The embedding model.
+        BaseEmbeddings: The embedding model.
     &#34;&#34;&#34;
-    return self._model</code></pre>
+    return self._embedding_model</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size"><code class="name">var <span class="ident">embedding_size</span> : int</code></dt>
@@ -215,6 +450,50 @@ def embedding_size(self) -&gt; int:
     return self._embedding_size</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings"><code class="name">var <span class="ident">langchain_embeddings</span> : <a title="llmflex.Embeddings.base_embeddings.LangchainEmbeddings" href="#llmflex.Embeddings.base_embeddings.LangchainEmbeddings">LangchainEmbeddings</a></code></dt>
+<dd>
+<div class="desc"><p>Langchain compatible embeddings model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Embeddings.base_embeddings.LangchainEmbeddings" href="#llmflex.Embeddings.base_embeddings.LangchainEmbeddings">LangchainEmbeddings</a></code></dt>
+<dd>Langchain compatible embeddings model.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def langchain_embeddings(self) -&gt; LangchainEmbeddings:
+    &#34;&#34;&#34;Langchain compatible embeddings model.
+
+    Returns:
+        LangchainEmbeddings: Langchain compatible embeddings model.
+    &#34;&#34;&#34;
+    return LangchainEmbeddings(self.embedding_model)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length"><code class="name">var <span class="ident">max_seq_length</span> : int</code></dt>
+<dd>
+<div class="desc"><p>Maximum number of tokens used in each embedding vector.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>Maximum number of tokens used in each embedding vector.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def max_seq_length(self) -&gt; int:
+    &#34;&#34;&#34;Maximum number of tokens used in each embedding vector.
+
+    Returns:
+        int: Maximum number of tokens used in each embedding vector.
+    &#34;&#34;&#34;
+    self._max_seq_length</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
 <dd>
 <div class="desc"><p>Name of the embedding model.</p>
@@ -237,12 +516,12 @@ def name(self) -&gt; str:
     return self._name</code></pre>
 </details>
 </dd>
-<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter"><code class="name">var <span class="ident">text_splitter</span> : Type[langchain.text_splitter.TextSplitter]</code></dt>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter"><code class="name">var <span class="ident">text_splitter</span> : <a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a></code></dt>
 <dd>
 <div class="desc"><p>The text splitter.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>TextSplitter</code></dt>
+<dt><code>BaseTextSplitter</code></dt>
 <dd>The text splitter.</dd>
 </dl></div>
 <details class="source">
@@ -250,11 +529,11 @@ def name(self) -&gt; str:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def text_splitter(self) -&gt; Type[TextSplitter]:
+def text_splitter(self) -&gt; BaseTextSplitter:
     &#34;&#34;&#34;The text splitter.
 
     Returns:
-        TextSplitter: The text splitter.
+        BaseTextSplitter: The text splitter.
     &#34;&#34;&#34;
     return self._text_splitter</code></pre>
 </details>
@@ -282,6 +561,129 @@ def type(self) -&gt; str:
 </details>
 </dd>
 </dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed"><code class="name flex">
+<span>def <span class="ident">batch_embed</span></span>(<span>self, texts: List[str]) ‑> numpy.ndarray[numpy.float32]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed list of texts.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>texts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of text to embed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.ndarray[np.float32]</code></dt>
+<dd>Array of embedding vectors of the list of texts.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_embed(self, texts: List[str]) -&gt; np.ndarray[np.float32]:
+    &#34;&#34;&#34;Embed list of texts.
+
+    Args:
+        texts (List[str]): List of text to embed.
+
+    Returns:
+        np.ndarray[np.float32]: Array of embedding vectors of the list of texts.
+    &#34;&#34;&#34;
+    vectors = self.embedding_model.embed_documents(texts=texts)
+    return np.array(vectors, dtype=np.float32)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed"><code class="name flex">
+<span>def <span class="ident">embed</span></span>(<span>self, text: str) ‑> numpy.ndarray[numpy.float32]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed a single string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>String to embed.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.ndarray[np.float32]</code></dt>
+<dd>Vector of the embedded stirng.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def embed(self, text: str) -&gt; np.ndarray[np.float32]:
+    &#34;&#34;&#34;Embed a single string.
+
+    Args:
+        text (str): String to embed.
+
+    Returns:
+        np.ndarray[np.float32]: Vector of the embedded stirng.
+    &#34;&#34;&#34;
+    return self.batch_embed([text])[0]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Embeddings.base_embeddings.LangchainEmbeddings"><code class="flex name class">
+<span>class <span class="ident">LangchainEmbeddings</span></span>
+<span>(</span><span>model: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a>])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class for langchain compatible embeddings.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LangchainEmbeddings(Embeddings):
+    &#34;&#34;&#34;Class for langchain compatible embeddings.
+    &#34;&#34;&#34;
+    def __init__(self, model: Type[BaseEmbeddings]) -&gt; None:
+        self._model = model
+
+    def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+        return self._model.embed_documents(texts=texts)
+    
+    def embed_query(self, text: str) -&gt; List[float]:
+        return self._model.embed_query(text=text)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>langchain_core.embeddings.Embeddings</li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Embeddings.base_embeddings.LangchainEmbeddings.embed_documents"><code class="name flex">
+<span>def <span class="ident">embed_documents</span></span>(<span>self, texts: List[str]) ‑> List[List[float]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed search docs.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
+    return self._model.embed_documents(texts=texts)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Embeddings.base_embeddings.LangchainEmbeddings.embed_query"><code class="name flex">
+<span>def <span class="ident">embed_query</span></span>(<span>self, text: str) ‑> List[float]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Embed query text.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def embed_query(self, text: str) -&gt; List[float]:
+    return self._model.embed_query(text=text)</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -300,13 +702,31 @@ def type(self) -&gt; str:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_documents">embed_documents</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings.embed_query">embed_query</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></code></h4>
 <ul class="">
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.batch_embed">batch_embed</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embed">embed</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_model">embedding_model</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.embedding_size">embedding_size</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.langchain_embeddings">langchain_embeddings</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length">max_seq_length</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name">name</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter">text_splitter</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type">type</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Embeddings.base_embeddings.LangchainEmbeddings" href="#llmflex.Embeddings.base_embeddings.LangchainEmbeddings">LangchainEmbeddings</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Embeddings.base_embeddings.LangchainEmbeddings.embed_documents" href="#llmflex.Embeddings.base_embeddings.LangchainEmbeddings.embed_documents">embed_documents</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.LangchainEmbeddings.embed_query" href="#llmflex.Embeddings.base_embeddings.LangchainEmbeddings.embed_query">embed_query</a></code></li>
 </ul>
 </li>
 </ul>

@@ -40,11 +40,11 @@ Classes
 
     ### Instance variables
 
-    `embeddings: Type[llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit]`
+    `embeddings: llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit`
     :   Embeddings toolkit.
         
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
 
     `text_splitter: llmflex.TextSplitters.sentence_token_text_splitter.SentenceTokenTextSplitter`
     :   Sentence text splitter.
@@ -52,11 +52,11 @@ Classes
         Returns:
             SentenceTokenTextSplitter: Sentence text splitter.
 
-    `vectordb: llmflex.Data.vector_database.VectorDatabase`
+    `vectordb: llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase`
     :   Vector database for saving the chat history.
         
         Returns:
-            VectorDatabase: Vector database for saving the chat history.
+            FaissVectorDatabase: Vector database for saving the chat history.
 
     ### Methods
 

@@ -190,5 +190,17 @@ def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None
 
     save_json(config, get_config_dir())
 
+def validate_type(obj: Any, cls: Any) -> Any:
+    """Validate the type of the given object.
 
+    Args:
+        obj (Any): Object to validate.
+        cls (Any): Class info to validate.
+
+    Returns:
+        Any: Th original object if not error is raised.
+    """
+    if not isinstance(obj, cls):
+        raise ValueError(f'{obj} is not a {cls} instance.')
+    return obj
 

@@ -27,7 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from .base_tool import BaseTool
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from ..Models.Factory.llm_factory import LlmFactory
@@ -75,7 +75,7 @@ class ToolSelector:
         if len(tools) == 0:
             raise ValueError(f&#39;At least one tool must be provided.&#39;)
         self._tools = tools
-        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._vectordb = FaissVectorDatabase.from_documents(embeddings=embeddings, docs=[])
         self._llm = model(temperature=0, max_new_tokens=128, stop=model.prompt_template.stop + [&#39;```&#39;])
         self._score_threshold = score_threshold
         self._last_score = 0
@@ -97,20 +97,20 @@ class ToolSelector:
 
 
     @property
-    def tools(self) -&gt; List[Type[BaseTool]]:
+    def tools(self) -&gt; List[BaseTool]:
         &#34;&#34;&#34;List of tools.
 
         Returns:
-            List[Type[BaseTool]]: List of tools.
+            List[BaseTool]: List of tools.
         &#34;&#34;&#34;
         return self._tools
 
     @property
-    def vectordb(self) -&gt; Optional[VectorDatabase]:
+    def vectordb(self) -&gt; Optional[FaissVectorDatabase]:
         &#34;&#34;&#34;Vector database for that store tools information.
 
         Returns:
-            VectorDatabase: Vector database for that store tools information.
+            Optional[FaissVectorDatabase]: Vector database for that store tools information.
         &#34;&#34;&#34;
         return self._vectordb
     
@@ -159,7 +159,7 @@ class ToolSelector:
         self._score_threshold = score_threshold
 
     def get_tool(self, user_input: str, 
-                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[Type[BaseTool]]:
+                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[BaseTool]:
         &#34;&#34;&#34;Select the most appropriate tool for a given user input.
 
         Args:
@@ -169,7 +169,7 @@ class ToolSelector:
             system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
         Returns:
-            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
+            Optional[BaseTool]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
         import json
         prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
@@ -224,7 +224,7 @@ class ToolSelector:
         if len(tools) == 0:
             raise ValueError(f&#39;At least one tool must be provided.&#39;)
         self._tools = tools
-        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._vectordb = FaissVectorDatabase.from_documents(embeddings=embeddings, docs=[])
         self._llm = model(temperature=0, max_new_tokens=128, stop=model.prompt_template.stop + [&#39;```&#39;])
         self._score_threshold = score_threshold
         self._last_score = 0
@@ -246,20 +246,20 @@ class ToolSelector:
 
 
     @property
-    def tools(self) -&gt; List[Type[BaseTool]]:
+    def tools(self) -&gt; List[BaseTool]:
         &#34;&#34;&#34;List of tools.
 
         Returns:
-            List[Type[BaseTool]]: List of tools.
+            List[BaseTool]: List of tools.
         &#34;&#34;&#34;
         return self._tools
 
     @property
-    def vectordb(self) -&gt; Optional[VectorDatabase]:
+    def vectordb(self) -&gt; Optional[FaissVectorDatabase]:
         &#34;&#34;&#34;Vector database for that store tools information.
 
         Returns:
-            VectorDatabase: Vector database for that store tools information.
+            Optional[FaissVectorDatabase]: Vector database for that store tools information.
         &#34;&#34;&#34;
         return self._vectordb
     
@@ -308,7 +308,7 @@ class ToolSelector:
         self._score_threshold = score_threshold
 
     def get_tool(self, user_input: str, 
-                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[Type[BaseTool]]:
+                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[BaseTool]:
         &#34;&#34;&#34;Select the most appropriate tool for a given user input.
 
         Args:
@@ -318,7 +318,7 @@ class ToolSelector:
             system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
         Returns:
-            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
+            Optional[BaseTool]: Selected tool or None if no tool is found or required.
         &#34;&#34;&#34;
         import json
         prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
@@ -434,12 +434,12 @@ def score_threshold(self) -&gt; float:
     return self._score_threshold</code></pre>
 </details>
 </dd>
-<dt id="llmflex.Tools.tool_selection.ToolSelector.tools"><code class="name">var <span class="ident">tools</span> : List[Type[<a title="llmflex.Tools.base_tool.BaseTool" href="base_tool.html#llmflex.Tools.base_tool.BaseTool">BaseTool</a>]]</code></dt>
+<dt id="llmflex.Tools.tool_selection.ToolSelector.tools"><code class="name">var <span class="ident">tools</span> : List[<a title="llmflex.Tools.base_tool.BaseTool" href="base_tool.html#llmflex.Tools.base_tool.BaseTool">BaseTool</a>]</code></dt>
 <dd>
 <div class="desc"><p>List of tools.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>List[Type[BaseTool]]</code></dt>
+<dt><code>List[BaseTool]</code></dt>
 <dd>List of tools.</dd>
 </dl></div>
 <details class="source">
@@ -447,21 +447,21 @@ def score_threshold(self) -&gt; float:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def tools(self) -&gt; List[Type[BaseTool]]:
+def tools(self) -&gt; List[BaseTool]:
     &#34;&#34;&#34;List of tools.
 
     Returns:
-        List[Type[BaseTool]]: List of tools.
+        List[BaseTool]: List of tools.
     &#34;&#34;&#34;
     return self._tools</code></pre>
 </details>
 </dd>
-<dt id="llmflex.Tools.tool_selection.ToolSelector.vectordb"><code class="name">var <span class="ident">vectordb</span> : Optional[<a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a>]</code></dt>
+<dt id="llmflex.Tools.tool_selection.ToolSelector.vectordb"><code class="name">var <span class="ident">vectordb</span> : Optional[<a title="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase" href="../VectorDBs/faiss_vectordb.html#llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a>]</code></dt>
 <dd>
 <div class="desc"><p>Vector database for that store tools information.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>VectorDatabase</code></dt>
+<dt><code>Optional[FaissVectorDatabase]</code></dt>
 <dd>Vector database for that store tools information.</dd>
 </dl></div>
 <details class="source">
@@ -469,11 +469,11 @@ def tools(self) -&gt; List[Type[BaseTool]]:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def vectordb(self) -&gt; Optional[VectorDatabase]:
+def vectordb(self) -&gt; Optional[FaissVectorDatabase]:
     &#34;&#34;&#34;Vector database for that store tools information.
 
     Returns:
-        VectorDatabase: Vector database for that store tools information.
+        Optional[FaissVectorDatabase]: Vector database for that store tools information.
     &#34;&#34;&#34;
     return self._vectordb</code></pre>
 </details>
@@ -482,7 +482,7 @@ def vectordb(self) -&gt; Optional[VectorDatabase]:
 <h3>Methods</h3>
 <dl>
 <dt id="llmflex.Tools.tool_selection.ToolSelector.get_tool"><code class="name flex">
-<span>def <span class="ident">get_tool</span></span>(<span>self, user_input: str, history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, system: str = 'This is a conversation between a human user and a helpful AI assistant.') ‑> Optional[Type[<a title="llmflex.Tools.base_tool.BaseTool" href="base_tool.html#llmflex.Tools.base_tool.BaseTool">BaseTool</a>]]</span>
+<span>def <span class="ident">get_tool</span></span>(<span>self, user_input: str, history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, system: str = 'This is a conversation between a human user and a helpful AI assistant.') ‑> Optional[<a title="llmflex.Tools.base_tool.BaseTool" href="base_tool.html#llmflex.Tools.base_tool.BaseTool">BaseTool</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Select the most appropriate tool for a given user input.</p>
@@ -499,7 +499,7 @@ def vectordb(self) -&gt; Optional[VectorDatabase]:
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Optional[Type[BaseTool]]</code></dt>
+<dt><code>Optional[BaseTool]</code></dt>
 <dd>Selected tool or None if no tool is found or required.</dd>
 </dl></div>
 <details class="source">
@@ -507,7 +507,7 @@ def vectordb(self) -&gt; Optional[VectorDatabase]:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_tool(self, user_input: str, 
-             history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[Type[BaseTool]]:
+             history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -&gt; Optional[BaseTool]:
     &#34;&#34;&#34;Select the most appropriate tool for a given user input.
 
     Args:
@@ -517,7 +517,7 @@ def vectordb(self) -&gt; Optional[VectorDatabase]:
         system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
     Returns:
-        Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
+        Optional[BaseTool]: Selected tool or None if no tool is found or required.
     &#34;&#34;&#34;
     import json
     prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template

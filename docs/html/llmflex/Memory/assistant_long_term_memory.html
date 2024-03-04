@@ -29,11 +29,12 @@
 <pre><code class="python">import os
 from .base_memory import BaseChatMemory, list_titles, chat_memory_home
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from ..Models.Cores.base_core import BaseLLM
+from ..Schemas.documents import Document
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from ..TextSplitters.sentence_token_text_splitter import SentenceTokenTextSplitter
-from typing import List, Dict, Any, Type, Union, Tuple, Callable
+from typing import List, Dict, Any, Type, Union, Tuple
 
 class AssistantLongTermChatMemory(BaseChatMemory):
 
@@ -43,20 +44,20 @@ class AssistantLongTermChatMemory(BaseChatMemory):
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
         &#34;&#34;&#34;Embeddings toolkit.
 
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
         &#34;&#34;&#34;
         return self._embeddings
 
     @property
-    def vectordb(self) -&gt; VectorDatabase:
+    def vectordb(self) -&gt; FaissVectorDatabase:
         &#34;&#34;&#34;Vector database for saving the chat history.
 
         Returns:
-            VectorDatabase: Vector database for saving the chat history.
+            FaissVectorDatabase: Vector database for saving the chat history.
         &#34;&#34;&#34;
         return self._vectordb
 
@@ -70,11 +71,11 @@ class AssistantLongTermChatMemory(BaseChatMemory):
         return self._text_splitter
 
     @property
-    def _data(self) -&gt; List[Dict[str, Any]]:
+    def _data(self) -&gt; Dict[str, Document]:
         &#34;&#34;&#34;Raw data from the vector database.
 
         Returns:
-            List[Dict[str, Any]]: Raw data from the vector database.
+            Dict[str, Document]: Raw data from the vector database.
         &#34;&#34;&#34;
         return self.vectordb.data
 
@@ -86,13 +87,14 @@ class AssistantLongTermChatMemory(BaseChatMemory):
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         &#34;&#34;&#34;
         if ((from_exist) &amp; (self.title in list_titles())):
-            self._vectordb = VectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
                                                        embeddings=self.embeddings, vectordb_dir=chat_memory_home())
 
         else:
-            self._vectordb = VectorDatabase.from_empty(embeddings=self.embeddings, 
-                                                       name=os.path.basename(self.chat_dir), 
-                                                       vectordb_dir=chat_memory_home(), save_raw=True)
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                    docs=[],
+                                                    name=os.path.basename(self.chat_dir), 
+                                                    vectordb_dir=chat_memory_home())
             self.vectordb._info[&#39;title&#39;] = self.title
             self.save()
 
@@ -298,20 +300,20 @@ def create_long_assistant_memory_prompt(user: str, prompt_template: PromptTempla
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
         &#34;&#34;&#34;Embeddings toolkit.
 
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
         &#34;&#34;&#34;
         return self._embeddings
 
     @property
-    def vectordb(self) -&gt; VectorDatabase:
+    def vectordb(self) -&gt; FaissVectorDatabase:
         &#34;&#34;&#34;Vector database for saving the chat history.
 
         Returns:
-            VectorDatabase: Vector database for saving the chat history.
+            FaissVectorDatabase: Vector database for saving the chat history.
         &#34;&#34;&#34;
         return self._vectordb
 
@@ -325,11 +327,11 @@ def create_long_assistant_memory_prompt(user: str, prompt_template: PromptTempla
         return self._text_splitter
 
     @property
-    def _data(self) -&gt; List[Dict[str, Any]]:
+    def _data(self) -&gt; Dict[str, Document]:
         &#34;&#34;&#34;Raw data from the vector database.
 
         Returns:
-            List[Dict[str, Any]]: Raw data from the vector database.
+            Dict[str, Document]: Raw data from the vector database.
         &#34;&#34;&#34;
         return self.vectordb.data
 
@@ -341,13 +343,14 @@ def create_long_assistant_memory_prompt(user: str, prompt_template: PromptTempla
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         &#34;&#34;&#34;
         if ((from_exist) &amp; (self.title in list_titles())):
-            self._vectordb = VectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
                                                        embeddings=self.embeddings, vectordb_dir=chat_memory_home())
 
         else:
-            self._vectordb = VectorDatabase.from_empty(embeddings=self.embeddings, 
-                                                       name=os.path.basename(self.chat_dir), 
-                                                       vectordb_dir=chat_memory_home(), save_raw=True)
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                    docs=[],
+                                                    name=os.path.basename(self.chat_dir), 
+                                                    vectordb_dir=chat_memory_home())
             self.vectordb._info[&#39;title&#39;] = self.title
             self.save()
 
@@ -430,12 +433,12 @@ def create_long_assistant_memory_prompt(user: str, prompt_template: PromptTempla
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>]</code></dt>
+<dt id="llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : <a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></code></dt>
 <dd>
 <div class="desc"><p>Embeddings toolkit.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Type[BaseEmbeddingsToolkit]</code></dt>
+<dt><code>BaseEmbeddingsToolkit</code></dt>
 <dd>Embeddings toolkit.</dd>
 </dl></div>
 <details class="source">
@@ -443,11 +446,11 @@ def create_long_assistant_memory_prompt(user: str, prompt_template: PromptTempla
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def embeddings(self) -&gt; Type[BaseEmbeddingsToolkit]:
+def embeddings(self) -&gt; BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Embeddings toolkit.
 
     Returns:
-        Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+        BaseEmbeddingsToolkit: Embeddings toolkit.
     &#34;&#34;&#34;
     return self._embeddings</code></pre>
 </details>
@@ -474,12 +477,12 @@ def text_splitter(self) -&gt; SentenceTokenTextSplitter:
     return self._text_splitter</code></pre>
 </details>
 </dd>
-<dt id="llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmflex.Data.vector_database.VectorDatabase" href="../Data/vector_database.html#llmflex.Data.vector_database.VectorDatabase">VectorDatabase</a></code></dt>
+<dt id="llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase" href="../VectorDBs/faiss_vectordb.html#llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></code></dt>
 <dd>
 <div class="desc"><p>Vector database for saving the chat history.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>VectorDatabase</code></dt>
+<dt><code>FaissVectorDatabase</code></dt>
 <dd>Vector database for saving the chat history.</dd>
 </dl></div>
 <details class="source">
@@ -487,11 +490,11 @@ def text_splitter(self) -&gt; SentenceTokenTextSplitter:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def vectordb(self) -&gt; VectorDatabase:
+def vectordb(self) -&gt; FaissVectorDatabase:
     &#34;&#34;&#34;Vector database for saving the chat history.
 
     Returns:
-        VectorDatabase: Vector database for saving the chat history.
+        FaissVectorDatabase: Vector database for saving the chat history.
     &#34;&#34;&#34;
     return self._vectordb</code></pre>
 </details>

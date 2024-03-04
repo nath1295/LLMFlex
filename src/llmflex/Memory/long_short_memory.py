@@ -1,8 +1,9 @@
 import os
 from .base_memory import BaseChatMemory, list_titles, chat_memory_home
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from ..Models.Cores.base_core import BaseLLM
+from ..Schemas.documents import Document
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from typing import List, Dict, Any, Type, Union, Tuple
 
@@ -13,16 +14,16 @@ class LongShortTermChatMemory(BaseChatMemory):
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -> Type[BaseEmbeddingsToolkit]:
+    def embeddings(self) -> BaseEmbeddingsToolkit:
         """Embeddings toolkit.
 
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
         """
         return self._embeddings
 
     @property
-    def vectordb(self) -> VectorDatabase:
+    def vectordb(self) -> FaissVectorDatabase:
         """Vector database for saving the chat history.
 
         Returns:
@@ -31,11 +32,11 @@ class LongShortTermChatMemory(BaseChatMemory):
         return self._vectordb
 
     @property
-    def _data(self) -> List[Dict[str, Any]]:
+    def _data(self) -> Dict[int, Document]:
         """Raw data from the vector database.
 
         Returns:
-            List[Dict[str, Any]]: Raw data from the vector database.
+            Dict[int, Document]: Raw data from the vector database.
         """
         return self.vectordb.data
 
@@ -46,13 +47,14 @@ class LongShortTermChatMemory(BaseChatMemory):
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         """
         if ((from_exist) & (self.title in list_titles())):
-            self._vectordb = VectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
                                                        embeddings=self.embeddings, vectordb_dir=chat_memory_home())
 
         else:
-            self._vectordb = VectorDatabase.from_empty(embeddings=self.embeddings, 
-                                                       name=os.path.basename(self.chat_dir), 
-                                                       vectordb_dir=chat_memory_home(), save_raw=True)
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                docs=[],
+                                                name=os.path.basename(self.chat_dir), 
+                                                vectordb_dir=chat_memory_home())
             self.vectordb._info['title'] = self.title
             self.save()
 

@@ -124,7 +124,7 @@ class BaseChatMemory:
         Returns:
             List[Tuple[str, str]]: Entire chat history.
         """
-        history = list(map(lambda x: [x['metadata']['user'], x['metadata']['assistant'], x['metadata']['order']], self._data))
+        history = list(map(lambda x: [x.metadata['user'], x.metadata['assistant'], x.metadata['order']], self._data.values()))
         if len(history) == 0:
             return []
         count = max(list(map(lambda x: x[2], history))) + 1
@@ -148,21 +148,24 @@ class BaseChatMemory:
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         """
         if ((from_exist) & (self.title in list_titles())):
-            from ..utils import read_json
-            self._data = read_json(os.path.join(self.chat_dir, 'data.json'))
+            import pickle
+            with open(os.path.join(self.chat_dir, 'data.pkl'), 'rb') as f:
+                self._data = pickle.load(f)
 
         else:
-            self._data = list()
+            self._data = dict()
             self.save()
 
     def save(self) -> None:
         """Save the current state of the memory.
         """
         from ..utils import save_json, current_time
+        import pickle
         self.info
         self._info['last_update'] = current_time()
         save_json(self._info, os.path.join(self.chat_dir, 'info.json'))
-        save_json(self._data, os.path.join(self.chat_dir, 'data.json'))
+        with open(os.path.join(self.chat_dir, 'data.pkl'), 'wb') as f:
+            pickle.dump(self._data, f)
 
     def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -> None:
         """Saving an interaction to the memory.
@@ -171,23 +174,27 @@ class BaseChatMemory:
             user_input (str): User input.
             assistant_output (str): Chatbot output.
         """
+        from ..Schemas.documents import Document
         user_input = user_input.strip(' \n\r\t')
         assistant_output = assistant_output.strip(' \n\r\t')
         metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
         for k, v in kwargs.items():
             if k not in ['user', 'assistant', 'order']:
                 metadata[k] = v
-        self._data.append(dict(
+        new_key = max(list(self._data.keys())) + 1 if len(self._data) != 0 else 0
+        self._data[new_key] = Document(
             index=f'{user_input}\n\n{assistant_output}',
             metadata=metadata
-        ))
+        )
         self.save()
 
     def remove_last_interaction(self) -> None:
         """Remove the latest interaction.
         """
         if len(self._data) != 0:
-            self._data = self._data[:-1]
+            order = self.interaction_count
+            data = list(filter(lambda x: x.metadata['order'] != order, list(self._data.values())))
+            self._data = dict(zip(range(len(data)), data))
             self.save()
 
     def clear(self) -> None:

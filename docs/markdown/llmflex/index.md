@@ -9,7 +9,9 @@ Sub-modules
 * llmflex.Memory
 * llmflex.Models
 * llmflex.Prompts
+* llmflex.Schemas
 * llmflex.TextSplitters
 * llmflex.Tools
+* llmflex.VectorDBs
 * llmflex.cli
 * llmflex.utils

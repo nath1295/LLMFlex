@@ -1,7 +1,7 @@
 from typing import List, Callable
-from langchain.text_splitter import TextSplitter
+from .base_text_splitter import BaseTextSplitter
 
-class TokenCountTextSplitter(TextSplitter):
+class TokenCountTextSplitter(BaseTextSplitter):
     """Text splitter that count tokens and split texts.
     """
 
@@ -9,6 +9,7 @@ class TokenCountTextSplitter(TextSplitter):
                  decode_fn: Callable[[List[int]], str],
                  chunk_size: int = 400, chunk_overlap: int = 40) -> None:
         """Initialise the TextSplitter.
+
         Args:
             encode_fn (Callable[[str], List[int]]): Function of encode a string.
             decode_fn (Callable[[List[int]], str]): Function to decode a list of token ids.

@@ -18,17 +18,5 @@ Classes
 
     ### Ancestors (in MRO)
 
-    * langchain.text_splitter.TextSplitter
-    * langchain_core.documents.transformers.BaseDocumentTransformer
+    * llmflex.TextSplitters.base_text_splitter.BaseTextSplitter
     * abc.ABC
-
-    ### Methods
-
-    `split_text(self, text: str) ‑> List[str]`
-    :   Splitting the given text.
-        
-        Args:
-            text (str): Text to split.
-        
-        Returns:
-            List[str]: List of split texts.

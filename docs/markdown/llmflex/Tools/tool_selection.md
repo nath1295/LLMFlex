@@ -33,21 +33,21 @@ Classes
         Returns:
             float: Score threshold.
 
-    `tools: List[Type[llmflex.Tools.base_tool.BaseTool]]`
+    `tools: List[llmflex.Tools.base_tool.BaseTool]`
     :   List of tools.
         
         Returns:
-            List[Type[BaseTool]]: List of tools.
+            List[BaseTool]: List of tools.
 
-    `vectordb: Optional[llmflex.Data.vector_database.VectorDatabase]`
+    `vectordb: Optional[llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase]`
     :   Vector database for that store tools information.
         
         Returns:
-            VectorDatabase: Vector database for that store tools information.
+            Optional[FaissVectorDatabase]: Vector database for that store tools information.
 
     ### Methods
 
-    `get_tool(self, user_input: str, history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[llmflex.Prompts.prompt_template.PromptTemplate] = None, system: str = 'This is a conversation between a human user and a helpful AI assistant.') ‑> Optional[Type[llmflex.Tools.base_tool.BaseTool]]`
+    `get_tool(self, user_input: str, history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[llmflex.Prompts.prompt_template.PromptTemplate] = None, system: str = 'This is a conversation between a human user and a helpful AI assistant.') ‑> Optional[llmflex.Tools.base_tool.BaseTool]`
     :   Select the most appropriate tool for a given user input.
         
         Args:
@@ -57,7 +57,7 @@ Classes
             system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
         
         Returns:
-            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
+            Optional[BaseTool]: Selected tool or None if no tool is found or required.
 
     `set_score_threshold(self, score_threshold: float) ‑> None`
     :   Set a new score threshold.

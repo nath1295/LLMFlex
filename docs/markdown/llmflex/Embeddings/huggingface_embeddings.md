@@ -4,6 +4,14 @@ Module llmflex.Embeddings.huggingface_embeddings
 Classes
 -------
 
+`HuggingFaceEmbeddings(model_id: str, model_kwargs: Dict[str, Any] = {}, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128})`
+:   Embeddings model from HuggingFace using sentence transformers.
+
+    ### Ancestors (in MRO)
+
+    * llmflex.Embeddings.base_embeddings.BaseEmbeddings
+    * abc.ABC
+
 `HuggingfaceEmbeddingsToolkit(model_id: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, model_kwargs: Dict[str, Any] = {}, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128})`
 :   Base class for storing the embedding model and the text splitter.
         

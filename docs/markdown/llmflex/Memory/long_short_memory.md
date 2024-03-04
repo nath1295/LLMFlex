@@ -40,13 +40,13 @@ Classes
 
     ### Instance variables
 
-    `embeddings: Type[llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit]`
+    `embeddings: llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit`
     :   Embeddings toolkit.
         
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
 
-    `vectordb: llmflex.Data.vector_database.VectorDatabase`
+    `vectordb: llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase`
     :   Vector database for saving the chat history.
         
         Returns:

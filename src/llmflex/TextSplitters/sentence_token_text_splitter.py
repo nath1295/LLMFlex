@@ -1,7 +1,7 @@
 from typing import Callable, List
-from langchain.text_splitter import TextSplitter
+from .base_text_splitter import BaseTextSplitter
 
-class SentenceTokenTextSplitter(TextSplitter):
+class SentenceTokenTextSplitter(BaseTextSplitter):
     """Text splitter that split text by sentences and group by token counts.
     """
     def __init__(self, count_token_fn: Callable[[str], int], language_model: str = 'en_core_web_sm', chunk_size: int = 400, chunk_overlap: int = 40) -> None:

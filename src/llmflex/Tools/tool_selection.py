@@ -1,5 +1,5 @@
 from .base_tool import BaseTool
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from ..Models.Factory.llm_factory import LlmFactory
@@ -47,7 +47,7 @@ class ToolSelector:
         if len(tools) == 0:
             raise ValueError(f'At least one tool must be provided.')
         self._tools = tools
-        self._vectordb = VectorDatabase.from_empty(embeddings=embeddings)
+        self._vectordb = FaissVectorDatabase.from_documents(embeddings=embeddings, docs=[])
         self._llm = model(temperature=0, max_new_tokens=128, stop=model.prompt_template.stop + ['```'])
         self._score_threshold = score_threshold
         self._last_score = 0
@@ -69,20 +69,20 @@ class ToolSelector:
 
 
     @property
-    def tools(self) -> List[Type[BaseTool]]:
+    def tools(self) -> List[BaseTool]:
         """List of tools.
 
         Returns:
-            List[Type[BaseTool]]: List of tools.
+            List[BaseTool]: List of tools.
         """
         return self._tools
 
     @property
-    def vectordb(self) -> Optional[VectorDatabase]:
+    def vectordb(self) -> Optional[FaissVectorDatabase]:
         """Vector database for that store tools information.
 
         Returns:
-            VectorDatabase: Vector database for that store tools information.
+            Optional[FaissVectorDatabase]: Vector database for that store tools information.
         """
         return self._vectordb
     
@@ -131,7 +131,7 @@ class ToolSelector:
         self._score_threshold = score_threshold
 
     def get_tool(self, user_input: str, 
-                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -> Optional[Type[BaseTool]]:
+                 history: Union[List[str], List[List[str]]] = [], prompt_template: Optional[PromptTemplate] = None, system: str = DEFAULT_SYSTEM_MESSAGE) -> Optional[BaseTool]:
         """Select the most appropriate tool for a given user input.
 
         Args:
@@ -141,7 +141,7 @@ class ToolSelector:
             system (str, optional): System message of the current conversation. Defaults to DEFAULT_SYSTEM_MESSAGE.
 
         Returns:
-            Optional[Type[BaseTool]]: Selected tool or None if no tool is found or required.
+            Optional[BaseTool]: Selected tool or None if no tool is found or required.
         """
         import json
         prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template

@@ -1,9 +1,8 @@
-from langchain.embeddings.base import Embeddings
-from .base_embeddings import BaseEmbeddingsToolkit
+from .base_embeddings import BaseEmbeddingsToolkit, BaseEmbeddings
 from typing import Dict, Any, List, Optional
 import json, requests, os
 
-class APIEmbeddings(Embeddings):
+class APIEmbeddings(BaseEmbeddings):
 
     def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -> None:
         self.base_url = base_url.removeprefix('/')
@@ -11,13 +10,13 @@ class APIEmbeddings(Embeddings):
         self.info = json.loads(requests.get(self.base_url + '/info').content.decode())
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        """embed search docs.
+        """Embed list of texts.
 
         Args:
             texts (List[str]): List of texts to embed.
 
         Returns:
-            List[List[float]]: List of embeddings given the texts.
+            List[List[float]]: List of embedded vectors.
         """
         show_progress = self.encode_kwargs.get('show_progress_bar', False)
 
@@ -33,18 +32,6 @@ class APIEmbeddings(Embeddings):
             content = requests.get(self.base_url + '/embeddings', json=req_dict).content.decode()
             embeddings += json.loads(content)
         return embeddings
-
-        
-    def embed_query(self, text: str) -> List[float]:
-        """Embed query text.
-
-        Args:
-            text (str): Text to embed.
-
-        Returns:
-            List[float]: Embeddings of the text.
-        """
-        return self.embed_documents([text])[0]
 
 class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
@@ -64,12 +51,15 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from transformers import AutoTokenizer
-        self._model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
-        self._name = self.embedding_model.info['model_id']
-        self._type = 'api_embeddings'
-        self._embedding_size = self.embedding_model.info['embedding_dimension']
-        chunk_size = min(self.embedding_model.info['max_seq_length'], 512) if not isinstance(chunk_size, int) else chunk_size
-        self._tokenizer = AutoTokenizer.from_pretrained(self.name, **tokenizer_kwargs)
-        encode_fn = lambda x: self._tokenizer.encode(x, add_special_tokens=False)
-        decode_fn = lambda x: self._tokenizer.decode(x, skip_special_tokens=True)
-        self._text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
+        embedding_model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
+        name = embedding_model.info['model_id']
+        type = 'api_embeddings'
+        embedding_size = embedding_model.info['embedding_dimension']
+        max_seq_length = embedding_model.info['max_seq_length']
+        chunk_size = min(max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        tokenizer = AutoTokenizer.from_pretrained(name, **tokenizer_kwargs)
+        encode_fn = lambda x: tokenizer.encode(x, add_special_tokens=False)
+        decode_fn = lambda x: tokenizer.decode(x, skip_special_tokens=True)
+        text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+                         type = type, embedding_size = embedding_size, max_seq_length = max_seq_length)

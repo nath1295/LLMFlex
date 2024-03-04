@@ -85,3 +85,14 @@ Functions
         package_home (Optional[str], optional): Home directory for the package if a path is provided. Defaults to None.
         hf_home (Optional[str], optional): Home directory for Huggingface if a path is provided. Defaults to None.
         st_home (Optional[str], optional): Home directory for sentence-transformer if a path is provided. Defaults to None.
+
+    
+`validate_type(obj: Any, cls: Any) ‑> Any`
+:   Validate the type of the given object.
+    
+    Args:
+        obj (Any): Object to validate.
+        cls (Any): Class info to validate.
+    
+    Returns:
+        Any: Th original object if not error is raised.

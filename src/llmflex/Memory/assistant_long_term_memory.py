@@ -1,11 +1,12 @@
 import os
 from .base_memory import BaseChatMemory, list_titles, chat_memory_home
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
-from ..Data.vector_database import VectorDatabase
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
 from ..Models.Cores.base_core import BaseLLM
+from ..Schemas.documents import Document
 from ..Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
 from ..TextSplitters.sentence_token_text_splitter import SentenceTokenTextSplitter
-from typing import List, Dict, Any, Type, Union, Tuple, Callable
+from typing import List, Dict, Any, Type, Union, Tuple
 
 class AssistantLongTermChatMemory(BaseChatMemory):
 
@@ -15,20 +16,20 @@ class AssistantLongTermChatMemory(BaseChatMemory):
         super().__init__(title, from_exist)
         
     @property
-    def embeddings(self) -> Type[BaseEmbeddingsToolkit]:
+    def embeddings(self) -> BaseEmbeddingsToolkit:
         """Embeddings toolkit.
 
         Returns:
-            Type[BaseEmbeddingsToolkit]: Embeddings toolkit.
+            BaseEmbeddingsToolkit: Embeddings toolkit.
         """
         return self._embeddings
 
     @property
-    def vectordb(self) -> VectorDatabase:
+    def vectordb(self) -> FaissVectorDatabase:
         """Vector database for saving the chat history.
 
         Returns:
-            VectorDatabase: Vector database for saving the chat history.
+            FaissVectorDatabase: Vector database for saving the chat history.
         """
         return self._vectordb
 
@@ -42,11 +43,11 @@ class AssistantLongTermChatMemory(BaseChatMemory):
         return self._text_splitter
 
     @property
-    def _data(self) -> List[Dict[str, Any]]:
+    def _data(self) -> Dict[str, Document]:
         """Raw data from the vector database.
 
         Returns:
-            List[Dict[str, Any]]: Raw data from the vector database.
+            Dict[str, Document]: Raw data from the vector database.
         """
         return self.vectordb.data
 
@@ -58,13 +59,14 @@ class AssistantLongTermChatMemory(BaseChatMemory):
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         """
         if ((from_exist) & (self.title in list_titles())):
-            self._vectordb = VectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
                                                        embeddings=self.embeddings, vectordb_dir=chat_memory_home())
 
         else:
-            self._vectordb = VectorDatabase.from_empty(embeddings=self.embeddings, 
-                                                       name=os.path.basename(self.chat_dir), 
-                                                       vectordb_dir=chat_memory_home(), save_raw=True)
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                    docs=[],
+                                                    name=os.path.basename(self.chat_dir), 
+                                                    vectordb_dir=chat_memory_home())
             self.vectordb._info['title'] = self.title
             self.save()
 
