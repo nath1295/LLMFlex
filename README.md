@@ -87,14 +87,15 @@ for token in llm.stream(prompt):
 To load an embedding model and use a vector database:
 
 ```python
-from llmflex import HuggingfaceEmbeddingsToolkit, VectorDatabase
+from llmflex.Embeddings import HuggingfaceEmbeddingsToolkit
+from llmflex.VectorDBs import FaissVectorDatabase
 
 # Loading the embedding model toolkit
 embeddings = HuggingfaceEmbeddingsToolkit(model_id="thenlper/gte-large")
 
 # Create a vector database
 food = ["Apple", "Banana", "Pork"]
-vectordb = VectorDatabase.from_data(index=food, embeddings=embeddings)
+vectordb = FaissVectorDatabase.from_data(index=food, embeddings=embeddings)
 
 # Do semantic search on the vector database
 print(vectordb.search("Beef"))
@@ -147,7 +148,6 @@ output_generator = tool.run(tool_input,
     llm=chat_llm, 
     history=memory.get_recent_memory(last_k=2), 
     prompt_template=prompt_template,
-    return_type="response",
     stream=True)
 
 tool_output = ""

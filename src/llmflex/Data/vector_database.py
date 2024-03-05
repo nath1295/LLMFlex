@@ -100,6 +100,7 @@ class VectorDatabase:
             name (Optional[str], optional): Name of the vector database. If given, the vector database will be stored in storage. Defaults to None.
             save_raw (bool, optional): Whether to save raw text data and metadata as a separate json file. Defaults to False.
         """
+        print("VectorDatabase class will be deprecated. Please use llmflex.VectorDBs.FaissVectorDatabase instead in the future.")
         self._name = '_InMemoryVectorDB_' if name is None else name_checker(name)
         self._embeddings = embeddings
         self._vectordb_dir = default_vectordb_dir() if vectordb_dir is None else os.path.abspath(vectordb_dir)
