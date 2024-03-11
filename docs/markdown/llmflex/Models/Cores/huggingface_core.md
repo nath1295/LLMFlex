@@ -4,7 +4,7 @@ Module llmflex.Models.Cores.huggingface_core
 Classes
 -------
 
-`HuggingfaceCore(model_id: str, model_type: "Literal['default', 'awq', 'gptq']", model_kwargs: Dict[str, Any] = {}, tokenizer_kwargs: Dict[str, Any] = {})`
+`HuggingfaceCore(model_id: str, model_type: "Literal['default', 'awq', 'gptq']", model_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None)`
 :   This is the core class of loading model in awq, gptq, or original format.
         
     
@@ -13,8 +13,8 @@ Classes
     Args:
         model_id (str): Model id (from Huggingface) to use.
         model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): Type of model format.
-        model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
-        tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
+        model_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the model. Defaults to None.
+        tokenizer_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the tokenizer. Defaults to None.
 
     ### Ancestors (in MRO)
 

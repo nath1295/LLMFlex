@@ -82,13 +82,13 @@ Classes
         Returns:
             str: The full prompt given your messages.
 
-    `create_prompt(self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Union[List[str], List[Tuple[str, str]]] = []) ‑> str`
+    `create_prompt(self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Optional[Union[List[str], List[Tuple[str, str]]]] = None) ‑> str`
     :   Creating the full chat prompt.
         
         Args:
             user (str): Latest user input.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): List of conversation history. Defaults to None.
         
         Returns:
             str: The full prompt.

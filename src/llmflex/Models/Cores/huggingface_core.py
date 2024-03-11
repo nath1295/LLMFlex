@@ -45,14 +45,15 @@ class KeywordsStoppingCriteria(StoppingCriteria):
 class HuggingfaceCore(BaseCore):
     """This is the core class of loading model in awq, gptq, or original format.
     """
-    def __init__(self, model_id: str, model_type: Literal['default', 'awq', 'gptq'], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -> None:
+    def __init__(self, model_id: str, model_type: Literal['default', 'awq', 'gptq'], 
+                 model_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -> None:
         """Initiating the core with transformers.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.
             model_type (Literal[&#39;default&#39;, &#39;awq&#39;, &#39;gptq&#39;]): Type of model format.
-            model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Defaults to dict().
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Defaults to dict().
+            model_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the model. Defaults to None.
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the tokenizer. Defaults to None.
         """
         self._core_type = 'HuggingfaceCore'
         self._init_config = dict(
@@ -85,7 +86,8 @@ class HuggingfaceCore(BaseCore):
         core._prompt_template = get_prompt_template_by_jinja(model_id, tokenizer)
         return core
 
-    def _init_core(self, model_id: str, model_type: Literal['default', 'awq', 'gptq'], model_kwargs: Dict[str, Any] = dict(), tokenizer_kwargs: Dict[str, Any] = dict()) -> None:
+    def _init_core(self, model_id: str, model_type: Literal['default', 'awq', 'gptq'], 
+                   model_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -> None:
         """Initialise everything needed in the core.
 
         Args:
@@ -98,7 +100,8 @@ class HuggingfaceCore(BaseCore):
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self._model_id = model_id
         self._model_type = model_type
-
+        model_kwargs = dict() if model_kwargs is None else model_kwargs
+        tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
         if not hasattr(tokenizer_kwargs, 'pretrained_model_name_or_path'):
             tokenizer_kwargs['pretrained_model_name_or_path'] = model_id
         self._tokenizer = AutoTokenizer.from_pretrained(**tokenizer_kwargs)

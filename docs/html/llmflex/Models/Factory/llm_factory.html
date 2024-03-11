@@ -60,14 +60,14 @@ class LlmFactory:
                 model_id: str, 
                 model_type: Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;exl2&#39;, &#39;debug&#39;] = &#39;auto&#39;,
                 model_file: Optional[str] = None,
-                model_kwargs: Dict[str, Any] = dict(),
+                model_kwargs: Optional[Dict[str, Any]] = None,
                 revision: Optional[str] = None,
                 from_local: bool = False,
                 context_length: int = 4096,
                 base_url: Optional[str] = None,
                 api_key: Optional[str] = None,
                 tokenizer_id: Optional[str] = None,
-                tokenizer_kwargs: Dict[str, Any] = dict(),
+                tokenizer_kwargs: Optional[Dict[str, Any]] = None,
                 init_empty: bool = False,
                 **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise the model core to create LLMs.
@@ -76,14 +76,14 @@ class LlmFactory:
             model_id (str): Model ID (from Huggingface) to use or the model to use if using OpenAI API core.
             model_type (Literal[&amp;#39;auto&amp;#39;, &amp;#39;default&amp;#39;, &amp;#39;gptq&amp;#39;, &amp;#39;awq&amp;#39;, &amp;#39;gguf&amp;#39;, &amp;#39;openai&amp;#39;, &amp;#39;exl2&amp;#39;, &amp;#39;debug&amp;#39;], optional): Type of model format, if &#39;auto&#39; is given, model_type will be automatically detected. Defaults to &#39;auto&#39;.
             model_file (Optional[str], optional): Specific model file to use. Only useful for `model_type=&#34;gguf&#34;`. Defaults to None.
-            model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to dict().
+            model_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to None.
             revision (Optional[str], optional): Specific revision of the model repository. Only useful for `model_type=&#34;exl2&#34;`. Defaults to None.
             from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Only useful for GGUF models. Defaults to False.
             context_length (int, optional): Size of the context window. Only useful for GGUF models. Defaults to 4096.
             base_url (Optional[str], optional): Base URL for the API. Only useful for OpenAI APIs. Defaults to None.
             api_key (Optional[str], optional): API key for OpenAI API. Defaults to None.
             tokenizer_id (Optional[str], optional): Model ID (from Huggingface) to load the tokenizer. Useful for model types &#34;default&#34;, &#34;gptq&#34;, &#34;awq&#34;, and &#34;openai&#34;. Defaults to None.
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Useful for model types &#34;default&#34;, &#34;gptq&#34;, &#34;awq&#34;, and &#34;openai&#34;.  Defaults to dict().
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the tokenizer. Useful for model types &#34;default&#34;, &#34;gptq&#34;, &#34;awq&#34;, and &#34;openai&#34;.  Defaults to None.
             init_empty (bool, optional): Initialise without a model core. Should not be used for normal initialisation. Defaults to False.
         &#34;&#34;&#34;
         if not init_empty:
@@ -274,7 +274,7 @@ class LlmFactory:
 <dl>
 <dt id="llmflex.Models.Factory.llm_factory.LlmFactory"><code class="flex name class">
 <span>class <span class="ident">LlmFactory</span></span>
-<span>(</span><span>model_id: str, model_type: "Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'exl2', 'debug']" = 'auto', model_file: Optional[str] = None, model_kwargs: Dict[str, Any] = {}, revision: Optional[str] = None, from_local: bool = False, context_length: int = 4096, base_url: Optional[str] = None, api_key: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = {}, init_empty: bool = False, **kwargs)</span>
+<span>(</span><span>model_id: str, model_type: "Literal['auto', 'default', 'gptq', 'awq', 'gguf', 'openai', 'exl2', 'debug']" = 'auto', model_file: Optional[str] = None, model_kwargs: Optional[Dict[str, Any]] = None, revision: Optional[str] = None, from_local: bool = False, context_length: int = 4096, base_url: Optional[str] = None, api_key: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None, init_empty: bool = False, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the model core to create LLMs.</p>
@@ -285,8 +285,8 @@ class LlmFactory:
 <dt>model_type (Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;exl2&#39;, &#39;debug&#39;], optional): Type of model format, if 'auto' is given, model_type will be automatically detected. Defaults to 'auto'.</dt>
 <dt><strong><code>model_file</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>Specific model file to use. Only useful for <code>model_type="gguf"</code>. Defaults to None.</dd>
-<dt><strong><code>model_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
-<dd>Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to dict().</dd>
+<dt><strong><code>model_kwargs</code></strong> :&ensp;<code>Optional[Dict[str, Any]]</code>, optional</dt>
+<dd>Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to None.</dd>
 <dt><strong><code>revision</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>Specific revision of the model repository. Only useful for <code>model_type="exl2"</code>. Defaults to None.</dd>
 <dt><strong><code>from_local</code></strong> :&ensp;<code>bool</code>, optional</dt>
@@ -299,9 +299,9 @@ class LlmFactory:
 <dd>API key for OpenAI API. Defaults to None.</dd>
 <dt><strong><code>tokenizer_id</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>Model ID (from Huggingface) to load the tokenizer. Useful for model types "default", "gptq", "awq", and "openai". Defaults to None.</dd>
-<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
+<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Optional[Dict[str, Any]]</code>, optional</dt>
 <dd>Keyword arguments for loading the tokenizer. Useful for model types "default", "gptq", "awq", and "openai".
-Defaults to dict().</dd>
+Defaults to None.</dd>
 <dt><strong><code>init_empty</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Initialise without a model core. Should not be used for normal initialisation. Defaults to False.</dd>
 </dl></div>
@@ -315,14 +315,14 @@ Defaults to dict().</dd>
                 model_id: str, 
                 model_type: Literal[&#39;auto&#39;, &#39;default&#39;, &#39;gptq&#39;, &#39;awq&#39;, &#39;gguf&#39;, &#39;openai&#39;, &#39;exl2&#39;, &#39;debug&#39;] = &#39;auto&#39;,
                 model_file: Optional[str] = None,
-                model_kwargs: Dict[str, Any] = dict(),
+                model_kwargs: Optional[Dict[str, Any]] = None,
                 revision: Optional[str] = None,
                 from_local: bool = False,
                 context_length: int = 4096,
                 base_url: Optional[str] = None,
                 api_key: Optional[str] = None,
                 tokenizer_id: Optional[str] = None,
-                tokenizer_kwargs: Dict[str, Any] = dict(),
+                tokenizer_kwargs: Optional[Dict[str, Any]] = None,
                 init_empty: bool = False,
                 **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise the model core to create LLMs.
@@ -331,14 +331,14 @@ Defaults to dict().</dd>
             model_id (str): Model ID (from Huggingface) to use or the model to use if using OpenAI API core.
             model_type (Literal[&amp;#39;auto&amp;#39;, &amp;#39;default&amp;#39;, &amp;#39;gptq&amp;#39;, &amp;#39;awq&amp;#39;, &amp;#39;gguf&amp;#39;, &amp;#39;openai&amp;#39;, &amp;#39;exl2&amp;#39;, &amp;#39;debug&amp;#39;], optional): Type of model format, if &#39;auto&#39; is given, model_type will be automatically detected. Defaults to &#39;auto&#39;.
             model_file (Optional[str], optional): Specific model file to use. Only useful for `model_type=&#34;gguf&#34;`. Defaults to None.
-            model_kwargs (Dict[str, Any], optional): Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to dict().
+            model_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the model. Only useful for Default, GPTQ, and AWQ models. Defaults to None.
             revision (Optional[str], optional): Specific revision of the model repository. Only useful for `model_type=&#34;exl2&#34;`. Defaults to None.
             from_local (bool, optional): Whether to treat the model_id given as a local path or a Huggingface ID. Only useful for GGUF models. Defaults to False.
             context_length (int, optional): Size of the context window. Only useful for GGUF models. Defaults to 4096.
             base_url (Optional[str], optional): Base URL for the API. Only useful for OpenAI APIs. Defaults to None.
             api_key (Optional[str], optional): API key for OpenAI API. Defaults to None.
             tokenizer_id (Optional[str], optional): Model ID (from Huggingface) to load the tokenizer. Useful for model types &#34;default&#34;, &#34;gptq&#34;, &#34;awq&#34;, and &#34;openai&#34;. Defaults to None.
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading the tokenizer. Useful for model types &#34;default&#34;, &#34;gptq&#34;, &#34;awq&#34;, and &#34;openai&#34;.  Defaults to dict().
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the tokenizer. Useful for model types &#34;default&#34;, &#34;gptq&#34;, &#34;awq&#34;, and &#34;openai&#34;.  Defaults to None.
             init_empty (bool, optional): Initialise without a model core. Should not be used for normal initialisation. Defaults to False.
         &#34;&#34;&#34;
         if not init_empty:

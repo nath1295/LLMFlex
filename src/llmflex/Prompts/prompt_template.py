@@ -105,18 +105,19 @@ class PromptTemplate:
             return body
         return self.rendered_template.render(messages=body, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=False)
 
-    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = []) -> str:
+    def create_prompt(self, user: str, system: str = DEFAULT_SYSTEM_MESSAGE, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None) -> str:
         """Creating the full chat prompt.
 
         Args:
             user (str): Latest user input.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): List of conversation history. Defaults to None.
 
         Returns:
             str: The full prompt.
         """
         head = [dict(role='system', content=system)] if system.strip(' \n\r\t') != '' else []
+        history = [] if history is None else history
         body = self.format_history(history=history, return_list=True)
         tail = [dict(role='user', content=user)]
         prompt = head + body + tail

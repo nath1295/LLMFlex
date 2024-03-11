@@ -4,18 +4,26 @@ from typing import Optional, Dict, Any, List
 
 class HuggingFaceEmbeddings(BaseEmbeddings):
     """Embeddings model from HuggingFace using sentence transformers."""
-    def __init__(self, model_id: str, model_kwargs: Dict[str, Any] = dict(), encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128)) -> None:
+    def __init__(self, model_id: str, model_kwargs: Optional[Dict[str, Any]] = None, encode_kwargs: Optional[Dict[str, Any]] = None) -> None:
+        """Initialising the embedding model.
+
+        Args:
+            model_id (str): Huggingface repo ID.
+            model_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the model. Defaults to None.
+            encode_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for encoding text. If None is given, the default is normalize_embeddings=True, batch_size=128. Defaults to None.
+        """
         from ..utils import get_config
         from sentence_transformers import SentenceTransformer
         os.environ['SENTENCE_TRANSFORMERS_HOME'] = get_config()['st_home']
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
+        model_kwargs = dict() if model_kwargs is None else model_kwargs
         self._model = SentenceTransformer(model_id, **model_kwargs)
         self._name = model_id
         self._tokenizer = self._model.tokenizer
         self._max_seq_length = self._model.max_seq_length
         self._embedding_size = self._model.get_sentence_embedding_dimension()
-        self._encode_kwargs = encode_kwargs
+        self._encode_kwargs = dict(normalize_embeddings=True, batch_size=128) if encode_kwargs is None else encode_kwargs
 
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """Embed list of texts.
@@ -32,16 +40,16 @@ class HuggingFaceEmbeddings(BaseEmbeddings):
 class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
     def __init__(self, model_id: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
-                 model_kwargs: Dict[str, Any] = dict(), 
-                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128)) -> None:
+                 model_kwargs: Optional[Dict[str, Any]] = None, 
+                 encode_kwargs: Optional[Dict[str, Any]] = None) -> None:
         """Initialising the Huggingface embeddings toolkit.
 
         Args:
             model_id (str): Model id (from Huggingface) to use.
             chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
             chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
-            model_kwargs (Dict[str, Any], optional): Keyword arguments for the model. Defaults to dict().
-            encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
+            model_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading the model. Defaults to None.
+            encode_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for encoding text. If None is given, the default is normalize_embeddings=True, batch_size=128. Defaults to None.
         """
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         embedding_model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)

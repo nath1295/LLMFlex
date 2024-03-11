@@ -32,9 +32,15 @@ import json, requests, os
 
 class APIEmbeddings(BaseEmbeddings):
 
-    def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -&gt; None:
+    def __init__(self, base_url: str, encode_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
+        &#34;&#34;&#34;Initialising the embedding model instance.
+
+        Args:
+            base_url (str): URL for the api.
+            encode_kwargs (Optional[Dict[str, Any]], optional): Encoding keyword arguments for the sentence transformer model. Defaults to None.
+        &#34;&#34;&#34;
         self.base_url = base_url.removeprefix(&#39;/&#39;)
-        self.encode_kwargs = encode_kwargs
+        self.encode_kwargs = dict() if encode_kwargs is None else encode_kwargs
         self.info = json.loads(requests.get(self.base_url + &#39;/info&#39;).content.decode())
 
     def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
@@ -64,27 +70,29 @@ class APIEmbeddings(BaseEmbeddings):
 class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
     def __init__(self, base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
-                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 encode_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the self-hosted Huggingface API embeddings toolkit.
 
         Args:
             base_url (str): Model id (from Huggingface) to use.
             chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
             chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
-            encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading tokenizer. Defaults to dict().
+            encode_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for encoding text. If None is given, the default is normalize_embeddings=True, batch_size=128. Defaults to None.
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading tokenizer. Defaults to None.
         &#34;&#34;&#34;
         from ..utils import get_config
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoTokenizer
+        encode_kwargs = dict(normalize_embeddings=True, batch_size=128) if encode_kwargs is None else encode_kwargs
         embedding_model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
         name = embedding_model.info[&#39;model_id&#39;]
         type = &#39;api_embeddings&#39;
         embedding_size = embedding_model.info[&#39;embedding_dimension&#39;]
         max_seq_length = embedding_model.info[&#39;max_seq_length&#39;]
         chunk_size = min(max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
         tokenizer = AutoTokenizer.from_pretrained(name, **tokenizer_kwargs)
         encode_fn = lambda x: tokenizer.encode(x, add_special_tokens=False)
         decode_fn = lambda x: tokenizer.decode(x, skip_special_tokens=True)
@@ -104,19 +112,33 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <dl>
 <dt id="llmflex.Embeddings.api_embeddings.APIEmbeddings"><code class="flex name class">
 <span>class <span class="ident">APIEmbeddings</span></span>
-<span>(</span><span>base_url: str, encode_kwargs: Dict[str, Any] = {})</span>
+<span>(</span><span>base_url: str, encode_kwargs: Optional[Dict[str, Any]] = None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Base class for embeddings model.</p></div>
+<div class="desc"><p>Base class for embeddings model.</p>
+<p>Initialising the embedding model instance.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>URL for the api.</dd>
+<dt><strong><code>encode_kwargs</code></strong> :&ensp;<code>Optional[Dict[str, Any]]</code>, optional</dt>
+<dd>Encoding keyword arguments for the sentence transformer model. Defaults to None.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class APIEmbeddings(BaseEmbeddings):
 
-    def __init__(self, base_url: str, encode_kwargs: Dict[str, Any] = dict()) -&gt; None:
+    def __init__(self, base_url: str, encode_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
+        &#34;&#34;&#34;Initialising the embedding model instance.
+
+        Args:
+            base_url (str): URL for the api.
+            encode_kwargs (Optional[Dict[str, Any]], optional): Encoding keyword arguments for the sentence transformer model. Defaults to None.
+        &#34;&#34;&#34;
         self.base_url = base_url.removeprefix(&#39;/&#39;)
-        self.encode_kwargs = encode_kwargs
+        self.encode_kwargs = dict() if encode_kwargs is None else encode_kwargs
         self.info = json.loads(requests.get(self.base_url + &#39;/info&#39;).content.decode())
 
     def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
@@ -160,7 +182,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 </dd>
 <dt id="llmflex.Embeddings.api_embeddings.APIEmbeddingsToolkit"><code class="flex name class">
 <span>class <span class="ident">APIEmbeddingsToolkit</span></span>
-<span>(</span><span>base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, encode_kwargs: Dict[str, Any] = {'normalize_embeddings': True, 'batch_size': 128}, tokenizer_kwargs: Dict[str, Any] = {})</span>
+<span>(</span><span>base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1, encode_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for storing the embedding model and the text splitter.</p>
@@ -173,10 +195,10 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <dd>Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.</dd>
 <dt><strong><code>chunk_overlap_perc</code></strong> :&ensp;<code>float</code>, optional</dt>
 <dd>Number of tokens percentage overlap during text splitting. Defaults to 0.1.</dd>
-<dt><strong><code>encode_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
-<dd>Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).</dd>
-<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
-<dd>Keyword arguments for loading tokenizer. Defaults to dict().</dd>
+<dt><strong><code>encode_kwargs</code></strong> :&ensp;<code>Optional[Dict[str, Any]]</code>, optional</dt>
+<dd>Keyword arguments for encoding text. If None is given, the default is normalize_embeddings=True, batch_size=128. Defaults to None.</dd>
+<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Optional[Dict[str, Any]]</code>, optional</dt>
+<dd>Keyword arguments for loading tokenizer. Defaults to None.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -185,27 +207,29 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 <pre><code class="python">class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
 
     def __init__(self, base_url: str, chunk_size: Optional[int] = None, chunk_overlap_perc: float = 0.1,
-                 encode_kwargs: Dict[str, Any] = dict(normalize_embeddings=True, batch_size=128), tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 encode_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the self-hosted Huggingface API embeddings toolkit.
 
         Args:
             base_url (str): Model id (from Huggingface) to use.
             chunk_size (Optional[int], optional): Chunk size for the text splitter. If not provided, the min of the model max_seq_length or 512 will be used. Defaults to None.
             chunk_overlap_perc (float, optional): Number of tokens percentage overlap during text splitting. Defaults to 0.1.
-            encode_kwargs (Dict[str, Any], optional): Keyword arguments for encoding. Defaults to dict(normalize_embeddings=True).
-            tokenizer_kwargs (Dict[str, Any], optional): Keyword arguments for loading tokenizer. Defaults to dict().
+            encode_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for encoding text. If None is given, the default is normalize_embeddings=True, batch_size=128. Defaults to None.
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for loading tokenizer. Defaults to None.
         &#34;&#34;&#34;
         from ..utils import get_config
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
         os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
         from transformers import AutoTokenizer
+        encode_kwargs = dict(normalize_embeddings=True, batch_size=128) if encode_kwargs is None else encode_kwargs
         embedding_model = APIEmbeddings(base_url=base_url, encode_kwargs=encode_kwargs)
         name = embedding_model.info[&#39;model_id&#39;]
         type = &#39;api_embeddings&#39;
         embedding_size = embedding_model.info[&#39;embedding_dimension&#39;]
         max_seq_length = embedding_model.info[&#39;max_seq_length&#39;]
         chunk_size = min(max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
+        tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
         tokenizer = AutoTokenizer.from_pretrained(name, **tokenizer_kwargs)
         encode_fn = lambda x: tokenizer.encode(x, add_special_tokens=False)
         decode_fn = lambda x: tokenizer.decode(x, skip_special_tokens=True)

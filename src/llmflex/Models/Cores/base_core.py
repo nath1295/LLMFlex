@@ -271,7 +271,7 @@ class BaseLLM(LLM):
         return self.core.encode(text=text)
     
     def chat(self, prompt: str, prompt_template: Optional[PromptTemplate] = None, stream: bool = False, 
-            system: str = DEFAULT_SYSTEM_MESSAGE, history: Union[List[str], List[Tuple[str, str]]] = [], **kwargs) -> Union[str, Iterator[str]]:
+            system: str = DEFAULT_SYSTEM_MESSAGE, history: Optional[Union[List[str], List[Tuple[str, str]]]] = None, **kwargs) -> Union[str, Iterator[str]]:
         """Chat with the llm given the input.
 
         Args:
@@ -279,7 +279,7 @@ class BaseLLM(LLM):
             prompt_template (Optional[PromptTemplate], optional): Pormpt template to use. If None is given, the default prompt template will be used. Defaults to None.
             stream (bool, optional): Whether to return the response as an iterator or a string. Defaults to False.
             system (str, optional): System message. Defaults to DEFAULT_SYSTEM_MESSAGE.
-            history (Union[List[str], List[Tuple[str, str]]], optional): List of conversation history. Defaults to [].
+            history (Optional[Union[List[str], List[Tuple[str, str]]]], optional): List of conversation history. Defaults to None.
 
         Returns:
             Union[str, Iterator[str]]: Response of the llm.

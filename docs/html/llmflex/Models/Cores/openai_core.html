@@ -35,7 +35,7 @@ class OpenAICore(BaseCore):
     &#34;&#34;&#34;Core class for llm models using openai api interface.
     &#34;&#34;&#34;
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None,
-                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the llm core.
 
         Args:
@@ -43,7 +43,7 @@ class OpenAICore(BaseCore):
             api_key (Optional[str], optional): If using OpenAI api, API key should be provided. Defaults to None.
             model_id (Optional[str], optional): If using OpenAI api or using an api with multiple models, please provide the model to use. Otherwise &#39;gpt-3.5-turbo&#39; or the first available model will be used by default. Defaults to None.
             tokenizer_id (Optional[str], optional): If not using OpenAI api, repo_id to get the tokenizer from HuggingFace must be provided. Defaults to None.
-            tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to None.
         &#34;&#34;&#34;
         self._core_type = &#39;OpenAICore&#39;
         self._init_config = dict(
@@ -81,7 +81,7 @@ class OpenAICore(BaseCore):
 
         
     def _init_core(self, base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None,
-                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the llm core.
 
         Args:
@@ -89,7 +89,7 @@ class OpenAICore(BaseCore):
             api_key (Optional[str], optional): If using OpenAI api, API key should be provided. Defaults to None.
             model_id (Optional[str], optional): If using OpenAI api or using an api with multiple models, please provide the model to use. Otherwise &#39;gpt-3.5-turbo&#39; or the first available model will be used by default. Defaults to None.
             tokenizer_id (Optional[str], optional): If not using OpenAI api, repo_id to get the tokenizer from HuggingFace must be provided. Defaults to None.
-            tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to None.
         &#34;&#34;&#34;
         from openai import OpenAI
         from .utils import get_prompt_template_by_jinja
@@ -103,6 +103,7 @@ class OpenAICore(BaseCore):
             os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
             os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
             from transformers import AutoTokenizer
+            tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
             self._tokenizer_type = &#39;transformers&#39;
             self._prompt_template = get_prompt_template_by_jinja(self.model_id, self.tokenizer)
@@ -212,7 +213,7 @@ class OpenAICore(BaseCore):
 <dl>
 <dt id="llmflex.Models.Cores.openai_core.OpenAICore"><code class="flex name class">
 <span>class <span class="ident">OpenAICore</span></span>
-<span>(</span><span>base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = {})</span>
+<span>(</span><span>base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None, tokenizer_id: Optional[str] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Core class for llm models using openai api interface.</p>
@@ -227,8 +228,8 @@ class OpenAICore(BaseCore):
 <dd>If using OpenAI api or using an api with multiple models, please provide the model to use. Otherwise 'gpt-3.5-turbo' or the first available model will be used by default. Defaults to None.</dd>
 <dt><strong><code>tokenizer_id</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>If not using OpenAI api, repo_id to get the tokenizer from HuggingFace must be provided. Defaults to None.</dd>
-<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
-<dd>If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().</dd>
+<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Optional[Dict[str, Any]]</code>, optional</dt>
+<dd>If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to None.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -238,7 +239,7 @@ class OpenAICore(BaseCore):
     &#34;&#34;&#34;Core class for llm models using openai api interface.
     &#34;&#34;&#34;
     def __init__(self, base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None,
-                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the llm core.
 
         Args:
@@ -246,7 +247,7 @@ class OpenAICore(BaseCore):
             api_key (Optional[str], optional): If using OpenAI api, API key should be provided. Defaults to None.
             model_id (Optional[str], optional): If using OpenAI api or using an api with multiple models, please provide the model to use. Otherwise &#39;gpt-3.5-turbo&#39; or the first available model will be used by default. Defaults to None.
             tokenizer_id (Optional[str], optional): If not using OpenAI api, repo_id to get the tokenizer from HuggingFace must be provided. Defaults to None.
-            tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to None.
         &#34;&#34;&#34;
         self._core_type = &#39;OpenAICore&#39;
         self._init_config = dict(
@@ -284,7 +285,7 @@ class OpenAICore(BaseCore):
 
         
     def _init_core(self, base_url: Optional[str] = None, api_key: Optional[str] = None, model_id: Optional[str] = None,
-                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Dict[str, Any] = dict()) -&gt; None:
+                 tokenizer_id: Optional[str] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the llm core.
 
         Args:
@@ -292,7 +293,7 @@ class OpenAICore(BaseCore):
             api_key (Optional[str], optional): If using OpenAI api, API key should be provided. Defaults to None.
             model_id (Optional[str], optional): If using OpenAI api or using an api with multiple models, please provide the model to use. Otherwise &#39;gpt-3.5-turbo&#39; or the first available model will be used by default. Defaults to None.
             tokenizer_id (Optional[str], optional): If not using OpenAI api, repo_id to get the tokenizer from HuggingFace must be provided. Defaults to None.
-            tokenizer_kwargs (Dict[str, Any], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to dict().
+            tokenizer_kwargs (Optional[Dict[str, Any]], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to None.
         &#34;&#34;&#34;
         from openai import OpenAI
         from .utils import get_prompt_template_by_jinja
@@ -306,6 +307,7 @@ class OpenAICore(BaseCore):
             os.environ[&#39;HF_HOME&#39;] = get_config()[&#39;hf_home&#39;]
             os.environ[&#39;TOKENIZERS_PARALLELISM&#39;] = &#39;true&#39;
             from transformers import AutoTokenizer
+            tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
             self._tokenizer_type = &#39;transformers&#39;
             self._prompt_template = get_prompt_template_by_jinja(self.model_id, self.tokenizer)
