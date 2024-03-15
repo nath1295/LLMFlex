@@ -72,25 +72,31 @@ class FaissVectorDatabase(BaseVectorDatabase):
         ids = np.array(ids, dtype=np.int32)
         if (ids > self.index.ntotal).sum() > 0:
             raise ValueError('Non-existence ids provided in the list of ids.')
-        new_data = list(self.data.items())
-        new_data = list(filter(lambda x: x[0] not in ids, new_data))
-        new_data = list(map(lambda x: x[1], new_data))
+        new_data = self.data.items()
+        new_data = filter(lambda x: x[0] not in ids, new_data)
+        new_data = map(lambda x: x[1], new_data)
         self.index.remove_ids(ids)
         self._data = dict(zip(range(self.index.ntotal), new_data))
 
-    def _batch_search_with_scores(self, vectors: np.ndarray[np.float32], k: int = 5) -> Tuple[np.ndarray[np.float32], np.ndarray[np.int64]]:
+    def _batch_search_with_scores(self, vectors: np.ndarray[np.float32], k: int = 5, ids_scope: Optional[List[int]] = None) -> Tuple[np.ndarray[np.float32], np.ndarray[np.int64]]:
         """Batch similarity search with multiple vectors.
 
         Args:
             vectors (np.ndarray[np.float32]): Array of vectors for the search.
             k (int, optional): Maximum results for each vector. Defaults to 5.
+            ids_scope (Optional[List[int]], optional): The list of allowed ids to return for the similarity search. Defaults to None.
 
         Returns:
             Tuple[np.ndarray[np.float32], np.ndarray[np.int64]]: Tuple of scores and ids. Both matrices must be in the same shape.
         """
-        from faiss import normalize_L2
+        from faiss import normalize_L2, SearchParametersIVF, IDSelectorArray
         normalize_L2(vectors)
-        scores, ids = self.index.search(vectors, k=k)
+        if ids_scope is None:
+            scores, ids = self.index.search(vectors, k=k)
+        else:
+            id_selector = IDSelectorArray(ids_scope)
+            k = min(k, len(ids_scope))
+            scores, ids = self.index.search(vectors, k=k, params=SearchParametersIVF(sel=id_selector))
         scores = 1 - scores / (2 ** 0.5)
         return scores, ids
     

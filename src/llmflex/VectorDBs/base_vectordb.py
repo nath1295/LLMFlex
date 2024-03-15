@@ -3,7 +3,7 @@ from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
 from ..TextSplitters.base_text_splitter import BaseTextSplitter
 from ..Schemas.documents import Document
 from abc import abstractmethod, ABC
-from typing import List, Dict, Union, Any, Type, Optional, Sequence, Literal, Tuple
+from typing import List, Dict, Union, Any, Type, Optional, Sequence, Callable, Tuple
 import os, numpy as np
 
 def default_vectordb_dir() -> str:
@@ -195,12 +195,13 @@ class BaseVectorDatabase(ABC):
         pass
 
     @abstractmethod
-    def _batch_search_with_scores(self, vectors: np.ndarray[np.float32], k: int = 5) -> Tuple[np.ndarray[np.float32], np.ndarray[np.int64]]:
+    def _batch_search_with_scores(self, vectors: np.ndarray[np.float32], k: int = 5, ids_scope: Optional[List[int]] = None) -> Tuple[np.ndarray[np.float32], np.ndarray[np.int64]]:
         """Batch similarity search with multiple vectors.
 
         Args:
             vectors (np.ndarray[np.float32]): Array of vectors for the search.
             k (int, optional): Maximum results for each vector. Defaults to 5.
+            ids_scope (Optional[List[int]], optional): The list of allowed ids to return for the similarity search. Defaults to None.
 
         Returns:
             Tuple[np.ndarray[np.float32], np.ndarray[np.int64]]: Tuple of scores and ids. Both matrices must be in the same shape.
@@ -389,22 +390,34 @@ class BaseVectorDatabase(ABC):
             docs = list(map(lambda x: Document(index=x[0], metadata=x[1]), list(zip(texts, metadata))))
             self.add_documents(docs=docs, split_text=split_text, text_splitter=text_splitter)
 
-    def batch_search(self, queries: List[str], top_k: int = 5, fetch_k: Optional[int] = None, 
-                     index_only: bool = True, batch_size: int = 100, **kwargs) -> List[List[Union[str, Dict[str, Any]]]]:
+    def batch_search(self, queries: List[str], top_k: int = 5, index_only: bool = True,
+                      batch_size: int = 100, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) -> List[List[Union[str, Dict[str, Any]]]]:
         """Batch simlarity search on multiple queries.
 
         Args:
             queries (List[str]): List of queries.
             top_k (int, optional): Maximum number of results for each query. Defaults to 5.
-            fetch_k (Optional[int], optional): Maximum number of results to fetch before metadata filtering. Defaults to None.
             index_only (bool, optional): Whether to return the list of indexes only. Defaults to True.
             batch_size (int, optional): Batch size to perform similarity search. Defaults to 100.
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function to limit the scope of similarity search. Defaults to None.
 
         Returns:
             List[List[Union[str, Dict[str, Any]]]]: List of list of search results.
         """
         import gc
-        fetch_k = min(20, top_k * 2, self.size) if fetch_k is None else min(fetch_k, self.size)
+        # Filtering the scope of search
+        scope = None
+        if filter_fn:
+            scope = filter(lambda x: filter_fn(x[1]), self.data.items())
+        if kwargs:
+            scope = self.data.items() if scope is None else scope
+            for k, v in kwargs.items():
+                scope = filter(lambda x: x[1].metadata.get(k) == v, scope)
+        ids_scope = scope if scope is None else list(map(lambda x: x[0], scope))
+        top_k = min(self.size, top_k) if ids_scope is None else min(self.size, top_k, len(ids_scope))
+        if top_k == 0:
+            return [[]] * len(queries)
+
         q_num = len(queries)
         batch_num = q_num // batch_size if ((q_num // batch_size) == (q_num / batch_size)) else (q_num // batch_size) + 1
         batches = list(map(lambda x: (x * batch_size, min(q_num, (x + 1) * batch_size)), range(batch_num)))
@@ -412,7 +425,7 @@ class BaseVectorDatabase(ABC):
         ids = list()
         for b in batches:
             qvecs = self.embeddings.batch_embed(queries[b[0]:b[1]])
-            score, id = self._batch_search_with_scores(vectors=qvecs, k=fetch_k)
+            score, id = self._batch_search_with_scores(vectors=qvecs, k=top_k, ids_scope=ids_scope)
             scores.append(score)
             ids.append(id)
             del qvecs
@@ -427,60 +440,56 @@ class BaseVectorDatabase(ABC):
         indexes = get_indexes(docs)
         metadatas = get_metadatas(docs)
         results = get_results(indexes, scores, ids, metadatas)
-        if kwargs:
-            results = results.tolist()
-            for k, v in kwargs.items():
-                filter_fn = lambda x: x['metadata'].get(k) == v
-                results = list(map(lambda x: list(filter(filter_fn, x)), results))
-            results = list(map(lambda x: x[:top_k], results))
-            if index_only:
-                results = list(map(lambda x: list(map(lambda y: y['index'], x)), results))
-            return results
+        if index_only:
+            get_str = np.vectorize(lambda x: x['index'])
+            return get_str(results).tolist()
         else:
-            results = np.apply_along_axis(lambda x: x[:min(top_k, results.shape[1])], axis=1, arr=results)
-            if index_only:
-                get_index = np.vectorize(lambda x: x['index'])
-                results = get_index(results)
             return results.tolist()
         
-    def search(self, query: str, top_k: int = 5, fetch_k: Optional[int] = None, index_only: bool = True, **kwargs) -> List[Union[str, Dict[str, Any]]]:
+    def search(self, query: str, top_k: int = 5, index_only: bool = True, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) -> List[Union[str, Dict[str, Any]]]:
         """Simlarity search on the given query.
 
         Args:
             query (str): Query for similarity search.
             top_k (int, optional): Maximum number of results. Defaults to 5.
-            fetch_k (Optional[int], optional): Maximum number of results to fetch before metadata filtering. Defaults to None.
             index_only (bool, optional): Whether to return the list of indexes only. Defaults to True.
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function to limit the scope of similarity search. Defaults to None.
 
         Returns:
             List[Union[str, Dict[str, Any]]]: List of search results.
         """
-        return self.batch_search(queries=[query], top_k=top_k, fetch_k=fetch_k, index_only=index_only, **kwargs)[0]
+        return self.batch_search(queries=[query], top_k=top_k, index_only=index_only,filter_fn=filter_fn, **kwargs)[0]
             
-    def search_by_metadata(self, ids_only: bool = False, **kwargs) -> Union[List[int], Dict[int, Document]]:
-        """Search documents or ids by metadata. Pass the filters on metadata as keyword arguments.
+    def search_by_metadata(self, ids_only: bool = False, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) -> Union[List[int], Dict[int, Document]]:
+        """Search documents or ids by metadata. Pass the filters on metadata as keyword arguments or pass a filter_fn.
 
         Args:
             ids_only (bool, optional): Whether to return a list of ids or a dictionary with the ids as keys and documents as values. Defaults to False.
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function. Defaults to None.
 
         Returns:
             Union[List[int], Dict[int, Document]]: List of ids or dictionary with the ids as keys and documents as values.
         """
-        results = list(self.data.items())
-        for k, v in kwargs.items():
-            results = list(filter(lambda x: k in x[1].metadata.keys(), results))
-            results = list(filter(lambda x: x[1].metadata[k] == v, results))
+        results = self.data.items()
+        if filter_fn:
+            results = filter(lambda x: filter_fn(x[1]), results)
+        if kwargs:
+            for k, v in kwargs.items():
+                results = filter(lambda x: x[1].metadata.get(k) == v, results)
 
         if ids_only:
             return list(map(lambda x: x[0], results))
         return dict(results)
     
-    def delete_by_metadata(self, **kwargs) -> None:
-        """Remove records by metadata. Pass the filters on metadata as keyword arguments.
+    def delete_by_metadata(self, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) -> None:
+        """Remove records by metadata. Pass the filters on metadata as keyword arguments or pass a filter_fn.
+
+        Args:
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function. Defaults to None.
         """
-        if not kwargs:
-            raise ValueError('No keyword arguments are passed. Use the "clear" method to clear the entire database.')
-        ids = self.search_by_metadata(ids_only=True, **kwargs)
+        if ((not kwargs) and (not filter_fn)):
+            raise ValueError('No keyword arguments or filter_fn are passed. Use the "clear" method to clear the entire database.')
+        ids = self.search_by_metadata(ids_only=True, filter_fn=filter_fn, **kwargs)
         self._delete(ids)
         self.save()
 
@@ -491,6 +500,6 @@ class BaseVectorDatabase(ABC):
         del self._index
         del self._data
         gc.collect()
-        self._index = self._get_empty_index
+        self._index = self._get_empty_index()
         self._data
         self.save()

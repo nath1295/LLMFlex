@@ -58,6 +58,7 @@ class HuggingFaceEmbeddingsServer:
         &#34;&#34;&#34;Start the server.
         &#34;&#34;&#34;
         from flask import request, jsonify
+        import torch
         @self.app.route(&#39;/embeddings&#39;, methods=[&#39;GET&#39;])
         def get_embeddings():
             args_dict = request.json
@@ -65,6 +66,13 @@ class HuggingFaceEmbeddingsServer:
             batch_size =  args_dict.get(&#39;batch_size&#39;, self.default_batch_size)
             normalize_embddings = args_dict.get(&#39;normalize_embeddings&#39;, True)
             embeddings = self.model.encode(input_texts, batch_size=batch_size, normalize_embeddings=normalize_embddings).tolist()
+            if self.model.device.type == &#39;mps&#39;:
+                torch.mps.empty_cache()
+            elif self.model.device.type == &#39;cuda&#39;:
+                torch.cuda.empty_cache()
+            else:
+                import gc
+                gc.collect()
             return jsonify(embeddings)
         
         @self.app.route(&#39;/info&#39;, methods=[&#39;GET&#39;])
@@ -130,6 +138,7 @@ class HuggingFaceEmbeddingsServer:
         &#34;&#34;&#34;Start the server.
         &#34;&#34;&#34;
         from flask import request, jsonify
+        import torch
         @self.app.route(&#39;/embeddings&#39;, methods=[&#39;GET&#39;])
         def get_embeddings():
             args_dict = request.json
@@ -137,6 +146,13 @@ class HuggingFaceEmbeddingsServer:
             batch_size =  args_dict.get(&#39;batch_size&#39;, self.default_batch_size)
             normalize_embddings = args_dict.get(&#39;normalize_embeddings&#39;, True)
             embeddings = self.model.encode(input_texts, batch_size=batch_size, normalize_embeddings=normalize_embddings).tolist()
+            if self.model.device.type == &#39;mps&#39;:
+                torch.mps.empty_cache()
+            elif self.model.device.type == &#39;cuda&#39;:
+                torch.cuda.empty_cache()
+            else:
+                import gc
+                gc.collect()
             return jsonify(embeddings)
         
         @self.app.route(&#39;/info&#39;, methods=[&#39;GET&#39;])
@@ -160,6 +176,7 @@ class HuggingFaceEmbeddingsServer:
     &#34;&#34;&#34;Start the server.
     &#34;&#34;&#34;
     from flask import request, jsonify
+    import torch
     @self.app.route(&#39;/embeddings&#39;, methods=[&#39;GET&#39;])
     def get_embeddings():
         args_dict = request.json
@@ -167,6 +184,13 @@ class HuggingFaceEmbeddingsServer:
         batch_size =  args_dict.get(&#39;batch_size&#39;, self.default_batch_size)
         normalize_embddings = args_dict.get(&#39;normalize_embeddings&#39;, True)
         embeddings = self.model.encode(input_texts, batch_size=batch_size, normalize_embeddings=normalize_embddings).tolist()
+        if self.model.device.type == &#39;mps&#39;:
+            torch.mps.empty_cache()
+        elif self.model.device.type == &#39;cuda&#39;:
+            torch.cuda.empty_cache()
+        else:
+            import gc
+            gc.collect()
         return jsonify(embeddings)
     
     @self.app.route(&#39;/info&#39;, methods=[&#39;GET&#39;])

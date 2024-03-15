@@ -165,15 +165,15 @@ Classes
             split_text (bool, optional): Whether to split the docuements with the embeddings toolkit text splitter. Defaults to True.
             text_splitter (Optional[Type[BaseTextSplitter]], optional): Text splitter to split the documents. If none given, the embeddings toolkit text splitter will be used. Defaults to None.
 
-    `batch_search(self, queries: List[str], top_k: int = 5, fetch_k: Optional[int] = None, index_only: bool = True, batch_size: int = 100, **kwargs) ‑> List[List[Union[str, Dict[str, Any]]]]`
+    `batch_search(self, queries: List[str], top_k: int = 5, index_only: bool = True, batch_size: int = 100, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) ‑> List[List[Union[str, Dict[str, Any]]]]`
     :   Batch simlarity search on multiple queries.
         
         Args:
             queries (List[str]): List of queries.
             top_k (int, optional): Maximum number of results for each query. Defaults to 5.
-            fetch_k (Optional[int], optional): Maximum number of results to fetch before metadata filtering. Defaults to None.
             index_only (bool, optional): Whether to return the list of indexes only. Defaults to True.
             batch_size (int, optional): Batch size to perform similarity search. Defaults to 100.
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function to limit the scope of similarity search. Defaults to None.
         
         Returns:
             List[List[Union[str, Dict[str, Any]]]]: List of list of search results.
@@ -181,29 +181,33 @@ Classes
     `clear(self) ‑> None`
     :   Clear the entire vector database. Use it with caution.
 
-    `delete_by_metadata(self, **kwargs) ‑> None`
-    :   Remove records by metadata. Pass the filters on metadata as keyword arguments.
+    `delete_by_metadata(self, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) ‑> None`
+    :   Remove records by metadata. Pass the filters on metadata as keyword arguments or pass a filter_fn.
+        
+        Args:
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function. Defaults to None.
 
     `save(self) ‑> None`
     :   Save the vector database.
 
-    `search(self, query: str, top_k: int = 5, fetch_k: Optional[int] = None, index_only: bool = True, **kwargs) ‑> List[Union[str, Dict[str, Any]]]`
+    `search(self, query: str, top_k: int = 5, index_only: bool = True, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) ‑> List[Union[str, Dict[str, Any]]]`
     :   Simlarity search on the given query.
         
         Args:
             query (str): Query for similarity search.
             top_k (int, optional): Maximum number of results. Defaults to 5.
-            fetch_k (Optional[int], optional): Maximum number of results to fetch before metadata filtering. Defaults to None.
             index_only (bool, optional): Whether to return the list of indexes only. Defaults to True.
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function to limit the scope of similarity search. Defaults to None.
         
         Returns:
             List[Union[str, Dict[str, Any]]]: List of search results.
 
-    `search_by_metadata(self, ids_only: bool = False, **kwargs) ‑> Union[List[int], Dict[int, llmflex.Schemas.documents.Document]]`
-    :   Search documents or ids by metadata. Pass the filters on metadata as keyword arguments.
+    `search_by_metadata(self, ids_only: bool = False, filter_fn: Optional[Callable[[Document], bool]] = None, **kwargs) ‑> Union[List[int], Dict[int, llmflex.Schemas.documents.Document]]`
+    :   Search documents or ids by metadata. Pass the filters on metadata as keyword arguments or pass a filter_fn.
         
         Args:
             ids_only (bool, optional): Whether to return a list of ids or a dictionary with the ids as keys and documents as values. Defaults to False.
+            filter_fn (Optional[Callable[[Document], bool]], optional): The filter function. Defaults to None.
         
         Returns:
             Union[List[int], Dict[int, Document]]: List of ids or dictionary with the ids as keys and documents as values.
