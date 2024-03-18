@@ -27,7 +27,8 @@ def list_vectordbs(vectordb_dir: Optional[str] = None) -> List[str]:
     Returns:
         List[str]: List all the vector databases in the given directory.
     """
-    vectordb_dir = vectordb_dir if ((isinstance(vectordb_dir, str)) & (os.path.exists(vectordb_dir))) else default_vectordb_dir()
+    vectordb_dir = default_vectordb_dir() if vectordb_dir is None else vectordb_dir
+    vectordb_dir = vectordb_dir if os.path.exists(vectordb_dir) else default_vectordb_dir()
     dbs = list(filter(lambda x: os.path.isdir(os.path.join(vectordb_dir, x)), os.listdir(vectordb_dir)))
     dbs = list(filter(lambda x: os.path.exists(os.path.join(vectordb_dir, x, 'info.json')), dbs))
     return dbs
