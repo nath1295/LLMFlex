@@ -55,7 +55,7 @@ def name_checker(name: str) -> str:
 class BaseVectorDatabase(ABC):
     """Base class for vector databases.
     """
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None) -> None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -> None:
         """Initialise a vector database.
 
         Args:
@@ -222,7 +222,7 @@ class BaseVectorDatabase(ABC):
         pass
 
     @classmethod
-    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None) -> BaseVectorDatabase:
+    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) -> BaseVectorDatabase:
         """Load the vector database from an existing vector database.
 
         Args:
@@ -271,7 +271,7 @@ class BaseVectorDatabase(ABC):
     @classmethod
     def from_documents(cls, embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], 
                       name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -> BaseVectorDatabase:
+                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -> BaseVectorDatabase:
         """Load the vector database from existing documents.
 
         Args:
@@ -293,7 +293,7 @@ class BaseVectorDatabase(ABC):
     @classmethod
     def from_texts(cls, embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
                       name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -> BaseVectorDatabase:
+                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -> BaseVectorDatabase:
         """Load the vector database from existing texts.
 
         Args:

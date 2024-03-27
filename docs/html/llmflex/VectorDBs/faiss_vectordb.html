@@ -35,7 +35,7 @@ import os, numpy as np
 
 class FaissVectorDatabase(BaseVectorDatabase):
 
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None) -&gt; None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise a vector database.
 
         Args:
@@ -155,7 +155,7 @@ class FaissVectorDatabase(BaseVectorDatabase):
 <dl>
 <dt id="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase"><code class="flex name class">
 <span>class <span class="ident">FaissVectorDatabase</span></span>
-<span>(</span><span>embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None)</span>
+<span>(</span><span>embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for vector databases.</p>
@@ -175,7 +175,7 @@ class FaissVectorDatabase(BaseVectorDatabase):
 </summary>
 <pre><code class="python">class FaissVectorDatabase(BaseVectorDatabase):
 
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None) -&gt; None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise a vector database.
 
         Args:

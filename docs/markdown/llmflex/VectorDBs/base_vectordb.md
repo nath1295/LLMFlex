@@ -34,7 +34,7 @@ Functions
 Classes
 -------
 
-`BaseVectorDatabase(embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None)`
+`BaseVectorDatabase(embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs)`
 :   Base class for vector databases.
         
     
@@ -55,7 +55,7 @@ Classes
 
     ### Static methods
 
-    `from_documents(embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) ‑> llmflex.VectorDBs.base_vectordb.BaseVectorDatabase`
+    `from_documents(embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) ‑> llmflex.VectorDBs.base_vectordb.BaseVectorDatabase`
     :   Load the vector database from existing documents.
         
         Args:
@@ -69,7 +69,7 @@ Classes
         Returns:
             BaseVectorDatabase: The initialised vector database.
 
-    `from_exist(embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None) ‑> llmflex.VectorDBs.base_vectordb.BaseVectorDatabase`
+    `from_exist(embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) ‑> llmflex.VectorDBs.base_vectordb.BaseVectorDatabase`
     :   Load the vector database from an existing vector database.
         
         Args:
@@ -80,7 +80,7 @@ Classes
         Returns:
             BaseVectorDatabase: The initialised vector database.
 
-    `from_texts(embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None, name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) ‑> llmflex.VectorDBs.base_vectordb.BaseVectorDatabase`
+    `from_texts(embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None, name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) ‑> llmflex.VectorDBs.base_vectordb.BaseVectorDatabase`
     :   Load the vector database from existing texts.
         
         Args:

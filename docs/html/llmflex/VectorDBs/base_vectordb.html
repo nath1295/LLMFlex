@@ -83,7 +83,7 @@ def name_checker(name: str) -&gt; str:
 class BaseVectorDatabase(ABC):
     &#34;&#34;&#34;Base class for vector databases.
     &#34;&#34;&#34;
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None) -&gt; None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise a vector database.
 
         Args:
@@ -250,7 +250,7 @@ class BaseVectorDatabase(ABC):
         pass
 
     @classmethod
-    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None) -&gt; BaseVectorDatabase:
+    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) -&gt; BaseVectorDatabase:
         &#34;&#34;&#34;Load the vector database from an existing vector database.
 
         Args:
@@ -299,7 +299,7 @@ class BaseVectorDatabase(ABC):
     @classmethod
     def from_documents(cls, embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], 
                       name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -&gt; BaseVectorDatabase:
+                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; BaseVectorDatabase:
         &#34;&#34;&#34;Load the vector database from existing documents.
 
         Args:
@@ -321,7 +321,7 @@ class BaseVectorDatabase(ABC):
     @classmethod
     def from_texts(cls, embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
                       name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -&gt; BaseVectorDatabase:
+                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; BaseVectorDatabase:
         &#34;&#34;&#34;Load the vector database from existing texts.
 
         Args:
@@ -649,7 +649,7 @@ class BaseVectorDatabase(ABC):
 <dl>
 <dt id="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase"><code class="flex name class">
 <span>class <span class="ident">BaseVectorDatabase</span></span>
-<span>(</span><span>embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None)</span>
+<span>(</span><span>embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for vector databases.</p>
@@ -670,7 +670,7 @@ class BaseVectorDatabase(ABC):
 <pre><code class="python">class BaseVectorDatabase(ABC):
     &#34;&#34;&#34;Base class for vector databases.
     &#34;&#34;&#34;
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None) -&gt; None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise a vector database.
 
         Args:
@@ -837,7 +837,7 @@ class BaseVectorDatabase(ABC):
         pass
 
     @classmethod
-    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None) -&gt; BaseVectorDatabase:
+    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) -&gt; BaseVectorDatabase:
         &#34;&#34;&#34;Load the vector database from an existing vector database.
 
         Args:
@@ -886,7 +886,7 @@ class BaseVectorDatabase(ABC):
     @classmethod
     def from_documents(cls, embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], 
                       name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -&gt; BaseVectorDatabase:
+                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; BaseVectorDatabase:
         &#34;&#34;&#34;Load the vector database from existing documents.
 
         Args:
@@ -908,7 +908,7 @@ class BaseVectorDatabase(ABC):
     @classmethod
     def from_texts(cls, embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
                       name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -&gt; BaseVectorDatabase:
+                      split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; BaseVectorDatabase:
         &#34;&#34;&#34;Load the vector database from existing texts.
 
         Args:
@@ -1131,7 +1131,7 @@ class BaseVectorDatabase(ABC):
 <h3>Static methods</h3>
 <dl>
 <dt id="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.from_documents"><code class="name flex">
-<span>def <span class="ident">from_documents</span></span>(<span>embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) ‑> <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
+<span>def <span class="ident">from_documents</span></span>(<span>embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) ‑> <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load the vector database from existing documents.</p>
@@ -1162,7 +1162,7 @@ class BaseVectorDatabase(ABC):
 <pre><code class="python">@classmethod
 def from_documents(cls, embeddings: Type[BaseEmbeddingsToolkit], docs: List[Document], 
                   name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                  split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -&gt; BaseVectorDatabase:
+                  split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; BaseVectorDatabase:
     &#34;&#34;&#34;Load the vector database from existing documents.
 
     Args:
@@ -1183,7 +1183,7 @@ def from_documents(cls, embeddings: Type[BaseEmbeddingsToolkit], docs: List[Docu
 </details>
 </dd>
 <dt id="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.from_exist"><code class="name flex">
-<span>def <span class="ident">from_exist</span></span>(<span>embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None) ‑> <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
+<span>def <span class="ident">from_exist</span></span>(<span>embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) ‑> <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load the vector database from an existing vector database.</p>
@@ -1206,7 +1206,7 @@ def from_documents(cls, embeddings: Type[BaseEmbeddingsToolkit], docs: List[Docu
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None) -&gt; BaseVectorDatabase:
+def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) -&gt; BaseVectorDatabase:
     &#34;&#34;&#34;Load the vector database from an existing vector database.
 
     Args:
@@ -1254,7 +1254,7 @@ def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb
 </details>
 </dd>
 <dt id="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.from_texts"><code class="name flex">
-<span>def <span class="ident">from_texts</span></span>(<span>embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None, name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) ‑> <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
+<span>def <span class="ident">from_texts</span></span>(<span>embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None, name: Optional[str] = None, vectordb_dir: Optional[str] = None, split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) ‑> <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Load the vector database from existing texts.</p>
@@ -1287,7 +1287,7 @@ def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb
 <pre><code class="python">@classmethod
 def from_texts(cls, embeddings: Type[BaseEmbeddingsToolkit], texts: List[str], metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
                   name: Optional[str] = None, vectordb_dir: Optional[str] = None,
-                  split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None) -&gt; BaseVectorDatabase:
+                  split_text: bool = True, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; BaseVectorDatabase:
     &#34;&#34;&#34;Load the vector database from existing texts.
 
     Args:

@@ -95,7 +95,7 @@ embeddings = HuggingfaceEmbeddingsToolkit(model_id="thenlper/gte-large")
 
 # Create a vector database
 food = ["Apple", "Banana", "Pork"]
-vectordb = FaissVectorDatabase.from_data(index=food, embeddings=embeddings)
+vectordb = FaissVectorDatabase.from_texts(index=food, embeddings=embeddings)
 
 # Do semantic search on the vector database
 print(vectordb.search("Beef"))

@@ -4,7 +4,7 @@ Module llmflex.VectorDBs.faiss_vectordb
 Classes
 -------
 
-`FaissVectorDatabase(embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None)`
+`FaissVectorDatabase(embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs)`
 :   Base class for vector databases.
         
     
