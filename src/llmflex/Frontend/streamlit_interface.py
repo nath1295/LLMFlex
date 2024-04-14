@@ -28,7 +28,7 @@ class InterfaceState:
         self.memory = AssistantLongTermChatMemory(title='Untitled 0', embeddings=self.embeddings, text_splitter=self.text_splitter, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
         self.template = self.model.prompt_template
-        self.llm = self.model(stop=self.template.stop + ['#####'])
+        self.llm = self.model(stop=self.template.stop + ['#####'], max_new_tokens=1024)
         self.short_limit = 600
         self.long_limit = 500
         self.score_threshold = 0.5
@@ -503,7 +503,7 @@ class StreamlitInterface:
 
     def memory_settings(self) -> None:
         """Memory token limit settings."""
-        self.short_limit_slidder = st.slider('Short term memory token limit', min_value=0, max_value=6000, step=1, value=self.backend.short_limit, disabled=self.generating)
+        self.short_limit_slidder = st.slider('Short term memory token limit', min_value=0, max_value=10000, step=1, value=self.backend.short_limit, disabled=self.generating)
         self.long_limit_slidder = st.slider('Long term memory token limit', min_value=0, max_value=6000, step=1, value=self.backend.long_limit, disabled=self.generating)
         self.score_threshold_slidder = st.slider('Score threshold for long term memory', min_value=0.0, max_value=1.0, step=0.01, value=self.backend.score_threshold, disabled=self.generating)
         summary = [

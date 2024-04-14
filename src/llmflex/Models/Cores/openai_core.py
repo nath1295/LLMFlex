@@ -160,7 +160,10 @@ class OpenAICore(BaseCore):
                     prompt=prompt,
                     **gen_config
                 ):
-                    yield i.choices[0].text
+                    if i.choices is None:
+                        yield i.content
+                    else:
+                        yield i.choices[0].text
             return textgen_iterator(generate(), stop=stop)
         else:
             from langchain.llms.utils import enforce_stop_tokens
@@ -169,6 +172,7 @@ class OpenAICore(BaseCore):
                 model=self.model_id,
                 prompt=prompt,
                 **gen_config
-            ).choices[0].text
+            )
+            output = output.content if output.choices is None else output.choices[0].text
             output = enforce_stop_tokens(output, stop=stop)
             return output

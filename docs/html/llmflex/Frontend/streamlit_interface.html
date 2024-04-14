@@ -56,7 +56,7 @@ class InterfaceState:
         self.memory = AssistantLongTermChatMemory(title=&#39;Untitled 0&#39;, embeddings=self.embeddings, text_splitter=self.text_splitter, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
         self.template = self.model.prompt_template
-        self.llm = self.model(stop=self.template.stop + [&#39;#####&#39;])
+        self.llm = self.model(stop=self.template.stop + [&#39;#####&#39;], max_new_tokens=1024)
         self.short_limit = 600
         self.long_limit = 500
         self.score_threshold = 0.5
@@ -531,7 +531,7 @@ class StreamlitInterface:
 
     def memory_settings(self) -&gt; None:
         &#34;&#34;&#34;Memory token limit settings.&#34;&#34;&#34;
-        self.short_limit_slidder = st.slider(&#39;Short term memory token limit&#39;, min_value=0, max_value=6000, step=1, value=self.backend.short_limit, disabled=self.generating)
+        self.short_limit_slidder = st.slider(&#39;Short term memory token limit&#39;, min_value=0, max_value=10000, step=1, value=self.backend.short_limit, disabled=self.generating)
         self.long_limit_slidder = st.slider(&#39;Long term memory token limit&#39;, min_value=0, max_value=6000, step=1, value=self.backend.long_limit, disabled=self.generating)
         self.score_threshold_slidder = st.slider(&#39;Score threshold for long term memory&#39;, min_value=0.0, max_value=1.0, step=0.01, value=self.backend.score_threshold, disabled=self.generating)
         summary = [
@@ -1039,7 +1039,7 @@ def run_streamlit_interface(model_kwargs: Dict[str, Any],
         self.memory = AssistantLongTermChatMemory(title=&#39;Untitled 0&#39;, embeddings=self.embeddings, text_splitter=self.text_splitter, from_exist=False)
         self.system = DEFAULT_SYSTEM_MESSAGE
         self.template = self.model.prompt_template
-        self.llm = self.model(stop=self.template.stop + [&#39;#####&#39;])
+        self.llm = self.model(stop=self.template.stop + [&#39;#####&#39;], max_new_tokens=1024)
         self.short_limit = 600
         self.long_limit = 500
         self.score_threshold = 0.5
@@ -1618,7 +1618,7 @@ def titles(self) -&gt; List[str]:
 
     def memory_settings(self) -&gt; None:
         &#34;&#34;&#34;Memory token limit settings.&#34;&#34;&#34;
-        self.short_limit_slidder = st.slider(&#39;Short term memory token limit&#39;, min_value=0, max_value=6000, step=1, value=self.backend.short_limit, disabled=self.generating)
+        self.short_limit_slidder = st.slider(&#39;Short term memory token limit&#39;, min_value=0, max_value=10000, step=1, value=self.backend.short_limit, disabled=self.generating)
         self.long_limit_slidder = st.slider(&#39;Long term memory token limit&#39;, min_value=0, max_value=6000, step=1, value=self.backend.long_limit, disabled=self.generating)
         self.score_threshold_slidder = st.slider(&#39;Score threshold for long term memory&#39;, min_value=0.0, max_value=1.0, step=0.01, value=self.backend.score_threshold, disabled=self.generating)
         summary = [
@@ -2462,7 +2462,7 @@ def tool_states(self) -&gt; Dict[str, bool]:
 </summary>
 <pre><code class="python">def memory_settings(self) -&gt; None:
     &#34;&#34;&#34;Memory token limit settings.&#34;&#34;&#34;
-    self.short_limit_slidder = st.slider(&#39;Short term memory token limit&#39;, min_value=0, max_value=6000, step=1, value=self.backend.short_limit, disabled=self.generating)
+    self.short_limit_slidder = st.slider(&#39;Short term memory token limit&#39;, min_value=0, max_value=10000, step=1, value=self.backend.short_limit, disabled=self.generating)
     self.long_limit_slidder = st.slider(&#39;Long term memory token limit&#39;, min_value=0, max_value=6000, step=1, value=self.backend.long_limit, disabled=self.generating)
     self.score_threshold_slidder = st.slider(&#39;Score threshold for long term memory&#39;, min_value=0.0, max_value=1.0, step=0.01, value=self.backend.score_threshold, disabled=self.generating)
     summary = [

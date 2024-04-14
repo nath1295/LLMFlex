@@ -146,14 +146,14 @@ class LlmFactory:
         """
         return self.core.prompt_template
     
-    def __call__(self, temperature: float = 0.8, max_new_tokens: int = 2048, top_p: float = 0.95,
+    def __call__(self, temperature: float = 0.8, max_new_tokens: int = 256, top_p: float = 0.95,
                 top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, 
                 newline=True, **kwargs: Dict[str, Any]) -> BaseLLM:
         """Calling the object will create a langchain format llm with the generation configurations passed from the arguments. 
 
         Args:
             temperature (float, optional): Set how "creative" the model is, the samller it is, the more static of the output. Defaults to 0.8.
-            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 256.
             top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
             top_k (int, optional): While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.
             repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.

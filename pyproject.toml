@@ -20,7 +20,7 @@ dependencies = [
     "faiss-cpu",
     "optimum",
     "gradio>=4.2",
-    "duckduckgo-search",
+    "duckduckgo-search>=5.2.2",
     "fake-useragent",
     "openai>=1.0.0",
     "tiktoken",
