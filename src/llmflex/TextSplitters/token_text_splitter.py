@@ -16,9 +16,9 @@ class TokenCountTextSplitter(BaseTextSplitter):
             chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
             chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
         """
-        from langchain.text_splitter import Tokenizer
+        from ..Schemas.tokenizer import Tokenizer
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        self._tokenizer = Tokenizer(chunk_overlap=chunk_overlap, tokens_per_chunk=chunk_size, decode=decode_fn, encode=encode_fn)
+        self._tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
 
     def split_text(self, text: str) -> List[str]:
         """Splitting the given text.
@@ -29,6 +29,5 @@ class TokenCountTextSplitter(BaseTextSplitter):
         Returns:
             List[str]: List of split texts.
         """
-        from langchain.text_splitter import split_text_on_tokens
-        chunks = split_text_on_tokens(text=text, tokenizer=self._tokenizer)
+        chunks = self._tokenizer.split_text_on_tokens(text=text, chunk_size=self._chunk_size, chunk_overlap=self._chunk_overlap)
         return chunks

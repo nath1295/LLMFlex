@@ -54,6 +54,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         """
         from ..utils import get_config
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
+        from ..Schemas.tokenizer import Tokenizer
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from transformers import AutoTokenizer
@@ -68,6 +69,7 @@ class APIEmbeddingsToolkit(BaseEmbeddingsToolkit):
         tokenizer = AutoTokenizer.from_pretrained(name, **tokenizer_kwargs)
         encode_fn = lambda x: tokenizer.encode(x, add_special_tokens=False)
         decode_fn = lambda x: tokenizer.decode(x, skip_special_tokens=True)
+        lf_tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
         text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
-        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, tokenizer=lf_tokenizer, name = name, 
                          type = type, embedding_size = embedding_size, max_seq_length = max_seq_length)

@@ -32,6 +32,68 @@ from typing import List, Dict, Any, Optional, Literal, Union, Tuple
 
 DEFAULT_SYSTEM_MESSAGE = &#34;&#34;&#34;This is a conversation between a human user and a helpful AI assistant.&#34;&#34;&#34;
 
+presets = {
+    &#39;Default&#39; : {
+        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ &#39;SYSTEM:\n&#39; + messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;]
+    },
+    &#39;Llama2&#39; : {
+        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0][&#39;content&#39;] %}{% elif false == true and not &#39;&lt;&lt;SYS&gt;&gt;&#39; in messages[0][&#39;content&#39;] %}{% set loop_messages = messages %}{% set system_message = &#39;You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\\n\\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don\\&#39;t know the answer to a question, please don\\&#39;t share false information.&#39; %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if (message[&#39;role&#39;] == &#39;user&#39;) != (loop.index0 % 2 == 0) %}{{ raise_exception(&#39;Conversation roles must alternate user/assistant/user/assistant/...&#39;) }}{% endif %}{% if loop.index0 == 0 and system_message != false %}{% set content = &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + message[&#39;content&#39;] %}{% else %}{% set content = message[&#39;content&#39;] %}{% endif %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ bos_token + &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% elif message[&#39;role&#39;] == &#39;system&#39; %}{{ &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + content.strip() + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39; &#39;  + content.strip() + &#39; &#39; + eos_token }}{% endif %}{% endfor %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
+    },
+    &#39;Llama3&#39; : {
+        &#39;template&#39;: &#34;{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = &#39;&lt;|start_header_id|&gt;&#39; + message[&#39;role&#39;] + &#39;&lt;|end_header_id|&gt;\n\n&#39;+ message[&#39;content&#39;] | trim + &#39;&lt;|eot_id|&gt;&#39; %}{% if loop.index0 == 0 %}{% set content = bos_token + content %}{% endif %}{{ content }}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\n&#39; }}{% else %}{{ eos_token }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;|end_of_text|&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;|begin_of_text|&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_text|&gt;&#39;, &#39;&lt;|eot_id|&gt;&#39;, &#39;&lt;|start_header_id|&gt;&#39;]
+    },
+    &#39;Vicuna&#39; : {
+        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + eos_token + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;, &#39;&lt;/s&gt;&#39;]
+    },
+    &#39;ChatML&#39; : {
+        &#39;template&#39;: &#34;{% for message in messages %}{{&#39;&lt;|im_start|&gt;&#39; + message[&#39;role&#39;] + &#39;\n&#39; + message[&#39;content&#39;] + &#39;&lt;|im_end|&gt;&#39; + &#39;\n&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|im_start|&gt;assistant\n&#39; }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;|im_end|&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;|endoftext|&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;, &#39;&lt;/s&gt;&#39;]
+    },
+    &#39;Zephyr&#39; : {
+        &#39;template&#39;: &#34;{% for message in messages %}\n{% if message[&#39;role&#39;] == &#39;user&#39; %}\n{{ &#39;&lt;|user|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;system&#39; %}\n{{ &#39;&lt;|system|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}\n{{ &#39;&lt;|assistant|&gt;\n&#39;  + message[&#39;content&#39;] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ &#39;&lt;|assistant|&gt;&#39; }}\n{% endif %}\n{% endfor %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;\n&#39;, &#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&lt;|user|&gt;\n&#39;]
+    },
+    &#39;OpenChat&#39; : {
+        &#39;template&#39;: &#34;{{ bos_token }}{% for message in messages %}{{ &#39;GPT4 Correct &#39; + message[&#39;role&#39;].title() + &#39;: &#39; + message[&#39;content&#39;] + &#39;&lt;|end_of_turn|&gt;&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;GPT4 Correct Assistant:&#39; }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;|end_of_turn|&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_turn|&gt;&#39;, &#39;&lt;|end_of_turn|&gt;GPT4 Correct Assistant: &#39;]
+    },
+    &#39;Alpaca&#39; : {
+        &#39;template&#39;: &#34;{% for message in messages %}{% if message[&#39;role&#39;] == &#39;system&#39; %}{% if message[&#39;content&#39;]%}{{&#39;### Instruction: &#39; + message[&#39;content&#39;]+&#39;\n&#39;}}{% endif %}{% elif message[&#39;role&#39;] == &#39;user&#39; %}{{&#39;### Input: &#39; + message[&#39;content&#39;]+&#39;\n&#39;}}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{&#39;### Response: &#39;  + message[&#39;content&#39;] + &#39;\n&#39;}}{% endif %}{% if loop.last and add_generation_prompt %}{{ &#39;### Response:&#39; }}{% endif %}{% endfor %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;|end_of_turn|&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;### Input: &#39;, &#39;\n### Input: &#39;, &#39;###&#39;]
+    },
+}
+
+hidden_presets = {
+    &#39;Llama2&#39; : {
+        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0][&#39;content&#39;] %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if loop.index0 == 0 and system_message != false %}{% set content = &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + message[&#39;content&#39;] %}{% else %}{% set content = message[&#39;content&#39;] %}{% endif %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{% if loop.index0 == 0 %}{{ &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% else %}{{ bos_token + &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% endif %}{% elif message[&#39;role&#39;] == &#39;system&#39; %}{{ &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + content.strip() + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{% if loop.index0 == 0 and system_message != false %}{% set prefix = &#39;[INST]&#39; + &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + &#39;[/INST] &#39; %}{% set content = message[&#39;content&#39;] %}{% elif loop.index0 == 0 %}{% set prefix = &#39;[INST][/INST] &#39; %}{% set content = message[&#39;content&#39;] %}{% else %}{% set prefix = &#39; &#39; %}{% endif %}{{ prefix  + content.strip() + &#39; &#39; + eos_token }}{% endif %}{% endfor %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
+    }
+}
+
+PRESET_FORMATS =  Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Llama3&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;]
+
 class PromptTemplate:
     &#34;&#34;&#34;Class for storing prompt format presets.
     &#34;&#34;&#34;
@@ -193,11 +255,12 @@ class PromptTemplate:
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;], force_real_template: bool = False) -&gt; PromptTemplate:
+    def from_preset(cls, style: PRESET_FORMATS, force_real_template: bool = False) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&amp;#39;Default&amp;#39;, &amp;#39;Llama2&amp;#39;, &amp;#39;Vicuna&amp;#39;, &amp;#39;ChatML&amp;#39;, &amp;#39;Zephyr&amp;#39;, &amp;#39;OpenChat&amp;#39;, &amp;#39;Alpaca&amp;#39;]): Format of the prompt.
+            style (PRESET_FORMATS): Format of the prompt.
+            force_real_template (bool, optional): Whether to render the given template. For most templates it has no effects. Only for some restrictive templates like llama2. Defaults to False.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -218,61 +281,7 @@ class PromptTemplate:
             eos_token = self.eos_token,
             bos_token = self.bos_token,
             stop = self.stop if self.stop is not None else [self.eos_token]
-        )
-    
-presets = {
-    &#39;Default&#39; : {
-        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ &#39;SYSTEM:\n&#39; + messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;]
-    },
-    &#39;Llama2&#39; : {
-        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0][&#39;content&#39;] %}{% elif false == true and not &#39;&lt;&lt;SYS&gt;&gt;&#39; in messages[0][&#39;content&#39;] %}{% set loop_messages = messages %}{% set system_message = &#39;You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\\n\\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don\\&#39;t know the answer to a question, please don\\&#39;t share false information.&#39; %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if (message[&#39;role&#39;] == &#39;user&#39;) != (loop.index0 % 2 == 0) %}{{ raise_exception(&#39;Conversation roles must alternate user/assistant/user/assistant/...&#39;) }}{% endif %}{% if loop.index0 == 0 and system_message != false %}{% set content = &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + message[&#39;content&#39;] %}{% else %}{% set content = message[&#39;content&#39;] %}{% endif %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ bos_token + &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% elif message[&#39;role&#39;] == &#39;system&#39; %}{{ &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + content.strip() + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39; &#39;  + content.strip() + &#39; &#39; + eos_token }}{% endif %}{% endfor %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
-    },
-    &#39;Vicuna&#39; : {
-        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + eos_token + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;, &#39;&lt;/s&gt;&#39;]
-    },
-    &#39;ChatML&#39; : {
-        &#39;template&#39;: &#34;{% for message in messages %}{{&#39;&lt;|im_start|&gt;&#39; + message[&#39;role&#39;] + &#39;\n&#39; + message[&#39;content&#39;] + &#39;&lt;|im_end|&gt;&#39; + &#39;\n&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|im_start|&gt;assistant\n&#39; }}{% endif %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;|im_end|&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;|endoftext|&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;, &#39;&lt;/s&gt;&#39;]
-    },
-    &#39;Zephyr&#39; : {
-        &#39;template&#39;: &#34;{% for message in messages %}\n{% if message[&#39;role&#39;] == &#39;user&#39; %}\n{{ &#39;&lt;|user|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;system&#39; %}\n{{ &#39;&lt;|system|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}\n{{ &#39;&lt;|assistant|&gt;\n&#39;  + message[&#39;content&#39;] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ &#39;&lt;|assistant|&gt;&#39; }}\n{% endif %}\n{% endfor %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;\n&#39;, &#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&lt;|user|&gt;\n&#39;]
-    },
-    &#39;OpenChat&#39; : {
-        &#39;template&#39;: &#34;{{ bos_token }}{% for message in messages %}{{ &#39;GPT4 Correct &#39; + message[&#39;role&#39;].title() + &#39;: &#39; + message[&#39;content&#39;] + &#39;&lt;|end_of_turn|&gt;&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;GPT4 Correct Assistant:&#39; }}{% endif %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;|end_of_turn|&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_turn|&gt;&#39;, &#39;&lt;|end_of_turn|&gt;GPT4 Correct Assistant: &#39;]
-    },
-    &#39;Alpaca&#39; : {
-        &#39;template&#39;: &#34;{% for message in messages %}{% if message[&#39;role&#39;] == &#39;system&#39; %}{% if message[&#39;content&#39;]%}{{&#39;### Instruction: &#39; + message[&#39;content&#39;]+&#39;\n&#39;}}{% endif %}{% elif message[&#39;role&#39;] == &#39;user&#39; %}{{&#39;### Input: &#39; + message[&#39;content&#39;]+&#39;\n&#39;}}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{&#39;### Response: &#39;  + message[&#39;content&#39;] + &#39;\n&#39;}}{% endif %}{% if loop.last and add_generation_prompt %}{{ &#39;### Response:&#39; }}{% endif %}{% endfor %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;|end_of_turn|&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;### Input: &#39;, &#39;\n### Input: &#39;, &#39;###&#39;]
-    },
-}
-
-hidden_presets = {
-    &#39;Llama2&#39; : {
-        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0][&#39;content&#39;] %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if loop.index0 == 0 and system_message != false %}{% set content = &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + message[&#39;content&#39;] %}{% else %}{% set content = message[&#39;content&#39;] %}{% endif %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{% if loop.index0 == 0 %}{{ &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% else %}{{ bos_token + &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% endif %}{% elif message[&#39;role&#39;] == &#39;system&#39; %}{{ &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + content.strip() + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{% if loop.index0 == 0 and system_message != false %}{% set prefix = &#39;[INST]&#39; + &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + &#39;[/INST] &#39; %}{% set content = message[&#39;content&#39;] %}{% elif loop.index0 == 0 %}{% set prefix = &#39;[INST][/INST] &#39; %}{% set content = message[&#39;content&#39;] %}{% else %}{% set prefix = &#39; &#39; %}{% endif %}{{ prefix  + content.strip() + &#39; &#39; + eos_token }}{% endif %}{% endfor %}&#34;,
-        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
-    }
-}</code></pre>
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -469,11 +478,12 @@ hidden_presets = {
         return cls.from_dict(read_json(file_dir=file_dir), template_name=file_dir)
     
     @classmethod
-    def from_preset(cls, style: Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;], force_real_template: bool = False) -&gt; PromptTemplate:
+    def from_preset(cls, style: PRESET_FORMATS, force_real_template: bool = False) -&gt; PromptTemplate:
         &#34;&#34;&#34;Initialise the prompt template from a preset.
 
         Args:
-            style (Literal[&amp;#39;Default&amp;#39;, &amp;#39;Llama2&amp;#39;, &amp;#39;Vicuna&amp;#39;, &amp;#39;ChatML&amp;#39;, &amp;#39;Zephyr&amp;#39;, &amp;#39;OpenChat&amp;#39;, &amp;#39;Alpaca&amp;#39;]): Format of the prompt.
+            style (PRESET_FORMATS): Format of the prompt.
+            force_real_template (bool, optional): Whether to render the given template. For most templates it has no effects. Only for some restrictive templates like llama2. Defaults to False.
 
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.
@@ -570,12 +580,17 @@ def from_json(cls, file_dir: str) -&gt; PromptTemplate:
 </details>
 </dd>
 <dt id="llmflex.Prompts.prompt_template.PromptTemplate.from_preset"><code class="name flex">
-<span>def <span class="ident">from_preset</span></span>(<span>style: "Literal['Default', 'Llama2', 'Vicuna', 'ChatML', 'Zephyr', 'OpenChat', 'Alpaca']", force_real_template: bool = False) ‑> <a title="llmflex.Prompts.prompt_template.PromptTemplate" href="#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
+<span>def <span class="ident">from_preset</span></span>(<span>style: PRESET_FORMATS, force_real_template: bool = False) ‑> <a title="llmflex.Prompts.prompt_template.PromptTemplate" href="#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the prompt template from a preset.</p>
 <h2 id="args">Args</h2>
-<p>style (Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;]): Format of the prompt.</p>
+<dl>
+<dt><strong><code>style</code></strong> :&ensp;<code>PRESET_FORMATS</code></dt>
+<dd>Format of the prompt.</dd>
+<dt><strong><code>force_real_template</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to render the given template. For most templates it has no effects. Only for some restrictive templates like llama2. Defaults to False.</dd>
+</dl>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code><a title="llmflex.Prompts.prompt_template.PromptTemplate" href="#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
@@ -586,11 +601,12 @@ def from_json(cls, file_dir: str) -&gt; PromptTemplate:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@classmethod
-def from_preset(cls, style: Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;], force_real_template: bool = False) -&gt; PromptTemplate:
+def from_preset(cls, style: PRESET_FORMATS, force_real_template: bool = False) -&gt; PromptTemplate:
     &#34;&#34;&#34;Initialise the prompt template from a preset.
 
     Args:
-        style (Literal[&amp;#39;Default&amp;#39;, &amp;#39;Llama2&amp;#39;, &amp;#39;Vicuna&amp;#39;, &amp;#39;ChatML&amp;#39;, &amp;#39;Zephyr&amp;#39;, &amp;#39;OpenChat&amp;#39;, &amp;#39;Alpaca&amp;#39;]): Format of the prompt.
+        style (PRESET_FORMATS): Format of the prompt.
+        force_real_template (bool, optional): Whether to render the given template. For most templates it has no effects. Only for some restrictive templates like llama2. Defaults to False.
 
     Returns:
         PromptTemplate: The initialised PromptTemplate instance.

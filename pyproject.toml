@@ -28,7 +28,7 @@ dependencies = [
     "beautifulsoup4",
     "streamlit",
     "watchdog",
-    "spacy",
+    "spacy>=3.7.0",
     "flask"
 ]
 

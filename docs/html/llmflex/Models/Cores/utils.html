@@ -150,11 +150,12 @@ def detect_prompt_template_by_id(model_id: str) -&gt; str:
         zephyr = &#39;Zephyr&#39;,
         solar = &#39;Llama2&#39;
     )
-    base = dict(
-        llama = &#39;Llama2&#39;,
-        mistral = &#39;Llama2&#39;,
-        mixtral = &#39;Llama2&#39;
-    )
+    base = {
+        &#39;llama-3&#39;: &#39;Llama3&#39;,
+        &#39;llama-2&#39;: &#39;Llama2&#39;,
+        &#39;mistral&#39;: &#39;Llama2&#39;,
+        &#39;mixtral&#39;: &#39;Llama2&#39;
+    }
     id_lower = model_id.lower()
 
     # Check if it is in the finetune list
@@ -310,11 +311,12 @@ def list_local_models() -&gt; List[Dict[str, str]]:
         zephyr = &#39;Zephyr&#39;,
         solar = &#39;Llama2&#39;
     )
-    base = dict(
-        llama = &#39;Llama2&#39;,
-        mistral = &#39;Llama2&#39;,
-        mixtral = &#39;Llama2&#39;
-    )
+    base = {
+        &#39;llama-3&#39;: &#39;Llama3&#39;,
+        &#39;llama-2&#39;: &#39;Llama2&#39;,
+        &#39;mistral&#39;: &#39;Llama2&#39;,
+        &#39;mixtral&#39;: &#39;Llama2&#39;
+    }
     id_lower = model_id.lower()
 
     # Check if it is in the finetune list

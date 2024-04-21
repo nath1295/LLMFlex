@@ -5,12 +5,12 @@ Functions
 ---------
 
     
-`create_content_chunks(contents: Optional[List[str]], llm: langchain_core.language_models.llms.LLM, chunk_size: int = 400) ‑> List[str]`
+`create_content_chunks(contents: Optional[List[str]], token_count_fn: Callable[[str], int], chunk_size: int = 400) ‑> List[str]`
 :   Create a list of strings of chunks limited by the count of tokens.
     
     Args:
         contents (Optional[List[str]]): List of contents to aggregate.
-        llm (LLM): LLM to count tokens.
+        token_count_fn (Callable[[str], int]): Function to count tokens.
         chunk_size (int, optional): Token limit of each chunk. Defaults to 400.
     
     Returns:

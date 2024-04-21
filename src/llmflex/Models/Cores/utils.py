@@ -122,11 +122,12 @@ def detect_prompt_template_by_id(model_id: str) -> str:
         zephyr = 'Zephyr',
         solar = 'Llama2'
     )
-    base = dict(
-        llama = 'Llama2',
-        mistral = 'Llama2',
-        mixtral = 'Llama2'
-    )
+    base = {
+        'llama-3': 'Llama3',
+        'llama-2': 'Llama2',
+        'mistral': 'Llama2',
+        'mixtral': 'Llama2'
+    }
     id_lower = model_id.lower()
 
     # Check if it is in the finetune list

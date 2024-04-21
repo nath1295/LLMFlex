@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup, NavigableString, Tag
 from langchain.llms.base import LLM
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Callable
 
 def get_soup_from_url(url: str, timeout: int = 8) -> BeautifulSoup:
     """Get the soup object from a URL.
@@ -373,12 +373,12 @@ def process_element(element: Union[BeautifulSoup, Tag, NavigableString], sep: st
         final = list(map(lambda x: x + end, final))
         return sep.join(final)
     
-def create_content_chunks(contents: Optional[List[str]], llm: LLM, chunk_size: int = 400) -> List[str]:
+def create_content_chunks(contents: Optional[List[str]], token_count_fn: Callable[[str], int], chunk_size: int = 400) -> List[str]:
     """Create a list of strings of chunks limited by the count of tokens.
 
     Args:
         contents (Optional[List[str]]): List of contents to aggregate.
-        llm (LLM): LLM to count tokens.
+        token_count_fn (Callable[[str], int]): Function to count tokens.
         chunk_size (int, optional): Token limit of each chunk. Defaults to 400.
 
     Returns:
@@ -390,7 +390,7 @@ def create_content_chunks(contents: Optional[List[str]], llm: LLM, chunk_size: i
     if contents is None:
         return chunks
     for c in contents:
-        count = llm.get_num_tokens(c)
+        count = token_count_fn(c)
         if current_count + count <= chunk_size:
             current.append(c)
             current_count += count

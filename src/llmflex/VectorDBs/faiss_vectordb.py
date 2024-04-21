@@ -1,5 +1,6 @@
 from __future__ import annotations
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from ..TextSplitters.base_text_splitter import BaseTextSplitter
 from ..Schemas.documents import Document
 from .base_vectordb import BaseVectorDatabase
 from typing import List, Any, Type, Optional, Tuple
@@ -7,13 +8,15 @@ import os, numpy as np
 
 class FaissVectorDatabase(BaseVectorDatabase):
 
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None,
+                 text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -> None:
         """Initialise a vector database.
 
         Args:
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit to use.
             name (Optional[str], optional): Name of the vector database. Will be used as the directory base name of the vector database in vectordb_dir. If None is given, the vector database will not be saved. Defaults to None.
             vectordb_dir (Optional[str], optional): Directory where the vector databases live. If None is given, the default_vectordb_dir will be used. Defaults to None.
+            text_splitter (Optional[Type[BaseTextSplitter]], optional): Default text splitter for the vecetor database. If None is given, the embeddings toolkit text splitter will be used. Defaults to None.
         """
         super().__init__(embeddings=embeddings, name=name, vectordb_dir=vectordb_dir)
 

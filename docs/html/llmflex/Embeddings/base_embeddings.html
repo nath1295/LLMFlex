@@ -27,6 +27,7 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from ..TextSplitters.base_text_splitter import BaseTextSplitter
+from ..Schemas.tokenizer import Tokenizer
 from langchain.embeddings.base import Embeddings
 from abc import ABC, abstractmethod
 import numpy as np
@@ -74,10 +75,12 @@ class LangchainEmbeddings(Embeddings):
 class BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Base class for storing the embedding model and the text splitter.
     &#34;&#34;&#34;
-    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], name: str, type: str, embedding_size: int, max_seq_length: int) -&gt; None:
+    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], tokenizer: Tokenizer,
+                 name: str, type: str, embedding_size: int, max_seq_length: int) -&gt; None:
         from ..utils import validate_type
         self._embedding_model = validate_type(embedding_model, BaseEmbeddings)
         self._text_splitter = validate_type(text_splitter, BaseTextSplitter)
+        self._tokenizer = validate_type(tokenizer, Tokenizer)
         self._name = validate_type(name, str)
         self._type = validate_type(type, str)
         self._embedding_size = validate_type(embedding_size, int)
@@ -100,6 +103,15 @@ class BaseEmbeddingsToolkit:
             BaseTextSplitter: The text splitter.
         &#34;&#34;&#34;
         return self._text_splitter
+    
+    @property
+    def tokenizer(self) -&gt; Tokenizer:
+        &#34;&#34;&#34;Tokenizer of the embedding model.
+
+        Returns:
+            Tokenizer: Tokenizer of the embedding model.
+        &#34;&#34;&#34;
+        return self._tokenizer
     
     @property
     def embedding_size(self) -&gt; int:
@@ -293,7 +305,7 @@ def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
 </dd>
 <dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit"><code class="flex name class">
 <span>class <span class="ident">BaseEmbeddingsToolkit</span></span>
-<span>(</span><span>embedding_model: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a>], text_splitter: Type[<a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a>], name: str, type: str, embedding_size: int, max_seq_length: int)</span>
+<span>(</span><span>embedding_model: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddings" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddings">BaseEmbeddings</a>], text_splitter: Type[<a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a>], tokenizer: <a title="llmflex.Schemas.tokenizer.Tokenizer" href="../Schemas/tokenizer.html#llmflex.Schemas.tokenizer.Tokenizer">Tokenizer</a>, name: str, type: str, embedding_size: int, max_seq_length: int)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for storing the embedding model and the text splitter.</p></div>
@@ -304,10 +316,12 @@ def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
 <pre><code class="python">class BaseEmbeddingsToolkit:
     &#34;&#34;&#34;Base class for storing the embedding model and the text splitter.
     &#34;&#34;&#34;
-    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], name: str, type: str, embedding_size: int, max_seq_length: int) -&gt; None:
+    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], tokenizer: Tokenizer,
+                 name: str, type: str, embedding_size: int, max_seq_length: int) -&gt; None:
         from ..utils import validate_type
         self._embedding_model = validate_type(embedding_model, BaseEmbeddings)
         self._text_splitter = validate_type(text_splitter, BaseTextSplitter)
+        self._tokenizer = validate_type(tokenizer, Tokenizer)
         self._name = validate_type(name, str)
         self._type = validate_type(type, str)
         self._embedding_size = validate_type(embedding_size, int)
@@ -330,6 +344,15 @@ def embed_documents(self, texts: List[str]) -&gt; List[List[float]]:
             BaseTextSplitter: The text splitter.
         &#34;&#34;&#34;
         return self._text_splitter
+    
+    @property
+    def tokenizer(self) -&gt; Tokenizer:
+        &#34;&#34;&#34;Tokenizer of the embedding model.
+
+        Returns:
+            Tokenizer: Tokenizer of the embedding model.
+        &#34;&#34;&#34;
+        return self._tokenizer
     
     @property
     def embedding_size(self) -&gt; int:
@@ -538,6 +561,28 @@ def text_splitter(self) -&gt; BaseTextSplitter:
     return self._text_splitter</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.tokenizer"><code class="name">var <span class="ident">tokenizer</span> : <a title="llmflex.Schemas.tokenizer.Tokenizer" href="../Schemas/tokenizer.html#llmflex.Schemas.tokenizer.Tokenizer">Tokenizer</a></code></dt>
+<dd>
+<div class="desc"><p>Tokenizer of the embedding model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Tokenizer</code></dt>
+<dd>Tokenizer of the embedding model.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tokenizer(self) -&gt; Tokenizer:
+    &#34;&#34;&#34;Tokenizer of the embedding model.
+
+    Returns:
+        Tokenizer: Tokenizer of the embedding model.
+    &#34;&#34;&#34;
+    return self._tokenizer</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type"><code class="name">var <span class="ident">type</span> : str</code></dt>
 <dd>
 <div class="desc"><p>Type of the embedding toolkit.</p>
@@ -652,7 +697,7 @@ def type(self) -&gt; str:
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li>langchain_core.embeddings.Embeddings</li>
+<li>langchain_core.embeddings.embeddings.Embeddings</li>
 <li>abc.ABC</li>
 </ul>
 <h3>Methods</h3>
@@ -719,6 +764,7 @@ def type(self) -&gt; str:
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.max_seq_length">max_seq_length</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.name">name</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.text_splitter">text_splitter</a></code></li>
+<li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.tokenizer" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.tokenizer">tokenizer</a></code></li>
 <li><code><a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type" href="#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit.type">type</a></code></li>
 </ul>
 </li>

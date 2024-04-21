@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>llmflex.TextSplitters.token_text_splitter API documentation</title>
+<title>llmflex.Rankers API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,126 +19,35 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>llmflex.TextSplitters.token_text_splitter</code></h1>
+<h1 class="title">Module <code>llmflex.Rankers</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List, Callable
-from .base_text_splitter import BaseTextSplitter
-
-class TokenCountTextSplitter(BaseTextSplitter):
-    &#34;&#34;&#34;Text splitter that count tokens and split texts.
-    &#34;&#34;&#34;
-
-    def __init__(self, encode_fn: Callable[[str], List[int]],
-                 decode_fn: Callable[[List[int]], str],
-                 chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
-        &#34;&#34;&#34;Initialise the TextSplitter.
-
-        Args:
-            encode_fn (Callable[[str], List[int]]): Function of encode a string.
-            decode_fn (Callable[[List[int]], str]): Function to decode a list of token ids.
-            chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
-            chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
-        &#34;&#34;&#34;
-        from ..Schemas.tokenizer import Tokenizer
-        super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        self._tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
-
-    def split_text(self, text: str) -&gt; List[str]:
-        &#34;&#34;&#34;Splitting the given text.
-
-        Args:
-            text (str): Text to split.
-
-        Returns:
-            List[str]: List of split texts.
-        &#34;&#34;&#34;
-        chunks = self._tokenizer.split_text_on_tokens(text=text, chunk_size=self._chunk_size, chunk_overlap=self._chunk_overlap)
-        return chunks</code></pre>
+<pre><code class="python">from .base_ranker import BaseRanker
+from .flashrank_ranker import FlashrankRanker</code></pre>
 </details>
 </section>
 <section>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
-<h2 class="section-title" id="header-classes">Classes</h2>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt id="llmflex.TextSplitters.token_text_splitter.TokenCountTextSplitter"><code class="flex name class">
-<span>class <span class="ident">TokenCountTextSplitter</span></span>
-<span>(</span><span>encode_fn: Callable[[str], List[int]], decode_fn: Callable[[List[int]], str], chunk_size: int = 400, chunk_overlap: int = 40)</span>
-</code></dt>
+<dt><code class="name"><a title="llmflex.Rankers.base_ranker" href="base_ranker.html">llmflex.Rankers.base_ranker</a></code></dt>
 <dd>
-<div class="desc"><p>Text splitter that count tokens and split texts.</p>
-<p>Initialise the TextSplitter.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>encode_fn</code></strong> :&ensp;<code>Callable[[str], List[int]]</code></dt>
-<dd>Function of encode a string.</dd>
-<dt><strong><code>decode_fn</code></strong> :&ensp;<code>Callable[[List[int]], str]</code></dt>
-<dd>Function to decode a list of token ids.</dd>
-<dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Maximum number of tokens per text chunk. Defaults to 400.</dd>
-<dt><strong><code>chunk_overlap</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class TokenCountTextSplitter(BaseTextSplitter):
-    &#34;&#34;&#34;Text splitter that count tokens and split texts.
-    &#34;&#34;&#34;
-
-    def __init__(self, encode_fn: Callable[[str], List[int]],
-                 decode_fn: Callable[[List[int]], str],
-                 chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
-        &#34;&#34;&#34;Initialise the TextSplitter.
-
-        Args:
-            encode_fn (Callable[[str], List[int]]): Function of encode a string.
-            decode_fn (Callable[[List[int]], str]): Function to decode a list of token ids.
-            chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
-            chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
-        &#34;&#34;&#34;
-        from ..Schemas.tokenizer import Tokenizer
-        super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        self._tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
-
-    def split_text(self, text: str) -&gt; List[str]:
-        &#34;&#34;&#34;Splitting the given text.
-
-        Args:
-            text (str): Text to split.
-
-        Returns:
-            List[str]: List of split texts.
-        &#34;&#34;&#34;
-        chunks = self._tokenizer.split_text_on_tokens(text=text, chunk_size=self._chunk_size, chunk_overlap=self._chunk_overlap)
-        return chunks</code></pre>
-</details>
-<h3>Ancestors</h3>
-<ul class="hlist">
-<li><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a></li>
-<li>abc.ABC</li>
-</ul>
-<h3>Inherited members</h3>
-<ul class="hlist">
-<li><code><b><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a></b></code>:
-<ul class="hlist">
-<li><code><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_documents" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_documents">split_documents</a></code></li>
-<li><code><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_text" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_text">split_text</a></code></li>
-</ul>
-</li>
-</ul>
+<div class="desc"></div>
+</dd>
+<dt><code class="name"><a title="llmflex.Rankers.flashrank_ranker" href="flashrank_ranker.html">llmflex.Rankers.flashrank_ranker</a></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
 </section>
 </article>
 <nav id="sidebar">
@@ -149,14 +58,13 @@ class TokenCountTextSplitter(BaseTextSplitter):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="llmflex.TextSplitters" href="index.html">llmflex.TextSplitters</a></code></li>
+<li><code><a title="llmflex" href="../index.html">llmflex</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-classes">Classes</a></h3>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li>
-<h4><code><a title="llmflex.TextSplitters.token_text_splitter.TokenCountTextSplitter" href="#llmflex.TextSplitters.token_text_splitter.TokenCountTextSplitter">TokenCountTextSplitter</a></code></h4>
-</li>
+<li><code><a title="llmflex.Rankers.base_ranker" href="base_ranker.html">llmflex.Rankers.base_ranker</a></code></li>
+<li><code><a title="llmflex.Rankers.flashrank_ranker" href="flashrank_ranker.html">llmflex.Rankers.flashrank_ranker</a></code></li>
 </ul>
 </li>
 </ul>

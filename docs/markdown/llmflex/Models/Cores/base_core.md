@@ -145,7 +145,7 @@ Classes
 
     ### Class variables
 
-    `core: Type[llmflex.Models.Cores.base_core.BaseCore]`
+    `core: Type[BaseCore]`
     :
 
     `generation_config: Dict[str, Any]`
@@ -230,7 +230,7 @@ Classes
 
     ### Class variables
 
-    `core: llmflex.Models.Cores.base_core.BaseCore`
+    `core: BaseCore`
     :
 
     `generation_config: Dict[str, Any]`

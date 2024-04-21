@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>llmflex.TextSplitters.token_text_splitter API documentation</title>
+<title>llmflex.Rankers.flashrank_ranker API documentation</title>
 <meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,46 +19,56 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>llmflex.TextSplitters.token_text_splitter</code></h1>
+<h1 class="title">Module <code>llmflex.Rankers.flashrank_ranker</code></h1>
 </header>
 <section id="section-intro">
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from typing import List, Callable
-from .base_text_splitter import BaseTextSplitter
+<pre><code class="python">from .base_ranker import BaseRanker
+from ..Schemas.documents import Document, RankResult
+from typing import List, Dict, Union, Any
 
-class TokenCountTextSplitter(BaseTextSplitter):
-    &#34;&#34;&#34;Text splitter that count tokens and split texts.
+class FlashrankRanker(BaseRanker):
+    &#34;&#34;&#34;Class for FlashRank rerankers.
     &#34;&#34;&#34;
-
-    def __init__(self, encode_fn: Callable[[str], List[int]],
-                 decode_fn: Callable[[List[int]], str],
-                 chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
-        &#34;&#34;&#34;Initialise the TextSplitter.
+    def __init__(self, model_name: str =  &#39;ms-marco-TinyBERT-L-2-v2&#39;, max_length: int = 512) -&gt; None:
+        &#34;&#34;&#34;Initialise the ranker.
 
         Args:
-            encode_fn (Callable[[str], List[int]]): Function of encode a string.
-            decode_fn (Callable[[List[int]], str]): Function to decode a list of token ids.
-            chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
-            chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
+            model_name (str, optional): Model to use for reranking. Please check https://github.com/PrithivirajDamodaran/FlashRank for more details. Defaults to &#39;ms-marco-TinyBERT-L-2-v2&#39;.
+            max_length (int, optional): Maximum number of tokens per document. Defaults to 512.
         &#34;&#34;&#34;
-        from ..Schemas.tokenizer import Tokenizer
-        super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        self._tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
+        from flashrank import Ranker
+        from ..utils import get_config
+        import os
+        super().__init__()
+        cache_dir = os.path.join(get_config()[&#39;hf_home&#39;], &#39;flashrank&#39;)
+        os.makedirs(cache_dir, exist_ok=True)
+        self._model = Ranker(model_name=model_name, max_length=max_length, cache_dir=cache_dir)
 
-    def split_text(self, text: str) -&gt; List[str]:
-        &#34;&#34;&#34;Splitting the given text.
+    def rerank(self, query: str, elements: List[Union[Document, Dict[str, Any]]], top_k: int = 5) -&gt; List[RankResult]:
+        &#34;&#34;&#34;The method to rerank list of documents, usually from the search results of a vector database.
 
         Args:
-            text (str): Text to split.
+            query (str): Query for reranking the given list of documents.
+            elements (List[RankResult]): List of documents or dictionaries of search results to rerank.
+            top_k (int, optional): Maximum number of results to return. Defaults to 5.
 
         Returns:
-            List[str]: List of split texts.
+            List[Dict[str, Any]]: List of results ordered descendingly.
         &#34;&#34;&#34;
-        chunks = self._tokenizer.split_text_on_tokens(text=text, chunk_size=self._chunk_size, chunk_overlap=self._chunk_overlap)
-        return chunks</code></pre>
+        from flashrank import RerankRequest
+        num_docs = len(elements)
+        docs = map(self._format_element, elements)
+        docs = list(map(lambda x: dict(id=x[&#39;id&#39;], text=x[&#39;text&#39;], meta=dict(metadata=x[&#39;metadata&#39;], original_score=x[&#39;original_score&#39;])), docs))
+        request = RerankRequest(query=query, passages=docs)
+        results = self._model.rerank(request=request)
+        results = results if len(results) &lt;= top_k else results[:top_k]
+        results = list(map(lambda x: RankResult(index=x[&#39;text&#39;], metadata=x[&#39;meta&#39;][&#39;metadata&#39;], 
+                    rank_score=float(x[&#39;score&#39;]), original_score=float(x[&#39;meta&#39;][&#39;original_score&#39;]), id=x[&#39;id&#39;]), results))
+        return results</code></pre>
 </details>
 </section>
 <section>
@@ -70,70 +80,74 @@ class TokenCountTextSplitter(BaseTextSplitter):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="llmflex.TextSplitters.token_text_splitter.TokenCountTextSplitter"><code class="flex name class">
-<span>class <span class="ident">TokenCountTextSplitter</span></span>
-<span>(</span><span>encode_fn: Callable[[str], List[int]], decode_fn: Callable[[List[int]], str], chunk_size: int = 400, chunk_overlap: int = 40)</span>
+<dt id="llmflex.Rankers.flashrank_ranker.FlashrankRanker"><code class="flex name class">
+<span>class <span class="ident">FlashrankRanker</span></span>
+<span>(</span><span>model_name: str = 'ms-marco-TinyBERT-L-2-v2', max_length: int = 512)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Text splitter that count tokens and split texts.</p>
-<p>Initialise the TextSplitter.</p>
+<div class="desc"><p>Class for FlashRank rerankers.</p>
+<p>Initialise the ranker.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>encode_fn</code></strong> :&ensp;<code>Callable[[str], List[int]]</code></dt>
-<dd>Function of encode a string.</dd>
-<dt><strong><code>decode_fn</code></strong> :&ensp;<code>Callable[[List[int]], str]</code></dt>
-<dd>Function to decode a list of token ids.</dd>
-<dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Maximum number of tokens per text chunk. Defaults to 400.</dd>
-<dt><strong><code>chunk_overlap</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.</dd>
+<dt><strong><code>model_name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Model to use for reranking. Please check <a href="https://github.com/PrithivirajDamodaran/FlashRank">https://github.com/PrithivirajDamodaran/FlashRank</a> for more details. Defaults to 'ms-marco-TinyBERT-L-2-v2'.</dd>
+<dt><strong><code>max_length</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of tokens per document. Defaults to 512.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class TokenCountTextSplitter(BaseTextSplitter):
-    &#34;&#34;&#34;Text splitter that count tokens and split texts.
+<pre><code class="python">class FlashrankRanker(BaseRanker):
+    &#34;&#34;&#34;Class for FlashRank rerankers.
     &#34;&#34;&#34;
-
-    def __init__(self, encode_fn: Callable[[str], List[int]],
-                 decode_fn: Callable[[List[int]], str],
-                 chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
-        &#34;&#34;&#34;Initialise the TextSplitter.
+    def __init__(self, model_name: str =  &#39;ms-marco-TinyBERT-L-2-v2&#39;, max_length: int = 512) -&gt; None:
+        &#34;&#34;&#34;Initialise the ranker.
 
         Args:
-            encode_fn (Callable[[str], List[int]]): Function of encode a string.
-            decode_fn (Callable[[List[int]], str]): Function to decode a list of token ids.
-            chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
-            chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
+            model_name (str, optional): Model to use for reranking. Please check https://github.com/PrithivirajDamodaran/FlashRank for more details. Defaults to &#39;ms-marco-TinyBERT-L-2-v2&#39;.
+            max_length (int, optional): Maximum number of tokens per document. Defaults to 512.
         &#34;&#34;&#34;
-        from ..Schemas.tokenizer import Tokenizer
-        super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        self._tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
+        from flashrank import Ranker
+        from ..utils import get_config
+        import os
+        super().__init__()
+        cache_dir = os.path.join(get_config()[&#39;hf_home&#39;], &#39;flashrank&#39;)
+        os.makedirs(cache_dir, exist_ok=True)
+        self._model = Ranker(model_name=model_name, max_length=max_length, cache_dir=cache_dir)
 
-    def split_text(self, text: str) -&gt; List[str]:
-        &#34;&#34;&#34;Splitting the given text.
+    def rerank(self, query: str, elements: List[Union[Document, Dict[str, Any]]], top_k: int = 5) -&gt; List[RankResult]:
+        &#34;&#34;&#34;The method to rerank list of documents, usually from the search results of a vector database.
 
         Args:
-            text (str): Text to split.
+            query (str): Query for reranking the given list of documents.
+            elements (List[RankResult]): List of documents or dictionaries of search results to rerank.
+            top_k (int, optional): Maximum number of results to return. Defaults to 5.
 
         Returns:
-            List[str]: List of split texts.
+            List[Dict[str, Any]]: List of results ordered descendingly.
         &#34;&#34;&#34;
-        chunks = self._tokenizer.split_text_on_tokens(text=text, chunk_size=self._chunk_size, chunk_overlap=self._chunk_overlap)
-        return chunks</code></pre>
+        from flashrank import RerankRequest
+        num_docs = len(elements)
+        docs = map(self._format_element, elements)
+        docs = list(map(lambda x: dict(id=x[&#39;id&#39;], text=x[&#39;text&#39;], meta=dict(metadata=x[&#39;metadata&#39;], original_score=x[&#39;original_score&#39;])), docs))
+        request = RerankRequest(query=query, passages=docs)
+        results = self._model.rerank(request=request)
+        results = results if len(results) &lt;= top_k else results[:top_k]
+        results = list(map(lambda x: RankResult(index=x[&#39;text&#39;], metadata=x[&#39;meta&#39;][&#39;metadata&#39;], 
+                    rank_score=float(x[&#39;score&#39;]), original_score=float(x[&#39;meta&#39;][&#39;original_score&#39;]), id=x[&#39;id&#39;]), results))
+        return results</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a></li>
+<li><a title="llmflex.Rankers.base_ranker.BaseRanker" href="base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker">BaseRanker</a></li>
 <li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a></b></code>:
+<li><code><b><a title="llmflex.Rankers.base_ranker.BaseRanker" href="base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker">BaseRanker</a></b></code>:
 <ul class="hlist">
-<li><code><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_documents" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_documents">split_documents</a></code></li>
-<li><code><a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_text" href="base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter.split_text">split_text</a></code></li>
+<li><code><a title="llmflex.Rankers.base_ranker.BaseRanker.rerank" href="base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker.rerank">rerank</a></code></li>
 </ul>
 </li>
 </ul>
@@ -149,13 +163,13 @@ class TokenCountTextSplitter(BaseTextSplitter):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="llmflex.TextSplitters" href="index.html">llmflex.TextSplitters</a></code></li>
+<li><code><a title="llmflex.Rankers" href="index.html">llmflex.Rankers</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="llmflex.TextSplitters.token_text_splitter.TokenCountTextSplitter" href="#llmflex.TextSplitters.token_text_splitter.TokenCountTextSplitter">TokenCountTextSplitter</a></code></h4>
+<h4><code><a title="llmflex.Rankers.flashrank_ranker.FlashrankRanker" href="#llmflex.Rankers.flashrank_ranker.FlashrankRanker">FlashrankRanker</a></code></h4>
 </li>
 </ul>
 </li>

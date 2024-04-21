@@ -36,7 +36,7 @@ Classes
         Returns:
             List[float]: embeddings of the string.
 
-`BaseEmbeddingsToolkit(embedding_model: Type[llmflex.Embeddings.base_embeddings.BaseEmbeddings], text_splitter: Type[llmflex.TextSplitters.base_text_splitter.BaseTextSplitter], name: str, type: str, embedding_size: int, max_seq_length: int)`
+`BaseEmbeddingsToolkit(embedding_model: Type[llmflex.Embeddings.base_embeddings.BaseEmbeddings], text_splitter: Type[llmflex.TextSplitters.base_text_splitter.BaseTextSplitter], tokenizer: llmflex.Schemas.tokenizer.Tokenizer, name: str, type: str, embedding_size: int, max_seq_length: int)`
 :   Base class for storing the embedding model and the text splitter.
 
     ### Descendants
@@ -82,6 +82,12 @@ Classes
         Returns:
             BaseTextSplitter: The text splitter.
 
+    `tokenizer: llmflex.Schemas.tokenizer.Tokenizer`
+    :   Tokenizer of the embedding model.
+        
+        Returns:
+            Tokenizer: Tokenizer of the embedding model.
+
     `type: str`
     :   Type of the embedding toolkit.
         
@@ -113,7 +119,7 @@ Classes
 
     ### Ancestors (in MRO)
 
-    * langchain_core.embeddings.Embeddings
+    * langchain_core.embeddings.embeddings.Embeddings
     * abc.ABC
 
     ### Methods

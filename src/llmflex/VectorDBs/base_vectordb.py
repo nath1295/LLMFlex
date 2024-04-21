@@ -55,13 +55,15 @@ def name_checker(name: str) -> str:
 class BaseVectorDatabase(ABC):
     """Base class for vector databases.
     """
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -> None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, 
+                 text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -> None:
         """Initialise a vector database.
 
         Args:
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit to use.
             name (Optional[str], optional): Name of the vector database. Will be used as the directory base name of the vector database in vectordb_dir. If None is given, the vector database will not be saved. Defaults to None.
             vectordb_dir (Optional[str], optional): Directory where the vector databases live. If None is given, the default_vectordb_dir will be used. Defaults to None.
+            text_splitter (Optional[Type[BaseTextSplitter]], optional): Default text splitter for the vecetor database. If None is given, the embeddings toolkit text splitter will be used. Defaults to None.
         """
         self._embeddings = embeddings
         self._name = name_checker(name) if name is not None else None
@@ -71,6 +73,7 @@ class BaseVectorDatabase(ABC):
             os.makedirs(self.db_dir, exist_ok=True)
         self._index = self._get_empty_index()
         self._data = dict()
+        self._text_splitter = self.embeddings.text_splitter if text_splitter is None else text_splitter
 
     @property
     def embeddings(self) -> BaseEmbeddingsToolkit:
@@ -80,6 +83,15 @@ class BaseVectorDatabase(ABC):
             BaseEmbeddingsToolkit: Embeddings toolkit used in the vector database.
         """
         return self._embeddings
+    
+    @property
+    def text_splitter(self) -> BaseTextSplitter:
+        """Default text splitter for the vector database.
+
+        Returns:
+            BaseTextSplitter: Default text splitter for the vector database.
+        """
+        return self._text_splitter
     
     @property
     def index(self) -> Any:
@@ -222,13 +234,16 @@ class BaseVectorDatabase(ABC):
         pass
 
     @classmethod
-    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None, **kwargs) -> BaseVectorDatabase:
+    def from_exist(cls, embeddings: Type[BaseEmbeddingsToolkit], name: str, vectordb_dir: Optional[str] = None,
+                   text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -> BaseVectorDatabase:
         """Load the vector database from an existing vector database.
 
         Args:
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit to use.
             name (str): Name of the existing database.
             vectordbs_dir (Optional[str], optional): Directory where the vector databases live. If None is given, the default_vectordb_dir will be used. Defaults to None.
+            text_splitter (Optional[Type[BaseTextSplitter]], optional): Text splitter to split the documents. If none given, the embeddings toolkit text splitter will be used. Defaults to None.
+
 
         Returns:
             BaseVectorDatabase: The initialised vector database.
@@ -244,7 +259,7 @@ class BaseVectorDatabase(ABC):
         db_info_dir = os.path.join(vectordbs_dir, name, 'info.json')
         db_info = read_json(db_info_dir)
         db_embeddings_name = db_info.get('embeddings', None)
-        vdb = cls(embeddings, name, vectordbs_dir)
+        vdb = cls(embeddings, name, vectordbs_dir, text_splitter)
         data_dir =os.path.join(vdb.db_dir, 'data.pkl')
         if os.path.exists(data_dir):
             with open(data_dir, 'rb') as f:
@@ -285,7 +300,7 @@ class BaseVectorDatabase(ABC):
         Returns:
             BaseVectorDatabase: The initialised vector database.
         """
-        vdb = cls(embeddings, name, vectordb_dir)
+        vdb = cls(embeddings, name, vectordb_dir, text_splitter)
         vdb.add_documents(docs=docs, split_text=split_text, text_splitter=text_splitter)
         vdb.save() # In case an empty list of docs is given.
         return vdb
@@ -308,7 +323,7 @@ class BaseVectorDatabase(ABC):
         Returns:
             BaseVectorDatabase: The initialised vector database.
         """
-        vdb = cls(embeddings, name, vectordb_dir)
+        vdb = cls(embeddings, name, vectordb_dir, text_splitter)
         vdb.add_texts(texts=texts, metadata=metadata, split_text=split_text, text_splitter=text_splitter)
         vdb.save() # In case an empty list of texts is given.
         return vdb
@@ -346,7 +361,7 @@ class BaseVectorDatabase(ABC):
             text_splitter (Optional[Type[BaseTextSplitter]], optional): Text splitter to split the documents. If none given, the embeddings toolkit text splitter will be used. Defaults to None.
         """
         if len(docs) != 0:
-            text_splitter = self.embeddings.text_splitter if text_splitter is None else text_splitter
+            text_splitter = self.text_splitter if text_splitter is None else text_splitter
             docs = text_splitter.split_documents(docs) if split_text else docs
             vectors = list(map(lambda x: x.index, docs))
             vectors = self.embeddings.batch_embed(vectors)
@@ -502,5 +517,5 @@ class BaseVectorDatabase(ABC):
         del self._data
         gc.collect()
         self._index = self._get_empty_index()
-        self._data
+        self._data = dict()
         self.save()

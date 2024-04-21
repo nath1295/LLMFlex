@@ -38,11 +38,12 @@ Classes
         Returns:
             PromptTemplatet: The initialised PromptTemplate instance.
 
-    `from_preset(style: "Literal['Default', 'Llama2', 'Vicuna', 'ChatML', 'Zephyr', 'OpenChat', 'Alpaca']", force_real_template: bool = False) ‑> llmflex.Prompts.prompt_template.PromptTemplate`
+    `from_preset(style: PRESET_FORMATS, force_real_template: bool = False) ‑> llmflex.Prompts.prompt_template.PromptTemplate`
     :   Initialise the prompt template from a preset.
         
         Args:
-            style (Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;]): Format of the prompt.
+            style (PRESET_FORMATS): Format of the prompt.
+            force_real_template (bool, optional): Whether to render the given template. For most templates it has no effects. Only for some restrictive templates like llama2. Defaults to False.
         
         Returns:
             PromptTemplate: The initialised PromptTemplate instance.

@@ -5,7 +5,7 @@ Classes
 -------
 
 `Document(**data: Any)`
-:   Usage docs: https://docs.pydantic.dev/2.6/concepts/models/
+:   Usage docs: https://docs.pydantic.dev/2.7/concepts/models/
     
     A base class for creating Pydantic models.
     
@@ -59,3 +59,14 @@ Classes
 
     `model_fields`
     :
+
+`RankResult(index: str, rank_score: float, metadata: Optional[Dict[str, Any]] = None, original_score: Optional[float] = None, id: Optional[int] = None)`
+:   Result of rerankers.
+
+    ### Methods
+
+    `to_dict(self) ‑> Dict[str, Any]`
+    :   Transform the result to a dictionary.
+        
+        Returns:
+            Dict[str, Any]: Dictionary of the content of the result.

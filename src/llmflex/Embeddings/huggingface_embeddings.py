@@ -52,12 +52,14 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
             encode_kwargs (Optional[Dict[str, Any]], optional): Keyword arguments for encoding text. If None is given, the default is normalize_embeddings=True, batch_size=128. Defaults to None.
         """
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
+        from ..Schemas.tokenizer import Tokenizer
         embedding_model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
         name = model_id
         type = 'huggingface_embeddings'
         chunk_size = min(embedding_model._max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size
         encode_fn = lambda x: embedding_model._tokenizer.encode(x, add_special_tokens=False)
         decode_fn = lambda x: embedding_model._tokenizer.decode(x, skip_special_tokens=True)
+        tokenizer = Tokenizer(tokenize_fn=encode_fn, detokenize_fn=decode_fn)
         text_splitter = TokenCountTextSplitter(encode_fn=encode_fn, decode_fn=decode_fn, chunk_overlap=int(chunk_size * chunk_overlap_perc), chunk_size=chunk_size)
-        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, name = name, 
+        super().__init__(embedding_model = embedding_model, text_splitter = text_splitter, tokenizer=tokenizer, name = name, 
                          type = type, embedding_size = embedding_model._embedding_size, max_seq_length = embedding_model._max_seq_length)

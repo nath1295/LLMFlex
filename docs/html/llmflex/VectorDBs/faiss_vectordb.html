@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from __future__ import annotations
 from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from ..TextSplitters.base_text_splitter import BaseTextSplitter
 from ..Schemas.documents import Document
 from .base_vectordb import BaseVectorDatabase
 from typing import List, Any, Type, Optional, Tuple
@@ -35,13 +36,15 @@ import os, numpy as np
 
 class FaissVectorDatabase(BaseVectorDatabase):
 
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -&gt; None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None,
+                 text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise a vector database.
 
         Args:
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit to use.
             name (Optional[str], optional): Name of the vector database. Will be used as the directory base name of the vector database in vectordb_dir. If None is given, the vector database will not be saved. Defaults to None.
             vectordb_dir (Optional[str], optional): Directory where the vector databases live. If None is given, the default_vectordb_dir will be used. Defaults to None.
+            text_splitter (Optional[Type[BaseTextSplitter]], optional): Default text splitter for the vecetor database. If None is given, the embeddings toolkit text splitter will be used. Defaults to None.
         &#34;&#34;&#34;
         super().__init__(embeddings=embeddings, name=name, vectordb_dir=vectordb_dir)
 
@@ -155,7 +158,7 @@ class FaissVectorDatabase(BaseVectorDatabase):
 <dl>
 <dt id="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase"><code class="flex name class">
 <span>class <span class="ident">FaissVectorDatabase</span></span>
-<span>(</span><span>embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs)</span>
+<span>(</span><span>embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for vector databases.</p>
@@ -168,6 +171,8 @@ class FaissVectorDatabase(BaseVectorDatabase):
 <dd>Name of the vector database. Will be used as the directory base name of the vector database in vectordb_dir. If None is given, the vector database will not be saved. Defaults to None.</dd>
 <dt><strong><code>vectordb_dir</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
 <dd>Directory where the vector databases live. If None is given, the default_vectordb_dir will be used. Defaults to None.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[Type[BaseTextSplitter]]</code>, optional</dt>
+<dd>Default text splitter for the vecetor database. If None is given, the embeddings toolkit text splitter will be used. Defaults to None.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -175,13 +180,15 @@ class FaissVectorDatabase(BaseVectorDatabase):
 </summary>
 <pre><code class="python">class FaissVectorDatabase(BaseVectorDatabase):
 
-    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None, **kwargs) -&gt; None:
+    def __init__(self, embeddings: Type[BaseEmbeddingsToolkit], name: Optional[str] = None, vectordb_dir: Optional[str] = None,
+                 text_splitter: Optional[Type[BaseTextSplitter]] = None, **kwargs) -&gt; None:
         &#34;&#34;&#34;Initialise a vector database.
 
         Args:
             embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit to use.
             name (Optional[str], optional): Name of the vector database. Will be used as the directory base name of the vector database in vectordb_dir. If None is given, the vector database will not be saved. Defaults to None.
             vectordb_dir (Optional[str], optional): Directory where the vector databases live. If None is given, the default_vectordb_dir will be used. Defaults to None.
+            text_splitter (Optional[Type[BaseTextSplitter]], optional): Default text splitter for the vecetor database. If None is given, the embeddings toolkit text splitter will be used. Defaults to None.
         &#34;&#34;&#34;
         super().__init__(embeddings=embeddings, name=name, vectordb_dir=vectordb_dir)
 
@@ -311,6 +318,7 @@ class FaissVectorDatabase(BaseVectorDatabase):
 <li><code><a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.search" href="base_vectordb.html#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.search">search</a></code></li>
 <li><code><a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.search_by_metadata" href="base_vectordb.html#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.search_by_metadata">search_by_metadata</a></code></li>
 <li><code><a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.size" href="base_vectordb.html#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.size">size</a></code></li>
+<li><code><a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.text_splitter" href="base_vectordb.html#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase.text_splitter">text_splitter</a></code></li>
 </ul>
 </li>
 </ul>

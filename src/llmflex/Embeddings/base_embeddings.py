@@ -1,4 +1,5 @@
 from ..TextSplitters.base_text_splitter import BaseTextSplitter
+from ..Schemas.tokenizer import Tokenizer
 from langchain.embeddings.base import Embeddings
 from abc import ABC, abstractmethod
 import numpy as np
@@ -46,10 +47,12 @@ class LangchainEmbeddings(Embeddings):
 class BaseEmbeddingsToolkit:
     """Base class for storing the embedding model and the text splitter.
     """
-    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], name: str, type: str, embedding_size: int, max_seq_length: int) -> None:
+    def __init__(self, embedding_model: Type[BaseEmbeddings], text_splitter: Type[BaseTextSplitter], tokenizer: Tokenizer,
+                 name: str, type: str, embedding_size: int, max_seq_length: int) -> None:
         from ..utils import validate_type
         self._embedding_model = validate_type(embedding_model, BaseEmbeddings)
         self._text_splitter = validate_type(text_splitter, BaseTextSplitter)
+        self._tokenizer = validate_type(tokenizer, Tokenizer)
         self._name = validate_type(name, str)
         self._type = validate_type(type, str)
         self._embedding_size = validate_type(embedding_size, int)
@@ -72,6 +75,15 @@ class BaseEmbeddingsToolkit:
             BaseTextSplitter: The text splitter.
         """
         return self._text_splitter
+    
+    @property
+    def tokenizer(self) -> Tokenizer:
+        """Tokenizer of the embedding model.
+
+        Returns:
+            Tokenizer: Tokenizer of the embedding model.
+        """
+        return self._tokenizer
     
     @property
     def embedding_size(self) -> int:

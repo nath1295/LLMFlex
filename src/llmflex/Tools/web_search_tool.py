@@ -140,7 +140,7 @@ class WebSearchTool(BaseTool):
             vectordb.add_documents(docs=docs, text_splitter=self.embeddings.text_splitter, split_text=True)
         else:
             contents = list(map(lambda x: get_markdown(x, as_list=True), urls))
-            contents = list(map(lambda x: create_content_chunks(x, llm), contents))
+            contents = list(map(lambda x: create_content_chunks(x, llm.get_num_tokens), contents))
             docs = list(zip(contents, results))
             docs = list(map(lambda x: list(map(lambda y: Document(index=y, metadata=x[1]), x[0])), docs))
             docs = sum(docs, [])
