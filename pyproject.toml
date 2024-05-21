@@ -29,7 +29,9 @@ dependencies = [
     "streamlit",
     "watchdog",
     "spacy>=3.7.0",
-    "flask"
+    "flask",
+    "PyMuPDF",
+    "python-docx"
 ]
 
 [project.urls]

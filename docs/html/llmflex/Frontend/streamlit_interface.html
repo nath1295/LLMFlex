@@ -704,10 +704,7 @@ class StreamlitInterface:
             
     def launch(self) -&gt; None:
         if self.islogin:
-            if not self.mobile:
-                st.set_page_config(layout=&#39;wide&#39;)
-            else:
-                st.set_page_config(layout=&#39;centered&#39;)
+            st.set_page_config(layout=&#39;wide&#39;)
             with st.sidebar:
                 self.sidebar()
             self.chatbot()
@@ -1791,10 +1788,7 @@ def titles(self) -&gt; List[str]:
             
     def launch(self) -&gt; None:
         if self.islogin:
-            if not self.mobile:
-                st.set_page_config(layout=&#39;wide&#39;)
-            else:
-                st.set_page_config(layout=&#39;centered&#39;)
+            st.set_page_config(layout=&#39;wide&#39;)
             with st.sidebar:
                 self.sidebar()
             self.chatbot()
@@ -2364,10 +2358,7 @@ def tool_states(self) -&gt; Dict[str, bool]:
 </summary>
 <pre><code class="python">def launch(self) -&gt; None:
     if self.islogin:
-        if not self.mobile:
-            st.set_page_config(layout=&#39;wide&#39;)
-        else:
-            st.set_page_config(layout=&#39;centered&#39;)
+        st.set_page_config(layout=&#39;wide&#39;)
         with st.sidebar:
             self.sidebar()
         self.chatbot()

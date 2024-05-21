@@ -43,7 +43,7 @@ def name_checker(name: str) -> str:
         str: Return the given text if it passes all the checkes.
     """
     if ' ' in name:
-        raise ValueError(f'Spaces cannot be in the name')
+        raise ValueError(f'Spaces cannot be in the name.')
     if '\n' in name:
         raise ValueError(f'Newline characters cannot be in the name.')
     if '\r' in name:
@@ -491,7 +491,7 @@ class BaseVectorDatabase(ABC):
             results = filter(lambda x: filter_fn(x[1]), results)
         if kwargs:
             for k, v in kwargs.items():
-                results = filter(lambda x: x[1].metadata.get(k) == v, results)
+                results = list(filter(lambda x: x[1].metadata.get(k) == v, results))
 
         if ids_only:
             return list(map(lambda x: x[0], results))

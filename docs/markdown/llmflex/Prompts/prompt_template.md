@@ -4,7 +4,7 @@ Module llmflex.Prompts.prompt_template
 Classes
 -------
 
-`PromptTemplate(template: str, eos_token: Optional[str], bos_token: Optional[str], stop: Optional[List[str]] = None, force_real_template: bool = False)`
+`PromptTemplate(template: str, eos_token: Optional[str], bos_token: Optional[str], stop: Optional[List[str]] = None, force_real_template: bool = False, **kwargs)`
 :   Class for storing prompt format presets.
         
     
@@ -50,20 +50,38 @@ Classes
 
     ### Instance variables
 
+    `allow_custom_role: bool`
+    :   Check if custom role can be used with the prompt template.
+        
+        Returns:
+            bool: Whether custom role can be used with the prompt template.
+
     `bos_token: Optional[str]`
     :
 
     `eos_token: Optional[str]`
     :
 
+    `keywords: List[str]`
+    :   List of keywords to search for in Jinja templates for template detection. Used for presets.
+        
+        Returns:
+            List[str]: List of keywords to search for in Jinja templates for template detection.
+
     `rendered_template: jinja2.environment.Environment`
-    :
+    :   Rendered Jinja template.
+        
+        Returns:
+            Environment: Rendered Jinja template.
 
     `stop: List[str]`
     :
 
     `template: str`
-    :
+    :   Jinja template string.
+        
+        Returns:
+            str: Jinja template string.
 
     `template_name: str`
     :   Name of the template.
@@ -82,6 +100,17 @@ Classes
         
         Returns:
             str: The full prompt given your messages.
+
+    `create_custom_prompt_with_open_role(self, messages: List[Dict[str, str]], end_role: str = '', begin_text: str = '') ‑> str`
+    :   Creating a custom prompt with your given list of messages. Each message should contain a dictionary with the key "role" and "content". The prompt will end with starting prompt of the end_role instead of assistant.
+        
+        Args:
+            messages (List[Dict[str, str]]): List of messages. Each message should contain a dictionary with the key "role" and "content".
+            end_role (str, optional): The role for text generation instead of assistant. If an empty string is given, it means that the role can be anything the llm is going to generate. Defaults to ''.
+            begin_text (str, optional): The beginning text of the last role. Defaults to ''.
+        
+        Returns:
+            str: The full prompt with your custom role.
 
     `create_prompt(self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Optional[Union[List[str], List[Tuple[str, str]]]] = None) ‑> str`
     :   Creating the full chat prompt.

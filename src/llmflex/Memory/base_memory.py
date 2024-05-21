@@ -1,7 +1,9 @@
 import os
 from ..utils import get_config
 from ..Models.Cores.base_core import BaseLLM
-from typing import List, Dict, Any, Type, Tuple
+from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE, PromptTemplate
+from ..KnowledgeBase.knowledge_base import KnowledgeBase
+from typing import List, Dict, Any, Type, Tuple, Optional
 
 
 def chat_memory_home() -> str:
@@ -52,18 +54,21 @@ def list_titles() -> List[str]:
 class BaseChatMemory:
     """Base class for chat memory.
     """
-    def __init__(self, title: str, from_exist: bool = True) -> None:
+    def __init__(self, title: str, from_exist: bool = True, system: Optional[str] = None) -> None:
         """Initialising the memory class.
 
         Args:
             title (str): Title of the chat.
             from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
+            system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
         """
         title = title.strip(' \n\r\t')
         if title == '':
             raise ValueError('Chat title cannot be an empty string.')
         self._title = title
         self._init_memory(from_exist=from_exist)
+        self.info['system'] = system.strip() if system is not None else self.info.get('system', DEFAULT_SYSTEM_MESSAGE)
+        self.save()
 
     @property
     def title(self) -> str:
@@ -117,6 +122,15 @@ class BaseChatMemory:
             save_json(self._info, os.path.join(self.chat_dir, 'info.json'))
             return self._info
 
+    @property
+    def system(self) -> str:
+        """Default system message of the memory.
+
+        Returns:
+            str: Default system message of the memory.
+        """
+        return self.info.get('system', DEFAULT_SYSTEM_MESSAGE)
+
     @property    
     def history(self) -> List[Tuple[str, str]]:
         """Entire chat history.
@@ -167,6 +181,15 @@ class BaseChatMemory:
         with open(os.path.join(self.chat_dir, 'data.pkl'), 'wb') as f:
             pickle.dump(self._data, f)
 
+    def update_system_message(self, system: str) -> None:
+        """Update the default system message for the memory.
+
+        Args:
+            system (str): New system message.
+        """
+        self.info['system'] = system.strip()
+        self.save()
+
     def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -> None:
         """Saving an interaction to the memory.
 
@@ -175,16 +198,25 @@ class BaseChatMemory:
             assistant_output (str): Chatbot output.
         """
         from ..Schemas.documents import Document
+        from copy import deepcopy
         user_input = user_input.strip(' \n\r\t')
         assistant_output = assistant_output.strip(' \n\r\t')
         metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
         for k, v in kwargs.items():
-            if k not in ['user', 'assistant', 'order']:
+            if k not in ['user', 'assistant', 'order', 'role']:
                 metadata[k] = v
         new_key = max(list(self._data.keys())) + 1 if len(self._data) != 0 else 0
+        meta_user = deepcopy(metadata)
+        meta_user['role'] = 'user'
+        meta_assistant = deepcopy(metadata)
+        meta_assistant['role'] = 'assistant'
         self._data[new_key] = Document(
-            index=f'{user_input}\n\n{assistant_output}',
-            metadata=metadata
+            index=user_input,
+            metadata=meta_user
+        )
+        self._data[new_key + 1] = Document(
+            index=assistant_output,
+            metadata=meta_assistant
         )
         self.save()
 
@@ -240,6 +272,51 @@ class BaseChatMemory:
             else:
                 break
         return results
+    
+    def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
+            system: Optional[str] = None, recent_token_limit: int = 200, 
+            knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, **kwargs) -> str:
+        """Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
+
+        Args:
+            user (str): User newest message.
+            prompt_template (PromptTemplate): Prompt template to use.
+            llm (Type[BaseLLM]): LLM for counting tokens.
+            system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
+            recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
+            knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
+            relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
+            relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
+
+
+        Returns:
+            str: The full chat prompt.
+        """
+        user = user.strip()
+        short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
+        system = self.system if not isinstance(system, str) else system
+        messages: list = [dict(role='system', content=self.system)] + prompt_template.format_history(short, return_list=True)
+        if knowledge_base is not None:
+            res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
+            if len(res) != 0:
+                import json
+                res = list(map(lambda x: x.index, res))
+                if prompt_template.allow_custom_role:
+                    res = json.dumps({'Information from knowledge base': res}, indent=4)
+                    messages.extend([dict(role='user', content=user), dict(role='extra information', content=res)])
+                    prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
+                else:
+                    messages.append(dict(role='user', content=user))
+                    prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
+                    res = json.dumps({'Information from knowledge base': res}, indent=4)
+                    prompt += f'{res}\n\nResponse: '
+            else:
+                messages.append(dict(role='user', content=user))
+                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
+        else:
+            messages.append(dict(role='user', content=user))
+            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
+        return prompt
 
 
 

@@ -28,7 +28,7 @@
 </summary>
 <pre><code class="python">from bs4 import BeautifulSoup, NavigableString, Tag
 from langchain.llms.base import LLM
-from typing import Optional, List, Union, Callable
+from typing import Optional, List, Union, Callable, Dict, Any
 
 def get_soup_from_url(url: str, timeout: int = 8) -&gt; BeautifulSoup:
     &#34;&#34;&#34;Get the soup object from a URL.
@@ -447,7 +447,25 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
         Union[str, List[str]]: Content of the URL as a string or a list of string.
     &#34;&#34;&#34;
     soup = get_soup_from_url(url, timeout=timeout)
-    return process_element(soup, as_list=as_list)</code></pre>
+    return process_element(soup, as_list=as_list)
+
+def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+    &#34;&#34;&#34;Search with DuckDuckGo.
+
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+    &#34;&#34;&#34;
+    from duckduckgo_search import DDGS
+    with DDGS() as ddgs:
+        results = [r for r in ddgs.text(query, max_results=n, **kwargs)]
+    if urls_only:
+        results = list(map(lambda x: x[&#39;href&#39;], results))
+    return results</code></pre>
 </details>
 </section>
 <section>
@@ -513,6 +531,48 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -&gt; Union[
     if len(current) != 0:
         chunks.append(&#39;\n\n&#39;.join(current))
     return chunks</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.web_search_utils.ddg_search"><code class="name flex">
+<span>def <span class="ident">ddg_search</span></span>(<span>query: str, n: int = 5, urls_only: bool = True, **kwargs) ‑> List[Union[str, Dict[str, Any]]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Search with DuckDuckGo.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>Search query.</dd>
+<dt><strong><code>n</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of results. Defaults to 5.</dd>
+<dt><strong><code>urls_only</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Only return the list of urls or return other information as well. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Union[str, Dict[str, Any]]]</code></dt>
+<dd>List of search results.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -&gt; List[Union[str, Dict[str, Any]]]:
+    &#34;&#34;&#34;Search with DuckDuckGo.
+
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+    &#34;&#34;&#34;
+    from duckduckgo_search import DDGS
+    with DDGS() as ddgs:
+        results = [r for r in ddgs.text(query, max_results=n, **kwargs)]
+    if urls_only:
+        results = list(map(lambda x: x[&#39;href&#39;], results))
+    return results</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Tools.web_search_utils.detect_language"><code class="name flex">
@@ -1246,6 +1306,7 @@ as_list (bool, optional): Whether to return a list of strings of elements or a s
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="llmflex.Tools.web_search_utils.create_content_chunks" href="#llmflex.Tools.web_search_utils.create_content_chunks">create_content_chunks</a></code></li>
+<li><code><a title="llmflex.Tools.web_search_utils.ddg_search" href="#llmflex.Tools.web_search_utils.ddg_search">ddg_search</a></code></li>
 <li><code><a title="llmflex.Tools.web_search_utils.detect_language" href="#llmflex.Tools.web_search_utils.detect_language">detect_language</a></code></li>
 <li><code><a title="llmflex.Tools.web_search_utils.filtered_child" href="#llmflex.Tools.web_search_utils.filtered_child">filtered_child</a></code></li>
 <li><code><a title="llmflex.Tools.web_search_utils.format_code" href="#llmflex.Tools.web_search_utils.format_code">format_code</a></code></li>

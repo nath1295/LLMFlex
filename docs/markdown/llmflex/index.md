@@ -3,9 +3,9 @@ Module llmflex
 
 Sub-modules
 -----------
-* llmflex.Data
 * llmflex.Embeddings
 * llmflex.Frontend
+* llmflex.KnowledgeBase
 * llmflex.Memory
 * llmflex.Models
 * llmflex.Prompts

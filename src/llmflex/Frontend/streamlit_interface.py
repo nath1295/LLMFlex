@@ -676,10 +676,7 @@ class StreamlitInterface:
             
     def launch(self) -> None:
         if self.islogin:
-            if not self.mobile:
-                st.set_page_config(layout='wide')
-            else:
-                st.set_page_config(layout='centered')
+            st.set_page_config(layout='wide')
             with st.sidebar:
                 self.sidebar()
             self.chatbot()

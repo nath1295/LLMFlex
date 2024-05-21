@@ -71,7 +71,7 @@ def name_checker(name: str) -&gt; str:
         str: Return the given text if it passes all the checkes.
     &#34;&#34;&#34;
     if &#39; &#39; in name:
-        raise ValueError(f&#39;Spaces cannot be in the name&#39;)
+        raise ValueError(f&#39;Spaces cannot be in the name.&#39;)
     if &#39;\n&#39; in name:
         raise ValueError(f&#39;Newline characters cannot be in the name.&#39;)
     if &#39;\r&#39; in name:
@@ -519,7 +519,7 @@ class BaseVectorDatabase(ABC):
             results = filter(lambda x: filter_fn(x[1]), results)
         if kwargs:
             for k, v in kwargs.items():
-                results = filter(lambda x: x[1].metadata.get(k) == v, results)
+                results = list(filter(lambda x: x[1].metadata.get(k) == v, results))
 
         if ids_only:
             return list(map(lambda x: x[0], results))
@@ -647,7 +647,7 @@ class BaseVectorDatabase(ABC):
         str: Return the given text if it passes all the checkes.
     &#34;&#34;&#34;
     if &#39; &#39; in name:
-        raise ValueError(f&#39;Spaces cannot be in the name&#39;)
+        raise ValueError(f&#39;Spaces cannot be in the name.&#39;)
     if &#39;\n&#39; in name:
         raise ValueError(f&#39;Newline characters cannot be in the name.&#39;)
     if &#39;\r&#39; in name:
@@ -1123,7 +1123,7 @@ class BaseVectorDatabase(ABC):
             results = filter(lambda x: filter_fn(x[1]), results)
         if kwargs:
             for k, v in kwargs.items():
-                results = filter(lambda x: x[1].metadata.get(k) == v, results)
+                results = list(filter(lambda x: x[1].metadata.get(k) == v, results))
 
         if ids_only:
             return list(map(lambda x: x[0], results))
@@ -1874,7 +1874,7 @@ def text_splitter(self) -&gt; BaseTextSplitter:
         results = filter(lambda x: filter_fn(x[1]), results)
     if kwargs:
         for k, v in kwargs.items():
-            results = filter(lambda x: x[1].metadata.get(k) == v, results)
+            results = list(filter(lambda x: x[1].metadata.get(k) == v, results))
 
     if ids_only:
         return list(map(lambda x: x[0], results))

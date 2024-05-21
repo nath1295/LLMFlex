@@ -157,7 +157,9 @@ def detect_prompt_template_by_jinja(jinja_template: str) -> str:
     """
     from ...Prompts.prompt_template import presets
     for k, v in presets.items():
-        if v['template'] == jinja_template:
+        if jinja_template in v['template']:
+            return k
+        if all(kw in jinja_template for kw in v['keywords']):
             return k
     return 'Default'
 

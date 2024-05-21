@@ -32,14 +32,6 @@ from langchain.callbacks.manager import CallbackManagerForLLMRun
 from .base_core import BaseCore, BaseLLM
 from typing import Optional, List, Dict, Any, Union, Iterator
 
-_chat_formats_map = {
-    &#39;llama-2&#39;: &#39;Llama2&#39;,
-    &#39;vicuna&#39;: &#39;Vicuna&#39;,
-    &#39;chatml&#39;: &#39;ChatML&#39;,
-    &#39;openchat&#39;: &#39;OpenChat&#39;,
-    &#39;zephyr&#39;: &#39;Zephyr&#39;
-}
-
 def get_model_dir(model_id: str, model_file: Optional[str] = None) -&gt; str:
     &#34;&#34;&#34;Download the model file from Huggingface and get the local directory.
 
@@ -145,9 +137,6 @@ class LlamaCppCore(BaseCore):
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
         self._tokenizer_type = &#39;llamacpp&#39;
-        preset = detect_prompt_template_by_id(self.model_id)
-        preset = _chat_formats_map.get(self._model.chat_format, &#39;Default&#39;) if preset == &#39;Default&#39; else preset
-        self._prompt_template = PromptTemplate.from_preset(preset)
 
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -382,9 +371,6 @@ class LlamaCppCore(BaseCore):
         self._model = Llama(**load_kwargs)
         self._tokenizer = self._model
         self._tokenizer_type = &#39;llamacpp&#39;
-        preset = detect_prompt_template_by_id(self.model_id)
-        preset = _chat_formats_map.get(self._model.chat_format, &#39;Default&#39;) if preset == &#39;Default&#39; else preset
-        self._prompt_template = PromptTemplate.from_preset(preset)
 
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.

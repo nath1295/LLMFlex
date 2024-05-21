@@ -64,7 +64,6 @@ class OpenAICore(BaseCore):
             tokenizer_kwargs (Optional[Dict[str, Any]], optional): If not using OpenAI api, kwargs can be passed to load the tokenizer from HuggingFace. Defaults to None.
         """
         from openai import OpenAI
-        from .utils import get_prompt_template_by_jinja
         api_key = os.environ.get('OPENAI_API_KEY', 'NOAPIKEY') if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
         models = list(map(lambda x: x.id, self._model.models.list().data))
@@ -78,7 +77,6 @@ class OpenAICore(BaseCore):
             tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
             self._tokenizer = AutoTokenizer.from_pretrained(tokenizer_id, **tokenizer_kwargs)
             self._tokenizer_type = 'transformers'
-            self._prompt_template = get_prompt_template_by_jinja(self.model_id, self.tokenizer)
         elif self._is_openai:
             import tiktoken
             self._tokenizer = tiktoken.encoding_for_model(self._model_id)

@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmflex.KnowledgeBase.knowledge_base API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.KnowledgeBase.knowledge_base</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from ..VectorDBs.base_vectordb import list_vectordbs
+from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from ..TextSplitters.base_text_splitter import BaseTextSplitter
+from ..VectorDBs.base_vectordb import BaseVectorDatabase
+from ..Models.Cores.base_core import BaseLLM
+from ..Rankers.base_ranker import BaseRanker
+from ..Schemas.documents import RankResult, Document
+import os
+from typing import List, Type, Optional, Callable, Literal, Tuple
+
+def knowledge_base_dir() -&gt; str:
+    &#34;&#34;&#34;Directory to store knowlege base.
+
+    Returns:
+        str: Directory to store knowlege base.
+    &#34;&#34;&#34;
+    from ..utils import get_config
+    kb_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;knowledge_base&#39;)
+    os.makedirs(kb_dir, exist_ok=True)
+    return kb_dir
+
+def list_knowledge_base() -&gt; List[str]:
+    &#34;&#34;&#34;List the existing knowledge base.
+
+    Returns:
+        List[str]: List of the existing knowledge bases.
+    &#34;&#34;&#34;
+    import re
+    re_kb = re.compile(&#39;kb_\d+&#39;)
+    dirs = os.listdir(knowledge_base_dir())
+    dirs = list(filter(lambda x: re_kb.match(x), dirs))
+    return dirs
+
+def get_new_kb_id() -&gt; str:
+    &#34;&#34;&#34;Get a new id for a new knowledge base.
+
+    Returns:
+        str: The new kb_id.
+    &#34;&#34;&#34;
+    ids = list_knowledge_base()
+    ids = list(map(lambda x: int(x.removeprefix(&#39;kb_&#39;)), ids))
+    if len(ids) == 0:
+        return &#39;kb_0&#39;
+    max_id = max(ids)
+    new = max_id + 1
+    for i in range(max_id):
+        if i not in ids:
+            new = i
+            break
+    return f&#39;kb_{new}&#39;
+
+def load_markdown(file_dir: str) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a markdown file as list of documents for the knowledge base to add.
+
+    Args:
+        file_dir (str): Full directory of the markdown file.
+
+    Returns:
+        List[Document]: List of documents from the markdown file.
+    &#34;&#34;&#34;
+    file_dir = os.path.abspath(file_dir)
+    filename = os.path.basename(file_dir)
+    with open(file_dir, &#39;r&#39;) as f:
+        text = f.read()
+    hash_start = text.startswith(&#39;#&#39;)
+    chunks = filter(lambda x: x != &#39;&#39;, text.split(&#39;\n#&#39;))
+    chunks = list(map(lambda x: (&#39;#&#39; + x).strip(), chunks))
+    if hash_start:
+        chunks[0] = chunks[0][1:]
+    docs = list(map(lambda x: Document(index=x, metadata=dict(filename=filename, file_dir=str(file_dir))), chunks))
+    return docs
+
+def load_docx(file_dir: str) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a docx file as list of documents for the knowledge base to add.
+
+    Args:
+        file_dir (str): Full directory of the docx file.
+
+    Returns:
+        List[Document]: List of documents from the docx file.
+    &#34;&#34;&#34;
+    from docx import Document as DocX
+    file_dir = os.path.abspath(file_dir)
+    filename = os.path.basename(file_dir)
+    file = DocX(file_dir)
+    chunks = filter(lambda x: x.text.strip() != &#39;&#39;, file.paragraphs)
+    chunks = map(lambda x: x.text.strip(), chunks)
+    docs = list(map(lambda x: Document(index=x, metadata=dict(filename=filename, file_dir=str(file_dir))), chunks))
+    return docs
+
+def load_pdf(file_dir: str) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a pdf file as list of documents for the knowledge base to add.
+
+    Args:
+        file_dir (str): Full directory of the pdf file.
+
+    Returns:
+        List[Document]: List of documents from the pdf file.
+    &#34;&#34;&#34;
+    import fitz
+    file_dir = os.path.abspath(file_dir)
+    filename = os.path.basename(file_dir)
+    with fitz.open(file_dir) as doc:
+        pages = []
+        for page in doc:
+            pages.append(page.get_text())
+
+    docs = []
+    for i, page in enumerate(pages):
+        chunks = map(lambda x: x.strip(), page.split(&#39;\n\n&#39;))
+        chunks = filter(lambda x: x != &#39;&#39;, chunks)
+        chunks = list(map(lambda x: Document(index=x, metadata=dict(filename=filename, file_dir=str(file_dir), page=i)), chunks))
+        docs.extend(chunks)
+    return docs
+
+def load_file(file_dir: str, filetype: Literal[&#39;auto&#39;, &#39;markdown&#39;, &#39;docx&#39;, &#39;pdf&#39;] = &#39;auto&#39;) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a text-based file as list of docments.
+
+    Args:
+        file_dir (str): Full directory of the file.
+        filetype (Literal[&amp;#39;auto&amp;#39;, &amp;#39;markdown&amp;#39;, &amp;#39;docx&amp;#39;, &amp;#39;pdf&amp;#39;], optional): The type of file to be loaded. If auto is set, it will be determined by the suffix of the file. Defaults to &#39;auto&#39;.
+
+    Returns:
+        List[Document]: List of documents from the pdf file.
+    &#34;&#34;&#34;
+    suffix = file_dir.split(&#39;.&#39;)[-1].lower()
+    suf_map = dict(md=&#39;markdown&#39;, docx=&#39;docx&#39;, pdf=&#39;pdf&#39;)
+    fn_map = dict(markdown=load_markdown, docx=load_docx, pdf=load_pdf)
+    if filetype == &#39;auto&#39;:
+        filetype = suf_map.get(suffix, &#39;markdown&#39;)
+    return fn_map[filetype](file_dir=file_dir)
+     
+
+class KnowledgeBase:
+    &#34;&#34;&#34;Class to store any text as knowledge for querying.
+    &#34;&#34;&#34;
+    def __init__(self, kb_id: str, embeddings: Type[BaseEmbeddingsToolkit], llm: Optional[BaseLLM], 
+                 ranker: Optional[BaseRanker] = None,
+                 text_splitter: Optional[BaseTextSplitter] = None,
+                 ts_lang_model: str = &#39;en_core_web_sm&#39;,
+                 chunk_size: int = 400,
+                 chunk_overlap: int = 40) -&gt; None:
+        &#34;&#34;&#34;Initialise the knowlege base.
+
+        Args:
+            kb_id (str): A unique identifier for the knowledge base starting with &#34;kb_&#34;.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit for the vector database.
+            llm (Optional[BaseLLM]): LLM for counting tokens. If not given, the embedding model tokenizer will be used to count tokens.
+            ranker (Optional[BaseRanker], optional): Reranker to rerank sementic search results. Defaults to None.
+            text_splitter (Optional[BaseTextSplitter], optional): Text splitter to split documents. If None is given, it will be created with the token counting function. Defaults to None.
+            ts_lang_model (str, optional): Text splitter language model to use if text_splitter is not provided. Defaults to &#39;en_core_web_sm&#39;.
+            chunk_size (int, optional): Chunk size of the text splitter if text_splitter is not provided. Defaults to 400.
+            chunk_overlap (int, optional): Chunk overlap of the text splitter if text_splitter is not provided. Defaults to 40.
+        &#34;&#34;&#34;
+        from ..TextSplitters.sentence_token_text_splitter import SentenceTokenTextSplitter
+        from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
+        from ..Rankers.flashrank_ranker import FlashrankRanker
+        self._kb_dir = os.path.join(knowledge_base_dir(), kb_id)
+        self._embeddings = embeddings
+        self._count_fn = self.embeddings.tokenizer.get_num_tokens if llm is None else llm.get_num_tokens
+        self._text_splitter = SentenceTokenTextSplitter(
+            count_token_fn=self.count_fn,
+            language_model=ts_lang_model,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
+        ) if text_splitter is None else text_splitter
+        self._ranker = FlashrankRanker() if ranker is None else ranker
+        if kb_id in list_knowledge_base():
+            self._vdb = FaissVectorDatabase.from_exist(embeddings=embeddings, name=kb_id, vectordb_dir=knowledge_base_dir(), text_splitter=self.text_splitter)
+        else:
+            import re
+            if not re.match(&#39;kb_\d+&#39;, kb_id):
+                raise ValueError(f&#39;&#34;{kb_id}&#34; is not a valid kb_id, it must start with &#34;kb_&#34;, followed by an integer.&#39;)
+            self._vdb = FaissVectorDatabase.from_documents(embeddings=embeddings, docs=[], name=kb_id, vectordb_dir=knowledge_base_dir(), text_splitter=self.text_splitter)
+
+    
+    @property
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+        &#34;&#34;&#34;Embeddings toolkit for the vector database.
+
+        Returns:
+            BaseEmbeddingsToolkit: Embeddings toolkit for the vector database.
+        &#34;&#34;&#34;
+        return self._embeddings
+    
+    @property
+    def text_splitter(self) -&gt; BaseTextSplitter:
+        &#34;&#34;&#34;Text splitter for the knowledge base.
+
+        Returns:
+            BaseTextSplitter: Text splitter for the knowledge base.
+        &#34;&#34;&#34;
+        return self._text_splitter
+    
+    @property
+    def vector_db(self) -&gt; BaseVectorDatabase:
+        &#34;&#34;&#34;Vector database for the knowledge base.
+
+        Returns:
+            BaseVectorDatabase: Vector database for the knowledge base.
+        &#34;&#34;&#34;
+        return self._vdb
+    
+    @property
+    def knowledge_base_dir(self) -&gt; str:
+        &#34;&#34;&#34;Directory for the knowledge base.
+
+        Returns:
+            str: Directory for the knowledge base.
+        &#34;&#34;&#34;
+        if not os.path.exists(self._kb_dir):
+            os.makedirs(self._kb_dir)
+        return self._kb_dir
+    
+    @property
+    def kb_id(self) -&gt; str:
+        &#34;&#34;&#34;Knowledge base id.
+
+        Returns:
+            str: Knowledge base id.
+        &#34;&#34;&#34;
+        return os.path.basename(self.knowledge_base_dir)
+
+    @property
+    def count_fn(self) -&gt; Callable[[str], int]:
+        &#34;&#34;&#34;Function to count number of tokens in a string.
+
+        Returns:
+            Callable[[str], int]: Function to count number of tokens in a string.
+        &#34;&#34;&#34;
+        return self._count_fn
+    
+    @property
+    def ranker(self) -&gt; BaseRanker:
+        &#34;&#34;&#34;Reranker for search results.
+
+        Returns:
+            BaseRanker: Reranker for search results.
+        &#34;&#34;&#34;
+        return self._ranker
+
+    @property
+    def files(self) -&gt; List[Tuple[str, str]]:
+        &#34;&#34;&#34;List of files and their respective directories.
+        Returns:
+            List[Tuple[str, str]]: List of files and their respective directories.
+        &#34;&#34;&#34;
+        docs = self.vector_db.data.values()
+        combos = list(set(map(lambda x: (x.metadata[&#39;filename&#39;], x.metadata[&#39;file_dir&#39;]), docs)))
+        return combos
+    
+    def search(self, query: str, top_k = 3, token_limit: Optional[int] = None, 
+               fetch_k: int = 30,
+               count_fn: Optional[Callable[[str], int]] = None,
+               relevance_score_threshold: float = 0.8) -&gt; List[RankResult]:
+        &#34;&#34;&#34;Searching for related information from the knowledge base.
+
+        Args:
+            query (str): Search query.
+            top_k (int, optional): Maximum number of result. If token_limit is not None, token_limit will be used instead. Defaults to 3.
+            token_limit (Optional[int], optional): Maximum number of tokens for the search results. Defaults to None.
+            fetch_k (int, optional): Number of results to fetch from the vector database before reranking. Defaults to 30.
+            count_fn (Optional[Callable[[str], int]], optional): Function to count the number of tokens if token_limit is not None. If None is given, the count_fn from the knowledge base class will be used. Defaults to None.
+            relevance_score_threshold (float, optional): Minumum score for the reranking. Defaults to 0.8.
+
+        Returns:
+            List[RankResult]: List of search results.
+        &#34;&#34;&#34;
+        count_fn = self.count_fn if count_fn is None else count_fn
+        init_result = self.vector_db.search(query=query, top_k=fetch_k, index_only=False)
+        if token_limit is None:
+            result = self.ranker.rerank(query=query, elements=init_result, top_k=top_k)
+        else: 
+            rank_result = self.ranker.rerank(query=query, elements=init_result, top_k=len(init_result))
+            result  =[]
+            token_count = 0
+            for res in rank_result:
+                res_count = count_fn(res.index)
+                if token_count + res_count &lt;= token_limit:
+                    token_count += res_count
+                    result.append(res)
+                else:
+                    break
+        result = list(filter(lambda x: x.rank_score &gt;= relevance_score_threshold, result))
+        return result
+    
+    def add_documents(self, docs: List[Document], mode: Literal[&#39;update&#39;, &#39;append&#39;] = &#39;update&#39;) -&gt; None:
+        &#34;&#34;&#34;Adding documents into the knowledge base. In the metadata of the file, it should contain at least filename and file_dir.
+
+        Args:
+            docs (List[Document]): List of documents to add.
+            mode (Literal[&#39;update&#39;, &#39;append&#39;], optional): Way of adding documents. Either updating/add the files or append on existing files. Defaults to &#39;update&#39;.
+        &#34;&#34;&#34;
+        val_docs = list(filter(lambda x: ((&#39;filename&#39; in x.metadata.keys()) &amp; (&#39;file_dir&#39; in x.metadata.keys())), docs))
+        if len(val_docs) &lt; len(docs):
+            raise ValueError(&#39;&#34;filename&#34; and &#34;file_dir&#34; must exist in the metadata of all the documents.&#39;)
+        if len(docs) != 0:
+            if mode == &#39;update&#39;:
+                combos = list(set(map(lambda x: (x.metadata[&#39;filename&#39;], x.metadata[&#39;file_dir&#39;]), docs)))
+                def filter_fn(doc: Document) -&gt; bool:
+                    combo = (doc.metadata[&#39;filename&#39;], doc.metadata[&#39;file_dir&#39;])
+                    return combo in combos
+                self.vector_db.delete_by_metadata(filter_fn=filter_fn)
+            self.vector_db.add_documents(docs=docs, split_text=True, text_splitter=self.text_splitter)
+                
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Clear the entire knowledge base. Use it with caution.
+        &#34;&#34;&#34;
+        self.vector_db.clear()
+
+    
+
+            
+
+
+    
+
+
+    
+
+    </code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.KnowledgeBase.knowledge_base.get_new_kb_id"><code class="name flex">
+<span>def <span class="ident">get_new_kb_id</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get a new id for a new knowledge base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The new kb_id.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_new_kb_id() -&gt; str:
+    &#34;&#34;&#34;Get a new id for a new knowledge base.
+
+    Returns:
+        str: The new kb_id.
+    &#34;&#34;&#34;
+    ids = list_knowledge_base()
+    ids = list(map(lambda x: int(x.removeprefix(&#39;kb_&#39;)), ids))
+    if len(ids) == 0:
+        return &#39;kb_0&#39;
+    max_id = max(ids)
+    new = max_id + 1
+    for i in range(max_id):
+        if i not in ids:
+            new = i
+            break
+    return f&#39;kb_{new}&#39;</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.knowledge_base_dir"><code class="name flex">
+<span>def <span class="ident">knowledge_base_dir</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Directory to store knowlege base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Directory to store knowlege base.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def knowledge_base_dir() -&gt; str:
+    &#34;&#34;&#34;Directory to store knowlege base.
+
+    Returns:
+        str: Directory to store knowlege base.
+    &#34;&#34;&#34;
+    from ..utils import get_config
+    kb_dir = os.path.join(get_config()[&#39;package_home&#39;], &#39;knowledge_base&#39;)
+    os.makedirs(kb_dir, exist_ok=True)
+    return kb_dir</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.list_knowledge_base"><code class="name flex">
+<span>def <span class="ident">list_knowledge_base</span></span>(<span>) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>List the existing knowledge base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of the existing knowledge bases.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_knowledge_base() -&gt; List[str]:
+    &#34;&#34;&#34;List the existing knowledge base.
+
+    Returns:
+        List[str]: List of the existing knowledge bases.
+    &#34;&#34;&#34;
+    import re
+    re_kb = re.compile(&#39;kb_\d+&#39;)
+    dirs = os.listdir(knowledge_base_dir())
+    dirs = list(filter(lambda x: re_kb.match(x), dirs))
+    return dirs</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.load_docx"><code class="name flex">
+<span>def <span class="ident">load_docx</span></span>(<span>file_dir: str) ‑> List[<a title="llmflex.Schemas.documents.Document" href="../Schemas/documents.html#llmflex.Schemas.documents.Document">Document</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a docx file as list of documents for the knowledge base to add.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>Full directory of the docx file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Document]</code></dt>
+<dd>List of documents from the docx file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_docx(file_dir: str) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a docx file as list of documents for the knowledge base to add.
+
+    Args:
+        file_dir (str): Full directory of the docx file.
+
+    Returns:
+        List[Document]: List of documents from the docx file.
+    &#34;&#34;&#34;
+    from docx import Document as DocX
+    file_dir = os.path.abspath(file_dir)
+    filename = os.path.basename(file_dir)
+    file = DocX(file_dir)
+    chunks = filter(lambda x: x.text.strip() != &#39;&#39;, file.paragraphs)
+    chunks = map(lambda x: x.text.strip(), chunks)
+    docs = list(map(lambda x: Document(index=x, metadata=dict(filename=filename, file_dir=str(file_dir))), chunks))
+    return docs</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.load_file"><code class="name flex">
+<span>def <span class="ident">load_file</span></span>(<span>file_dir: str, filetype: Literal['auto', 'markdown', 'docx', 'pdf'] = 'auto') ‑> List[<a title="llmflex.Schemas.documents.Document" href="../Schemas/documents.html#llmflex.Schemas.documents.Document">Document</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a text-based file as list of docments.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>Full directory of the file.</dd>
+</dl>
+<p>filetype (Literal[&#39;auto&#39;, &#39;markdown&#39;, &#39;docx&#39;, &#39;pdf&#39;], optional): The type of file to be loaded. If auto is set, it will be determined by the suffix of the file. Defaults to 'auto'.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Document]</code></dt>
+<dd>List of documents from the pdf file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_file(file_dir: str, filetype: Literal[&#39;auto&#39;, &#39;markdown&#39;, &#39;docx&#39;, &#39;pdf&#39;] = &#39;auto&#39;) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a text-based file as list of docments.
+
+    Args:
+        file_dir (str): Full directory of the file.
+        filetype (Literal[&amp;#39;auto&amp;#39;, &amp;#39;markdown&amp;#39;, &amp;#39;docx&amp;#39;, &amp;#39;pdf&amp;#39;], optional): The type of file to be loaded. If auto is set, it will be determined by the suffix of the file. Defaults to &#39;auto&#39;.
+
+    Returns:
+        List[Document]: List of documents from the pdf file.
+    &#34;&#34;&#34;
+    suffix = file_dir.split(&#39;.&#39;)[-1].lower()
+    suf_map = dict(md=&#39;markdown&#39;, docx=&#39;docx&#39;, pdf=&#39;pdf&#39;)
+    fn_map = dict(markdown=load_markdown, docx=load_docx, pdf=load_pdf)
+    if filetype == &#39;auto&#39;:
+        filetype = suf_map.get(suffix, &#39;markdown&#39;)
+    return fn_map[filetype](file_dir=file_dir)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.load_markdown"><code class="name flex">
+<span>def <span class="ident">load_markdown</span></span>(<span>file_dir: str) ‑> List[<a title="llmflex.Schemas.documents.Document" href="../Schemas/documents.html#llmflex.Schemas.documents.Document">Document</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a markdown file as list of documents for the knowledge base to add.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>Full directory of the markdown file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Document]</code></dt>
+<dd>List of documents from the markdown file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_markdown(file_dir: str) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a markdown file as list of documents for the knowledge base to add.
+
+    Args:
+        file_dir (str): Full directory of the markdown file.
+
+    Returns:
+        List[Document]: List of documents from the markdown file.
+    &#34;&#34;&#34;
+    file_dir = os.path.abspath(file_dir)
+    filename = os.path.basename(file_dir)
+    with open(file_dir, &#39;r&#39;) as f:
+        text = f.read()
+    hash_start = text.startswith(&#39;#&#39;)
+    chunks = filter(lambda x: x != &#39;&#39;, text.split(&#39;\n#&#39;))
+    chunks = list(map(lambda x: (&#39;#&#39; + x).strip(), chunks))
+    if hash_start:
+        chunks[0] = chunks[0][1:]
+    docs = list(map(lambda x: Document(index=x, metadata=dict(filename=filename, file_dir=str(file_dir))), chunks))
+    return docs</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.load_pdf"><code class="name flex">
+<span>def <span class="ident">load_pdf</span></span>(<span>file_dir: str) ‑> List[<a title="llmflex.Schemas.documents.Document" href="../Schemas/documents.html#llmflex.Schemas.documents.Document">Document</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a pdf file as list of documents for the knowledge base to add.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>file_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>Full directory of the pdf file.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Document]</code></dt>
+<dd>List of documents from the pdf file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_pdf(file_dir: str) -&gt; List[Document]:
+    &#34;&#34;&#34;Load a pdf file as list of documents for the knowledge base to add.
+
+    Args:
+        file_dir (str): Full directory of the pdf file.
+
+    Returns:
+        List[Document]: List of documents from the pdf file.
+    &#34;&#34;&#34;
+    import fitz
+    file_dir = os.path.abspath(file_dir)
+    filename = os.path.basename(file_dir)
+    with fitz.open(file_dir) as doc:
+        pages = []
+        for page in doc:
+            pages.append(page.get_text())
+
+    docs = []
+    for i, page in enumerate(pages):
+        chunks = map(lambda x: x.strip(), page.split(&#39;\n\n&#39;))
+        chunks = filter(lambda x: x != &#39;&#39;, chunks)
+        chunks = list(map(lambda x: Document(index=x, metadata=dict(filename=filename, file_dir=str(file_dir), page=i)), chunks))
+        docs.extend(chunks)
+    return docs</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase"><code class="flex name class">
+<span>class <span class="ident">KnowledgeBase</span></span>
+<span>(</span><span>kb_id: str, embeddings: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], llm: Optional[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], ranker: Optional[<a title="llmflex.Rankers.base_ranker.BaseRanker" href="../Rankers/base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker">BaseRanker</a>] = None, text_splitter: Optional[<a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a>] = None, ts_lang_model: str = 'en_core_web_sm', chunk_size: int = 400, chunk_overlap: int = 40)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class to store any text as knowledge for querying.</p>
+<p>Initialise the knowlege base.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>kb_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>A unique identifier for the knowledge base starting with "kb_".</dd>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>Type[BaseEmbeddingsToolkit]</code></dt>
+<dd>Embeddings toolkit for the vector database.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Optional[BaseLLM]</code></dt>
+<dd>LLM for counting tokens. If not given, the embedding model tokenizer will be used to count tokens.</dd>
+<dt><strong><code>ranker</code></strong> :&ensp;<code>Optional[BaseRanker]</code>, optional</dt>
+<dd>Reranker to rerank sementic search results. Defaults to None.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>Text splitter to split documents. If None is given, it will be created with the token counting function. Defaults to None.</dd>
+<dt><strong><code>ts_lang_model</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Text splitter language model to use if text_splitter is not provided. Defaults to 'en_core_web_sm'.</dd>
+<dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Chunk size of the text splitter if text_splitter is not provided. Defaults to 400.</dd>
+<dt><strong><code>chunk_overlap</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Chunk overlap of the text splitter if text_splitter is not provided. Defaults to 40.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class KnowledgeBase:
+    &#34;&#34;&#34;Class to store any text as knowledge for querying.
+    &#34;&#34;&#34;
+    def __init__(self, kb_id: str, embeddings: Type[BaseEmbeddingsToolkit], llm: Optional[BaseLLM], 
+                 ranker: Optional[BaseRanker] = None,
+                 text_splitter: Optional[BaseTextSplitter] = None,
+                 ts_lang_model: str = &#39;en_core_web_sm&#39;,
+                 chunk_size: int = 400,
+                 chunk_overlap: int = 40) -&gt; None:
+        &#34;&#34;&#34;Initialise the knowlege base.
+
+        Args:
+            kb_id (str): A unique identifier for the knowledge base starting with &#34;kb_&#34;.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit for the vector database.
+            llm (Optional[BaseLLM]): LLM for counting tokens. If not given, the embedding model tokenizer will be used to count tokens.
+            ranker (Optional[BaseRanker], optional): Reranker to rerank sementic search results. Defaults to None.
+            text_splitter (Optional[BaseTextSplitter], optional): Text splitter to split documents. If None is given, it will be created with the token counting function. Defaults to None.
+            ts_lang_model (str, optional): Text splitter language model to use if text_splitter is not provided. Defaults to &#39;en_core_web_sm&#39;.
+            chunk_size (int, optional): Chunk size of the text splitter if text_splitter is not provided. Defaults to 400.
+            chunk_overlap (int, optional): Chunk overlap of the text splitter if text_splitter is not provided. Defaults to 40.
+        &#34;&#34;&#34;
+        from ..TextSplitters.sentence_token_text_splitter import SentenceTokenTextSplitter
+        from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
+        from ..Rankers.flashrank_ranker import FlashrankRanker
+        self._kb_dir = os.path.join(knowledge_base_dir(), kb_id)
+        self._embeddings = embeddings
+        self._count_fn = self.embeddings.tokenizer.get_num_tokens if llm is None else llm.get_num_tokens
+        self._text_splitter = SentenceTokenTextSplitter(
+            count_token_fn=self.count_fn,
+            language_model=ts_lang_model,
+            chunk_size=chunk_size,
+            chunk_overlap=chunk_overlap
+        ) if text_splitter is None else text_splitter
+        self._ranker = FlashrankRanker() if ranker is None else ranker
+        if kb_id in list_knowledge_base():
+            self._vdb = FaissVectorDatabase.from_exist(embeddings=embeddings, name=kb_id, vectordb_dir=knowledge_base_dir(), text_splitter=self.text_splitter)
+        else:
+            import re
+            if not re.match(&#39;kb_\d+&#39;, kb_id):
+                raise ValueError(f&#39;&#34;{kb_id}&#34; is not a valid kb_id, it must start with &#34;kb_&#34;, followed by an integer.&#39;)
+            self._vdb = FaissVectorDatabase.from_documents(embeddings=embeddings, docs=[], name=kb_id, vectordb_dir=knowledge_base_dir(), text_splitter=self.text_splitter)
+
+    
+    @property
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+        &#34;&#34;&#34;Embeddings toolkit for the vector database.
+
+        Returns:
+            BaseEmbeddingsToolkit: Embeddings toolkit for the vector database.
+        &#34;&#34;&#34;
+        return self._embeddings
+    
+    @property
+    def text_splitter(self) -&gt; BaseTextSplitter:
+        &#34;&#34;&#34;Text splitter for the knowledge base.
+
+        Returns:
+            BaseTextSplitter: Text splitter for the knowledge base.
+        &#34;&#34;&#34;
+        return self._text_splitter
+    
+    @property
+    def vector_db(self) -&gt; BaseVectorDatabase:
+        &#34;&#34;&#34;Vector database for the knowledge base.
+
+        Returns:
+            BaseVectorDatabase: Vector database for the knowledge base.
+        &#34;&#34;&#34;
+        return self._vdb
+    
+    @property
+    def knowledge_base_dir(self) -&gt; str:
+        &#34;&#34;&#34;Directory for the knowledge base.
+
+        Returns:
+            str: Directory for the knowledge base.
+        &#34;&#34;&#34;
+        if not os.path.exists(self._kb_dir):
+            os.makedirs(self._kb_dir)
+        return self._kb_dir
+    
+    @property
+    def kb_id(self) -&gt; str:
+        &#34;&#34;&#34;Knowledge base id.
+
+        Returns:
+            str: Knowledge base id.
+        &#34;&#34;&#34;
+        return os.path.basename(self.knowledge_base_dir)
+
+    @property
+    def count_fn(self) -&gt; Callable[[str], int]:
+        &#34;&#34;&#34;Function to count number of tokens in a string.
+
+        Returns:
+            Callable[[str], int]: Function to count number of tokens in a string.
+        &#34;&#34;&#34;
+        return self._count_fn
+    
+    @property
+    def ranker(self) -&gt; BaseRanker:
+        &#34;&#34;&#34;Reranker for search results.
+
+        Returns:
+            BaseRanker: Reranker for search results.
+        &#34;&#34;&#34;
+        return self._ranker
+
+    @property
+    def files(self) -&gt; List[Tuple[str, str]]:
+        &#34;&#34;&#34;List of files and their respective directories.
+        Returns:
+            List[Tuple[str, str]]: List of files and their respective directories.
+        &#34;&#34;&#34;
+        docs = self.vector_db.data.values()
+        combos = list(set(map(lambda x: (x.metadata[&#39;filename&#39;], x.metadata[&#39;file_dir&#39;]), docs)))
+        return combos
+    
+    def search(self, query: str, top_k = 3, token_limit: Optional[int] = None, 
+               fetch_k: int = 30,
+               count_fn: Optional[Callable[[str], int]] = None,
+               relevance_score_threshold: float = 0.8) -&gt; List[RankResult]:
+        &#34;&#34;&#34;Searching for related information from the knowledge base.
+
+        Args:
+            query (str): Search query.
+            top_k (int, optional): Maximum number of result. If token_limit is not None, token_limit will be used instead. Defaults to 3.
+            token_limit (Optional[int], optional): Maximum number of tokens for the search results. Defaults to None.
+            fetch_k (int, optional): Number of results to fetch from the vector database before reranking. Defaults to 30.
+            count_fn (Optional[Callable[[str], int]], optional): Function to count the number of tokens if token_limit is not None. If None is given, the count_fn from the knowledge base class will be used. Defaults to None.
+            relevance_score_threshold (float, optional): Minumum score for the reranking. Defaults to 0.8.
+
+        Returns:
+            List[RankResult]: List of search results.
+        &#34;&#34;&#34;
+        count_fn = self.count_fn if count_fn is None else count_fn
+        init_result = self.vector_db.search(query=query, top_k=fetch_k, index_only=False)
+        if token_limit is None:
+            result = self.ranker.rerank(query=query, elements=init_result, top_k=top_k)
+        else: 
+            rank_result = self.ranker.rerank(query=query, elements=init_result, top_k=len(init_result))
+            result  =[]
+            token_count = 0
+            for res in rank_result:
+                res_count = count_fn(res.index)
+                if token_count + res_count &lt;= token_limit:
+                    token_count += res_count
+                    result.append(res)
+                else:
+                    break
+        result = list(filter(lambda x: x.rank_score &gt;= relevance_score_threshold, result))
+        return result
+    
+    def add_documents(self, docs: List[Document], mode: Literal[&#39;update&#39;, &#39;append&#39;] = &#39;update&#39;) -&gt; None:
+        &#34;&#34;&#34;Adding documents into the knowledge base. In the metadata of the file, it should contain at least filename and file_dir.
+
+        Args:
+            docs (List[Document]): List of documents to add.
+            mode (Literal[&#39;update&#39;, &#39;append&#39;], optional): Way of adding documents. Either updating/add the files or append on existing files. Defaults to &#39;update&#39;.
+        &#34;&#34;&#34;
+        val_docs = list(filter(lambda x: ((&#39;filename&#39; in x.metadata.keys()) &amp; (&#39;file_dir&#39; in x.metadata.keys())), docs))
+        if len(val_docs) &lt; len(docs):
+            raise ValueError(&#39;&#34;filename&#34; and &#34;file_dir&#34; must exist in the metadata of all the documents.&#39;)
+        if len(docs) != 0:
+            if mode == &#39;update&#39;:
+                combos = list(set(map(lambda x: (x.metadata[&#39;filename&#39;], x.metadata[&#39;file_dir&#39;]), docs)))
+                def filter_fn(doc: Document) -&gt; bool:
+                    combo = (doc.metadata[&#39;filename&#39;], doc.metadata[&#39;file_dir&#39;])
+                    return combo in combos
+                self.vector_db.delete_by_metadata(filter_fn=filter_fn)
+            self.vector_db.add_documents(docs=docs, split_text=True, text_splitter=self.text_splitter)
+                
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Clear the entire knowledge base. Use it with caution.
+        &#34;&#34;&#34;
+        self.vector_db.clear()</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.count_fn"><code class="name">var <span class="ident">count_fn</span> : Callable[[str], int]</code></dt>
+<dd>
+<div class="desc"><p>Function to count number of tokens in a string.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Callable[[str], int]</code></dt>
+<dd>Function to count number of tokens in a string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def count_fn(self) -&gt; Callable[[str], int]:
+    &#34;&#34;&#34;Function to count number of tokens in a string.
+
+    Returns:
+        Callable[[str], int]: Function to count number of tokens in a string.
+    &#34;&#34;&#34;
+    return self._count_fn</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.embeddings"><code class="name">var <span class="ident">embeddings</span> : <a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></code></dt>
+<dd>
+<div class="desc"><p>Embeddings toolkit for the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseEmbeddingsToolkit</code></dt>
+<dd>Embeddings toolkit for the vector database.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+    &#34;&#34;&#34;Embeddings toolkit for the vector database.
+
+    Returns:
+        BaseEmbeddingsToolkit: Embeddings toolkit for the vector database.
+    &#34;&#34;&#34;
+    return self._embeddings</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.files"><code class="name">var <span class="ident">files</span> : List[Tuple[str, str]]</code></dt>
+<dd>
+<div class="desc"><p>List of files and their respective directories.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Tuple[str, str]]</code></dt>
+<dd>List of files and their respective directories.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def files(self) -&gt; List[Tuple[str, str]]:
+    &#34;&#34;&#34;List of files and their respective directories.
+    Returns:
+        List[Tuple[str, str]]: List of files and their respective directories.
+    &#34;&#34;&#34;
+    docs = self.vector_db.data.values()
+    combos = list(set(map(lambda x: (x.metadata[&#39;filename&#39;], x.metadata[&#39;file_dir&#39;]), docs)))
+    return combos</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.kb_id"><code class="name">var <span class="ident">kb_id</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Knowledge base id.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Knowledge base id.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def kb_id(self) -&gt; str:
+    &#34;&#34;&#34;Knowledge base id.
+
+    Returns:
+        str: Knowledge base id.
+    &#34;&#34;&#34;
+    return os.path.basename(self.knowledge_base_dir)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.knowledge_base_dir"><code class="name">var <span class="ident">knowledge_base_dir</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Directory for the knowledge base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Directory for the knowledge base.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def knowledge_base_dir(self) -&gt; str:
+    &#34;&#34;&#34;Directory for the knowledge base.
+
+    Returns:
+        str: Directory for the knowledge base.
+    &#34;&#34;&#34;
+    if not os.path.exists(self._kb_dir):
+        os.makedirs(self._kb_dir)
+    return self._kb_dir</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.ranker"><code class="name">var <span class="ident">ranker</span> : <a title="llmflex.Rankers.base_ranker.BaseRanker" href="../Rankers/base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker">BaseRanker</a></code></dt>
+<dd>
+<div class="desc"><p>Reranker for search results.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseRanker</code></dt>
+<dd>Reranker for search results.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ranker(self) -&gt; BaseRanker:
+    &#34;&#34;&#34;Reranker for search results.
+
+    Returns:
+        BaseRanker: Reranker for search results.
+    &#34;&#34;&#34;
+    return self._ranker</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.text_splitter"><code class="name">var <span class="ident">text_splitter</span> : <a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a></code></dt>
+<dd>
+<div class="desc"><p>Text splitter for the knowledge base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseTextSplitter</code></dt>
+<dd>Text splitter for the knowledge base.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def text_splitter(self) -&gt; BaseTextSplitter:
+    &#34;&#34;&#34;Text splitter for the knowledge base.
+
+    Returns:
+        BaseTextSplitter: Text splitter for the knowledge base.
+    &#34;&#34;&#34;
+    return self._text_splitter</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.vector_db"><code class="name">var <span class="ident">vector_db</span> : <a title="llmflex.VectorDBs.base_vectordb.BaseVectorDatabase" href="../VectorDBs/base_vectordb.html#llmflex.VectorDBs.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></code></dt>
+<dd>
+<div class="desc"><p>Vector database for the knowledge base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseVectorDatabase</code></dt>
+<dd>Vector database for the knowledge base.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def vector_db(self) -&gt; BaseVectorDatabase:
+    &#34;&#34;&#34;Vector database for the knowledge base.
+
+    Returns:
+        BaseVectorDatabase: Vector database for the knowledge base.
+    &#34;&#34;&#34;
+    return self._vdb</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.add_documents"><code class="name flex">
+<span>def <span class="ident">add_documents</span></span>(<span>self, docs: List[<a title="llmflex.Schemas.documents.Document" href="../Schemas/documents.html#llmflex.Schemas.documents.Document">Document</a>], mode: Literal['update', 'append'] = 'update') ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Adding documents into the knowledge base. In the metadata of the file, it should contain at least filename and file_dir.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>docs</code></strong> :&ensp;<code>List[Document]</code></dt>
+<dd>List of documents to add.</dd>
+</dl>
+<p>mode (Literal['update', 'append'], optional): Way of adding documents. Either updating/add the files or append on existing files. Defaults to 'update'.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_documents(self, docs: List[Document], mode: Literal[&#39;update&#39;, &#39;append&#39;] = &#39;update&#39;) -&gt; None:
+    &#34;&#34;&#34;Adding documents into the knowledge base. In the metadata of the file, it should contain at least filename and file_dir.
+
+    Args:
+        docs (List[Document]): List of documents to add.
+        mode (Literal[&#39;update&#39;, &#39;append&#39;], optional): Way of adding documents. Either updating/add the files or append on existing files. Defaults to &#39;update&#39;.
+    &#34;&#34;&#34;
+    val_docs = list(filter(lambda x: ((&#39;filename&#39; in x.metadata.keys()) &amp; (&#39;file_dir&#39; in x.metadata.keys())), docs))
+    if len(val_docs) &lt; len(docs):
+        raise ValueError(&#39;&#34;filename&#34; and &#34;file_dir&#34; must exist in the metadata of all the documents.&#39;)
+    if len(docs) != 0:
+        if mode == &#39;update&#39;:
+            combos = list(set(map(lambda x: (x.metadata[&#39;filename&#39;], x.metadata[&#39;file_dir&#39;]), docs)))
+            def filter_fn(doc: Document) -&gt; bool:
+                combo = (doc.metadata[&#39;filename&#39;], doc.metadata[&#39;file_dir&#39;])
+                return combo in combos
+            self.vector_db.delete_by_metadata(filter_fn=filter_fn)
+        self.vector_db.add_documents(docs=docs, split_text=True, text_splitter=self.text_splitter)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Clear the entire knowledge base. Use it with caution.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Clear the entire knowledge base. Use it with caution.
+    &#34;&#34;&#34;
+    self.vector_db.clear()</code></pre>
+</details>
+</dd>
+<dt id="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>self, query: str, top_k=3, token_limit: Optional[int] = None, fetch_k: int = 30, count_fn: Optional[Callable[[str], int]] = None, relevance_score_threshold: float = 0.8) ‑> List[<a title="llmflex.Schemas.documents.RankResult" href="../Schemas/documents.html#llmflex.Schemas.documents.RankResult">RankResult</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Searching for related information from the knowledge base.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>Search query.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of result. If token_limit is not None, token_limit will be used instead. Defaults to 3.</dd>
+<dt><strong><code>token_limit</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>Maximum number of tokens for the search results. Defaults to None.</dd>
+<dt><strong><code>fetch_k</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Number of results to fetch from the vector database before reranking. Defaults to 30.</dd>
+<dt><strong><code>count_fn</code></strong> :&ensp;<code>Optional[Callable[[str], int]]</code>, optional</dt>
+<dd>Function to count the number of tokens if token_limit is not None. If None is given, the count_fn from the knowledge base class will be used. Defaults to None.</dd>
+<dt><strong><code>relevance_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Minumum score for the reranking. Defaults to 0.8.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[RankResult]</code></dt>
+<dd>List of search results.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def search(self, query: str, top_k = 3, token_limit: Optional[int] = None, 
+           fetch_k: int = 30,
+           count_fn: Optional[Callable[[str], int]] = None,
+           relevance_score_threshold: float = 0.8) -&gt; List[RankResult]:
+    &#34;&#34;&#34;Searching for related information from the knowledge base.
+
+    Args:
+        query (str): Search query.
+        top_k (int, optional): Maximum number of result. If token_limit is not None, token_limit will be used instead. Defaults to 3.
+        token_limit (Optional[int], optional): Maximum number of tokens for the search results. Defaults to None.
+        fetch_k (int, optional): Number of results to fetch from the vector database before reranking. Defaults to 30.
+        count_fn (Optional[Callable[[str], int]], optional): Function to count the number of tokens if token_limit is not None. If None is given, the count_fn from the knowledge base class will be used. Defaults to None.
+        relevance_score_threshold (float, optional): Minumum score for the reranking. Defaults to 0.8.
+
+    Returns:
+        List[RankResult]: List of search results.
+    &#34;&#34;&#34;
+    count_fn = self.count_fn if count_fn is None else count_fn
+    init_result = self.vector_db.search(query=query, top_k=fetch_k, index_only=False)
+    if token_limit is None:
+        result = self.ranker.rerank(query=query, elements=init_result, top_k=top_k)
+    else: 
+        rank_result = self.ranker.rerank(query=query, elements=init_result, top_k=len(init_result))
+        result  =[]
+        token_count = 0
+        for res in rank_result:
+            res_count = count_fn(res.index)
+            if token_count + res_count &lt;= token_limit:
+                token_count += res_count
+                result.append(res)
+            else:
+                break
+    result = list(filter(lambda x: x.rank_score &gt;= relevance_score_threshold, result))
+    return result</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.KnowledgeBase" href="index.html">llmflex.KnowledgeBase</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.get_new_kb_id" href="#llmflex.KnowledgeBase.knowledge_base.get_new_kb_id">get_new_kb_id</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.knowledge_base_dir" href="#llmflex.KnowledgeBase.knowledge_base.knowledge_base_dir">knowledge_base_dir</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.list_knowledge_base" href="#llmflex.KnowledgeBase.knowledge_base.list_knowledge_base">list_knowledge_base</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.load_docx" href="#llmflex.KnowledgeBase.knowledge_base.load_docx">load_docx</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.load_file" href="#llmflex.KnowledgeBase.knowledge_base.load_file">load_file</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.load_markdown" href="#llmflex.KnowledgeBase.knowledge_base.load_markdown">load_markdown</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.load_pdf" href="#llmflex.KnowledgeBase.knowledge_base.load_pdf">load_pdf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase">KnowledgeBase</a></code></h4>
+<ul class="two-column">
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.add_documents" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.add_documents">add_documents</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.clear" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.clear">clear</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.count_fn" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.count_fn">count_fn</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.embeddings" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.embeddings">embeddings</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.files" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.files">files</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.kb_id" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.kb_id">kb_id</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.knowledge_base_dir" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.knowledge_base_dir">knowledge_base_dir</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.ranker" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.ranker">ranker</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.search" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.search">search</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.text_splitter" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.text_splitter">text_splitter</a></code></li>
+<li><code><a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.vector_db" href="#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase.vector_db">vector_db</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -17,6 +17,18 @@ Functions
         List[str]: List of content chunks.
 
     
+`ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) ‑> List[Union[str, Dict[str, Any]]]`
+:   Search with DuckDuckGo.
+    
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+    
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+
+    
 `detect_language(code_snippet: str) ‑> str`
 :   Detect the language of a code snippet.
     

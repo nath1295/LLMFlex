@@ -185,7 +185,9 @@ def detect_prompt_template_by_jinja(jinja_template: str) -&gt; str:
     &#34;&#34;&#34;
     from ...Prompts.prompt_template import presets
     for k, v in presets.items():
-        if v[&#39;template&#39;] == jinja_template:
+        if jinja_template in v[&#39;template&#39;]:
+            return k
+        if all(kw in jinja_template for kw in v[&#39;keywords&#39;]):
             return k
     return &#39;Default&#39;
 
@@ -366,7 +368,9 @@ def list_local_models() -&gt; List[Dict[str, str]]:
     &#34;&#34;&#34;
     from ...Prompts.prompt_template import presets
     for k, v in presets.items():
-        if v[&#39;template&#39;] == jinja_template:
+        if jinja_template in v[&#39;template&#39;]:
+            return k
+        if all(kw in jinja_template for kw in v[&#39;keywords&#39;]):
             return k
     return &#39;Default&#39;</code></pre>
 </details>

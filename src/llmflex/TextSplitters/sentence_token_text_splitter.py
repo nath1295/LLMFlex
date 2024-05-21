@@ -1,15 +1,16 @@
-from typing import Callable, List
 from .base_text_splitter import BaseTextSplitter
+from spacy.language import Language
+from typing import Callable, List, Union
 
 class SentenceTokenTextSplitter(BaseTextSplitter):
     """Text splitter that split text by sentences and group by token counts.
     """
-    def __init__(self, count_token_fn: Callable[[str], int], language_model: str = 'en_core_web_sm', chunk_size: int = 400, chunk_overlap: int = 40) -> None:
+    def __init__(self, count_token_fn: Callable[[str], int], language_model: Union[str, Language] = 'en_core_web_sm', chunk_size: int = 400, chunk_overlap: int = 40) -> None:
         """Initialise the TextSplitter.
 
         Args:
             count_token_fn (Callable[[str], int]): Function to count the number of tokens in a string.
-            language_model (str, optional): Name of the SpaCy model to use. Defaults to 'en_core_web_sm'.
+            language_model (Union[str, Language], optional): Name of the SpaCy model or the SpaCy model to use. Defaults to 'en_core_web_sm'.
             chunk_size (int, optional): Maximum number of tokens per text chunk. Defaults to 400.
             chunk_overlap (int, optional): Numbers of tokens that overlaps for each subsequent chunks. Defaults to 40.
         """
@@ -22,7 +23,7 @@ class SentenceTokenTextSplitter(BaseTextSplitter):
             except:
                 raise RuntimeError(f'Failed to download the SpaCy languange model "{language_model}".')
         super().__init__(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
-        self.nlp = spacy.load(language_model)
+        self.nlp = spacy.load(language_model) if isinstance(language_model, str) else language_model
         self.count_fn = count_token_fn
         self._language_model = language_model
     

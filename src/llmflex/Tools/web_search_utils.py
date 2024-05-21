@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup, NavigableString, Tag
 from langchain.llms.base import LLM
-from typing import Optional, List, Union, Callable
+from typing import Optional, List, Union, Callable, Dict, Any
 
 def get_soup_from_url(url: str, timeout: int = 8) -> BeautifulSoup:
     """Get the soup object from a URL.
@@ -420,3 +420,21 @@ def get_markdown(url: str, timeout: int = 8, as_list: bool = False) -> Union[str
     """
     soup = get_soup_from_url(url, timeout=timeout)
     return process_element(soup, as_list=as_list)
+
+def ddg_search(query: str, n: int = 5, urls_only: bool = True, **kwargs) -> List[Union[str, Dict[str, Any]]]:
+    """Search with DuckDuckGo.
+
+    Args:
+        query (str): Search query.
+        n (int, optional): Maximum number of results. Defaults to 5.
+        urls_only (bool, optional): Only return the list of urls or return other information as well. Defaults to True.
+
+    Returns:
+        List[Union[str, Dict[str, Any]]]: List of search results.
+    """
+    from duckduckgo_search import DDGS
+    with DDGS() as ddgs:
+        results = [r for r in ddgs.text(query, max_results=n, **kwargs)]
+    if urls_only:
+        results = list(map(lambda x: x['href'], results))
+    return results

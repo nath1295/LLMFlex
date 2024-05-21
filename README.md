@@ -1,5 +1,9 @@
 # LLMFlex
+[![PyPI](https://img.shields.io/pypi/v/llmflex)](https://pypi.org/project/llmflex/)
+[![PyPI - License](https://img.shields.io/pypi/l/llmflex)](https://pypi.org/project/llmflex/)
+[![GitHub Repo stars](https://img.shields.io/github/stars/nath1295/llmflex)](https://pypi.org/project/llmflex/)
 
+## A python package for developing AI applications with local LLMs
 LLMFlex is a python package that allows python developers to work with different large language models (LLM) and do prompt engineering with a simple interface. It favours free and local resources instead of using paid APIs to develop truly local and private AI-powered solutions.
 
 It provides classes to load LLM models, embedding models, and vector databases to create LLM powered applications with your own prompt engineering and RAG techniques. With a one-liner command, you can load a chatbot interface to chat with the LLM or serve a model as OpenAI API as well.

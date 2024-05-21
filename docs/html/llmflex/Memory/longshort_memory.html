@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmflex.Memory.longshort_memory API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Memory.longshort_memory</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import os
+from .base_memory import BaseChatMemory, list_titles, chat_memory_home
+from ..Embeddings.base_embeddings import BaseEmbeddingsToolkit
+from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
+from ..Models.Cores.base_core import BaseLLM
+from ..Schemas.documents import Document
+from ..Rankers.base_ranker import BaseRanker
+from ..TextSplitters.base_text_splitter import BaseTextSplitter
+from ..Prompts.prompt_template import PromptTemplate
+from ..KnowledgeBase.knowledge_base import KnowledgeBase
+from ..TextSplitters.sentence_token_text_splitter import SentenceTokenTextSplitter
+from typing import List, Dict, Any, Type, Union, Tuple, Optional
+
+class LongShortTermChatMemory(BaseChatMemory):
+
+    def __init__(self, title: str, 
+                 embeddings: Type[BaseEmbeddingsToolkit], 
+                 llm: Optional[BaseLLM], 
+                 ranker: Optional[BaseRanker] = None,
+                 text_splitter: Optional[BaseTextSplitter] = None,
+                 ts_lang_model: str = &#39;en_core_web_sm&#39;,
+                 chunk_size: int = 400,
+                 chunk_overlap: int = 40,
+                 from_exist: bool = True,
+                 system: Optional[str] = None) -&gt; None:
+        &#34;&#34;&#34;Initialising the memory class.
+
+        Args:
+            title (str): Title of the chat.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit for the vector database for storing chat history.
+            llm (Optional[BaseLLM]): LLM for counting tokens.
+            ranker (Optional[BaseRanker], optional): Reranker for long term memory retrieval. Defaults to None.
+            ts_lang_model (str, optional): Language model for the sentence text splitter. Defaults to &#39;en_core_web_sm&#39;.
+            chunk_size (int, optional): Chunk size for the text splitter. Defaults to 400.
+            chunk_overlap (int, optional): Chunk overlap for the text splitter. Defaults to 40.
+            from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
+            system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._embeddings = embeddings
+        count_token_fn = self.embeddings.tokenizer.get_num_tokens if llm is None else llm.get_num_tokens
+        self._text_splitter = SentenceTokenTextSplitter(
+            count_token_fn=count_token_fn, 
+            language_model=ts_lang_model, 
+            chunk_size=chunk_size, 
+            chunk_overlap=chunk_overlap
+        ) if text_splitter is None else text_splitter
+        if ranker is None:
+            from ..Rankers.flashrank_ranker import FlashrankRanker
+            self._ranker = FlashrankRanker()
+        else:
+            from ..utils import validate_type
+            self._ranker = validate_type(ranker, BaseRanker)
+        super().__init__(title=title, from_exist=from_exist, system=system)
+        
+    @property
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+        &#34;&#34;&#34;Embeddings toolkit.
+
+        Returns:
+            BaseEmbeddingsToolkit: Embeddings toolkit.
+        &#34;&#34;&#34;
+        return self._embeddings
+
+    @property
+    def vectordb(self) -&gt; FaissVectorDatabase:
+        &#34;&#34;&#34;Vector database for saving the chat history.
+
+        Returns:
+            FaissVectorDatabase: Vector database for saving the chat history.
+        &#34;&#34;&#34;
+        return self._vectordb
+
+    @property
+    def text_splitter(self) -&gt; SentenceTokenTextSplitter:
+        &#34;&#34;&#34;Sentence text splitter.
+
+        Returns:
+            SentenceTokenTextSplitter: Sentence text splitter.
+        &#34;&#34;&#34;
+        return self._text_splitter
+    
+    @property
+    def ranker(self) -&gt; BaseRanker:
+        &#34;&#34;&#34;Reranker.
+
+        Returns:
+            BaseRanker: Reranker.
+        &#34;&#34;&#34;
+        return self._ranker
+
+    @property
+    def _data(self) -&gt; Dict[str, Document]:
+        &#34;&#34;&#34;Raw data from the vector database.
+
+        Returns:
+            Dict[str, Document]: Raw data from the vector database.
+        &#34;&#34;&#34;
+        return self.vectordb.data
+
+
+    def _init_memory(self, from_exist: bool = True) -&gt; None:
+        &#34;&#34;&#34;Method to initialise the components in the memory.
+
+        Args:
+            from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
+        &#34;&#34;&#34;
+        if ((from_exist) &amp; (self.title in list_titles())):
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+                                                       embeddings=self.embeddings, vectordb_dir=chat_memory_home())
+
+        else:
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                    docs=[],
+                                                    name=os.path.basename(self.chat_dir), 
+                                                    vectordb_dir=chat_memory_home())
+            self.vectordb._info[&#39;title&#39;] = self.title
+            self.save()
+
+    def save(self) -&gt; None:
+        &#34;&#34;&#34;Save the current state of the memory.
+        &#34;&#34;&#34;
+        self.vectordb.save()
+
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Saving an interaction to the memory.
+
+        Args:
+            user_input (str): User input.
+            assistant_output (str): Chatbot output.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        user_input = user_input.strip(&#39; \n\r\t&#39;)
+        assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        user_chunks = self.text_splitter.split_text(user_input)
+        assistant_chunks = self.text_splitter.split_text(assistant_output)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;,  &#39;role&#39;]:
+                metadata[k] = v
+        metadata_user = deepcopy(metadata)
+        metadata_user[&#39;role&#39;] = &#39;user&#39;
+        metadata_assistant = deepcopy(metadata)
+        metadata_assistant[&#39;role&#39;] = &#39;assistant&#39;
+        self.vectordb.add_texts(texts=user_chunks, metadata=metadata_user, split_text=False)
+        self.vectordb.add_texts(texts=assistant_chunks, metadata=metadata_assistant, split_text=False)
+
+    def remove_last_interaction(self) -&gt; None:
+        &#34;&#34;&#34;Remove the latest interaction.
+        &#34;&#34;&#34;
+        if self.interaction_count != 0:
+            self.vectordb.delete_by_metadata(order=self.interaction_count-1)
+
+    def get_long_term_memory(self, query: str, recent_history: Union[List[str], List[Tuple[str, str]]], 
+                             llm: Type[BaseLLM], token_limit: int = 400, similarity_score_threshold: float = 0.2, relevance_score_threshold: float = 0.8) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Retriving the long term memory with the given query. Usually used together with get_token_memory.
+
+        Args:
+            query (str): Search query for the vector database. Usually the latest user input.
+            recent_history (Union[List[str], List[Tuple[str, str]]]): List of interactions in the short term memory to skip in the long term memory.
+            llm (Type[BaseLLM]): LLM to count tokens.
+            token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
+            similarity_score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
+            relevance_score_threshold (float, optional): Minimum threshold for relevance score for the reranker, shoulbe be between 0 to 1. Defaults to 0.8.
+
+        Returns:
+            List[Dict[str, Any]]: List of chunks related to the query and their respective speaker.
+        &#34;&#34;&#34;
+        if self.interaction_count == 0:
+            return []
+        related = self.vectordb.search(query=query, top_k=30, index_only=False)
+        related = list(filter(lambda x: (x[&#39;score&#39;] &gt;= similarity_score_threshold), related))
+        if len(related) == 0:
+            return []
+        if len(recent_history) != 0:
+            if isinstance(recent_history[0], str):
+                related = filter(lambda x: all(x[&#39;metadata&#39;][&#39;user&#39;] not in c for c in recent_history) 
+                                 and all(x[&#39;metadata&#39;][&#39;assistant&#39;] not in c for c in recent_history), related)
+                
+            else:
+                related = filter(lambda x: all(((x[&#39;metadata&#39;][&#39;user&#39;] not in c[0]) and (x[&#39;metadata&#39;][&#39;assistant&#39;] not in c[1])) for c in recent_history), related)
+        related = list(related)
+        if len(related) == 0:
+            return []
+        
+        related = self.ranker.rerank(query=query, elements=related, top_k=len(related))
+        related = filter(lambda x: x.rank_score &gt;= relevance_score_threshold, related)
+
+        final = []
+        token_count = 0
+        for msg in related:
+            msg_count = llm.get_num_tokens(msg.index)
+            if (token_count + msg_count) &lt;= token_limit:
+                token_count += msg_count
+                final.append(dict(role=msg.metadata.get(&#39;role&#39;, &#39;unknown&#39;), chunk=msg.index, relevance_score=msg.rank_score))
+        return final
+
+    def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
+            system: Optional[str] = None, recent_token_limit: int = 200, 
+            knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, 
+            similarity_score_threshold: float = 0.5, **kwargs) -&gt; str:
+        &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
+
+        Args:
+            user (str): User newest message.
+            prompt_template (PromptTemplate): Prompt template to use.
+            llm (Type[BaseLLM]): LLM for counting tokens.
+            system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
+            recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
+            knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
+            relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
+            relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
+            similarity_score_threshold (float, optional): Long term memory similarity score threshold. Defaults to 0.5.
+
+
+        Returns:
+            str: The full chat prompt.
+        &#34;&#34;&#34;
+        user = user.strip()
+        short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
+        system = self.system if not isinstance(system, str) else system
+        messages: list = [dict(role=&#39;system&#39;, content=self.system)] + prompt_template.format_history(short, return_list=True)
+
+        # Gathering knowledge
+        results = self.get_long_term_memory(query=user, recent_history=short, llm=llm, 
+                        token_limit=relevance_token_limit, similarity_score_threshold=similarity_score_threshold, relevance_score_threshold=relevance_score_threshold)
+        results = list(map(lambda x: dict(text=x[&#39;chunk&#39;], role=x[&#39;role&#39;], relevance_score=x[&#39;relevance_score&#39;], info_type=&#39;memory&#39;), results))
+
+        if knowledge_base is not None:
+            kb_res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
+            kb_res = list(map(lambda x: dict(text=x.index, relevance_score=x.rank_score, info_type=&#39;kb&#39;), kb_res))
+            results.extend(kb_res)
+
+        results.sort(key=lambda x: x[&#39;relevance_score&#39;], reverse=True)
+
+        # filter by token counts
+        res = []
+        token_count = 0
+        for r in results:
+            rcount = llm.get_num_tokens(r[&#39;text&#39;])
+            if token_count + rcount &lt;= relevance_token_limit:
+                res.append(r)
+                token_count += rcount
+            else:
+                break
+
+        # formatting information
+        if len(res) != 0:
+            import json
+            as_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;assistant&#39;, res))
+            us_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;user&#39;, res))
+            kb_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;user&#39;, res))
+            if prompt_template.allow_custom_role:
+                res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
+                messages.extend([dict(role=&#39;user&#39;, content=user), dict(role=&#39;extra information&#39;, content=res)])
+                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
+            else:
+                messages.append(dict(role=&#39;user&#39;, content=user))
+                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
+                res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
+                prompt += f&#39;{res}\n\nResponse: &#39;
+        else:
+            messages.append(dict(role=&#39;user&#39;, content=user))
+            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
+
+        return prompt</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory"><code class="flex name class">
+<span>class <span class="ident">LongShortTermChatMemory</span></span>
+<span>(</span><span>title: str, embeddings: Type[<a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a>], llm: Optional[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], ranker: Optional[<a title="llmflex.Rankers.base_ranker.BaseRanker" href="../Rankers/base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker">BaseRanker</a>] = None, text_splitter: Optional[<a title="llmflex.TextSplitters.base_text_splitter.BaseTextSplitter" href="../TextSplitters/base_text_splitter.html#llmflex.TextSplitters.base_text_splitter.BaseTextSplitter">BaseTextSplitter</a>] = None, ts_lang_model: str = 'en_core_web_sm', chunk_size: int = 400, chunk_overlap: int = 40, from_exist: bool = True, system: Optional[str] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base class for chat memory.</p>
+<p>Initialising the memory class.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Title of the chat.</dd>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>Type[BaseEmbeddingsToolkit]</code></dt>
+<dd>Embeddings toolkit for the vector database for storing chat history.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Optional[BaseLLM]</code></dt>
+<dd>LLM for counting tokens.</dd>
+<dt><strong><code>ranker</code></strong> :&ensp;<code>Optional[BaseRanker]</code>, optional</dt>
+<dd>Reranker for long term memory retrieval. Defaults to None.</dd>
+<dt><strong><code>ts_lang_model</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>Language model for the sentence text splitter. Defaults to 'en_core_web_sm'.</dd>
+<dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Chunk size for the text splitter. Defaults to 400.</dd>
+<dt><strong><code>chunk_overlap</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Chunk overlap for the text splitter. Defaults to 40.</dd>
+<dt><strong><code>from_exist</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Initialising the chat memory from existing files if the title exists. Defaults to True.</dd>
+<dt><strong><code>system</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LongShortTermChatMemory(BaseChatMemory):
+
+    def __init__(self, title: str, 
+                 embeddings: Type[BaseEmbeddingsToolkit], 
+                 llm: Optional[BaseLLM], 
+                 ranker: Optional[BaseRanker] = None,
+                 text_splitter: Optional[BaseTextSplitter] = None,
+                 ts_lang_model: str = &#39;en_core_web_sm&#39;,
+                 chunk_size: int = 400,
+                 chunk_overlap: int = 40,
+                 from_exist: bool = True,
+                 system: Optional[str] = None) -&gt; None:
+        &#34;&#34;&#34;Initialising the memory class.
+
+        Args:
+            title (str): Title of the chat.
+            embeddings (Type[BaseEmbeddingsToolkit]): Embeddings toolkit for the vector database for storing chat history.
+            llm (Optional[BaseLLM]): LLM for counting tokens.
+            ranker (Optional[BaseRanker], optional): Reranker for long term memory retrieval. Defaults to None.
+            ts_lang_model (str, optional): Language model for the sentence text splitter. Defaults to &#39;en_core_web_sm&#39;.
+            chunk_size (int, optional): Chunk size for the text splitter. Defaults to 400.
+            chunk_overlap (int, optional): Chunk overlap for the text splitter. Defaults to 40.
+            from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
+            system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._embeddings = embeddings
+        count_token_fn = self.embeddings.tokenizer.get_num_tokens if llm is None else llm.get_num_tokens
+        self._text_splitter = SentenceTokenTextSplitter(
+            count_token_fn=count_token_fn, 
+            language_model=ts_lang_model, 
+            chunk_size=chunk_size, 
+            chunk_overlap=chunk_overlap
+        ) if text_splitter is None else text_splitter
+        if ranker is None:
+            from ..Rankers.flashrank_ranker import FlashrankRanker
+            self._ranker = FlashrankRanker()
+        else:
+            from ..utils import validate_type
+            self._ranker = validate_type(ranker, BaseRanker)
+        super().__init__(title=title, from_exist=from_exist, system=system)
+        
+    @property
+    def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+        &#34;&#34;&#34;Embeddings toolkit.
+
+        Returns:
+            BaseEmbeddingsToolkit: Embeddings toolkit.
+        &#34;&#34;&#34;
+        return self._embeddings
+
+    @property
+    def vectordb(self) -&gt; FaissVectorDatabase:
+        &#34;&#34;&#34;Vector database for saving the chat history.
+
+        Returns:
+            FaissVectorDatabase: Vector database for saving the chat history.
+        &#34;&#34;&#34;
+        return self._vectordb
+
+    @property
+    def text_splitter(self) -&gt; SentenceTokenTextSplitter:
+        &#34;&#34;&#34;Sentence text splitter.
+
+        Returns:
+            SentenceTokenTextSplitter: Sentence text splitter.
+        &#34;&#34;&#34;
+        return self._text_splitter
+    
+    @property
+    def ranker(self) -&gt; BaseRanker:
+        &#34;&#34;&#34;Reranker.
+
+        Returns:
+            BaseRanker: Reranker.
+        &#34;&#34;&#34;
+        return self._ranker
+
+    @property
+    def _data(self) -&gt; Dict[str, Document]:
+        &#34;&#34;&#34;Raw data from the vector database.
+
+        Returns:
+            Dict[str, Document]: Raw data from the vector database.
+        &#34;&#34;&#34;
+        return self.vectordb.data
+
+
+    def _init_memory(self, from_exist: bool = True) -&gt; None:
+        &#34;&#34;&#34;Method to initialise the components in the memory.
+
+        Args:
+            from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
+        &#34;&#34;&#34;
+        if ((from_exist) &amp; (self.title in list_titles())):
+            self._vectordb = FaissVectorDatabase.from_exist(name=os.path.basename(self.chat_dir), 
+                                                       embeddings=self.embeddings, vectordb_dir=chat_memory_home())
+
+        else:
+            self._vectordb = FaissVectorDatabase.from_documents(embeddings=self.embeddings,
+                                                    docs=[],
+                                                    name=os.path.basename(self.chat_dir), 
+                                                    vectordb_dir=chat_memory_home())
+            self.vectordb._info[&#39;title&#39;] = self.title
+            self.save()
+
+    def save(self) -&gt; None:
+        &#34;&#34;&#34;Save the current state of the memory.
+        &#34;&#34;&#34;
+        self.vectordb.save()
+
+    def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Saving an interaction to the memory.
+
+        Args:
+            user_input (str): User input.
+            assistant_output (str): Chatbot output.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        user_input = user_input.strip(&#39; \n\r\t&#39;)
+        assistant_output = assistant_output.strip(&#39; \n\r\t&#39;)
+        user_chunks = self.text_splitter.split_text(user_input)
+        assistant_chunks = self.text_splitter.split_text(assistant_output)
+        metadata = dict(user=user_input, assistant=assistant_output, order=self.interaction_count)
+        for k, v in kwargs.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;,  &#39;role&#39;]:
+                metadata[k] = v
+        metadata_user = deepcopy(metadata)
+        metadata_user[&#39;role&#39;] = &#39;user&#39;
+        metadata_assistant = deepcopy(metadata)
+        metadata_assistant[&#39;role&#39;] = &#39;assistant&#39;
+        self.vectordb.add_texts(texts=user_chunks, metadata=metadata_user, split_text=False)
+        self.vectordb.add_texts(texts=assistant_chunks, metadata=metadata_assistant, split_text=False)
+
+    def remove_last_interaction(self) -&gt; None:
+        &#34;&#34;&#34;Remove the latest interaction.
+        &#34;&#34;&#34;
+        if self.interaction_count != 0:
+            self.vectordb.delete_by_metadata(order=self.interaction_count-1)
+
+    def get_long_term_memory(self, query: str, recent_history: Union[List[str], List[Tuple[str, str]]], 
+                             llm: Type[BaseLLM], token_limit: int = 400, similarity_score_threshold: float = 0.2, relevance_score_threshold: float = 0.8) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Retriving the long term memory with the given query. Usually used together with get_token_memory.
+
+        Args:
+            query (str): Search query for the vector database. Usually the latest user input.
+            recent_history (Union[List[str], List[Tuple[str, str]]]): List of interactions in the short term memory to skip in the long term memory.
+            llm (Type[BaseLLM]): LLM to count tokens.
+            token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
+            similarity_score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
+            relevance_score_threshold (float, optional): Minimum threshold for relevance score for the reranker, shoulbe be between 0 to 1. Defaults to 0.8.
+
+        Returns:
+            List[Dict[str, Any]]: List of chunks related to the query and their respective speaker.
+        &#34;&#34;&#34;
+        if self.interaction_count == 0:
+            return []
+        related = self.vectordb.search(query=query, top_k=30, index_only=False)
+        related = list(filter(lambda x: (x[&#39;score&#39;] &gt;= similarity_score_threshold), related))
+        if len(related) == 0:
+            return []
+        if len(recent_history) != 0:
+            if isinstance(recent_history[0], str):
+                related = filter(lambda x: all(x[&#39;metadata&#39;][&#39;user&#39;] not in c for c in recent_history) 
+                                 and all(x[&#39;metadata&#39;][&#39;assistant&#39;] not in c for c in recent_history), related)
+                
+            else:
+                related = filter(lambda x: all(((x[&#39;metadata&#39;][&#39;user&#39;] not in c[0]) and (x[&#39;metadata&#39;][&#39;assistant&#39;] not in c[1])) for c in recent_history), related)
+        related = list(related)
+        if len(related) == 0:
+            return []
+        
+        related = self.ranker.rerank(query=query, elements=related, top_k=len(related))
+        related = filter(lambda x: x.rank_score &gt;= relevance_score_threshold, related)
+
+        final = []
+        token_count = 0
+        for msg in related:
+            msg_count = llm.get_num_tokens(msg.index)
+            if (token_count + msg_count) &lt;= token_limit:
+                token_count += msg_count
+                final.append(dict(role=msg.metadata.get(&#39;role&#39;, &#39;unknown&#39;), chunk=msg.index, relevance_score=msg.rank_score))
+        return final
+
+    def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
+            system: Optional[str] = None, recent_token_limit: int = 200, 
+            knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, 
+            similarity_score_threshold: float = 0.5, **kwargs) -&gt; str:
+        &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
+
+        Args:
+            user (str): User newest message.
+            prompt_template (PromptTemplate): Prompt template to use.
+            llm (Type[BaseLLM]): LLM for counting tokens.
+            system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
+            recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
+            knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
+            relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
+            relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
+            similarity_score_threshold (float, optional): Long term memory similarity score threshold. Defaults to 0.5.
+
+
+        Returns:
+            str: The full chat prompt.
+        &#34;&#34;&#34;
+        user = user.strip()
+        short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
+        system = self.system if not isinstance(system, str) else system
+        messages: list = [dict(role=&#39;system&#39;, content=self.system)] + prompt_template.format_history(short, return_list=True)
+
+        # Gathering knowledge
+        results = self.get_long_term_memory(query=user, recent_history=short, llm=llm, 
+                        token_limit=relevance_token_limit, similarity_score_threshold=similarity_score_threshold, relevance_score_threshold=relevance_score_threshold)
+        results = list(map(lambda x: dict(text=x[&#39;chunk&#39;], role=x[&#39;role&#39;], relevance_score=x[&#39;relevance_score&#39;], info_type=&#39;memory&#39;), results))
+
+        if knowledge_base is not None:
+            kb_res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
+            kb_res = list(map(lambda x: dict(text=x.index, relevance_score=x.rank_score, info_type=&#39;kb&#39;), kb_res))
+            results.extend(kb_res)
+
+        results.sort(key=lambda x: x[&#39;relevance_score&#39;], reverse=True)
+
+        # filter by token counts
+        res = []
+        token_count = 0
+        for r in results:
+            rcount = llm.get_num_tokens(r[&#39;text&#39;])
+            if token_count + rcount &lt;= relevance_token_limit:
+                res.append(r)
+                token_count += rcount
+            else:
+                break
+
+        # formatting information
+        if len(res) != 0:
+            import json
+            as_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;assistant&#39;, res))
+            us_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;user&#39;, res))
+            kb_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;user&#39;, res))
+            if prompt_template.allow_custom_role:
+                res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
+                messages.extend([dict(role=&#39;user&#39;, content=user), dict(role=&#39;extra information&#39;, content=res)])
+                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
+            else:
+                messages.append(dict(role=&#39;user&#39;, content=user))
+                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
+                res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
+                prompt += f&#39;{res}\n\nResponse: &#39;
+        else:
+            messages.append(dict(role=&#39;user&#39;, content=user))
+            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
+
+        return prompt</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.Memory.base_memory.BaseChatMemory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory">BaseChatMemory</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory.embeddings"><code class="name">var <span class="ident">embeddings</span> : <a title="llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit" href="../Embeddings/base_embeddings.html#llmflex.Embeddings.base_embeddings.BaseEmbeddingsToolkit">BaseEmbeddingsToolkit</a></code></dt>
+<dd>
+<div class="desc"><p>Embeddings toolkit.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseEmbeddingsToolkit</code></dt>
+<dd>Embeddings toolkit.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def embeddings(self) -&gt; BaseEmbeddingsToolkit:
+    &#34;&#34;&#34;Embeddings toolkit.
+
+    Returns:
+        BaseEmbeddingsToolkit: Embeddings toolkit.
+    &#34;&#34;&#34;
+    return self._embeddings</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory.ranker"><code class="name">var <span class="ident">ranker</span> : <a title="llmflex.Rankers.base_ranker.BaseRanker" href="../Rankers/base_ranker.html#llmflex.Rankers.base_ranker.BaseRanker">BaseRanker</a></code></dt>
+<dd>
+<div class="desc"><p>Reranker.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseRanker</code></dt>
+<dd>Reranker.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def ranker(self) -&gt; BaseRanker:
+    &#34;&#34;&#34;Reranker.
+
+    Returns:
+        BaseRanker: Reranker.
+    &#34;&#34;&#34;
+    return self._ranker</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory.text_splitter"><code class="name">var <span class="ident">text_splitter</span> : <a title="llmflex.TextSplitters.sentence_token_text_splitter.SentenceTokenTextSplitter" href="../TextSplitters/sentence_token_text_splitter.html#llmflex.TextSplitters.sentence_token_text_splitter.SentenceTokenTextSplitter">SentenceTokenTextSplitter</a></code></dt>
+<dd>
+<div class="desc"><p>Sentence text splitter.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>SentenceTokenTextSplitter</code></dt>
+<dd>Sentence text splitter.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def text_splitter(self) -&gt; SentenceTokenTextSplitter:
+    &#34;&#34;&#34;Sentence text splitter.
+
+    Returns:
+        SentenceTokenTextSplitter: Sentence text splitter.
+    &#34;&#34;&#34;
+    return self._text_splitter</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory.vectordb"><code class="name">var <span class="ident">vectordb</span> : <a title="llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase" href="../VectorDBs/faiss_vectordb.html#llmflex.VectorDBs.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></code></dt>
+<dd>
+<div class="desc"><p>Vector database for saving the chat history.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>FaissVectorDatabase</code></dt>
+<dd>Vector database for saving the chat history.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def vectordb(self) -&gt; FaissVectorDatabase:
+    &#34;&#34;&#34;Vector database for saving the chat history.
+
+    Returns:
+        FaissVectorDatabase: Vector database for saving the chat history.
+    &#34;&#34;&#34;
+    return self._vectordb</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory.create_prompt_with_memory"><code class="name flex">
+<span>def <span class="ident">create_prompt_with_memory</span></span>(<span>self, user: str, prompt_template: <a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], system: Optional[str] = None, recent_token_limit: int = 200, knowledge_base: Optional[<a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase" href="../KnowledgeBase/knowledge_base.html#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase">KnowledgeBase</a>] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, similarity_score_threshold: float = 0.5, **kwargs) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user</code></strong> :&ensp;<code>str</code></dt>
+<dd>User newest message.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>PromptTemplate</code></dt>
+<dd>Prompt template to use.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM for counting tokens.</dd>
+<dt><strong><code>system</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>System message to override the default system message for the memory. Defaults to None.</dd>
+<dt><strong><code>recent_token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of tokens for recent term memory. Defaults to 200.</dd>
+<dt><strong><code>knowledge_base</code></strong> :&ensp;<code>Optional[KnowledgeBase]</code></dt>
+<dd>Knowledge base that helps the assistant to answer questions. Defaults to None.</dd>
+<dt><strong><code>relevance_token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.</dd>
+<dt><strong><code>relevance_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.</dd>
+<dt><strong><code>similarity_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Long term memory similarity score threshold. Defaults to 0.5.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The full chat prompt.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
+        system: Optional[str] = None, recent_token_limit: int = 200, 
+        knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, 
+        similarity_score_threshold: float = 0.5, **kwargs) -&gt; str:
+    &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
+
+    Args:
+        user (str): User newest message.
+        prompt_template (PromptTemplate): Prompt template to use.
+        llm (Type[BaseLLM]): LLM for counting tokens.
+        system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
+        recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
+        knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
+        relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
+        relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
+        similarity_score_threshold (float, optional): Long term memory similarity score threshold. Defaults to 0.5.
+
+
+    Returns:
+        str: The full chat prompt.
+    &#34;&#34;&#34;
+    user = user.strip()
+    short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
+    system = self.system if not isinstance(system, str) else system
+    messages: list = [dict(role=&#39;system&#39;, content=self.system)] + prompt_template.format_history(short, return_list=True)
+
+    # Gathering knowledge
+    results = self.get_long_term_memory(query=user, recent_history=short, llm=llm, 
+                    token_limit=relevance_token_limit, similarity_score_threshold=similarity_score_threshold, relevance_score_threshold=relevance_score_threshold)
+    results = list(map(lambda x: dict(text=x[&#39;chunk&#39;], role=x[&#39;role&#39;], relevance_score=x[&#39;relevance_score&#39;], info_type=&#39;memory&#39;), results))
+
+    if knowledge_base is not None:
+        kb_res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
+        kb_res = list(map(lambda x: dict(text=x.index, relevance_score=x.rank_score, info_type=&#39;kb&#39;), kb_res))
+        results.extend(kb_res)
+
+    results.sort(key=lambda x: x[&#39;relevance_score&#39;], reverse=True)
+
+    # filter by token counts
+    res = []
+    token_count = 0
+    for r in results:
+        rcount = llm.get_num_tokens(r[&#39;text&#39;])
+        if token_count + rcount &lt;= relevance_token_limit:
+            res.append(r)
+            token_count += rcount
+        else:
+            break
+
+    # formatting information
+    if len(res) != 0:
+        import json
+        as_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;assistant&#39;, res))
+        us_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;user&#39;, res))
+        kb_mem = list(filter(lambda x: res.get(&#39;role&#39;) == &#39;user&#39;, res))
+        if prompt_template.allow_custom_role:
+            res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
+            messages.extend([dict(role=&#39;user&#39;, content=user), dict(role=&#39;extra information&#39;, content=res)])
+            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
+        else:
+            messages.append(dict(role=&#39;user&#39;, content=user))
+            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
+            res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
+            prompt += f&#39;{res}\n\nResponse: &#39;
+    else:
+        messages.append(dict(role=&#39;user&#39;, content=user))
+        prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
+
+    return prompt</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.longshort_memory.LongShortTermChatMemory.get_long_term_memory"><code class="name flex">
+<span>def <span class="ident">get_long_term_memory</span></span>(<span>self, query: str, recent_history: Union[List[str], List[Tuple[str, str]]], llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], token_limit: int = 400, similarity_score_threshold: float = 0.2, relevance_score_threshold: float = 0.8) ‑> List[Dict[str, Any]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retriving the long term memory with the given query. Usually used together with get_token_memory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>Search query for the vector database. Usually the latest user input.</dd>
+<dt><strong><code>recent_history</code></strong> :&ensp;<code>Union[List[str], List[Tuple[str, str]]]</code></dt>
+<dd>List of interactions in the short term memory to skip in the long term memory.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM to count tokens.</dd>
+<dt><strong><code>token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of tokens in the long term memory. Defaults to 400.</dd>
+<dt><strong><code>similarity_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.</dd>
+<dt><strong><code>relevance_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Minimum threshold for relevance score for the reranker, shoulbe be between 0 to 1. Defaults to 0.8.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Dict[str, Any]]</code></dt>
+<dd>List of chunks related to the query and their respective speaker.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_long_term_memory(self, query: str, recent_history: Union[List[str], List[Tuple[str, str]]], 
+                         llm: Type[BaseLLM], token_limit: int = 400, similarity_score_threshold: float = 0.2, relevance_score_threshold: float = 0.8) -&gt; List[Dict[str, Any]]:
+    &#34;&#34;&#34;Retriving the long term memory with the given query. Usually used together with get_token_memory.
+
+    Args:
+        query (str): Search query for the vector database. Usually the latest user input.
+        recent_history (Union[List[str], List[Tuple[str, str]]]): List of interactions in the short term memory to skip in the long term memory.
+        llm (Type[BaseLLM]): LLM to count tokens.
+        token_limit (int, optional): Maximum number of tokens in the long term memory. Defaults to 400.
+        similarity_score_threshold (float, optional): Minimum threshold for similarity score, shoulbe be between 0 to 1. Defaults to 0.2.
+        relevance_score_threshold (float, optional): Minimum threshold for relevance score for the reranker, shoulbe be between 0 to 1. Defaults to 0.8.
+
+    Returns:
+        List[Dict[str, Any]]: List of chunks related to the query and their respective speaker.
+    &#34;&#34;&#34;
+    if self.interaction_count == 0:
+        return []
+    related = self.vectordb.search(query=query, top_k=30, index_only=False)
+    related = list(filter(lambda x: (x[&#39;score&#39;] &gt;= similarity_score_threshold), related))
+    if len(related) == 0:
+        return []
+    if len(recent_history) != 0:
+        if isinstance(recent_history[0], str):
+            related = filter(lambda x: all(x[&#39;metadata&#39;][&#39;user&#39;] not in c for c in recent_history) 
+                             and all(x[&#39;metadata&#39;][&#39;assistant&#39;] not in c for c in recent_history), related)
+            
+        else:
+            related = filter(lambda x: all(((x[&#39;metadata&#39;][&#39;user&#39;] not in c[0]) and (x[&#39;metadata&#39;][&#39;assistant&#39;] not in c[1])) for c in recent_history), related)
+    related = list(related)
+    if len(related) == 0:
+        return []
+    
+    related = self.ranker.rerank(query=query, elements=related, top_k=len(related))
+    related = filter(lambda x: x.rank_score &gt;= relevance_score_threshold, related)
+
+    final = []
+    token_count = 0
+    for msg in related:
+        msg_count = llm.get_num_tokens(msg.index)
+        if (token_count + msg_count) &lt;= token_limit:
+            token_count += msg_count
+            final.append(dict(role=msg.metadata.get(&#39;role&#39;, &#39;unknown&#39;), chunk=msg.index, relevance_score=msg.rank_score))
+    return final</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.Memory.base_memory.BaseChatMemory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory">BaseChatMemory</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.chat_dir" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.chat_dir">chat_dir</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.clear" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.clear">clear</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory">get_recent_memory</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_token_memory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.get_token_memory">get_token_memory</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.history" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.history">history</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.info" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.info">info</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.interaction_count" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.interaction_count">interaction_count</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction">remove_last_interaction</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.save" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.save">save</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.save_interaction" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.save_interaction">save_interaction</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.system" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.system">system</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.title" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.title">title</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.update_system_message" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.update_system_message">update_system_message</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Memory" href="index.html">llmflex.Memory</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory.create_prompt_with_memory" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory.create_prompt_with_memory">create_prompt_with_memory</a></code></li>
+<li><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory.embeddings" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory.embeddings">embeddings</a></code></li>
+<li><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory.get_long_term_memory" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory.get_long_term_memory">get_long_term_memory</a></code></li>
+<li><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory.ranker" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory.ranker">ranker</a></code></li>
+<li><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory.text_splitter" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory.text_splitter">text_splitter</a></code></li>
+<li><code><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory.vectordb" href="#llmflex.Memory.longshort_memory.LongShortTermChatMemory.vectordb">vectordb</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

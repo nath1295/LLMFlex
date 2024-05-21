@@ -271,6 +271,8 @@ def create_long_short_prompt(user: str, prompt_template: PromptTemplate, llm: Ty
 <dd>Title of the chat.</dd>
 <dt><strong><code>from_exist</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Initialising the chat memory from existing files if the title exists. Defaults to True.</dd>
+<dt><strong><code>system</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -534,6 +536,7 @@ def vectordb(self) -&gt; FaissVectorDatabase:
 <ul class="hlist">
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.chat_dir" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.chat_dir">chat_dir</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.clear" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.clear">clear</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.create_prompt_with_memory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.create_prompt_with_memory">create_prompt_with_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory">get_recent_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_token_memory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.get_token_memory">get_token_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.history" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.history">history</a></code></li>
@@ -542,7 +545,9 @@ def vectordb(self) -&gt; FaissVectorDatabase:
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction">remove_last_interaction</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.save" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.save">save</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.save_interaction" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.save_interaction">save_interaction</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.system" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.system">system</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.title" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.title">title</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.update_system_message" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory.update_system_message">update_system_message</a></code></li>
 </ul>
 </li>
 </ul>

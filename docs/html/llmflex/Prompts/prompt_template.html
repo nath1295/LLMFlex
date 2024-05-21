@@ -34,7 +34,7 @@ DEFAULT_SYSTEM_MESSAGE = &#34;&#34;&#34;This is a conversation between a human u
 
 presets = {
     &#39;Default&#39; : {
-        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ &#39;SYSTEM:\n&#39; + messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
+        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ &#39;SYSTEM:\n&#39; + messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% else %}{{ message[&#39;role&#39;].upper() + &#39;: &#39; + message[&#39;content&#39;].strip() + eos_token + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
         &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;]
@@ -43,43 +43,57 @@ presets = {
         &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{% set system_message = messages[0][&#39;content&#39;] %}{% elif false == true and not &#39;&lt;&lt;SYS&gt;&gt;&#39; in messages[0][&#39;content&#39;] %}{% set loop_messages = messages %}{% set system_message = &#39;You are a helpful, respectful and honest assistant. Always answer as helpfully as possible, while being safe. Your answers should not include any harmful, unethical, racist, sexist, toxic, dangerous, or illegal content. Please ensure that your responses are socially unbiased and positive in nature.\\n\\nIf a question does not make any sense, or is not factually coherent, explain why instead of answering something not correct. If you don\\&#39;t know the answer to a question, please don\\&#39;t share false information.&#39; %}{% else %}{% set loop_messages = messages %}{% set system_message = false %}{% endif %}{% for message in loop_messages %}{% if (message[&#39;role&#39;] == &#39;user&#39;) != (loop.index0 % 2 == 0) %}{{ raise_exception(&#39;Conversation roles must alternate user/assistant/user/assistant/...&#39;) }}{% endif %}{% if loop.index0 == 0 and system_message != false %}{% set content = &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + system_message + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; + message[&#39;content&#39;] %}{% else %}{% set content = message[&#39;content&#39;] %}{% endif %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ bos_token + &#39;[INST] &#39; + content.strip() + &#39; [/INST]&#39; }}{% elif message[&#39;role&#39;] == &#39;system&#39; %}{{ &#39;&lt;&lt;SYS&gt;&gt;\\n&#39; + content.strip() + &#39;\\n&lt;&lt;/SYS&gt;&gt;\\n\\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39; &#39;  + content.strip() + &#39; &#39; + eos_token }}{% endif %}{% endfor %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;],
+        &#39;keywords&#39;: [&#39;[INST]&#39;, &#39;[/INST]&#39;]
     },
     &#39;Llama3&#39; : {
         &#39;template&#39;: &#34;{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{% set loop_messages = messages %}{% for message in loop_messages %}{% set content = &#39;&lt;|start_header_id|&gt;&#39; + message[&#39;role&#39;] + &#39;&lt;|end_header_id|&gt;\n\n&#39;+ message[&#39;content&#39;] | trim + &#39;&lt;|eot_id|&gt;&#39; %}{% if loop.index0 == 0 %}{% set content = bos_token + content %}{% endif %}{{ content }}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|start_header_id|&gt;assistant&lt;|end_header_id|&gt;\n\n&#39; }}{% else %}{{ eos_token }}{% endif %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;|end_of_text|&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;|begin_of_text|&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_text|&gt;&#39;, &#39;&lt;|eot_id|&gt;&#39;, &#39;&lt;|start_header_id|&gt;&#39;]
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_text|&gt;&#39;, &#39;&lt;|eot_id|&gt;&#39;, &#39;&lt;|start_header_id|&gt;&#39;],
+        &#39;keywords&#39;: [&#39;&lt;|start_header_id|&gt;&#39;, &#39;&lt;|end_header_id|&gt;&#39;]
     },
     &#39;Vicuna&#39; : {
         &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + eos_token + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;, &#39;&lt;/s&gt;&#39;]
+        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;, &#39;&lt;/s&gt;&#39;],
+        &#39;keywords&#39;: [&#39;USER:&#39;, &#39;ASSISTANT:&#39;]
     },
     &#39;ChatML&#39; : {
-        &#39;template&#39;: &#34;{% for message in messages %}{{&#39;&lt;|im_start|&gt;&#39; + message[&#39;role&#39;] + &#39;\n&#39; + message[&#39;content&#39;] + &#39;&lt;|im_end|&gt;&#39; + &#39;\n&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|im_start|&gt;assistant\n&#39; }}{% endif %}&#34;,
+        &#39;template&#39;: &#34;{{bos_token}}{% for message in messages %}{{&#39;&lt;|im_start|&gt;&#39; + message[&#39;role&#39;] + &#39;\n&#39; + message[&#39;content&#39;] + &#39;&lt;|im_end|&gt;&#39; + &#39;\n&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|im_start|&gt;assistant\n&#39; }}{% endif %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;|im_end|&gt;&#39;,
-        &#39;bos_token&#39;: &#39;&lt;|endoftext|&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;, &#39;&lt;/s&gt;&#39;]
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;, &#39;&lt;|im_start|&gt;user\n&#39;, &#39;&lt;|im_end|&gt;\n&lt;|im_start|&gt;user\n&#39;, &#39;&lt;/s&gt;&#39;],
+        &#39;keywords&#39;: [&#39;&lt;|im_start|&gt;&#39;, &#39;&lt;|im_end|&gt;&#39;]
     },
     &#39;Zephyr&#39; : {
         &#39;template&#39;: &#34;{% for message in messages %}\n{% if message[&#39;role&#39;] == &#39;user&#39; %}\n{{ &#39;&lt;|user|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;system&#39; %}\n{{ &#39;&lt;|system|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}\n{{ &#39;&lt;|assistant|&gt;\n&#39;  + message[&#39;content&#39;] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ &#39;&lt;|assistant|&gt;&#39; }}\n{% endif %}\n{% endfor %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;\n&#39;, &#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&lt;|user|&gt;\n&#39;]
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;\n&#39;, &#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&lt;|user|&gt;\n&#39;],
+        &#39;keywords&#39;: [&#39;&lt;|system|&gt;&#39;]
     },
     &#39;OpenChat&#39; : {
         &#39;template&#39;: &#34;{{ bos_token }}{% for message in messages %}{{ &#39;GPT4 Correct &#39; + message[&#39;role&#39;].title() + &#39;: &#39; + message[&#39;content&#39;] + &#39;&lt;|end_of_turn|&gt;&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;GPT4 Correct Assistant:&#39; }}{% endif %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;|end_of_turn|&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_turn|&gt;&#39;, &#39;&lt;|end_of_turn|&gt;GPT4 Correct Assistant: &#39;]
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;|end_of_turn|&gt;&#39;, &#39;&lt;|end_of_turn|&gt;GPT4 Correct Assistant: &#39;],
+        &#39;keywords&#39;: [&#39;GPT4 Correct&#39;]
     },
     &#39;Alpaca&#39; : {
         &#39;template&#39;: &#34;{% for message in messages %}{% if message[&#39;role&#39;] == &#39;system&#39; %}{% if message[&#39;content&#39;]%}{{&#39;### Instruction: &#39; + message[&#39;content&#39;]+&#39;\n&#39;}}{% endif %}{% elif message[&#39;role&#39;] == &#39;user&#39; %}{{&#39;### Input: &#39; + message[&#39;content&#39;]+&#39;\n&#39;}}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{&#39;### Response: &#39;  + message[&#39;content&#39;] + &#39;\n&#39;}}{% endif %}{% if loop.last and add_generation_prompt %}{{ &#39;### Response:&#39; }}{% endif %}{% endfor %}&#34;,
         &#39;eos_token&#39;: &#39;&lt;|end_of_turn|&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
-        &#39;stop&#39;: [&#39;### Input: &#39;, &#39;\n### Input: &#39;, &#39;###&#39;]
+        &#39;stop&#39;: [&#39;### Input: &#39;, &#39;\n### Input: &#39;, &#39;###&#39;],
+        &#39;keywords&#39;: [&#39;### Input:&#39;, &#39;### Response:&#39;]
+    },
+    &#39;Phi3&#39; : {
+        &#39;template&#39;: &#34;{{ bos_token }}{% for message in messages %}{% if (message[&#39;role&#39;] == &#39;user&#39;) %}{{&#39;&lt;|user|&gt;&#39; + &#39;\n&#39; + message[&#39;content&#39;] + &#39;&lt;|end|&gt;&#39; + &#39;\n&#39; + &#39;&lt;|assistant|&gt;&#39; + &#39;\n&#39;}}{% elif (message[&#39;role&#39;] == &#39;assistant&#39;) %}{{message[&#39;content&#39;] + &#39;&lt;|end|&gt;&#39; + &#39;\n&#39;}}{% endif %}{% endfor %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;|endoftext|&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;|end|&gt;&#39;, &#39;&lt;|endoftext|&gt;&#39;],
+        &#39;keywords&#39;: [&#39;&lt;|end|&gt;&#39;]
     },
 }
 
@@ -89,10 +103,29 @@ hidden_presets = {
         &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
         &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
         &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;&lt;s&gt;&#39;, &#39;[INST]&#39;, &#39;&lt;s&gt;[INST]&#39;]
-    }
+    },
+    &#39;Zephyr&#39; : {
+        &#39;template&#39;: &#34;{% for message in messages %}\n{% if message[&#39;role&#39;] == &#39;user&#39; %}\n{{ &#39;&lt;|user|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;system&#39; %}\n{{ &#39;&lt;|system|&gt;\n&#39; + message[&#39;content&#39;] + eos_token }}\n{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}\n{{ &#39;&lt;|assistant|&gt;\n&#39;  + message[&#39;content&#39;] + eos_token }}\n{% else  %}\n{{ &#39;&lt;|&#39; + message[&#39;role&#39;] + &#39;|&gt;\n&#39;  + message[&#39;content&#39;] + eos_token }}\n{% endif %}\n{% if loop.last and add_generation_prompt %}\n{{ &#39;&lt;|assistant|&gt;&#39; }}\n{% endif %}\n{% endfor %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;/s&gt;&#39;, &#39;&lt;/s&gt;\n&#39;, &#39;&lt;|user|&gt;\n&#39;, &#39;&lt;/s&gt;\n&lt;|user|&gt;\n&#39;]
+    },
+    &#39;Vicuna&#39; : {
+        &#39;template&#39;: &#34;{% if messages[0][&#39;role&#39;] == &#39;system&#39; %}{% set loop_messages = messages[1:] %}{{ messages[0][&#39;content&#39;].strip() + &#39;\n\n&#39; }}{% else %}{% set loop_messages = messages %}{% endif %}{% for message in loop_messages %}{% if message[&#39;role&#39;] == &#39;user&#39; %}{{ &#39;USER: &#39; + message[&#39;content&#39;].strip() + &#39;\n&#39; }}{% elif message[&#39;role&#39;] == &#39;assistant&#39; %}{{ &#39;ASSISTANT: &#39; + message[&#39;content&#39;].strip() + eos_token + &#39;\n&#39; }}{% else %}{{ message[&#39;role&#39;].upper() + &#39;: &#39; + message[&#39;content&#39;].strip() + eos_token + &#39;\n&#39; }}{% endif %}{% endfor %}{% if add_generation_prompt %}{{ &#39;ASSISTANT:&#39; }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;/s&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;\nASSISTANT&#39;, &#39;\nUSER:&#39;, &#39;ASSISTANT:&#39;, &#39;USER:&#39;, &#39;&lt;/s&gt;&#39;]
+    },
+    &#39;Phi3&#39; : {
+        &#39;template&#39;: &#34;{{ bos_token }}{% for message in messages %}{{&#39;&lt;|&#39; + message[&#39;role&#39;] + &#39;|&gt;&#39; + &#39;\n&#39; + message[&#39;content&#39;] + &#39;&lt;|end|&gt;&#39; + &#39;\n&#39;}}{% endfor %}{% if add_generation_prompt %}{{ &#39;&lt;|assistant|&gt;\n&#39; }}{% endif %}&#34;,
+        &#39;eos_token&#39;: &#39;&lt;|endoftext|&gt;&#39;,
+        &#39;bos_token&#39;: &#39;&lt;s&gt;&#39;,
+        &#39;stop&#39;: [&#39;&lt;|end|&gt;&#39;, &#39;&lt;|endoftext|&gt;&#39;],
+        &#39;keywords&#39;: [&#39;&lt;|end|&gt;&#39;]
+    },
 }
 
-PRESET_FORMATS =  Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Llama3&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;]
+PRESET_FORMATS =  Literal[&#39;Default&#39;, &#39;Llama2&#39;, &#39;Llama3&#39;, &#39;Vicuna&#39;, &#39;ChatML&#39;, &#39;Zephyr&#39;, &#39;OpenChat&#39;, &#39;Alpaca&#39;, &#39;Phi3&#39;]
 
 class PromptTemplate:
     &#34;&#34;&#34;Class for storing prompt format presets.
@@ -103,7 +136,8 @@ class PromptTemplate:
             eos_token: Optional[str],
             bos_token: Optional[str],
             stop: Optional[List[str]] = None,
-            force_real_template: bool = False
+            force_real_template: bool = False,
+            **kwargs
     ) -&gt; None:
         &#34;&#34;&#34;Initialising the chat prompt class.
 
@@ -119,9 +153,15 @@ class PromptTemplate:
         self._bos_token = bos_token
         self._stop = stop
         self._force_real_template = force_real_template
+        self._keywords = kwargs.get(&#39;keywords&#39;, [])
 
     @property
     def template(self) -&gt; str:
+        &#34;&#34;&#34;Jinja template string.
+
+        Returns:
+            str: Jinja template string.
+        &#34;&#34;&#34;
         return self._template
     
     @property
@@ -136,11 +176,27 @@ class PromptTemplate:
     
     @property
     def rendered_template(self) -&gt; Environment:
+        &#34;&#34;&#34;Rendered Jinja template.
+
+        Returns:
+            Environment: Rendered Jinja template.
+        &#34;&#34;&#34;
         if not hasattr(self, &#39;_rendered_template&#39;):
             from jinja2 import BaseLoader
             template = self.template if self._force_real_template else self._hidden_template
             self._rendered_template = Environment(loader=BaseLoader).from_string(template)
         return self._rendered_template
+    
+    @property
+    def keywords(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of keywords to search for in Jinja templates for template detection. Used for presets.
+
+        Returns:
+            List[str]: List of keywords to search for in Jinja templates for template detection.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_keywords&#39;):
+            self._keywords = []
+        return self._keywords
 
     @property
     def eos_token(self) -&gt; Optional[str]:
@@ -168,6 +224,24 @@ class PromptTemplate:
                     self._template_name = k
                     break
         return self._template_name
+    
+    @property
+    def allow_custom_role(self) -&gt; bool:
+        &#34;&#34;&#34;Check if custom role can be used with the prompt template.
+
+        Returns:
+            bool: Whether custom role can be used with the prompt template.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_allow_custom_role&#39;):
+            test = [dict(role=&#39;user&#39;, content=&#39;random message&#39;), dict(role=&#39;customrole&#39;, content=&#39;exist&#39;)]
+            try: 
+                output = self.create_custom_prompt(test)
+                self._allow_custom_role = &#39;customrole&#39; in output.lower()
+            except:
+                self._allow_custom_role = False
+        return self._allow_custom_role
+
+
 
     def format_history(self, history: Union[List[str], List[Tuple[str, str]]], return_list: bool = False) -&gt; Union[str, List[Dict[str, str]]]:
         &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history or a list of messages for the Jinja template to render.
@@ -206,7 +280,7 @@ class PromptTemplate:
         Returns:
             str: The full prompt.
         &#34;&#34;&#34;
-        head = [dict(role=&#39;system&#39;, content=system)] if system.strip(&#39; \n\r\t&#39;) != &#39;&#39; else []
+        head = [dict(role=&#39;system&#39;, content=system)] if system.strip() != &#39;&#39; else []
         history = [] if history is None else history
         body = self.format_history(history=history, return_list=True)
         tail = [dict(role=&#39;user&#39;, content=user)]
@@ -224,6 +298,35 @@ class PromptTemplate:
             str: The full prompt given your messages.
         &#34;&#34;&#34;
         return self.rendered_template.render(messages=messages, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=add_generation_prompt)
+    
+    def create_custom_prompt_with_open_role(self, messages: List[Dict[str, str]], end_role: str = &#39;&#39;, begin_text: str = &#39;&#39;) -&gt; str:
+        &#34;&#34;&#34;Creating a custom prompt with your given list of messages. Each message should contain a dictionary with the key &#34;role&#34; and &#34;content&#34;. The prompt will end with starting prompt of the end_role instead of assistant.
+
+        Args:
+            messages (List[Dict[str, str]]): List of messages. Each message should contain a dictionary with the key &#34;role&#34; and &#34;content&#34;.
+            end_role (str, optional): The role for text generation instead of assistant. If an empty string is given, it means that the role can be anything the llm is going to generate. Defaults to &#39;&#39;.
+            begin_text (str, optional): The beginning text of the last role. Defaults to &#39;&#39;.
+
+        Returns:
+            str: The full prompt with your custom role.
+        &#34;&#34;&#34;
+        if self.allow_custom_role:
+            role_ph = end_role if end_role.strip() != &#39;&#39; else &#39;place_holder_role&#39;
+            text_ph = &#39;$$$PLACE_HOLDER_TEXT$$$&#39;
+            prompt = self.create_custom_prompt(messages=messages + [dict(role=role_ph, content=text_ph)], add_generation_prompt=False)
+            prompt = text_ph.join(prompt.split(text_ph)[:-1])
+            real = self.create_custom_prompt(messages=messages + [dict(role=end_role, content=text_ph)], add_generation_prompt=False)
+            real = text_ph.join(real.split(text_ph)[:-1])
+            if real == prompt:
+                return real + begin_text
+            elif begin_text.strip() != &#39;&#39;:
+                return real + begin_text
+            else:
+                import os
+                return os.path.commonprefix([real, prompt])
+        else:
+            raise AssertionError(f&#39;This prompt template &#34;{self.template_name}&#34; does not allow custom_roles.&#39;)
+
     
     @classmethod
     def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -&gt; PromptTemplate:
@@ -295,7 +398,7 @@ class PromptTemplate:
 <dl>
 <dt id="llmflex.Prompts.prompt_template.PromptTemplate"><code class="flex name class">
 <span>class <span class="ident">PromptTemplate</span></span>
-<span>(</span><span>template: str, eos_token: Optional[str], bos_token: Optional[str], stop: Optional[List[str]] = None, force_real_template: bool = False)</span>
+<span>(</span><span>template: str, eos_token: Optional[str], bos_token: Optional[str], stop: Optional[List[str]] = None, force_real_template: bool = False, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Class for storing prompt format presets.</p>
@@ -326,7 +429,8 @@ class PromptTemplate:
             eos_token: Optional[str],
             bos_token: Optional[str],
             stop: Optional[List[str]] = None,
-            force_real_template: bool = False
+            force_real_template: bool = False,
+            **kwargs
     ) -&gt; None:
         &#34;&#34;&#34;Initialising the chat prompt class.
 
@@ -342,9 +446,15 @@ class PromptTemplate:
         self._bos_token = bos_token
         self._stop = stop
         self._force_real_template = force_real_template
+        self._keywords = kwargs.get(&#39;keywords&#39;, [])
 
     @property
     def template(self) -&gt; str:
+        &#34;&#34;&#34;Jinja template string.
+
+        Returns:
+            str: Jinja template string.
+        &#34;&#34;&#34;
         return self._template
     
     @property
@@ -359,11 +469,27 @@ class PromptTemplate:
     
     @property
     def rendered_template(self) -&gt; Environment:
+        &#34;&#34;&#34;Rendered Jinja template.
+
+        Returns:
+            Environment: Rendered Jinja template.
+        &#34;&#34;&#34;
         if not hasattr(self, &#39;_rendered_template&#39;):
             from jinja2 import BaseLoader
             template = self.template if self._force_real_template else self._hidden_template
             self._rendered_template = Environment(loader=BaseLoader).from_string(template)
         return self._rendered_template
+    
+    @property
+    def keywords(self) -&gt; List[str]:
+        &#34;&#34;&#34;List of keywords to search for in Jinja templates for template detection. Used for presets.
+
+        Returns:
+            List[str]: List of keywords to search for in Jinja templates for template detection.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_keywords&#39;):
+            self._keywords = []
+        return self._keywords
 
     @property
     def eos_token(self) -&gt; Optional[str]:
@@ -391,6 +517,24 @@ class PromptTemplate:
                     self._template_name = k
                     break
         return self._template_name
+    
+    @property
+    def allow_custom_role(self) -&gt; bool:
+        &#34;&#34;&#34;Check if custom role can be used with the prompt template.
+
+        Returns:
+            bool: Whether custom role can be used with the prompt template.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_allow_custom_role&#39;):
+            test = [dict(role=&#39;user&#39;, content=&#39;random message&#39;), dict(role=&#39;customrole&#39;, content=&#39;exist&#39;)]
+            try: 
+                output = self.create_custom_prompt(test)
+                self._allow_custom_role = &#39;customrole&#39; in output.lower()
+            except:
+                self._allow_custom_role = False
+        return self._allow_custom_role
+
+
 
     def format_history(self, history: Union[List[str], List[Tuple[str, str]]], return_list: bool = False) -&gt; Union[str, List[Dict[str, str]]]:
         &#34;&#34;&#34;Formatting a list of conversation history into a full string of conversation history or a list of messages for the Jinja template to render.
@@ -429,7 +573,7 @@ class PromptTemplate:
         Returns:
             str: The full prompt.
         &#34;&#34;&#34;
-        head = [dict(role=&#39;system&#39;, content=system)] if system.strip(&#39; \n\r\t&#39;) != &#39;&#39; else []
+        head = [dict(role=&#39;system&#39;, content=system)] if system.strip() != &#39;&#39; else []
         history = [] if history is None else history
         body = self.format_history(history=history, return_list=True)
         tail = [dict(role=&#39;user&#39;, content=user)]
@@ -447,6 +591,35 @@ class PromptTemplate:
             str: The full prompt given your messages.
         &#34;&#34;&#34;
         return self.rendered_template.render(messages=messages, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=add_generation_prompt)
+    
+    def create_custom_prompt_with_open_role(self, messages: List[Dict[str, str]], end_role: str = &#39;&#39;, begin_text: str = &#39;&#39;) -&gt; str:
+        &#34;&#34;&#34;Creating a custom prompt with your given list of messages. Each message should contain a dictionary with the key &#34;role&#34; and &#34;content&#34;. The prompt will end with starting prompt of the end_role instead of assistant.
+
+        Args:
+            messages (List[Dict[str, str]]): List of messages. Each message should contain a dictionary with the key &#34;role&#34; and &#34;content&#34;.
+            end_role (str, optional): The role for text generation instead of assistant. If an empty string is given, it means that the role can be anything the llm is going to generate. Defaults to &#39;&#39;.
+            begin_text (str, optional): The beginning text of the last role. Defaults to &#39;&#39;.
+
+        Returns:
+            str: The full prompt with your custom role.
+        &#34;&#34;&#34;
+        if self.allow_custom_role:
+            role_ph = end_role if end_role.strip() != &#39;&#39; else &#39;place_holder_role&#39;
+            text_ph = &#39;$$$PLACE_HOLDER_TEXT$$$&#39;
+            prompt = self.create_custom_prompt(messages=messages + [dict(role=role_ph, content=text_ph)], add_generation_prompt=False)
+            prompt = text_ph.join(prompt.split(text_ph)[:-1])
+            real = self.create_custom_prompt(messages=messages + [dict(role=end_role, content=text_ph)], add_generation_prompt=False)
+            real = text_ph.join(real.split(text_ph)[:-1])
+            if real == prompt:
+                return real + begin_text
+            elif begin_text.strip() != &#39;&#39;:
+                return real + begin_text
+            else:
+                import os
+                return os.path.commonprefix([real, prompt])
+        else:
+            raise AssertionError(f&#39;This prompt template &#34;{self.template_name}&#34; does not allow custom_roles.&#39;)
+
     
     @classmethod
     def from_dict(cls, format_dict: Dict[str, Any], template_name: Optional[str] = None) -&gt; PromptTemplate:
@@ -620,6 +793,35 @@ def from_preset(cls, style: PRESET_FORMATS, force_real_template: bool = False) -
 </dl>
 <h3>Instance variables</h3>
 <dl>
+<dt id="llmflex.Prompts.prompt_template.PromptTemplate.allow_custom_role"><code class="name">var <span class="ident">allow_custom_role</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Check if custom role can be used with the prompt template.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether custom role can be used with the prompt template.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def allow_custom_role(self) -&gt; bool:
+    &#34;&#34;&#34;Check if custom role can be used with the prompt template.
+
+    Returns:
+        bool: Whether custom role can be used with the prompt template.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_allow_custom_role&#39;):
+        test = [dict(role=&#39;user&#39;, content=&#39;random message&#39;), dict(role=&#39;customrole&#39;, content=&#39;exist&#39;)]
+        try: 
+            output = self.create_custom_prompt(test)
+            self._allow_custom_role = &#39;customrole&#39; in output.lower()
+        except:
+            self._allow_custom_role = False
+    return self._allow_custom_role</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Prompts.prompt_template.PromptTemplate.bos_token"><code class="name">var <span class="ident">bos_token</span> : Optional[str]</code></dt>
 <dd>
 <div class="desc"></div>
@@ -644,15 +846,49 @@ def eos_token(self) -&gt; Optional[str]:
     return self._eos_token</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Prompts.prompt_template.PromptTemplate.keywords"><code class="name">var <span class="ident">keywords</span> : List[str]</code></dt>
+<dd>
+<div class="desc"><p>List of keywords to search for in Jinja templates for template detection. Used for presets.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>List of keywords to search for in Jinja templates for template detection.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def keywords(self) -&gt; List[str]:
+    &#34;&#34;&#34;List of keywords to search for in Jinja templates for template detection. Used for presets.
+
+    Returns:
+        List[str]: List of keywords to search for in Jinja templates for template detection.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_keywords&#39;):
+        self._keywords = []
+    return self._keywords</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Prompts.prompt_template.PromptTemplate.rendered_template"><code class="name">var <span class="ident">rendered_template</span> : jinja2.environment.Environment</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Rendered Jinja template.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Environment</code></dt>
+<dd>Rendered Jinja template.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def rendered_template(self) -&gt; Environment:
+    &#34;&#34;&#34;Rendered Jinja template.
+
+    Returns:
+        Environment: Rendered Jinja template.
+    &#34;&#34;&#34;
     if not hasattr(self, &#39;_rendered_template&#39;):
         from jinja2 import BaseLoader
         template = self.template if self._force_real_template else self._hidden_template
@@ -674,13 +910,23 @@ def stop(self) -&gt; List[str]:
 </dd>
 <dt id="llmflex.Prompts.prompt_template.PromptTemplate.template"><code class="name">var <span class="ident">template</span> : str</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Jinja template string.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Jinja template string.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def template(self) -&gt; str:
+    &#34;&#34;&#34;Jinja template string.
+
+    Returns:
+        str: Jinja template string.
+    &#34;&#34;&#34;
     return self._template</code></pre>
 </details>
 </dd>
@@ -749,6 +995,58 @@ def template_name(self) -&gt; str:
     return self.rendered_template.render(messages=messages, bos_token=self.bos_token, eos_token=self.eos_token, add_generation_prompt=add_generation_prompt)</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Prompts.prompt_template.PromptTemplate.create_custom_prompt_with_open_role"><code class="name flex">
+<span>def <span class="ident">create_custom_prompt_with_open_role</span></span>(<span>self, messages: List[Dict[str, str]], end_role: str = '', begin_text: str = '') ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creating a custom prompt with your given list of messages. Each message should contain a dictionary with the key "role" and "content". The prompt will end with starting prompt of the end_role instead of assistant.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>messages</code></strong> :&ensp;<code>List[Dict[str, str]]</code></dt>
+<dd>List of messages. Each message should contain a dictionary with the key "role" and "content".</dd>
+<dt><strong><code>end_role</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The role for text generation instead of assistant. If an empty string is given, it means that the role can be anything the llm is going to generate. Defaults to ''.</dd>
+<dt><strong><code>begin_text</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The beginning text of the last role. Defaults to ''.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The full prompt with your custom role.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_custom_prompt_with_open_role(self, messages: List[Dict[str, str]], end_role: str = &#39;&#39;, begin_text: str = &#39;&#39;) -&gt; str:
+    &#34;&#34;&#34;Creating a custom prompt with your given list of messages. Each message should contain a dictionary with the key &#34;role&#34; and &#34;content&#34;. The prompt will end with starting prompt of the end_role instead of assistant.
+
+    Args:
+        messages (List[Dict[str, str]]): List of messages. Each message should contain a dictionary with the key &#34;role&#34; and &#34;content&#34;.
+        end_role (str, optional): The role for text generation instead of assistant. If an empty string is given, it means that the role can be anything the llm is going to generate. Defaults to &#39;&#39;.
+        begin_text (str, optional): The beginning text of the last role. Defaults to &#39;&#39;.
+
+    Returns:
+        str: The full prompt with your custom role.
+    &#34;&#34;&#34;
+    if self.allow_custom_role:
+        role_ph = end_role if end_role.strip() != &#39;&#39; else &#39;place_holder_role&#39;
+        text_ph = &#39;$$$PLACE_HOLDER_TEXT$$$&#39;
+        prompt = self.create_custom_prompt(messages=messages + [dict(role=role_ph, content=text_ph)], add_generation_prompt=False)
+        prompt = text_ph.join(prompt.split(text_ph)[:-1])
+        real = self.create_custom_prompt(messages=messages + [dict(role=end_role, content=text_ph)], add_generation_prompt=False)
+        real = text_ph.join(real.split(text_ph)[:-1])
+        if real == prompt:
+            return real + begin_text
+        elif begin_text.strip() != &#39;&#39;:
+            return real + begin_text
+        else:
+            import os
+            return os.path.commonprefix([real, prompt])
+    else:
+        raise AssertionError(f&#39;This prompt template &#34;{self.template_name}&#34; does not allow custom_roles.&#39;)</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Prompts.prompt_template.PromptTemplate.create_prompt"><code class="name flex">
 <span>def <span class="ident">create_prompt</span></span>(<span>self, user: str, system: str = 'This is a conversation between a human user and a helpful AI assistant.', history: Optional[Union[List[str], List[Tuple[str, str]]]] = None) ‑> str</span>
 </code></dt>
@@ -783,7 +1081,7 @@ def template_name(self) -&gt; str:
     Returns:
         str: The full prompt.
     &#34;&#34;&#34;
-    head = [dict(role=&#39;system&#39;, content=system)] if system.strip(&#39; \n\r\t&#39;) != &#39;&#39; else []
+    head = [dict(role=&#39;system&#39;, content=system)] if system.strip() != &#39;&#39; else []
     history = [] if history is None else history
     body = self.format_history(history=history, return_list=True)
     tail = [dict(role=&#39;user&#39;, content=user)]
@@ -888,14 +1186,17 @@ def template_name(self) -&gt; str:
 <li>
 <h4><code><a title="llmflex.Prompts.prompt_template.PromptTemplate" href="#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></h4>
 <ul class="">
+<li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.allow_custom_role" href="#llmflex.Prompts.prompt_template.PromptTemplate.allow_custom_role">allow_custom_role</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.bos_token" href="#llmflex.Prompts.prompt_template.PromptTemplate.bos_token">bos_token</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.create_custom_prompt" href="#llmflex.Prompts.prompt_template.PromptTemplate.create_custom_prompt">create_custom_prompt</a></code></li>
+<li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.create_custom_prompt_with_open_role" href="#llmflex.Prompts.prompt_template.PromptTemplate.create_custom_prompt_with_open_role">create_custom_prompt_with_open_role</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.create_prompt" href="#llmflex.Prompts.prompt_template.PromptTemplate.create_prompt">create_prompt</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.eos_token" href="#llmflex.Prompts.prompt_template.PromptTemplate.eos_token">eos_token</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.format_history" href="#llmflex.Prompts.prompt_template.PromptTemplate.format_history">format_history</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.from_dict" href="#llmflex.Prompts.prompt_template.PromptTemplate.from_dict">from_dict</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.from_json" href="#llmflex.Prompts.prompt_template.PromptTemplate.from_json">from_json</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.from_preset" href="#llmflex.Prompts.prompt_template.PromptTemplate.from_preset">from_preset</a></code></li>
+<li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.keywords" href="#llmflex.Prompts.prompt_template.PromptTemplate.keywords">keywords</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.rendered_template" href="#llmflex.Prompts.prompt_template.PromptTemplate.rendered_template">rendered_template</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.stop" href="#llmflex.Prompts.prompt_template.PromptTemplate.stop">stop</a></code></li>
 <li><code><a title="llmflex.Prompts.prompt_template.PromptTemplate.template" href="#llmflex.Prompts.prompt_template.PromptTemplate.template">template</a></code></li>

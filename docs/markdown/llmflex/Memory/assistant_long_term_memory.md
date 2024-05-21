@@ -33,6 +33,7 @@ Classes
     Args:
         title (str): Title of the chat.
         from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
+        system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
 
     ### Ancestors (in MRO)
 

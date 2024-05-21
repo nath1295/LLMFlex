@@ -94,7 +94,6 @@ class HuggingfaceCore(BaseCore):
             model_id (str): The repo ID.
         """
         from ...utils import get_config
-        from .utils import get_prompt_template_by_jinja
         os.environ['HF_HOME'] = get_config()['hf_home']
         os.environ['TOKENIZERS_PARALLELISM'] = 'true'
         from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -106,7 +105,6 @@ class HuggingfaceCore(BaseCore):
             tokenizer_kwargs['pretrained_model_name_or_path'] = model_id
         self._tokenizer = AutoTokenizer.from_pretrained(**tokenizer_kwargs)
         self._tokenizer_type = 'transformers'
-        self._prompt_template = get_prompt_template_by_jinja(model_id, self.tokenizer)
 
         if not hasattr(model_kwargs, 'device_map'):
             model_kwargs['device_map'] = 'auto'

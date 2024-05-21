@@ -3,8 +3,16 @@ from langchain.llms.base import LLM
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from langchain.schema.runnable import RunnableConfig
 from ...Prompts.prompt_template import PromptTemplate, DEFAULT_SYSTEM_MESSAGE
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import ABC, abstractmethod
 from typing import Any, List, Dict, Optional, Union, Iterator, Type, Tuple, Literal
+
+_chat_formats_map = {
+    'llama-2': 'Llama2',
+    'vicuna': 'Vicuna',
+    'chatml': 'ChatML',
+    'openchat': 'OpenChat',
+    'zephyr': 'Zephyr'
+}
 
 class BaseCore(ABC):
     """Base class of Core object to store the llm model and tokenizer.
@@ -18,7 +26,7 @@ class BaseCore(ABC):
         self._init_config = kwargs
         self._core_type = 'BaseCore'
 
-    @abstractclassmethod
+    @classmethod
     def from_model_object(cls, model: Any, tokenizer: Any, model_id: str, **kwargs) -> BaseCore:
         """Load a core directly from an already loaded model object and a tokenizer object for the supported formats.
 
@@ -106,8 +114,16 @@ class BaseCore(ABC):
             PromptTemplate: Default prompt template for the model.
         """
         if not hasattr(self, '_prompt_template'):
-            from .utils import detect_prompt_template_by_id
-            self._prompt_template = PromptTemplate.from_preset(detect_prompt_template_by_id(self.model_id))
+            from transformers import PreTrainedTokenizer
+            from .utils import detect_prompt_template_by_id, get_prompt_template_by_jinja
+            if isinstance(self.tokenizer, PreTrainedTokenizer):
+                self._prompt_template = get_prompt_template_by_jinja(self.model_id, tokenizer=self.tokenizer)
+            elif self.core_type == 'LlamaCppCore':
+                preset = detect_prompt_template_by_id(self.model_id)
+                preset = _chat_formats_map.get(self._model.chat_format, 'Default') if preset == 'Default' else preset
+                self._prompt_template = PromptTemplate.from_preset(preset)
+            else:
+                self._prompt_template = PromptTemplate.from_preset(detect_prompt_template_by_id(self.model_id))
         return self._prompt_template
     
     def encode(self, text: str) -> List[int]:
