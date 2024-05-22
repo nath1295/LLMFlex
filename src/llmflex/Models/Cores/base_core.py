@@ -114,9 +114,9 @@ class BaseCore(ABC):
             PromptTemplate: Default prompt template for the model.
         """
         if not hasattr(self, '_prompt_template'):
-            from transformers import PreTrainedTokenizer
+            from transformers import PreTrainedTokenizerBase
             from .utils import detect_prompt_template_by_id, get_prompt_template_by_jinja
-            if isinstance(self.tokenizer, PreTrainedTokenizer):
+            if isinstance(self.tokenizer, PreTrainedTokenizerBase):
                 self._prompt_template = get_prompt_template_by_jinja(self.model_id, tokenizer=self.tokenizer)
             elif self.core_type == 'LlamaCppCore':
                 preset = detect_prompt_template_by_id(self.model_id)

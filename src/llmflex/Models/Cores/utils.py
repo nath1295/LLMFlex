@@ -159,8 +159,9 @@ def detect_prompt_template_by_jinja(jinja_template: str) -> str:
     for k, v in presets.items():
         if jinja_template in v['template']:
             return k
-        if all(kw in jinja_template for kw in v['keywords']):
-            return k
+        if 'keywords' in v.keys():
+            if all(kw in jinja_template for kw in v['keywords']):
+                return k
     return 'Default'
 
 def get_prompt_template_by_jinja(model_id: str, tokenizer: Any) -> PromptTemplate:

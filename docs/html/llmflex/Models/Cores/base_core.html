@@ -142,9 +142,9 @@ class BaseCore(ABC):
             PromptTemplate: Default prompt template for the model.
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_prompt_template&#39;):
-            from transformers import PreTrainedTokenizer
+            from transformers import PreTrainedTokenizerBase
             from .utils import detect_prompt_template_by_id, get_prompt_template_by_jinja
-            if isinstance(self.tokenizer, PreTrainedTokenizer):
+            if isinstance(self.tokenizer, PreTrainedTokenizerBase):
                 self._prompt_template = get_prompt_template_by_jinja(self.model_id, tokenizer=self.tokenizer)
             elif self.core_type == &#39;LlamaCppCore&#39;:
                 preset = detect_prompt_template_by_id(self.model_id)
@@ -517,9 +517,9 @@ class GenericLLM(BaseLLM):
             PromptTemplate: Default prompt template for the model.
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_prompt_template&#39;):
-            from transformers import PreTrainedTokenizer
+            from transformers import PreTrainedTokenizerBase
             from .utils import detect_prompt_template_by_id, get_prompt_template_by_jinja
-            if isinstance(self.tokenizer, PreTrainedTokenizer):
+            if isinstance(self.tokenizer, PreTrainedTokenizerBase):
                 self._prompt_template = get_prompt_template_by_jinja(self.model_id, tokenizer=self.tokenizer)
             elif self.core_type == &#39;LlamaCppCore&#39;:
                 preset = detect_prompt_template_by_id(self.model_id)
@@ -726,9 +726,9 @@ def prompt_template(self) -&gt; PromptTemplate:
         PromptTemplate: Default prompt template for the model.
     &#34;&#34;&#34;
     if not hasattr(self, &#39;_prompt_template&#39;):
-        from transformers import PreTrainedTokenizer
+        from transformers import PreTrainedTokenizerBase
         from .utils import detect_prompt_template_by_id, get_prompt_template_by_jinja
-        if isinstance(self.tokenizer, PreTrainedTokenizer):
+        if isinstance(self.tokenizer, PreTrainedTokenizerBase):
             self._prompt_template = get_prompt_template_by_jinja(self.model_id, tokenizer=self.tokenizer)
         elif self.core_type == &#39;LlamaCppCore&#39;:
             preset = detect_prompt_template_by_id(self.model_id)
