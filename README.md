@@ -53,10 +53,10 @@ Memory class using an underlying `VectorDatabase` to maintain long term memory a
 A `PromptTemplate` class is implemented to format your prompt with different prompt formats for models from different sources. Some presets like `Llama2`, `ChatML`, `Vicuna`, and more are already implemented, but you can alway add your own prompt format template.
 
 ### 8. Custom tools
-A base class `BaseTool` for creating llm powered tools. A `WebSearchTool` powered by __DuckDuckGo__ is implemented as an example.
+A base class `BaseTool` for creating llm powered tools. A `BrowserTool` powered by __DuckDuckGo__ is implemented as an example.
 
 ### 9. Chatbot frontend interface
-If you simply want to play with a model, there's a gradio frontend chatbot that allows you to chat with a model with different generation configurations. You can switch between chat histories and prompt format, and you can set your system prompt and other model text generation sampling configurations in the gradio webapp.
+If you simply want to play with a model, there is a streamlit frontend chatbot that allows you to chat with a model with different generation configurations. You can switch between chat histories and prompt format, and you can set your system prompt and other model text generation sampling configurations in the webapp.
 
 ## Using LLMFlex
 
@@ -95,88 +95,46 @@ from llmflex.Embeddings import HuggingfaceEmbeddingsToolkit
 from llmflex.VectorDBs import FaissVectorDatabase
 
 # Loading the embedding model toolkit
-embeddings = HuggingfaceEmbeddingsToolkit(model_id="thenlper/gte-large")
+embeddings = HuggingfaceEmbeddingsToolkit(model_id="thenlper/gte-small")
 
 # Create a vector database
 food = ["Apple", "Banana", "Pork"]
-vectordb = FaissVectorDatabase.from_texts(index=food, embeddings=embeddings)
+vectordb = FaissVectorDatabase.from_texts(embeddings=embeddings, texts=food)
 
 # Do semantic search on the vector database
 print(vectordb.search("Beef"))
 ```
 
-### 3. Use memory and prompt template to create a chatbot
-Use the Memory classes and the `PromptTemplate` class to create a chatbot.
-```python
-from llmflex.Memory import LongShortTermChatMemory, create_long_short_prompt
-from llmflex.Prompts import PromptTemplate
-
-# Create the memory with the embeddings toolkit created earlier
-memory = LongShortTermChatMemory(title="My first conversation with OpenHermes", embeddings=embeddings, from_exist=False)
-
-# Get a prompt template
-prompt_template = PromptTemplate.from_preset("ChatML")
-
-# Create an llm from the model factory
-chat_llm = model(max_new_tokens=512, stop=prompt_template.stop + ["###"])
-
-# Create the prompt for the llm
-user_input = "What is the meaning of life?"
-prompt = create_long_short_prompt(
-    user_input=user_input,
-    prompt_template=prompt_template,
-    llm=chat_llm,
-    memory=memory
-)
-
-# Generating the response from the model
-output = ""
-for token in chat_llm.stream(prompt):
-    output += token
-    print(token, end="")
-
-# Save the interaction between you and the chatbot
-memory.save_interaction(user_input=user_input, assistant_output=output)
-```
-### 4. Use tools
+### 3. Use tools
 A `WebSearchTool` class is implemented as an example to build a tool with LLMFlex. The tool is using __DuckDuckGo__ by default. Here is how you can use it:
 ```python
-from llmflex.Tools import WebSearchTool
+from llmflex.Tools import BrowserTool
 
-# Create a web search tool with the embeddings toolkit created earlier
-tool = WebSearchTool(embeddings=embeddings, verbose=True)
+# Create a broswer tool with the embeddings toolkit created earlier
+tool = BrowserTool(embeddings=embeddings)
 
-# Run the tool with the previsous chat memory for a more coherent response
-tool_input = "Can you give me some views of the meaning of life from some famous philosophers?"
-output_generator = tool.run(tool_input, 
-    llm=chat_llm, 
-    history=memory.get_recent_memory(last_k=2), 
-    prompt_template=prompt_template,
-    stream=True)
-
-tool_output = ""
-for token in output_generator:
-    tool_output += token
-    print(token, end="")
-
-# And save the response to the memory
-memory = memory.save_interaction(user_input=tool_input, assistant_output=tool_output)
+# Run the tool
+tool(search_query='Install python')
 ```
 
-### 5. Chat with the model in a Streamlit web app
+### 4. Chat with the model in a Streamlit web app
 If you just want a GUI to start chatting with your LLM model with both long term and short term memory, type this command in the terminal:
 ```bash
-llmflex interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --embeddings thenlper/gte-small
+llmflex interface
 ```
-If you want to chat with the web search tool:
+If you want to configure the llm model, embedding model, text splitter, and reranker, create a config file and modify it first:
 ```bash
-# Use a model with longer context for web search
-llmflex interface --model_id TheBloke/OpenHermes-2.5-Mistral-7B-16k-GGUF --embeddings thenlper/gte-small --web_search --extras "model_file='openhermes-2.5-mistral-7b-16k.Q6_K.gguf', context_length=16384"
+# Create a config file for the webapp
+llmflex create-app-config
+```
+after modifying the file, run the following:
+```bash
+llmflex interface --config_dir chatbot_config.yaml
 ```
 You will see a streamlit frontend, use it to chat with the LLM model.  
-![Streamlit GUI](imgs/chat_gui_streamlit.png)
+![Streamlit GUI](imgs/webapp.png)
 
-### 6. Serve an OpenAI API with a GGUF model
+### 5. Serve an OpenAI API with a GGUF model
 To serve a GGUF model with OpenAI API:
 ```bash
 llmflex serve --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --model_file openhermes-2.5-mistral-7b.Q6_K.gguf --context_size 4096

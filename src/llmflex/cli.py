@@ -53,29 +53,32 @@ def config() -> None:
     set_config(**new_config)
 
 @cli.command()
-@click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')
-@click.option('--embeddings', default='thenlper/gte-small', help='Embeddings model ID to use. If an url is provided, the APIEmbeddingsToolkit will be used instead.')
-@click.option('--web_search', is_flag=True, help='Whether to use web search in the interface or not.')
-@click.option('--model_type', default='auto', help='LLM model type.')
-@click.option('--auth', type=(str, str), default=None, help='User name and password for authentication.')
-@click.option('--appname', default=PACKAGE_DISPLAY_NAME, help='Name of the webapp.')
-@click.option('--extras', default='', help='Extra arugments for loading the model.')
-def interface(model_id: str = 'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', 
-              embeddings: str = 'thenlper/gte-small', 
-              web_search: bool = False,
-              model_type: str = 'auto',
-              auth: Optional[Tuple[str, str]] = None, 
-              appname: str = PACKAGE_DISPLAY_NAME,
-              extras: str = "") -> None:
+@click.option('--config_dir', default=None, help='Config file to load the webapp.')
+def interface(config_dir: str) -> None:
     """Launch the Streamlit Chat GUI.
     """
-    from .Frontend.streamlit_interface import run_streamlit_interface
-    model_id = None if model_id == 'None' else model_id
-    model = dict(model_id=model_id, model_type=model_type, **args_from_string(extras))
-    embeddings_class = 'APIEmbeddingsToolkit' if 'http' in embeddings else 'HuggingfaceEmbeddingsToolkit'
-    embeddings = dict(embeddings_class=embeddings_class, model_id=embeddings) if embeddings_class.startswith('Huggingface') else dict(embeddings_class=embeddings_class, base_url=embeddings)
-    tools = [dict(tool_class='WebSearchTool', embeddings=True, verbose=False)] if web_search else []
-    app = run_streamlit_interface(model_kwargs=model, embeddings_kwargs=embeddings, tool_kwargs=tools, auth=auth, debug=False, app_name=appname)
+    from .Frontend.streamlit_interface import DEFAULT_CONFIG, create_streamlit_script
+    import os
+    import yaml
+    script_dir = create_streamlit_script()
+    if config_dir is None:
+        config = DEFAULT_CONFIG
+    else:
+        with open(config_dir, 'r') as f:
+            config = yaml.safe_load(f)
+    with open(os.path.join(os.path.dirname(script_dir), 'chatbot_config.yaml'), 'w') as f:
+        yaml.safe_dump(config, f, sort_keys=False)
+    os.system(f'streamlit run {script_dir}')
+
+@cli.command()
+@click.option('--filename', default='chatbot_config.yaml', help='LLM model ID to use.')
+def create_app_config(filename: str = 'chatbot_config.yaml') -> None:
+    """Generate a chatbot config file template.
+    """
+    from .Frontend.streamlit_interface import DEFAULT_CONFIG
+    import yaml
+    with open(filename, 'w') as f:
+        yaml.safe_dump(DEFAULT_CONFIG, f, sort_keys=False)
 
 @cli.command()
 @click.option('--model_id', default='TheBloke/OpenHermes-2.5-Mistral-7B-GGUF', help='LLM model ID to use.')

@@ -12,11 +12,45 @@ Functions
         str: The default directory for saving chat memories.
 
     
+`get_dir_from_id(chat_id: str) ‑> str`
+:   Geet the memory directory given the chat ID.
+    
+    Args:
+        chat_id (str): Chat ID.
+    
+    Returns:
+        str: Memory directory.
+
+    
+`get_new_chat_id() ‑> str`
+:   Get an unused chat id.
+    
+    Returns:
+        str: New chat id.
+
+    
+`get_title_from_id(chat_id: str) ‑> str`
+:   Getting the title from Chat ID.
+    
+    Args:
+        chat_id (str): Chat ID.
+    
+    Returns:
+        str: Title of the memory.
+
+    
 `list_chat_dirs() ‑> List[str]`
 :   List the directories of all chat memories.
     
     Returns:
         List[str]: List of directories of all chat memories.
+
+    
+`list_chat_ids() ‑> List[str]`
+:   Return a list of existing chat ids.
+    
+    Returns:
+        List[str]: Return a list of existing chat ids, sorted by last update descendingly.
 
     
 `list_titles() ‑> List[str]`
@@ -25,32 +59,23 @@ Functions
     Returns:
         List[str]: List of chat titles, sorted by last update descendingly.
 
-    
-`title_dir_map() ‑> Dict[str, str]`
-:   Return a dictionary with chat titles as keys and their respective directories as values.
-    
-    Returns:
-        Dict[str, str]: A dictionary with chat titles as keys and their respective directories as values.
-
 Classes
 -------
 
-`BaseChatMemory(title: str, from_exist: bool = True, system: Optional[str] = None)`
+`BaseChatMemory(chat_id: str, from_exist: bool = True, system: Optional[str] = None)`
 :   Base class for chat memory.
         
     
     Initialising the memory class.
     
     Args:
-        title (str): Title of the chat.
+        chat_id (str): Chat ID.
         from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
         system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
 
     ### Descendants
 
-    * llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory
     * llmflex.Memory.long_short_memory.LongShortTermChatMemory
-    * llmflex.Memory.longshort_memory.LongShortTermChatMemory
 
     ### Instance variables
 
@@ -60,11 +85,23 @@ Classes
         Returns:
             str: Directory of the chat.
 
+    `chat_id: str`
+    :   Unique identifier of the chat memory.
+        
+        Returns:
+            str: Unique identifier of the chat memory.
+
     `history: List[Tuple[str, str]]`
     :   Entire chat history.
         
         Returns:
             List[Tuple[str, str]]: Entire chat history.
+
+    `history_dict: List[Dict[str, Any]]`
+    :   Entire history as dictionaries.
+        
+        Returns:
+            List[Dict[str, Any]]: Entire history as dictionaries.
 
     `info: Dict[str, Any]`
     :   Information of the chat.
@@ -94,23 +131,6 @@ Classes
 
     `clear(self) ‑> None`
     :   Empty the whole chat history.
-
-    `create_prompt_with_memory(self, user: str, prompt_template: llmflex.Prompts.prompt_template.PromptTemplate, llm: Type[llmflex.Models.Cores.base_core.BaseLLM], system: Optional[str] = None, recent_token_limit: int = 200, knowledge_base: Optional[llmflex.KnowledgeBase.knowledge_base.KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, **kwargs) ‑> str`
-    :   Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
-        
-        Args:
-            user (str): User newest message.
-            prompt_template (PromptTemplate): Prompt template to use.
-            llm (Type[BaseLLM]): LLM for counting tokens.
-            system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
-            recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
-            knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
-            relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
-            relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
-        
-        
-        Returns:
-            str: The full chat prompt.
 
     `get_recent_memory(self, k: int = 3) ‑> List[Tuple[str, str]]`
     :   Get the last k interactions as a list.
@@ -149,3 +169,9 @@ Classes
         
         Args:
             system (str): New system message.
+
+    `update_title(self, title: str) ‑> None`
+    :   Update the title of the memory.
+        
+        Args:
+            title (str): New chat memory title.

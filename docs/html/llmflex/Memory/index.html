@@ -26,18 +26,14 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from .base_memory import BaseChatMemory, list_chat_dirs, list_titles, title_dir_map, chat_memory_home
-from .long_short_memory import LongShortTermChatMemory, create_long_short_prompt
-from .assistant_long_term_memory import AssistantLongTermChatMemory, create_long_assistant_memory_prompt</code></pre>
+<pre><code class="python">from .base_memory import BaseChatMemory, list_chat_dirs, list_titles, list_chat_ids, chat_memory_home, get_new_chat_id, get_title_from_id
+from .long_short_memory import LongShortTermChatMemory
+from .memory_utils import create_prompt_with_history</code></pre>
 </details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="llmflex.Memory.assistant_long_term_memory" href="assistant_long_term_memory.html">llmflex.Memory.assistant_long_term_memory</a></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
 <dt><code class="name"><a title="llmflex.Memory.base_memory" href="base_memory.html">llmflex.Memory.base_memory</a></code></dt>
 <dd>
 <div class="desc"></div>
@@ -46,7 +42,7 @@ from .assistant_long_term_memory import AssistantLongTermChatMemory, create_long
 <dd>
 <div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="llmflex.Memory.longshort_memory" href="longshort_memory.html">llmflex.Memory.longshort_memory</a></code></dt>
+<dt><code class="name"><a title="llmflex.Memory.memory_utils" href="memory_utils.html">llmflex.Memory.memory_utils</a></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -72,10 +68,9 @@ from .assistant_long_term_memory import AssistantLongTermChatMemory, create_long
 </li>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="llmflex.Memory.assistant_long_term_memory" href="assistant_long_term_memory.html">llmflex.Memory.assistant_long_term_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory" href="base_memory.html">llmflex.Memory.base_memory</a></code></li>
 <li><code><a title="llmflex.Memory.long_short_memory" href="long_short_memory.html">llmflex.Memory.long_short_memory</a></code></li>
-<li><code><a title="llmflex.Memory.longshort_memory" href="longshort_memory.html">llmflex.Memory.longshort_memory</a></code></li>
+<li><code><a title="llmflex.Memory.memory_utils" href="memory_utils.html">llmflex.Memory.memory_utils</a></code></li>
 </ul>
 </li>
 </ul>

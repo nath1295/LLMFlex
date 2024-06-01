@@ -367,6 +367,7 @@ def process_element(element: Union[BeautifulSoup, Tag, NavigableString], sep: st
             final.append(o)
     if len(final) == 0:
         return None
+    final = list(filter(lambda x: x is not None, final))
     if as_list:
         return final
     else:

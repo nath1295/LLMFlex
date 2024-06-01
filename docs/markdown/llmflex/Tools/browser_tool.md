@@ -11,8 +11,9 @@ Classes
     Initialising the tool.
     
     Args:
-        name (Optional[str], optional): Name of the tool. If not given, it will be the tool class name. Defaults to None.
-        description (Optional[str], optional): Description of the tool. If not given, it will read from the docstring of the tool class. Defaults to None.
+        embeddings (BaseEmbeddingsToolkit): Embeddings toolkit for the vector database.
+        llm (Optional[BaseLLM], optional): LLM to count number of tokens for each chunk. Defaults to None.
+        ranker (Optional[BaseRanker], optional): Reranker to rerank results. If none is given, results will not be reranked after the search on the vector database. Defaults to None.
 
     ### Ancestors (in MRO)
 

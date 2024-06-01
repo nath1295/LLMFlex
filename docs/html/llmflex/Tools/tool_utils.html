@@ -28,6 +28,8 @@
 </summary>
 <pre><code class="python">import inspect
 from typing import Literal, List, Dict, Any, Optional, Callable, Union, Type
+from ..Models.Cores.base_core import BaseLLM
+from ..Prompts.prompt_template import PromptTemplate
 
 PYTHON_TO_JSON_TYPES = {
     &#34;str&#34;: &#34;string&#34;,
@@ -152,7 +154,7 @@ def get_required_args(fn: Callable) -&gt; List[str]:
     args = list(filter(lambda x: x not in [&#39;cls&#39;, &#39;self&#39;], args))
     return args
 
-def get_args_types(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
+def get_args_dtypes(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
     &#34;&#34;&#34;Get the data types of the arguments of a function or tool given the callable.
 
     Args:
@@ -163,6 +165,13 @@ def get_args_types(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
     &#34;&#34;&#34;
     annotations = inspect.getfullargspec(fn).annotations
     args_desc = get_args_descriptions(fn.__doc__) if fn.__doc__ is not None else dict()
+    required = get_required_args(fn)
+    signature = inspect.signature(fn)
+    defaults = {
+        k: v.default
+        for k, v in signature.parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
     args = dict()
     for arg, arg_type in annotations.items():
         if arg in [&#39;return&#39;, &#39;cls&#39;, &#39;self&#39;]:
@@ -172,6 +181,8 @@ def get_args_types(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
             args[arg] = dict(type=PYTHON_TO_JSON_TYPES[arg_type.__name__])
             if arg in args_desc:
                 args[arg][&#39;description&#39;] = args_desc[arg]
+            if arg not in required:
+                args[arg][&#39;default&#39;] = defaults[arg]
         elif getattr(arg_type, &#39;__name__&#39;) == &#39;Literal&#39;:
             dtype = getattr(type(arg_type.__args__[0]), &#39;__name__&#39;)
             dtype = PYTHON_TO_JSON_TYPES.get(dtype, None)
@@ -181,11 +192,15 @@ def get_args_types(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
                 if arg in args_desc:
                     args[arg][&#39;description&#39;] = args_desc[arg]
                 args[arg][&#39;enum&#39;] = list(arg_type.__args__)
+                if arg not in required:
+                    args[arg][&#39;default&#39;] = defaults[arg]
             else:
                 args[arg][&#39;type&#39;] = getattr(arg_type, &#39;__name__&#39;, str(arg_type))
                 if arg in args_desc:
                     args[arg][&#39;description&#39;] = args_desc[arg]
                 args[arg][&#39;enum&#39;] = list(map(lambda x: str(x), arg_type.__args__))
+                if arg not in required:
+                    args[arg][&#39;default&#39;] = defaults[arg]
         elif getattr(arg_type, &#39;__name__&#39;) == &#39;Optional&#39;:
             dtype = getattr(arg_type.__args__[0], &#39;__name__&#39;)
             dtype = PYTHON_TO_JSON_TYPES.get(dtype, None)
@@ -196,11 +211,15 @@ def get_args_types(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
                 args[arg][&#39;type&#39;] = getattr(arg_type, &#39;__name__&#39;, str(arg_type))
             if arg in args_desc:
                 args[arg][&#39;description&#39;] = args_desc[arg]
+            if arg not in required:
+                args[arg][&#39;default&#39;] = defaults[arg]
         else:
             args[arg] = dict()
             args[arg][&#39;type&#39;] = getattr(arg_type, &#39;__name__&#39;, str(arg_type))
             if arg in args_desc:
                 args[arg][&#39;description&#39;] = args_desc[arg]
+            if arg not in required:
+                args[arg][&#39;default&#39;] = defaults[arg]
     return args
 
 def get_tool_metadata(fn: Union[Callable, Type[BaseTool]]) -&gt; Dict[str, Any]:
@@ -218,23 +237,112 @@ def get_tool_metadata(fn: Union[Callable, Type[BaseTool]]) -&gt; Dict[str, Any]:
         name = fn.name
         description = desc_doc
         required = get_required_args(fn.__call__)
-        args = get_args_types(fn.__call__)
+        args = get_args_dtypes(fn.__call__)
     else:
         name = normalise_tool_name(fn.__name__)
         description = get_description(desc_doc) if desc_doc else &#39;&#39;
         required = get_required_args(fn)
-        args = get_args_types(fn)
+        args = get_args_dtypes(fn)
     return dict(name=name, description=description, parameters=dict(type=&#39;object&#39;, properties=args, required=required))
     
+def select(llm: Type[BaseLLM], prompt: str, options: List[str], 
+           stop: Optional[List[str]] = None, default: Optional[str] = None, retry: int = 3, raise_error: bool = False, **kwargs) -&gt; Optional[str]:
+    &#34;&#34;&#34;Ask the LLM to make a selection of the list of options provided.
+
+    Args:
+        llm (Type[BaseLLM]): LLM to generate the selection.
+        prompt (str): Prompt for the llm.
+        options (List[str]): List of options for the LLM to pick.
+        stop (Optional[List[str]], None): List of stop words for the LLM to help the llm stop earlier. Defaults to None.
+        default (Optional[str], optional): Default value if the LLM fails to generate the option. If none is given and the LLM fail, an error will be raised. Defaults to None.
+        retry (int, optional): Number of times the llm can retry. Defaults to 3.
+        raise_error (bool, optional): Whether to raise an error if the selection failed. Defaults to False.
+
+    Returns:
+        Optional[str]: The selection of the LLM given the options.
+    &#34;&#34;&#34;
+    if len(options) == 0:
+        raise ValueError(&#39;&#34;options&#34; must contain at least one string.&#39;)
+    if llm.core.core_type ==&#39;llama_cpp_core&#39;:
+        from guidance.models.llama_cpp import LlamaCpp
+        from guidance import select as gselect
+        gllm = LlamaCpp(model=llm.core.model, echo=False)
+        res = gllm + prompt + gselect(options=options)
+        res = str(res).removeprefix(prompt)
+        del gllm
+        return res
+    else:
+        from math import ceil
+        from copy import deepcopy
+        option_num_tokens = [llm.get_num_tokens(opt) for opt in options]
+        max_new_tokens = ceil(max(option_num_tokens) * 1.2)
+        stop = [] if stop is None else stop
+        for i in range(retry):
+            clone_kw = deepcopy(kwargs)
+            clone_kw.pop(&#39;max_new_tokens&#39;, None)
+            res = llm.invoke(prompt, stop=stop, max_new_tokens=max_new_tokens, **clone_kw)
+            if res in options:
+                return res
+            else:
+                valids = list(filter(lambda x: res.startswith(x), options))
+                if len(valids) &gt;= 1:
+                    return max(valids, key=len)
+        if default is not None:
+            return default
+        elif raise_error:
+            raise RuntimeError(f&#39;LLM cannot generate one of the options after {retry} retries.&#39;)
+        else:
+            return None
+        
+def gen_string(llm: Type[BaseLLM], prompt: str, double_quote: bool = True, max_gen: int = 5, **kwargs) -&gt; str:
+    &#34;&#34;&#34;Generate a valid string that can be wrapped between quotes safely. 
+
+    Args:
+        llm (Type[BaseLLM]): LLM for the string generation.
+        prompt (str): Prompt for generating the string, should not include the open quote.
+        double_quote (bool, optional): Whether to use double quote or not. The quote character will be added to the end of the original prompt. Defaults to True.
+        max_gen (int, optional): In the unlikely event of the LLM keep generating without being able to generate a valid string, this set the maximum of generation the LLM can go. Defaults to 5.
+
+    Returns:
+        str: A valid string that can be wrapped between quotes safely. If a valid string cannot be generated, an empty string will be returned.
+    &#34;&#34;&#34;
+    quote = &#39;&#34;&#39; if double_quote else &#34;&#39;&#34;
+    original = prompt + quote
+    text = quote
+    not_string: bool = True
+    count = 0
+    while ((not_string) &amp; (count &lt; max_gen)):
+        try:
+            assert isinstance(eval(text), str)
+            not_string = False
+        except:
+            new = llm.invoke(original, stop=[quote], **kwargs)
+            text += new + quote
+            original += new + quote
+            count += 1
+    if not not_string:
+        return eval(text)
+    else:
+        return &#39;&#39;
+
+def direct_response() -&gt; str:
+    &#34;&#34;&#34;Direct response without using any tools or functions.
+
+    Returns:
+        str: Response.
+    &#34;&#34;&#34;
+    # This is a placeholder function for function call when no tools or functions are required. 
+    pass
+
 ### Tool selection
 class ToolSelector:
     &#34;&#34;&#34;Class for selecting tool.
     &#34;&#34;&#34;
     def __init__(self, tools: List[Union[Callable, Type[BaseTool]]]) -&gt; None:
-        self._tools = tools
+        self._tools = tools if direct_response in tools else tools + [direct_response]
         self._metadatas = [get_tool_metadata(tool) for tool in self.tools]
-        self._tool_names = [m[&#39;name&#39;] for m in self._metadatas]
-        self._enabled = list(zip(self._tool_names, [True] * len(self._tool_names)))
+        self._tool_names: List[str] = [m[&#39;name&#39;] for m in self._metadatas]
+        self._enabled = dict(zip(self._tool_names, [True] * len(self._tool_names)))
     
     @property
     def tool_names(self) -&gt; List[str]:
@@ -252,7 +360,7 @@ class ToolSelector:
         Returns:
             List[str]: List of tool names that are enabled.
         &#34;&#34;&#34;
-        enabled_tools = filter(lambda x: x[1], self._enabled)
+        enabled_tools = filter(lambda x: x[1], self._enabled.items())
         return list(map(lambda x: x[0], enabled_tools))
     
     @property
@@ -303,7 +411,200 @@ class ToolSelector:
         &#34;&#34;&#34;
         import json
         return dict(role=&#39;function_metadata&#39;, content=json.dumps(self.metadatas, indent=4))
-        </code></pre>
+        
+    @property
+    def is_empty(self) -&gt; bool:
+        &#34;&#34;&#34;Whether tools except direct_response are enabled.
+
+        Returns:
+            bool: Whether tools except direct_response are enabled.
+        &#34;&#34;&#34;
+        return ((len(self.enabled_tools) == 1) &amp; (&#39;direct_response&#39; in self.enabled_tools))
+
+    def get_tool_metadata(self, tool_name: str) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Get the tool metadata given the tool name.
+
+        Args:
+            tool_name (str): Tool name.
+
+        Returns:
+            Dict[str, Any]: Metadata of the tool.
+        &#34;&#34;&#34;
+        return list(filter(lambda x: x[&#39;name&#39;] == tool_name, self.metadatas))[0]
+    
+    def structured_input_generation(self, raw_prompt: str, llm: Type[BaseLLM], **kwargs) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Core part of tool input generation.
+
+        Args:
+            raw_prompt (str): The starting prompt.
+            llm (Type[BaseLLM]): LLM for generation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
+        &#34;&#34;&#34;
+        import json
+        original_prompt = raw_prompt
+        prompt: str = original_prompt + &#39;{\n\t&#34;name&#34;: &#34;&#39;
+        tool_name = select(llm=llm, prompt=prompt, options=self.enabled_tools, default=&#39;direct_response&#39;, **kwargs)
+        tool = self.get_tool_metadata(tool_name=tool_name)
+
+        # gather tool info
+        args_info = tool[&#39;parameters&#39;][&#39;properties&#39;]
+        args = list(args_info.keys())
+        required_args = tool[&#39;parameters&#39;][&#39;required&#39;]
+        optional_args = list(filter(lambda x: x not in required_args, args))
+
+        prompt += tool_name + &#39;&#34;&#39;
+        if len(args) == 0:
+            prompt += &#39;\n}&#39;
+        else:
+            prompt += &#39;,\n\t&#34;inputs&#34;: {&#39;
+            if len(required_args) != 0:
+                for arg in required_args:
+                    prompt += f&#39;\n\t\t&#34;{arg}&#34;: &#39;
+                    enum = args_info[arg].get(&#39;enum&#39;)
+                    if args_info[arg].get(&#39;type&#39;) == &#39;string&#39;:
+                        if enum is None:
+                            val = gen_string(llm=llm, prompt=prompt, **kwargs)
+                            prompt += &#39;&#34;&#39; + val + &#39;&#34;,&#39;
+                        else:
+                            val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                            if val is not None:
+                                prompt +=  f&#39;&#34;{val}&#34;&#39; + &#39;,&#39;
+                            else:
+                                return dict(name=&#39;direct_response&#39;)
+                    elif enum is None:
+                        prompt += llm.invoke(prompt, stop=[&#39;\n\t&#39;], **kwargs)
+                    else:
+                        val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                        if val is not None:
+                            prompt += val + &#39;,&#39;
+                        else:
+                            return dict(name=&#39;direct_response&#39;)
+                prompt = prompt.rstrip(&#39;,&#39;) # strip off the comma, see if the llm wants to continue on optional arguments
+                if len(optional_args) &gt; 0:
+                    from copy import deepcopy
+                    clone_kw = deepcopy(kwargs)
+                    clone_kw.pop(&#39;max_new_tokens&#39;, None)
+                    new_tokens = llm.invoke(prompt, max_new_tokens=3, **clone_kw)
+                    used_args = []
+                    while ((new_tokens.startswith(&#39;,&#39;)) &amp; (len(used_args) &lt; len(optional_args))):
+                        prompt += &#39;,\n\t\t&#34;&#39;
+                        arg = select(llm=llm, prompt=prompt, options=list(filter(lambda x: x not in used_args, optional_args)), stop=[&#39;&#34;&#39;], **kwargs)
+                        if arg is None:
+                            prompt = prompt.removesuffix(&#39;,\n\t\t&#34;&#39;)
+                            new_tokens = &#39;&#39;
+                        else:
+                            prompt += arg + &#39;&#34;: &#39;
+                            enum = args_info[arg].get(&#39;enum&#39;)
+                            default = args_info[arg].get(&#39;default&#39;)
+                            default = &#39;null&#39; if default is None else default
+                            if args_info[arg].get(&#39;type&#39;) == &#39;string&#39;:
+                                if enum is None:
+                                    val = gen_string(llm=llm, prompt=prompt, **kwargs)
+                                    val = default if val == &#39;&#39; else f&#39;&#34;{val}&#34;&#39;
+                                    prompt += val
+                                else:
+                                    val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                                    val = default if val is None else f&#39;&#34;{val}&#34;&#39;
+                                    prompt += val
+                            elif enum is None:
+                                prompt += llm.invoke(prompt, stop=[&#39;\n\t&#39;], **kwargs)
+                                prompt = prompt.strip(&#39;, \n\r\t&#39;)
+                            else:
+                                val = select(llm, prompt=prompt, options=enum, **kwargs)
+                                val = default if val is None else val
+                                prompt += val
+                            clone_kw = deepcopy(kwargs)
+                            clone_kw.pop(&#39;max_new_tokens&#39;, None)
+                            new_tokens = llm.invoke(prompt, max_new_tokens=3, **clone_kw)
+            prompt += &#39;\n\t}\n}&#39;
+        try:
+            return json.loads(prompt.removeprefix(original_prompt))
+        except:
+            return dict(name=&#39;direct_response&#39;)
+    
+    def tool_call_input(self, llm: Type[BaseLLM], messages: List[Dict[str, str]], prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Generate a dictionary of the tool to use and the input arguments.
+
+        Args:
+            llm (Type[BaseLLM]): LLM for the function call generation.
+            messages (List[Dict[str, str]]): List of messages of the conversation history, msut contain the function metadatas.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template to use. If none is give, the default prompt template for the llm will be used. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
+        &#34;&#34;&#34;
+        # set temperature to zero if temperature not given in kwargs
+        if &#39;temperature&#39; not in kwargs.keys():
+            kwargs[&#39;temperature&#39;] = 0
+        # Start tool selection logic
+        if ((len(self.enabled_tools) == 1) &amp; (self.enabled_tools[0] == &#39;direct_response&#39;)):
+            return dict(name=&#39;direct_response&#39;)
+        prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+        # check if the function metadata content is in the messages.
+        if not any(self.function_metadata[&#39;content&#39;]  in content for content in list(map(lambda x: x[&#39;content&#39;], messages))):
+            return dict(name=&#39;direct_response&#39;)
+        original_prompt = prompt_template.create_custom_prompt_with_open_role(messages=messages, end_role=&#39;function_call&#39;)
+        return self.structured_input_generation(raw_prompt=original_prompt, llm=llm, **kwargs)
+
+    def tool_call_output(self, tool_input: Dict[str, Any], return_error: bool = False) -&gt; Optional[Dict[str, Any]]:
+        &#34;&#34;&#34;Return the output of the function call along with the input ditionary.
+
+        Args:
+            tool_input (Dict[str, Any]): Inputs of the tool, including the name of the tool and the input arguments.
+            return_error (bool, optional): Whether to return the error should the tool failed to execute. If False and the tool failed, None will be returned instead of the error message.
+
+        Returns:
+            Optional[Dict[str, Any]]: Dictionary containing the name of the function, the inputs, and the outputs. If None is returned, that means no tool is required and the llm should respond directly.
+        &#34;&#34;&#34;
+        import json
+        from copy import deepcopy
+        tool_inputs = deepcopy(tool_input)
+        tool_name = tool_inputs[&#39;name&#39;]
+        if tool_name == &#39;direct_response&#39;:
+            return None
+        inputs = tool_inputs.get(&#39;inputs&#39;, dict())
+        tool = self.tool_map[tool_name]
+        try:
+            output = tool(**inputs)
+        except Exception as e:
+            if return_error:
+                tool_inputs[&#39;error&#39;] = str(e)
+                return tool_inputs
+            else:
+                return None
+        # formatting output
+        jsonable = True
+        try:
+            json.dumps(output)
+        except:
+            jsonable = False
+        tool_inputs[&#39;output&#39;] = output if jsonable else str(output)
+        return tool_inputs
+
+    def turn_on_tools(self, tools: List[str]) -&gt; None:
+        &#34;&#34;&#34;Enable the given list of tools.
+
+        Args:
+            tools (List[str]): List of tool names.
+        &#34;&#34;&#34;
+        for tool in tools:
+            if tool in self.tool_names:
+                self._enabled[tool] = True
+
+    def turn_off_tools(self, tools: List[str]) -&gt; None:
+        &#34;&#34;&#34;Disable the given list of tools.
+
+        Args:
+            tools (List[str]): List of tool names.
+        &#34;&#34;&#34;
+        for tool in tools:
+            if ((tool in self.tool_names) &amp; (tool != &#39;direct_response&#39;)):
+                self._enabled[tool] = False
+
+
+                    </code></pre>
 </details>
 </section>
 <section>
@@ -313,6 +614,87 @@ class ToolSelector:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="llmflex.Tools.tool_utils.direct_response"><code class="name flex">
+<span>def <span class="ident">direct_response</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Direct response without using any tools or functions.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def direct_response() -&gt; str:
+    &#34;&#34;&#34;Direct response without using any tools or functions.
+
+    Returns:
+        str: Response.
+    &#34;&#34;&#34;
+    # This is a placeholder function for function call when no tools or functions are required. 
+    pass</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.gen_string"><code class="name flex">
+<span>def <span class="ident">gen_string</span></span>(<span>llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt: str, double_quote: bool = True, max_gen: int = 5, **kwargs) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a valid string that can be wrapped between quotes safely. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM for the string generation.</dd>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>Prompt for generating the string, should not include the open quote.</dd>
+<dt><strong><code>double_quote</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to use double quote or not. The quote character will be added to the end of the original prompt. Defaults to True.</dd>
+<dt><strong><code>max_gen</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>In the unlikely event of the LLM keep generating without being able to generate a valid string, this set the maximum of generation the LLM can go. Defaults to 5.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>A valid string that can be wrapped between quotes safely. If a valid string cannot be generated, an empty string will be returned.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def gen_string(llm: Type[BaseLLM], prompt: str, double_quote: bool = True, max_gen: int = 5, **kwargs) -&gt; str:
+    &#34;&#34;&#34;Generate a valid string that can be wrapped between quotes safely. 
+
+    Args:
+        llm (Type[BaseLLM]): LLM for the string generation.
+        prompt (str): Prompt for generating the string, should not include the open quote.
+        double_quote (bool, optional): Whether to use double quote or not. The quote character will be added to the end of the original prompt. Defaults to True.
+        max_gen (int, optional): In the unlikely event of the LLM keep generating without being able to generate a valid string, this set the maximum of generation the LLM can go. Defaults to 5.
+
+    Returns:
+        str: A valid string that can be wrapped between quotes safely. If a valid string cannot be generated, an empty string will be returned.
+    &#34;&#34;&#34;
+    quote = &#39;&#34;&#39; if double_quote else &#34;&#39;&#34;
+    original = prompt + quote
+    text = quote
+    not_string: bool = True
+    count = 0
+    while ((not_string) &amp; (count &lt; max_gen)):
+        try:
+            assert isinstance(eval(text), str)
+            not_string = False
+        except:
+            new = llm.invoke(original, stop=[quote], **kwargs)
+            text += new + quote
+            original += new + quote
+            count += 1
+    if not not_string:
+        return eval(text)
+    else:
+        return &#39;&#39;</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Tools.tool_utils.get_args_descriptions"><code class="name flex">
 <span>def <span class="ident">get_args_descriptions</span></span>(<span>docstring: str) ‑> Dict[str, str]</span>
 </code></dt>
@@ -358,8 +740,8 @@ class ToolSelector:
     return args</code></pre>
 </details>
 </dd>
-<dt id="llmflex.Tools.tool_utils.get_args_types"><code class="name flex">
-<span>def <span class="ident">get_args_types</span></span>(<span>fn: Callable) ‑> Dict[str, Dict[str, Any]]</span>
+<dt id="llmflex.Tools.tool_utils.get_args_dtypes"><code class="name flex">
+<span>def <span class="ident">get_args_dtypes</span></span>(<span>fn: Callable) ‑> Dict[str, Dict[str, Any]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the data types of the arguments of a function or tool given the callable.</p>
@@ -377,7 +759,7 @@ class ToolSelector:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_args_types(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
+<pre><code class="python">def get_args_dtypes(fn: Callable) -&gt; Dict[str, Dict[str, Any]]:
     &#34;&#34;&#34;Get the data types of the arguments of a function or tool given the callable.
 
     Args:
@@ -388,6 +770,13 @@ class ToolSelector:
     &#34;&#34;&#34;
     annotations = inspect.getfullargspec(fn).annotations
     args_desc = get_args_descriptions(fn.__doc__) if fn.__doc__ is not None else dict()
+    required = get_required_args(fn)
+    signature = inspect.signature(fn)
+    defaults = {
+        k: v.default
+        for k, v in signature.parameters.items()
+        if v.default is not inspect.Parameter.empty
+    }
     args = dict()
     for arg, arg_type in annotations.items():
         if arg in [&#39;return&#39;, &#39;cls&#39;, &#39;self&#39;]:
@@ -397,6 +786,8 @@ class ToolSelector:
             args[arg] = dict(type=PYTHON_TO_JSON_TYPES[arg_type.__name__])
             if arg in args_desc:
                 args[arg][&#39;description&#39;] = args_desc[arg]
+            if arg not in required:
+                args[arg][&#39;default&#39;] = defaults[arg]
         elif getattr(arg_type, &#39;__name__&#39;) == &#39;Literal&#39;:
             dtype = getattr(type(arg_type.__args__[0]), &#39;__name__&#39;)
             dtype = PYTHON_TO_JSON_TYPES.get(dtype, None)
@@ -406,11 +797,15 @@ class ToolSelector:
                 if arg in args_desc:
                     args[arg][&#39;description&#39;] = args_desc[arg]
                 args[arg][&#39;enum&#39;] = list(arg_type.__args__)
+                if arg not in required:
+                    args[arg][&#39;default&#39;] = defaults[arg]
             else:
                 args[arg][&#39;type&#39;] = getattr(arg_type, &#39;__name__&#39;, str(arg_type))
                 if arg in args_desc:
                     args[arg][&#39;description&#39;] = args_desc[arg]
                 args[arg][&#39;enum&#39;] = list(map(lambda x: str(x), arg_type.__args__))
+                if arg not in required:
+                    args[arg][&#39;default&#39;] = defaults[arg]
         elif getattr(arg_type, &#39;__name__&#39;) == &#39;Optional&#39;:
             dtype = getattr(arg_type.__args__[0], &#39;__name__&#39;)
             dtype = PYTHON_TO_JSON_TYPES.get(dtype, None)
@@ -421,11 +816,15 @@ class ToolSelector:
                 args[arg][&#39;type&#39;] = getattr(arg_type, &#39;__name__&#39;, str(arg_type))
             if arg in args_desc:
                 args[arg][&#39;description&#39;] = args_desc[arg]
+            if arg not in required:
+                args[arg][&#39;default&#39;] = defaults[arg]
         else:
             args[arg] = dict()
             args[arg][&#39;type&#39;] = getattr(arg_type, &#39;__name__&#39;, str(arg_type))
             if arg in args_desc:
                 args[arg][&#39;description&#39;] = args_desc[arg]
+            if arg not in required:
+                args[arg][&#39;default&#39;] = defaults[arg]
     return args</code></pre>
 </details>
 </dd>
@@ -539,12 +938,12 @@ class ToolSelector:
         name = fn.name
         description = desc_doc
         required = get_required_args(fn.__call__)
-        args = get_args_types(fn.__call__)
+        args = get_args_dtypes(fn.__call__)
     else:
         name = normalise_tool_name(fn.__name__)
         description = get_description(desc_doc) if desc_doc else &#39;&#39;
         required = get_required_args(fn)
-        args = get_args_types(fn)
+        args = get_args_dtypes(fn)
     return dict(name=name, description=description, parameters=dict(type=&#39;object&#39;, properties=args, required=required))</code></pre>
 </details>
 </dd>
@@ -580,6 +979,87 @@ class ToolSelector:
     tokens = re.sub( r&#34;([A-Z])&#34;, r&#34; \1&#34;, name).split()
     tokens = list(map(lambda x: x.lower().strip(&#39; \n\r\t_&#39;), tokens))
     return &#39;_&#39;.join(tokens).strip()</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.select"><code class="name flex">
+<span>def <span class="ident">select</span></span>(<span>llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt: str, options: List[str], stop: Optional[List[str]] = None, default: Optional[str] = None, retry: int = 3, raise_error: bool = False, **kwargs) ‑> Optional[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Ask the LLM to make a selection of the list of options provided.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM to generate the selection.</dd>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>Prompt for the llm.</dd>
+<dt><strong><code>options</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of options for the LLM to pick.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]], None</code></dt>
+<dd>List of stop words for the LLM to help the llm stop earlier. Defaults to None.</dd>
+<dt><strong><code>default</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Default value if the LLM fails to generate the option. If none is given and the LLM fail, an error will be raised. Defaults to None.</dd>
+<dt><strong><code>retry</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Number of times the llm can retry. Defaults to 3.</dd>
+<dt><strong><code>raise_error</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to raise an error if the selection failed. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>The selection of the LLM given the options.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select(llm: Type[BaseLLM], prompt: str, options: List[str], 
+           stop: Optional[List[str]] = None, default: Optional[str] = None, retry: int = 3, raise_error: bool = False, **kwargs) -&gt; Optional[str]:
+    &#34;&#34;&#34;Ask the LLM to make a selection of the list of options provided.
+
+    Args:
+        llm (Type[BaseLLM]): LLM to generate the selection.
+        prompt (str): Prompt for the llm.
+        options (List[str]): List of options for the LLM to pick.
+        stop (Optional[List[str]], None): List of stop words for the LLM to help the llm stop earlier. Defaults to None.
+        default (Optional[str], optional): Default value if the LLM fails to generate the option. If none is given and the LLM fail, an error will be raised. Defaults to None.
+        retry (int, optional): Number of times the llm can retry. Defaults to 3.
+        raise_error (bool, optional): Whether to raise an error if the selection failed. Defaults to False.
+
+    Returns:
+        Optional[str]: The selection of the LLM given the options.
+    &#34;&#34;&#34;
+    if len(options) == 0:
+        raise ValueError(&#39;&#34;options&#34; must contain at least one string.&#39;)
+    if llm.core.core_type ==&#39;llama_cpp_core&#39;:
+        from guidance.models.llama_cpp import LlamaCpp
+        from guidance import select as gselect
+        gllm = LlamaCpp(model=llm.core.model, echo=False)
+        res = gllm + prompt + gselect(options=options)
+        res = str(res).removeprefix(prompt)
+        del gllm
+        return res
+    else:
+        from math import ceil
+        from copy import deepcopy
+        option_num_tokens = [llm.get_num_tokens(opt) for opt in options]
+        max_new_tokens = ceil(max(option_num_tokens) * 1.2)
+        stop = [] if stop is None else stop
+        for i in range(retry):
+            clone_kw = deepcopy(kwargs)
+            clone_kw.pop(&#39;max_new_tokens&#39;, None)
+            res = llm.invoke(prompt, stop=stop, max_new_tokens=max_new_tokens, **clone_kw)
+            if res in options:
+                return res
+            else:
+                valids = list(filter(lambda x: res.startswith(x), options))
+                if len(valids) &gt;= 1:
+                    return max(valids, key=len)
+        if default is not None:
+            return default
+        elif raise_error:
+            raise RuntimeError(f&#39;LLM cannot generate one of the options after {retry} retries.&#39;)
+        else:
+            return None</code></pre>
 </details>
 </dd>
 </dl>
@@ -711,10 +1191,10 @@ def name(self) -&gt; str:
     &#34;&#34;&#34;Class for selecting tool.
     &#34;&#34;&#34;
     def __init__(self, tools: List[Union[Callable, Type[BaseTool]]]) -&gt; None:
-        self._tools = tools
+        self._tools = tools if direct_response in tools else tools + [direct_response]
         self._metadatas = [get_tool_metadata(tool) for tool in self.tools]
-        self._tool_names = [m[&#39;name&#39;] for m in self._metadatas]
-        self._enabled = list(zip(self._tool_names, [True] * len(self._tool_names)))
+        self._tool_names: List[str] = [m[&#39;name&#39;] for m in self._metadatas]
+        self._enabled = dict(zip(self._tool_names, [True] * len(self._tool_names)))
     
     @property
     def tool_names(self) -&gt; List[str]:
@@ -732,7 +1212,7 @@ def name(self) -&gt; str:
         Returns:
             List[str]: List of tool names that are enabled.
         &#34;&#34;&#34;
-        enabled_tools = filter(lambda x: x[1], self._enabled)
+        enabled_tools = filter(lambda x: x[1], self._enabled.items())
         return list(map(lambda x: x[0], enabled_tools))
     
     @property
@@ -782,7 +1262,198 @@ def name(self) -&gt; str:
             Dict[str, str]: A message with the role &#34;function_metadata&#34; and content being the metadata of the tools.
         &#34;&#34;&#34;
         import json
-        return dict(role=&#39;function_metadata&#39;, content=json.dumps(self.metadatas, indent=4))</code></pre>
+        return dict(role=&#39;function_metadata&#39;, content=json.dumps(self.metadatas, indent=4))
+        
+    @property
+    def is_empty(self) -&gt; bool:
+        &#34;&#34;&#34;Whether tools except direct_response are enabled.
+
+        Returns:
+            bool: Whether tools except direct_response are enabled.
+        &#34;&#34;&#34;
+        return ((len(self.enabled_tools) == 1) &amp; (&#39;direct_response&#39; in self.enabled_tools))
+
+    def get_tool_metadata(self, tool_name: str) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Get the tool metadata given the tool name.
+
+        Args:
+            tool_name (str): Tool name.
+
+        Returns:
+            Dict[str, Any]: Metadata of the tool.
+        &#34;&#34;&#34;
+        return list(filter(lambda x: x[&#39;name&#39;] == tool_name, self.metadatas))[0]
+    
+    def structured_input_generation(self, raw_prompt: str, llm: Type[BaseLLM], **kwargs) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Core part of tool input generation.
+
+        Args:
+            raw_prompt (str): The starting prompt.
+            llm (Type[BaseLLM]): LLM for generation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
+        &#34;&#34;&#34;
+        import json
+        original_prompt = raw_prompt
+        prompt: str = original_prompt + &#39;{\n\t&#34;name&#34;: &#34;&#39;
+        tool_name = select(llm=llm, prompt=prompt, options=self.enabled_tools, default=&#39;direct_response&#39;, **kwargs)
+        tool = self.get_tool_metadata(tool_name=tool_name)
+
+        # gather tool info
+        args_info = tool[&#39;parameters&#39;][&#39;properties&#39;]
+        args = list(args_info.keys())
+        required_args = tool[&#39;parameters&#39;][&#39;required&#39;]
+        optional_args = list(filter(lambda x: x not in required_args, args))
+
+        prompt += tool_name + &#39;&#34;&#39;
+        if len(args) == 0:
+            prompt += &#39;\n}&#39;
+        else:
+            prompt += &#39;,\n\t&#34;inputs&#34;: {&#39;
+            if len(required_args) != 0:
+                for arg in required_args:
+                    prompt += f&#39;\n\t\t&#34;{arg}&#34;: &#39;
+                    enum = args_info[arg].get(&#39;enum&#39;)
+                    if args_info[arg].get(&#39;type&#39;) == &#39;string&#39;:
+                        if enum is None:
+                            val = gen_string(llm=llm, prompt=prompt, **kwargs)
+                            prompt += &#39;&#34;&#39; + val + &#39;&#34;,&#39;
+                        else:
+                            val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                            if val is not None:
+                                prompt +=  f&#39;&#34;{val}&#34;&#39; + &#39;,&#39;
+                            else:
+                                return dict(name=&#39;direct_response&#39;)
+                    elif enum is None:
+                        prompt += llm.invoke(prompt, stop=[&#39;\n\t&#39;], **kwargs)
+                    else:
+                        val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                        if val is not None:
+                            prompt += val + &#39;,&#39;
+                        else:
+                            return dict(name=&#39;direct_response&#39;)
+                prompt = prompt.rstrip(&#39;,&#39;) # strip off the comma, see if the llm wants to continue on optional arguments
+                if len(optional_args) &gt; 0:
+                    from copy import deepcopy
+                    clone_kw = deepcopy(kwargs)
+                    clone_kw.pop(&#39;max_new_tokens&#39;, None)
+                    new_tokens = llm.invoke(prompt, max_new_tokens=3, **clone_kw)
+                    used_args = []
+                    while ((new_tokens.startswith(&#39;,&#39;)) &amp; (len(used_args) &lt; len(optional_args))):
+                        prompt += &#39;,\n\t\t&#34;&#39;
+                        arg = select(llm=llm, prompt=prompt, options=list(filter(lambda x: x not in used_args, optional_args)), stop=[&#39;&#34;&#39;], **kwargs)
+                        if arg is None:
+                            prompt = prompt.removesuffix(&#39;,\n\t\t&#34;&#39;)
+                            new_tokens = &#39;&#39;
+                        else:
+                            prompt += arg + &#39;&#34;: &#39;
+                            enum = args_info[arg].get(&#39;enum&#39;)
+                            default = args_info[arg].get(&#39;default&#39;)
+                            default = &#39;null&#39; if default is None else default
+                            if args_info[arg].get(&#39;type&#39;) == &#39;string&#39;:
+                                if enum is None:
+                                    val = gen_string(llm=llm, prompt=prompt, **kwargs)
+                                    val = default if val == &#39;&#39; else f&#39;&#34;{val}&#34;&#39;
+                                    prompt += val
+                                else:
+                                    val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                                    val = default if val is None else f&#39;&#34;{val}&#34;&#39;
+                                    prompt += val
+                            elif enum is None:
+                                prompt += llm.invoke(prompt, stop=[&#39;\n\t&#39;], **kwargs)
+                                prompt = prompt.strip(&#39;, \n\r\t&#39;)
+                            else:
+                                val = select(llm, prompt=prompt, options=enum, **kwargs)
+                                val = default if val is None else val
+                                prompt += val
+                            clone_kw = deepcopy(kwargs)
+                            clone_kw.pop(&#39;max_new_tokens&#39;, None)
+                            new_tokens = llm.invoke(prompt, max_new_tokens=3, **clone_kw)
+            prompt += &#39;\n\t}\n}&#39;
+        try:
+            return json.loads(prompt.removeprefix(original_prompt))
+        except:
+            return dict(name=&#39;direct_response&#39;)
+    
+    def tool_call_input(self, llm: Type[BaseLLM], messages: List[Dict[str, str]], prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Generate a dictionary of the tool to use and the input arguments.
+
+        Args:
+            llm (Type[BaseLLM]): LLM for the function call generation.
+            messages (List[Dict[str, str]]): List of messages of the conversation history, msut contain the function metadatas.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template to use. If none is give, the default prompt template for the llm will be used. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
+        &#34;&#34;&#34;
+        # set temperature to zero if temperature not given in kwargs
+        if &#39;temperature&#39; not in kwargs.keys():
+            kwargs[&#39;temperature&#39;] = 0
+        # Start tool selection logic
+        if ((len(self.enabled_tools) == 1) &amp; (self.enabled_tools[0] == &#39;direct_response&#39;)):
+            return dict(name=&#39;direct_response&#39;)
+        prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+        # check if the function metadata content is in the messages.
+        if not any(self.function_metadata[&#39;content&#39;]  in content for content in list(map(lambda x: x[&#39;content&#39;], messages))):
+            return dict(name=&#39;direct_response&#39;)
+        original_prompt = prompt_template.create_custom_prompt_with_open_role(messages=messages, end_role=&#39;function_call&#39;)
+        return self.structured_input_generation(raw_prompt=original_prompt, llm=llm, **kwargs)
+
+    def tool_call_output(self, tool_input: Dict[str, Any], return_error: bool = False) -&gt; Optional[Dict[str, Any]]:
+        &#34;&#34;&#34;Return the output of the function call along with the input ditionary.
+
+        Args:
+            tool_input (Dict[str, Any]): Inputs of the tool, including the name of the tool and the input arguments.
+            return_error (bool, optional): Whether to return the error should the tool failed to execute. If False and the tool failed, None will be returned instead of the error message.
+
+        Returns:
+            Optional[Dict[str, Any]]: Dictionary containing the name of the function, the inputs, and the outputs. If None is returned, that means no tool is required and the llm should respond directly.
+        &#34;&#34;&#34;
+        import json
+        from copy import deepcopy
+        tool_inputs = deepcopy(tool_input)
+        tool_name = tool_inputs[&#39;name&#39;]
+        if tool_name == &#39;direct_response&#39;:
+            return None
+        inputs = tool_inputs.get(&#39;inputs&#39;, dict())
+        tool = self.tool_map[tool_name]
+        try:
+            output = tool(**inputs)
+        except Exception as e:
+            if return_error:
+                tool_inputs[&#39;error&#39;] = str(e)
+                return tool_inputs
+            else:
+                return None
+        # formatting output
+        jsonable = True
+        try:
+            json.dumps(output)
+        except:
+            jsonable = False
+        tool_inputs[&#39;output&#39;] = output if jsonable else str(output)
+        return tool_inputs
+
+    def turn_on_tools(self, tools: List[str]) -&gt; None:
+        &#34;&#34;&#34;Enable the given list of tools.
+
+        Args:
+            tools (List[str]): List of tool names.
+        &#34;&#34;&#34;
+        for tool in tools:
+            if tool in self.tool_names:
+                self._enabled[tool] = True
+
+    def turn_off_tools(self, tools: List[str]) -&gt; None:
+        &#34;&#34;&#34;Disable the given list of tools.
+
+        Args:
+            tools (List[str]): List of tool names.
+        &#34;&#34;&#34;
+        for tool in tools:
+            if ((tool in self.tool_names) &amp; (tool != &#39;direct_response&#39;)):
+                self._enabled[tool] = False</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -805,7 +1476,7 @@ def enabled_tools(self) -&gt; List[str]:
     Returns:
         List[str]: List of tool names that are enabled.
     &#34;&#34;&#34;
-    enabled_tools = filter(lambda x: x[1], self._enabled)
+    enabled_tools = filter(lambda x: x[1], self._enabled.items())
     return list(map(lambda x: x[0], enabled_tools))</code></pre>
 </details>
 </dd>
@@ -830,6 +1501,28 @@ def function_metadata(self) -&gt; Dict[str, str]:
     &#34;&#34;&#34;
     import json
     return dict(role=&#39;function_metadata&#39;, content=json.dumps(self.metadatas, indent=4))</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.is_empty"><code class="name">var <span class="ident">is_empty</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Whether tools except direct_response are enabled.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether tools except direct_response are enabled.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def is_empty(self) -&gt; bool:
+    &#34;&#34;&#34;Whether tools except direct_response are enabled.
+
+    Returns:
+        bool: Whether tools except direct_response are enabled.
+    &#34;&#34;&#34;
+    return ((len(self.enabled_tools) == 1) &amp; (&#39;direct_response&#39; in self.enabled_tools))</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Tools.tool_utils.ToolSelector.metadatas"><code class="name">var <span class="ident">metadatas</span> : List[Dict[str, Any]]</code></dt>
@@ -946,6 +1639,309 @@ def tools(self) -&gt; List[Union[Callable, Type[BaseTool]]]:
 </details>
 </dd>
 </dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.get_tool_metadata"><code class="name flex">
+<span>def <span class="ident">get_tool_metadata</span></span>(<span>self, tool_name: str) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the tool metadata given the tool name.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tool_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>Tool name.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>Metadata of the tool.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_tool_metadata(self, tool_name: str) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Get the tool metadata given the tool name.
+
+    Args:
+        tool_name (str): Tool name.
+
+    Returns:
+        Dict[str, Any]: Metadata of the tool.
+    &#34;&#34;&#34;
+    return list(filter(lambda x: x[&#39;name&#39;] == tool_name, self.metadatas))[0]</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.structured_input_generation"><code class="name flex">
+<span>def <span class="ident">structured_input_generation</span></span>(<span>self, raw_prompt: str, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], **kwargs) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Core part of tool input generation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>raw_prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The starting prompt.</dd>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM for generation.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>Dictionary containing the name of the function and the input arguments.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def structured_input_generation(self, raw_prompt: str, llm: Type[BaseLLM], **kwargs) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Core part of tool input generation.
+
+    Args:
+        raw_prompt (str): The starting prompt.
+        llm (Type[BaseLLM]): LLM for generation.
+
+    Returns:
+        Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
+    &#34;&#34;&#34;
+    import json
+    original_prompt = raw_prompt
+    prompt: str = original_prompt + &#39;{\n\t&#34;name&#34;: &#34;&#39;
+    tool_name = select(llm=llm, prompt=prompt, options=self.enabled_tools, default=&#39;direct_response&#39;, **kwargs)
+    tool = self.get_tool_metadata(tool_name=tool_name)
+
+    # gather tool info
+    args_info = tool[&#39;parameters&#39;][&#39;properties&#39;]
+    args = list(args_info.keys())
+    required_args = tool[&#39;parameters&#39;][&#39;required&#39;]
+    optional_args = list(filter(lambda x: x not in required_args, args))
+
+    prompt += tool_name + &#39;&#34;&#39;
+    if len(args) == 0:
+        prompt += &#39;\n}&#39;
+    else:
+        prompt += &#39;,\n\t&#34;inputs&#34;: {&#39;
+        if len(required_args) != 0:
+            for arg in required_args:
+                prompt += f&#39;\n\t\t&#34;{arg}&#34;: &#39;
+                enum = args_info[arg].get(&#39;enum&#39;)
+                if args_info[arg].get(&#39;type&#39;) == &#39;string&#39;:
+                    if enum is None:
+                        val = gen_string(llm=llm, prompt=prompt, **kwargs)
+                        prompt += &#39;&#34;&#39; + val + &#39;&#34;,&#39;
+                    else:
+                        val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                        if val is not None:
+                            prompt +=  f&#39;&#34;{val}&#34;&#39; + &#39;,&#39;
+                        else:
+                            return dict(name=&#39;direct_response&#39;)
+                elif enum is None:
+                    prompt += llm.invoke(prompt, stop=[&#39;\n\t&#39;], **kwargs)
+                else:
+                    val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                    if val is not None:
+                        prompt += val + &#39;,&#39;
+                    else:
+                        return dict(name=&#39;direct_response&#39;)
+            prompt = prompt.rstrip(&#39;,&#39;) # strip off the comma, see if the llm wants to continue on optional arguments
+            if len(optional_args) &gt; 0:
+                from copy import deepcopy
+                clone_kw = deepcopy(kwargs)
+                clone_kw.pop(&#39;max_new_tokens&#39;, None)
+                new_tokens = llm.invoke(prompt, max_new_tokens=3, **clone_kw)
+                used_args = []
+                while ((new_tokens.startswith(&#39;,&#39;)) &amp; (len(used_args) &lt; len(optional_args))):
+                    prompt += &#39;,\n\t\t&#34;&#39;
+                    arg = select(llm=llm, prompt=prompt, options=list(filter(lambda x: x not in used_args, optional_args)), stop=[&#39;&#34;&#39;], **kwargs)
+                    if arg is None:
+                        prompt = prompt.removesuffix(&#39;,\n\t\t&#34;&#39;)
+                        new_tokens = &#39;&#39;
+                    else:
+                        prompt += arg + &#39;&#34;: &#39;
+                        enum = args_info[arg].get(&#39;enum&#39;)
+                        default = args_info[arg].get(&#39;default&#39;)
+                        default = &#39;null&#39; if default is None else default
+                        if args_info[arg].get(&#39;type&#39;) == &#39;string&#39;:
+                            if enum is None:
+                                val = gen_string(llm=llm, prompt=prompt, **kwargs)
+                                val = default if val == &#39;&#39; else f&#39;&#34;{val}&#34;&#39;
+                                prompt += val
+                            else:
+                                val = select(llm, prompt=prompt + &#39;&#34;&#39;, options=enum, **kwargs)
+                                val = default if val is None else f&#39;&#34;{val}&#34;&#39;
+                                prompt += val
+                        elif enum is None:
+                            prompt += llm.invoke(prompt, stop=[&#39;\n\t&#39;], **kwargs)
+                            prompt = prompt.strip(&#39;, \n\r\t&#39;)
+                        else:
+                            val = select(llm, prompt=prompt, options=enum, **kwargs)
+                            val = default if val is None else val
+                            prompt += val
+                        clone_kw = deepcopy(kwargs)
+                        clone_kw.pop(&#39;max_new_tokens&#39;, None)
+                        new_tokens = llm.invoke(prompt, max_new_tokens=3, **clone_kw)
+        prompt += &#39;\n\t}\n}&#39;
+    try:
+        return json.loads(prompt.removeprefix(original_prompt))
+    except:
+        return dict(name=&#39;direct_response&#39;)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.tool_call_input"><code class="name flex">
+<span>def <span class="ident">tool_call_input</span></span>(<span>self, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], messages: List[Dict[str, str]], prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, **kwargs) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a dictionary of the tool to use and the input arguments.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>LLM for the function call generation.</dd>
+<dt><strong><code>messages</code></strong> :&ensp;<code>List[Dict[str, str]]</code></dt>
+<dd>List of messages of the conversation history, msut contain the function metadatas.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>Prompt template to use. If none is give, the default prompt template for the llm will be used. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>Dictionary containing the name of the function and the input arguments.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tool_call_input(self, llm: Type[BaseLLM], messages: List[Dict[str, str]], prompt_template: Optional[PromptTemplate] = None, **kwargs) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Generate a dictionary of the tool to use and the input arguments.
+
+    Args:
+        llm (Type[BaseLLM]): LLM for the function call generation.
+        messages (List[Dict[str, str]]): List of messages of the conversation history, msut contain the function metadatas.
+        prompt_template (Optional[PromptTemplate], optional): Prompt template to use. If none is give, the default prompt template for the llm will be used. Defaults to None.
+
+    Returns:
+        Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
+    &#34;&#34;&#34;
+    # set temperature to zero if temperature not given in kwargs
+    if &#39;temperature&#39; not in kwargs.keys():
+        kwargs[&#39;temperature&#39;] = 0
+    # Start tool selection logic
+    if ((len(self.enabled_tools) == 1) &amp; (self.enabled_tools[0] == &#39;direct_response&#39;)):
+        return dict(name=&#39;direct_response&#39;)
+    prompt_template = llm.core.prompt_template if prompt_template is None else prompt_template
+    # check if the function metadata content is in the messages.
+    if not any(self.function_metadata[&#39;content&#39;]  in content for content in list(map(lambda x: x[&#39;content&#39;], messages))):
+        return dict(name=&#39;direct_response&#39;)
+    original_prompt = prompt_template.create_custom_prompt_with_open_role(messages=messages, end_role=&#39;function_call&#39;)
+    return self.structured_input_generation(raw_prompt=original_prompt, llm=llm, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.tool_call_output"><code class="name flex">
+<span>def <span class="ident">tool_call_output</span></span>(<span>self, tool_input: Dict[str, Any], return_error: bool = False) ‑> Optional[Dict[str, Any]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the output of the function call along with the input ditionary.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tool_input</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>Inputs of the tool, including the name of the tool and the input arguments.</dd>
+<dt><strong><code>return_error</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the error should the tool failed to execute. If False and the tool failed, None will be returned instead of the error message.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[Dict[str, Any]]</code></dt>
+<dd>Dictionary containing the name of the function, the inputs, and the outputs. If None is returned, that means no tool is required and the llm should respond directly.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tool_call_output(self, tool_input: Dict[str, Any], return_error: bool = False) -&gt; Optional[Dict[str, Any]]:
+    &#34;&#34;&#34;Return the output of the function call along with the input ditionary.
+
+    Args:
+        tool_input (Dict[str, Any]): Inputs of the tool, including the name of the tool and the input arguments.
+        return_error (bool, optional): Whether to return the error should the tool failed to execute. If False and the tool failed, None will be returned instead of the error message.
+
+    Returns:
+        Optional[Dict[str, Any]]: Dictionary containing the name of the function, the inputs, and the outputs. If None is returned, that means no tool is required and the llm should respond directly.
+    &#34;&#34;&#34;
+    import json
+    from copy import deepcopy
+    tool_inputs = deepcopy(tool_input)
+    tool_name = tool_inputs[&#39;name&#39;]
+    if tool_name == &#39;direct_response&#39;:
+        return None
+    inputs = tool_inputs.get(&#39;inputs&#39;, dict())
+    tool = self.tool_map[tool_name]
+    try:
+        output = tool(**inputs)
+    except Exception as e:
+        if return_error:
+            tool_inputs[&#39;error&#39;] = str(e)
+            return tool_inputs
+        else:
+            return None
+    # formatting output
+    jsonable = True
+    try:
+        json.dumps(output)
+    except:
+        jsonable = False
+    tool_inputs[&#39;output&#39;] = output if jsonable else str(output)
+    return tool_inputs</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.turn_off_tools"><code class="name flex">
+<span>def <span class="ident">turn_off_tools</span></span>(<span>self, tools: List[str]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Disable the given list of tools.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tools</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of tool names.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def turn_off_tools(self, tools: List[str]) -&gt; None:
+    &#34;&#34;&#34;Disable the given list of tools.
+
+    Args:
+        tools (List[str]): List of tool names.
+    &#34;&#34;&#34;
+    for tool in tools:
+        if ((tool in self.tool_names) &amp; (tool != &#39;direct_response&#39;)):
+            self._enabled[tool] = False</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Tools.tool_utils.ToolSelector.turn_on_tools"><code class="name flex">
+<span>def <span class="ident">turn_on_tools</span></span>(<span>self, tools: List[str]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Enable the given list of tools.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tools</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of tool names.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def turn_on_tools(self, tools: List[str]) -&gt; None:
+    &#34;&#34;&#34;Enable the given list of tools.
+
+    Args:
+        tools (List[str]): List of tool names.
+    &#34;&#34;&#34;
+    for tool in tools:
+        if tool in self.tool_names:
+            self._enabled[tool] = True</code></pre>
+</details>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -963,12 +1959,15 @@ def tools(self) -&gt; List[Union[Callable, Type[BaseTool]]]:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="llmflex.Tools.tool_utils.direct_response" href="#llmflex.Tools.tool_utils.direct_response">direct_response</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.gen_string" href="#llmflex.Tools.tool_utils.gen_string">gen_string</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.get_args_descriptions" href="#llmflex.Tools.tool_utils.get_args_descriptions">get_args_descriptions</a></code></li>
-<li><code><a title="llmflex.Tools.tool_utils.get_args_types" href="#llmflex.Tools.tool_utils.get_args_types">get_args_types</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.get_args_dtypes" href="#llmflex.Tools.tool_utils.get_args_dtypes">get_args_dtypes</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.get_description" href="#llmflex.Tools.tool_utils.get_description">get_description</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.get_required_args" href="#llmflex.Tools.tool_utils.get_required_args">get_required_args</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.get_tool_metadata" href="#llmflex.Tools.tool_utils.get_tool_metadata">get_tool_metadata</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.normalise_tool_name" href="#llmflex.Tools.tool_utils.normalise_tool_name">normalise_tool_name</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.select" href="#llmflex.Tools.tool_utils.select">select</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -982,14 +1981,21 @@ def tools(self) -&gt; List[Union[Callable, Type[BaseTool]]]:
 </li>
 <li>
 <h4><code><a title="llmflex.Tools.tool_utils.ToolSelector" href="#llmflex.Tools.tool_utils.ToolSelector">ToolSelector</a></code></h4>
-<ul class="two-column">
+<ul class="">
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.enabled_tools" href="#llmflex.Tools.tool_utils.ToolSelector.enabled_tools">enabled_tools</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.function_metadata" href="#llmflex.Tools.tool_utils.ToolSelector.function_metadata">function_metadata</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.get_tool_metadata" href="#llmflex.Tools.tool_utils.ToolSelector.get_tool_metadata">get_tool_metadata</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.is_empty" href="#llmflex.Tools.tool_utils.ToolSelector.is_empty">is_empty</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.metadatas" href="#llmflex.Tools.tool_utils.ToolSelector.metadatas">metadatas</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.num_tools" href="#llmflex.Tools.tool_utils.ToolSelector.num_tools">num_tools</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.structured_input_generation" href="#llmflex.Tools.tool_utils.ToolSelector.structured_input_generation">structured_input_generation</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.tool_call_input" href="#llmflex.Tools.tool_utils.ToolSelector.tool_call_input">tool_call_input</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.tool_call_output" href="#llmflex.Tools.tool_utils.ToolSelector.tool_call_output">tool_call_output</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.tool_map" href="#llmflex.Tools.tool_utils.ToolSelector.tool_map">tool_map</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.tool_names" href="#llmflex.Tools.tool_utils.ToolSelector.tool_names">tool_names</a></code></li>
 <li><code><a title="llmflex.Tools.tool_utils.ToolSelector.tools" href="#llmflex.Tools.tool_utils.ToolSelector.tools">tools</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.turn_off_tools" href="#llmflex.Tools.tool_utils.ToolSelector.turn_off_tools">turn_off_tools</a></code></li>
+<li><code><a title="llmflex.Tools.tool_utils.ToolSelector.turn_on_tools" href="#llmflex.Tools.tool_utils.ToolSelector.turn_on_tools">turn_on_tools</a></code></li>
 </ul>
 </li>
 </ul>

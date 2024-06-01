@@ -3,5 +3,5 @@ Module llmflex.Frontend
 
 Sub-modules
 -----------
-* llmflex.Frontend.gradio_interface
+* llmflex.Frontend.app_resource
 * llmflex.Frontend.streamlit_interface

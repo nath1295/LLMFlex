@@ -14,10 +14,6 @@ Classes
 
     * abc.ABC
 
-    ### Descendants
-
-    * llmflex.Tools.web_search_tool.WebSearchTool
-
     ### Instance variables
 
     `description: str`

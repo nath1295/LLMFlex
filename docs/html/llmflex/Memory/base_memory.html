@@ -29,10 +29,8 @@
 <pre><code class="python">import os
 from ..utils import get_config
 from ..Models.Cores.base_core import BaseLLM
-from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE, PromptTemplate
-from ..KnowledgeBase.knowledge_base import KnowledgeBase
+from ..Prompts.prompt_template import DEFAULT_SYSTEM_MESSAGE
 from typing import List, Dict, Any, Type, Tuple, Optional
-
 
 def chat_memory_home() -&gt; str:
     &#34;&#34;&#34;Return the default directory for saving chat memories.
@@ -50,22 +48,26 @@ def list_chat_dirs() -&gt; List[str]:
     Returns:
         List[str]: List of directories of all chat memories.
     &#34;&#34;&#34;
+    import re
+    re_chat = re.compile(r&#39;chat_\d+&#39;)
     chats_dir = chat_memory_home()
     dirs = list(map(lambda x: os.path.join(chats_dir, x), os.listdir(chats_dir)))
-    dirs = list(filter(lambda x: os.path.basename(x).startswith(&#39;chat_&#39;), dirs))
+    dirs = list(filter(lambda x: re_chat.match(os.path.basename(x)), dirs))
     dirs = list(filter(lambda x: ((os.path.isdir(x)) &amp; (&#39;info.json&#39; in os.listdir(x))), dirs))
     return dirs
 
-def title_dir_map() -&gt; Dict[str, str]:
-    &#34;&#34;&#34;Return a dictionary with chat titles as keys and their respective directories as values.
+def list_chat_ids() -&gt; List[str]:
+    &#34;&#34;&#34;Return a list of existing chat ids.
 
     Returns:
-        Dict[str, str]: A dictionary with chat titles as keys and their respective directories as values.
+        List[str]: Return a list of existing chat ids, sorted by last update descendingly.
     &#34;&#34;&#34;
     from ..utils import read_json
-    dirs = list_chat_dirs()
-    titles = list(map(lambda x: read_json(os.path.join(x, &#39;info.json&#39;))[&#39;title&#39;], dirs))
-    return dict(zip(titles, dirs))
+    chat_dirs = list_chat_dirs()
+    chat_infos = list(map(lambda x: [read_json(os.path.join(x, &#39;info.json&#39;)), x], chat_dirs))
+    chat_infos.sort(key=lambda x: x[0][&#39;last_update&#39;], reverse=True)
+    chat_ids = list(map(lambda x: os.path.basename(x[1]), chat_infos))
+    return chat_ids
 
 def list_titles() -&gt; List[str]:
     &#34;&#34;&#34;Return a list of chat titles.
@@ -74,29 +76,80 @@ def list_titles() -&gt; List[str]:
         List[str]: List of chat titles, sorted by last update descendingly.
     &#34;&#34;&#34;
     from ..utils import read_json
-    mapper = list(title_dir_map().items())
-    mapper = list(map(lambda x: (x[0], read_json(os.path.join(x[1], &#39;info.json&#39;))[&#39;last_update&#39;]), mapper))
-    mapper.sort(key=lambda x: x[1], reverse=True)
-    return list(map(lambda x: x[0], mapper))   
+    chat_ids = list_chat_ids()
+    home = chat_memory_home()
+    titles = list(map(lambda x: read_json(os.path.join(home, x, &#39;info.json&#39;))[&#39;title&#39;], chat_ids))
+    return titles   
+
+def get_new_chat_id() -&gt; str:
+    &#34;&#34;&#34;Get an unused chat id.
+
+    Returns:
+        str: New chat id.
+    &#34;&#34;&#34;
+    chat_ids = list_chat_ids()
+    if len(chat_ids) == 0:
+        return &#39;chat_0&#39;
+    indexes = list(map(lambda x: int(x.removeprefix(&#39;chat_&#39;)), chat_ids))
+    max_index = max(indexes)
+    for i in range(max_index + 1):
+        if f&#39;chat_{i}&#39; not in chat_ids:
+            return f&#39;chat_{i}&#39;
+    return f&#39;chat_{max_index + 1}&#39;
+    
+def get_title_from_id(chat_id: str) -&gt; str:
+    &#34;&#34;&#34;Getting the title from Chat ID.
+
+    Args:
+        chat_id (str): Chat ID.
+
+    Returns:
+        str: Title of the memory.
+    &#34;&#34;&#34;
+    if chat_id not in list_chat_ids():
+        raise FileNotFoundError(f&#39;Chat ID &#34;{chat_id}&#34; does not exist.&#39;)
+    from ..utils import read_json
+    return read_json(os.path.join(chat_memory_home(), chat_id, &#39;info.json&#39;))[&#39;title&#39;]
+
+def get_dir_from_id(chat_id: str) -&gt; str:
+    &#34;&#34;&#34;Geet the memory directory given the chat ID.
+
+    Args:
+        chat_id (str): Chat ID.
+
+    Returns:
+        str: Memory directory.
+    &#34;&#34;&#34;
+    return os.path.join(chat_memory_home(), chat_id)
 
 class BaseChatMemory:
     &#34;&#34;&#34;Base class for chat memory.
     &#34;&#34;&#34;
-    def __init__(self, title: str, from_exist: bool = True, system: Optional[str] = None) -&gt; None:
+    def __init__(self, chat_id: str, from_exist: bool = True, system: Optional[str] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the memory class.
 
         Args:
-            title (str): Title of the chat.
+            chat_id (str): Chat ID.
             from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
             system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
         &#34;&#34;&#34;
-        title = title.strip(&#39; \n\r\t&#39;)
-        if title == &#39;&#39;:
-            raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
-        self._title = title
+        import re
+        re_chat = re.compile(r&#39;chat_\d+&#39;)
+        if not re_chat.match(chat_id):
+            raise ValueError(&#39;Invalid chat ID.&#39;)
+        self._chat_id = chat_id
         self._init_memory(from_exist=from_exist)
         self.info[&#39;system&#39;] = system.strip() if system is not None else self.info.get(&#39;system&#39;, DEFAULT_SYSTEM_MESSAGE)
         self.save()
+
+    @property
+    def chat_id(self) -&gt; str:
+        &#34;&#34;&#34;Unique identifier of the chat memory.
+
+        Returns:
+            str: Unique identifier of the chat memory.
+        &#34;&#34;&#34;
+        return self._chat_id
 
     @property
     def title(self) -&gt; str:
@@ -105,7 +158,11 @@ class BaseChatMemory:
         Returns:
             str: Chat title.
         &#34;&#34;&#34;
-        return self._title
+        title = self.info.get(&#39;title&#39;)
+        if title is None:
+            self.info[&#39;title&#39;] = &#39;New Chat&#39;
+            self.save()
+        return title
     
     @property
     def chat_dir(self) -&gt; str:
@@ -114,22 +171,10 @@ class BaseChatMemory:
         Returns:
             str: Directory of the chat.
         &#34;&#34;&#34;
-        mapper = title_dir_map()
-        if hasattr(self, &#39;_chat_dir&#39;):
-            return self._chat_dir
-        elif self.title in list(mapper.keys()):
-            self._chat_dir = mapper[self.title]
-            return self._chat_dir
-        elif len(list(mapper.keys())) == 0:
-            self._chat_dir = os.path.join(chat_memory_home(), &#39;chat_0&#39;)
-            os.makedirs(self._chat_dir, exist_ok=True)
-            return self._chat_dir
-        else:
-            dirs = list(mapper.values())
-            new = max(list(map(lambda x: int(os.path.basename(x).removeprefix(&#39;chat_&#39;)), dirs))) + 1
-            self._chat_dir = os.path.join(chat_memory_home(), f&#39;chat_{new}&#39;)
-            os.makedirs(self._chat_dir, exist_ok=True)
-            return self._chat_dir
+        chat_dir = os.path.join(chat_memory_home(), self.chat_id)
+        if not os.path.exists(chat_dir):
+            os.makedirs(chat_dir)
+        return chat_dir
     
     @property
     def info(self) -&gt; Dict[str, Any]:
@@ -146,7 +191,7 @@ class BaseChatMemory:
             return self._info
         else:
             from ..utils import save_json, current_time
-            self._info = dict(title=self.title, last_update=current_time())
+            self._info = dict(title=&#39;New Chat&#39;, last_update=current_time())
             save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
             return self._info
 
@@ -173,6 +218,32 @@ class BaseChatMemory:
         history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
         history.sort(key=lambda x: x[2], reverse=False)
         return list(map(lambda x: tuple(x[:2]), history))
+    
+    @property
+    def history_dict(self) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Entire history as dictionaries.
+
+        Returns:
+            List[Dict[str, Any]]: Entire history as dictionaries.
+        &#34;&#34;&#34;
+        import gc
+        history: list[dict[str, Any]] = list(map(lambda x: x.metadata, self._data.values()))
+        if len(history) == 0:
+            return []
+        count = max(list(map(lambda x: x[&#39;order&#39;], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[&#39;order&#39;] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[&#39;order&#39;], reverse=False)
+        def reformat_record(record: dict[str, Any]) -&gt; List[Dict[str, Any]]:
+            user = dict(role=&#39;user&#39;, content=record[&#39;user&#39;])
+            assistant = dict(role=&#39;assistant&#39;, content=record[&#39;assistant&#39;])
+            for k, v in record.items():
+                if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;, &#39;role&#39;]:
+                    assistant[k] = v
+            return [user, assistant]
+        history = list(map(reformat_record, history))
+        gc.collect()
+        return sum(history, [])
+
 
     @property
     def interaction_count(self) -&gt; int:
@@ -189,7 +260,7 @@ class BaseChatMemory:
         Args:
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         &#34;&#34;&#34;
-        if ((from_exist) &amp; (self.title in list_titles())):
+        if ((from_exist) &amp; (self.chat_id in list_chat_ids())):
             import pickle
             with open(os.path.join(self.chat_dir, &#39;data.pkl&#39;), &#39;rb&#39;) as f:
                 self._data = pickle.load(f)
@@ -216,6 +287,18 @@ class BaseChatMemory:
             system (str): New system message.
         &#34;&#34;&#34;
         self.info[&#39;system&#39;] = system.strip()
+        self.save()
+
+    def update_title(self, title: str) -&gt; None:
+        &#34;&#34;&#34;Update the title of the memory.
+
+        Args:
+            title (str): New chat memory title.
+        &#34;&#34;&#34;
+        title = title.strip()
+        if title == &#39;&#39;:
+            raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
+        self.info[&#39;title&#39;] = title
         self.save()
 
     def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
@@ -299,52 +382,7 @@ class BaseChatMemory:
                 tk_count += msg_count
             else:
                 break
-        return results
-    
-    def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
-            system: Optional[str] = None, recent_token_limit: int = 200, 
-            knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, **kwargs) -&gt; str:
-        &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
-
-        Args:
-            user (str): User newest message.
-            prompt_template (PromptTemplate): Prompt template to use.
-            llm (Type[BaseLLM]): LLM for counting tokens.
-            system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
-            recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
-            knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
-            relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
-            relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
-
-
-        Returns:
-            str: The full chat prompt.
-        &#34;&#34;&#34;
-        user = user.strip()
-        short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
-        system = self.system if not isinstance(system, str) else system
-        messages: list = [dict(role=&#39;system&#39;, content=self.system)] + prompt_template.format_history(short, return_list=True)
-        if knowledge_base is not None:
-            res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
-            if len(res) != 0:
-                import json
-                res = list(map(lambda x: x.index, res))
-                if prompt_template.allow_custom_role:
-                    res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
-                    messages.extend([dict(role=&#39;user&#39;, content=user), dict(role=&#39;extra information&#39;, content=res)])
-                    prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
-                else:
-                    messages.append(dict(role=&#39;user&#39;, content=user))
-                    prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
-                    res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
-                    prompt += f&#39;{res}\n\nResponse: &#39;
-            else:
-                messages.append(dict(role=&#39;user&#39;, content=user))
-                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
-        else:
-            messages.append(dict(role=&#39;user&#39;, content=user))
-            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
-        return prompt</code></pre>
+        return results</code></pre>
 </details>
 </section>
 <section>
@@ -379,6 +417,102 @@ class BaseChatMemory:
     return history_dir</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Memory.base_memory.get_dir_from_id"><code class="name flex">
+<span>def <span class="ident">get_dir_from_id</span></span>(<span>chat_id: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Geet the memory directory given the chat ID.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>chat_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Chat ID.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Memory directory.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_dir_from_id(chat_id: str) -&gt; str:
+    &#34;&#34;&#34;Geet the memory directory given the chat ID.
+
+    Args:
+        chat_id (str): Chat ID.
+
+    Returns:
+        str: Memory directory.
+    &#34;&#34;&#34;
+    return os.path.join(chat_memory_home(), chat_id)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.get_new_chat_id"><code class="name flex">
+<span>def <span class="ident">get_new_chat_id</span></span>(<span>) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get an unused chat id.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>New chat id.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_new_chat_id() -&gt; str:
+    &#34;&#34;&#34;Get an unused chat id.
+
+    Returns:
+        str: New chat id.
+    &#34;&#34;&#34;
+    chat_ids = list_chat_ids()
+    if len(chat_ids) == 0:
+        return &#39;chat_0&#39;
+    indexes = list(map(lambda x: int(x.removeprefix(&#39;chat_&#39;)), chat_ids))
+    max_index = max(indexes)
+    for i in range(max_index + 1):
+        if f&#39;chat_{i}&#39; not in chat_ids:
+            return f&#39;chat_{i}&#39;
+    return f&#39;chat_{max_index + 1}&#39;</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.get_title_from_id"><code class="name flex">
+<span>def <span class="ident">get_title_from_id</span></span>(<span>chat_id: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Getting the title from Chat ID.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>chat_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Chat ID.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Title of the memory.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_title_from_id(chat_id: str) -&gt; str:
+    &#34;&#34;&#34;Getting the title from Chat ID.
+
+    Args:
+        chat_id (str): Chat ID.
+
+    Returns:
+        str: Title of the memory.
+    &#34;&#34;&#34;
+    if chat_id not in list_chat_ids():
+        raise FileNotFoundError(f&#39;Chat ID &#34;{chat_id}&#34; does not exist.&#39;)
+    from ..utils import read_json
+    return read_json(os.path.join(chat_memory_home(), chat_id, &#39;info.json&#39;))[&#39;title&#39;]</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Memory.base_memory.list_chat_dirs"><code class="name flex">
 <span>def <span class="ident">list_chat_dirs</span></span>(<span>) ‑> List[str]</span>
 </code></dt>
@@ -399,11 +533,41 @@ class BaseChatMemory:
     Returns:
         List[str]: List of directories of all chat memories.
     &#34;&#34;&#34;
+    import re
+    re_chat = re.compile(r&#39;chat_\d+&#39;)
     chats_dir = chat_memory_home()
     dirs = list(map(lambda x: os.path.join(chats_dir, x), os.listdir(chats_dir)))
-    dirs = list(filter(lambda x: os.path.basename(x).startswith(&#39;chat_&#39;), dirs))
+    dirs = list(filter(lambda x: re_chat.match(os.path.basename(x)), dirs))
     dirs = list(filter(lambda x: ((os.path.isdir(x)) &amp; (&#39;info.json&#39; in os.listdir(x))), dirs))
     return dirs</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.list_chat_ids"><code class="name flex">
+<span>def <span class="ident">list_chat_ids</span></span>(<span>) ‑> List[str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a list of existing chat ids.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>Return a list of existing chat ids, sorted by last update descendingly.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def list_chat_ids() -&gt; List[str]:
+    &#34;&#34;&#34;Return a list of existing chat ids.
+
+    Returns:
+        List[str]: Return a list of existing chat ids, sorted by last update descendingly.
+    &#34;&#34;&#34;
+    from ..utils import read_json
+    chat_dirs = list_chat_dirs()
+    chat_infos = list(map(lambda x: [read_json(os.path.join(x, &#39;info.json&#39;)), x], chat_dirs))
+    chat_infos.sort(key=lambda x: x[0][&#39;last_update&#39;], reverse=True)
+    chat_ids = list(map(lambda x: os.path.basename(x[1]), chat_infos))
+    return chat_ids</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Memory.base_memory.list_titles"><code class="name flex">
@@ -427,36 +591,10 @@ class BaseChatMemory:
         List[str]: List of chat titles, sorted by last update descendingly.
     &#34;&#34;&#34;
     from ..utils import read_json
-    mapper = list(title_dir_map().items())
-    mapper = list(map(lambda x: (x[0], read_json(os.path.join(x[1], &#39;info.json&#39;))[&#39;last_update&#39;]), mapper))
-    mapper.sort(key=lambda x: x[1], reverse=True)
-    return list(map(lambda x: x[0], mapper))   </code></pre>
-</details>
-</dd>
-<dt id="llmflex.Memory.base_memory.title_dir_map"><code class="name flex">
-<span>def <span class="ident">title_dir_map</span></span>(<span>) ‑> Dict[str, str]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Return a dictionary with chat titles as keys and their respective directories as values.</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>Dict[str, str]</code></dt>
-<dd>A dictionary with chat titles as keys and their respective directories as values.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def title_dir_map() -&gt; Dict[str, str]:
-    &#34;&#34;&#34;Return a dictionary with chat titles as keys and their respective directories as values.
-
-    Returns:
-        Dict[str, str]: A dictionary with chat titles as keys and their respective directories as values.
-    &#34;&#34;&#34;
-    from ..utils import read_json
-    dirs = list_chat_dirs()
-    titles = list(map(lambda x: read_json(os.path.join(x, &#39;info.json&#39;))[&#39;title&#39;], dirs))
-    return dict(zip(titles, dirs))</code></pre>
+    chat_ids = list_chat_ids()
+    home = chat_memory_home()
+    titles = list(map(lambda x: read_json(os.path.join(home, x, &#39;info.json&#39;))[&#39;title&#39;], chat_ids))
+    return titles   </code></pre>
 </details>
 </dd>
 </dl>
@@ -466,15 +604,15 @@ class BaseChatMemory:
 <dl>
 <dt id="llmflex.Memory.base_memory.BaseChatMemory"><code class="flex name class">
 <span>class <span class="ident">BaseChatMemory</span></span>
-<span>(</span><span>title: str, from_exist: bool = True, system: Optional[str] = None)</span>
+<span>(</span><span>chat_id: str, from_exist: bool = True, system: Optional[str] = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Base class for chat memory.</p>
 <p>Initialising the memory class.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
-<dd>Title of the chat.</dd>
+<dt><strong><code>chat_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Chat ID.</dd>
 <dt><strong><code>from_exist</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Initialising the chat memory from existing files if the title exists. Defaults to True.</dd>
 <dt><strong><code>system</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
@@ -487,21 +625,31 @@ class BaseChatMemory:
 <pre><code class="python">class BaseChatMemory:
     &#34;&#34;&#34;Base class for chat memory.
     &#34;&#34;&#34;
-    def __init__(self, title: str, from_exist: bool = True, system: Optional[str] = None) -&gt; None:
+    def __init__(self, chat_id: str, from_exist: bool = True, system: Optional[str] = None) -&gt; None:
         &#34;&#34;&#34;Initialising the memory class.
 
         Args:
-            title (str): Title of the chat.
+            chat_id (str): Chat ID.
             from_exist (bool, optional): Initialising the chat memory from existing files if the title exists. Defaults to True.
             system (Optional[str], optional): System message for the chat. If None is given, the default system message or the stored system message will be used. Defaults to None.
         &#34;&#34;&#34;
-        title = title.strip(&#39; \n\r\t&#39;)
-        if title == &#39;&#39;:
-            raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
-        self._title = title
+        import re
+        re_chat = re.compile(r&#39;chat_\d+&#39;)
+        if not re_chat.match(chat_id):
+            raise ValueError(&#39;Invalid chat ID.&#39;)
+        self._chat_id = chat_id
         self._init_memory(from_exist=from_exist)
         self.info[&#39;system&#39;] = system.strip() if system is not None else self.info.get(&#39;system&#39;, DEFAULT_SYSTEM_MESSAGE)
         self.save()
+
+    @property
+    def chat_id(self) -&gt; str:
+        &#34;&#34;&#34;Unique identifier of the chat memory.
+
+        Returns:
+            str: Unique identifier of the chat memory.
+        &#34;&#34;&#34;
+        return self._chat_id
 
     @property
     def title(self) -&gt; str:
@@ -510,7 +658,11 @@ class BaseChatMemory:
         Returns:
             str: Chat title.
         &#34;&#34;&#34;
-        return self._title
+        title = self.info.get(&#39;title&#39;)
+        if title is None:
+            self.info[&#39;title&#39;] = &#39;New Chat&#39;
+            self.save()
+        return title
     
     @property
     def chat_dir(self) -&gt; str:
@@ -519,22 +671,10 @@ class BaseChatMemory:
         Returns:
             str: Directory of the chat.
         &#34;&#34;&#34;
-        mapper = title_dir_map()
-        if hasattr(self, &#39;_chat_dir&#39;):
-            return self._chat_dir
-        elif self.title in list(mapper.keys()):
-            self._chat_dir = mapper[self.title]
-            return self._chat_dir
-        elif len(list(mapper.keys())) == 0:
-            self._chat_dir = os.path.join(chat_memory_home(), &#39;chat_0&#39;)
-            os.makedirs(self._chat_dir, exist_ok=True)
-            return self._chat_dir
-        else:
-            dirs = list(mapper.values())
-            new = max(list(map(lambda x: int(os.path.basename(x).removeprefix(&#39;chat_&#39;)), dirs))) + 1
-            self._chat_dir = os.path.join(chat_memory_home(), f&#39;chat_{new}&#39;)
-            os.makedirs(self._chat_dir, exist_ok=True)
-            return self._chat_dir
+        chat_dir = os.path.join(chat_memory_home(), self.chat_id)
+        if not os.path.exists(chat_dir):
+            os.makedirs(chat_dir)
+        return chat_dir
     
     @property
     def info(self) -&gt; Dict[str, Any]:
@@ -551,7 +691,7 @@ class BaseChatMemory:
             return self._info
         else:
             from ..utils import save_json, current_time
-            self._info = dict(title=self.title, last_update=current_time())
+            self._info = dict(title=&#39;New Chat&#39;, last_update=current_time())
             save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
             return self._info
 
@@ -578,6 +718,32 @@ class BaseChatMemory:
         history = list(map(lambda x: list(filter(lambda y: y[2] == x, history))[0], range(count)))
         history.sort(key=lambda x: x[2], reverse=False)
         return list(map(lambda x: tuple(x[:2]), history))
+    
+    @property
+    def history_dict(self) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Entire history as dictionaries.
+
+        Returns:
+            List[Dict[str, Any]]: Entire history as dictionaries.
+        &#34;&#34;&#34;
+        import gc
+        history: list[dict[str, Any]] = list(map(lambda x: x.metadata, self._data.values()))
+        if len(history) == 0:
+            return []
+        count = max(list(map(lambda x: x[&#39;order&#39;], history))) + 1
+        history = list(map(lambda x: list(filter(lambda y: y[&#39;order&#39;] == x, history))[0], range(count)))
+        history.sort(key=lambda x: x[&#39;order&#39;], reverse=False)
+        def reformat_record(record: dict[str, Any]) -&gt; List[Dict[str, Any]]:
+            user = dict(role=&#39;user&#39;, content=record[&#39;user&#39;])
+            assistant = dict(role=&#39;assistant&#39;, content=record[&#39;assistant&#39;])
+            for k, v in record.items():
+                if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;, &#39;role&#39;]:
+                    assistant[k] = v
+            return [user, assistant]
+        history = list(map(reformat_record, history))
+        gc.collect()
+        return sum(history, [])
+
 
     @property
     def interaction_count(self) -&gt; int:
@@ -594,7 +760,7 @@ class BaseChatMemory:
         Args:
             from_exist (bool, optional): Whether to initialise from existing files. Defaults to True.
         &#34;&#34;&#34;
-        if ((from_exist) &amp; (self.title in list_titles())):
+        if ((from_exist) &amp; (self.chat_id in list_chat_ids())):
             import pickle
             with open(os.path.join(self.chat_dir, &#39;data.pkl&#39;), &#39;rb&#39;) as f:
                 self._data = pickle.load(f)
@@ -621,6 +787,18 @@ class BaseChatMemory:
             system (str): New system message.
         &#34;&#34;&#34;
         self.info[&#39;system&#39;] = system.strip()
+        self.save()
+
+    def update_title(self, title: str) -&gt; None:
+        &#34;&#34;&#34;Update the title of the memory.
+
+        Args:
+            title (str): New chat memory title.
+        &#34;&#34;&#34;
+        title = title.strip()
+        if title == &#39;&#39;:
+            raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
+        self.info[&#39;title&#39;] = title
         self.save()
 
     def save_interaction(self, user_input: str, assistant_output: str, **kwargs) -&gt; None:
@@ -704,58 +882,11 @@ class BaseChatMemory:
                 tk_count += msg_count
             else:
                 break
-        return results
-    
-    def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
-            system: Optional[str] = None, recent_token_limit: int = 200, 
-            knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, **kwargs) -&gt; str:
-        &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
-
-        Args:
-            user (str): User newest message.
-            prompt_template (PromptTemplate): Prompt template to use.
-            llm (Type[BaseLLM]): LLM for counting tokens.
-            system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
-            recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
-            knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
-            relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
-            relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
-
-
-        Returns:
-            str: The full chat prompt.
-        &#34;&#34;&#34;
-        user = user.strip()
-        short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
-        system = self.system if not isinstance(system, str) else system
-        messages: list = [dict(role=&#39;system&#39;, content=self.system)] + prompt_template.format_history(short, return_list=True)
-        if knowledge_base is not None:
-            res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
-            if len(res) != 0:
-                import json
-                res = list(map(lambda x: x.index, res))
-                if prompt_template.allow_custom_role:
-                    res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
-                    messages.extend([dict(role=&#39;user&#39;, content=user), dict(role=&#39;extra information&#39;, content=res)])
-                    prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
-                else:
-                    messages.append(dict(role=&#39;user&#39;, content=user))
-                    prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
-                    res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
-                    prompt += f&#39;{res}\n\nResponse: &#39;
-            else:
-                messages.append(dict(role=&#39;user&#39;, content=user))
-                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
-        else:
-            messages.append(dict(role=&#39;user&#39;, content=user))
-            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
-        return prompt</code></pre>
+        return results</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory" href="assistant_long_term_memory.html#llmflex.Memory.assistant_long_term_memory.AssistantLongTermChatMemory">AssistantLongTermChatMemory</a></li>
 <li><a title="llmflex.Memory.long_short_memory.LongShortTermChatMemory" href="long_short_memory.html#llmflex.Memory.long_short_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></li>
-<li><a title="llmflex.Memory.longshort_memory.LongShortTermChatMemory" href="longshort_memory.html#llmflex.Memory.longshort_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -778,22 +909,32 @@ def chat_dir(self) -&gt; str:
     Returns:
         str: Directory of the chat.
     &#34;&#34;&#34;
-    mapper = title_dir_map()
-    if hasattr(self, &#39;_chat_dir&#39;):
-        return self._chat_dir
-    elif self.title in list(mapper.keys()):
-        self._chat_dir = mapper[self.title]
-        return self._chat_dir
-    elif len(list(mapper.keys())) == 0:
-        self._chat_dir = os.path.join(chat_memory_home(), &#39;chat_0&#39;)
-        os.makedirs(self._chat_dir, exist_ok=True)
-        return self._chat_dir
-    else:
-        dirs = list(mapper.values())
-        new = max(list(map(lambda x: int(os.path.basename(x).removeprefix(&#39;chat_&#39;)), dirs))) + 1
-        self._chat_dir = os.path.join(chat_memory_home(), f&#39;chat_{new}&#39;)
-        os.makedirs(self._chat_dir, exist_ok=True)
-        return self._chat_dir</code></pre>
+    chat_dir = os.path.join(chat_memory_home(), self.chat_id)
+    if not os.path.exists(chat_dir):
+        os.makedirs(chat_dir)
+    return chat_dir</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.chat_id"><code class="name">var <span class="ident">chat_id</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Unique identifier of the chat memory.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Unique identifier of the chat memory.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def chat_id(self) -&gt; str:
+    &#34;&#34;&#34;Unique identifier of the chat memory.
+
+    Returns:
+        str: Unique identifier of the chat memory.
+    &#34;&#34;&#34;
+    return self._chat_id</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Memory.base_memory.BaseChatMemory.history"><code class="name">var <span class="ident">history</span> : List[Tuple[str, str]]</code></dt>
@@ -824,6 +965,44 @@ def history(self) -&gt; List[Tuple[str, str]]:
     return list(map(lambda x: tuple(x[:2]), history))</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.history_dict"><code class="name">var <span class="ident">history_dict</span> : List[Dict[str, Any]]</code></dt>
+<dd>
+<div class="desc"><p>Entire history as dictionaries.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Dict[str, Any]]</code></dt>
+<dd>Entire history as dictionaries.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def history_dict(self) -&gt; List[Dict[str, Any]]:
+    &#34;&#34;&#34;Entire history as dictionaries.
+
+    Returns:
+        List[Dict[str, Any]]: Entire history as dictionaries.
+    &#34;&#34;&#34;
+    import gc
+    history: list[dict[str, Any]] = list(map(lambda x: x.metadata, self._data.values()))
+    if len(history) == 0:
+        return []
+    count = max(list(map(lambda x: x[&#39;order&#39;], history))) + 1
+    history = list(map(lambda x: list(filter(lambda y: y[&#39;order&#39;] == x, history))[0], range(count)))
+    history.sort(key=lambda x: x[&#39;order&#39;], reverse=False)
+    def reformat_record(record: dict[str, Any]) -&gt; List[Dict[str, Any]]:
+        user = dict(role=&#39;user&#39;, content=record[&#39;user&#39;])
+        assistant = dict(role=&#39;assistant&#39;, content=record[&#39;assistant&#39;])
+        for k, v in record.items():
+            if k not in [&#39;user&#39;, &#39;assistant&#39;, &#39;order&#39;, &#39;role&#39;]:
+                assistant[k] = v
+        return [user, assistant]
+    history = list(map(reformat_record, history))
+    gc.collect()
+    return sum(history, [])</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Memory.base_memory.BaseChatMemory.info"><code class="name">var <span class="ident">info</span> : Dict[str, Any]</code></dt>
 <dd>
 <div class="desc"><p>Information of the chat.</p>
@@ -851,7 +1030,7 @@ def info(self) -&gt; Dict[str, Any]:
         return self._info
     else:
         from ..utils import save_json, current_time
-        self._info = dict(title=self.title, last_update=current_time())
+        self._info = dict(title=&#39;New Chat&#39;, last_update=current_time())
         save_json(self._info, os.path.join(self.chat_dir, &#39;info.json&#39;))
         return self._info</code></pre>
 </details>
@@ -919,7 +1098,11 @@ def title(self) -&gt; str:
     Returns:
         str: Chat title.
     &#34;&#34;&#34;
-    return self._title</code></pre>
+    title = self.info.get(&#39;title&#39;)
+    if title is None:
+        self.info[&#39;title&#39;] = &#39;New Chat&#39;
+        self.save()
+    return title</code></pre>
 </details>
 </dd>
 </dl>
@@ -938,85 +1121,6 @@ def title(self) -&gt; str:
     &#34;&#34;&#34;Empty the whole chat history.
     &#34;&#34;&#34;
     self._init_memory(from_exist=False)</code></pre>
-</details>
-</dd>
-<dt id="llmflex.Memory.base_memory.BaseChatMemory.create_prompt_with_memory"><code class="name flex">
-<span>def <span class="ident">create_prompt_with_memory</span></span>(<span>self, user: str, prompt_template: <a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], system: Optional[str] = None, recent_token_limit: int = 200, knowledge_base: Optional[<a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase" href="../KnowledgeBase/knowledge_base.html#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase">KnowledgeBase</a>] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, **kwargs) ‑> str</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. </p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>user</code></strong> :&ensp;<code>str</code></dt>
-<dd>User newest message.</dd>
-<dt><strong><code>prompt_template</code></strong> :&ensp;<code>PromptTemplate</code></dt>
-<dd>Prompt template to use.</dd>
-<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
-<dd>LLM for counting tokens.</dd>
-<dt><strong><code>system</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
-<dd>System message to override the default system message for the memory. Defaults to None.</dd>
-<dt><strong><code>recent_token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Maximum number of tokens for recent term memory. Defaults to 200.</dd>
-<dt><strong><code>knowledge_base</code></strong> :&ensp;<code>Optional[KnowledgeBase]</code></dt>
-<dd>Knowledge base that helps the assistant to answer questions. Defaults to None.</dd>
-<dt><strong><code>relevance_token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.</dd>
-<dt><strong><code>relevance_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>str</code></dt>
-<dd>The full chat prompt.</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def create_prompt_with_memory(self, user: str, prompt_template: PromptTemplate, llm: Type[BaseLLM],
-        system: Optional[str] = None, recent_token_limit: int = 200, 
-        knowledge_base: Optional[KnowledgeBase] = None, relevance_token_limit: int = 200, relevance_score_threshold: float = 0.8, **kwargs) -&gt; str:
-    &#34;&#34;&#34;Wrapper function to create full chat prompts using the prompt template given, with long term memory included in the prompt. 
-
-    Args:
-        user (str): User newest message.
-        prompt_template (PromptTemplate): Prompt template to use.
-        llm (Type[BaseLLM]): LLM for counting tokens.
-        system (Optional[str], optional): System message to override the default system message for the memory. Defaults to None.
-        recent_token_limit (int, optional): Maximum number of tokens for recent term memory. Defaults to 200.
-        knowledge_base (Optional[KnowledgeBase]): Knowledge base that helps the assistant to answer questions. Defaults to None.
-        relevance_token_limit (int, optional): Maximum number of tokens for search results from the knowledge base if a knowledge base is given. Defaults to 200.
-        relevance_score_threshold (float, optional): Reranking score threshold for knowledge base search if a knowledge base is given. Defaults to 0.8.
-
-
-    Returns:
-        str: The full chat prompt.
-    &#34;&#34;&#34;
-    user = user.strip()
-    short = self.get_token_memory(llm=llm, token_limit=recent_token_limit)
-    system = self.system if not isinstance(system, str) else system
-    messages: list = [dict(role=&#39;system&#39;, content=self.system)] + prompt_template.format_history(short, return_list=True)
-    if knowledge_base is not None:
-        res = knowledge_base.search(query=user, token_limit=relevance_token_limit, fetch_k=50, count_fn=llm.get_num_tokens, relevance_score_threshold=relevance_score_threshold)
-        if len(res) != 0:
-            import json
-            res = list(map(lambda x: x.index, res))
-            if prompt_template.allow_custom_role:
-                res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
-                messages.extend([dict(role=&#39;user&#39;, content=user), dict(role=&#39;extra information&#39;, content=res)])
-                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True) 
-            else:
-                messages.append(dict(role=&#39;user&#39;, content=user))
-                prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
-                res = json.dumps({&#39;Information from knowledge base&#39;: res}, indent=4)
-                prompt += f&#39;{res}\n\nResponse: &#39;
-        else:
-            messages.append(dict(role=&#39;user&#39;, content=user))
-            prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)    
-    else:
-        messages.append(dict(role=&#39;user&#39;, content=user))
-        prompt = prompt_template.create_custom_prompt(messages=messages, add_generation_prompt=True)
-    return prompt</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory"><code class="name flex">
@@ -1211,6 +1315,33 @@ def title(self) -&gt; str:
     self.save()</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Memory.base_memory.BaseChatMemory.update_title"><code class="name flex">
+<span>def <span class="ident">update_title</span></span>(<span>self, title: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update the title of the memory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>New chat memory title.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_title(self, title: str) -&gt; None:
+    &#34;&#34;&#34;Update the title of the memory.
+
+    Args:
+        title (str): New chat memory title.
+    &#34;&#34;&#34;
+    title = title.strip()
+    if title == &#39;&#39;:
+        raise ValueError(&#39;Chat title cannot be an empty string.&#39;)
+    self.info[&#39;title&#39;] = title
+    self.save()</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 </dl>
@@ -1228,11 +1359,14 @@ def title(self) -&gt; str:
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="llmflex.Memory.base_memory.chat_memory_home" href="#llmflex.Memory.base_memory.chat_memory_home">chat_memory_home</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.get_dir_from_id" href="#llmflex.Memory.base_memory.get_dir_from_id">get_dir_from_id</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.get_new_chat_id" href="#llmflex.Memory.base_memory.get_new_chat_id">get_new_chat_id</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.get_title_from_id" href="#llmflex.Memory.base_memory.get_title_from_id">get_title_from_id</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.list_chat_dirs" href="#llmflex.Memory.base_memory.list_chat_dirs">list_chat_dirs</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.list_chat_ids" href="#llmflex.Memory.base_memory.list_chat_ids">list_chat_ids</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.list_titles" href="#llmflex.Memory.base_memory.list_titles">list_titles</a></code></li>
-<li><code><a title="llmflex.Memory.base_memory.title_dir_map" href="#llmflex.Memory.base_memory.title_dir_map">title_dir_map</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -1241,11 +1375,12 @@ def title(self) -&gt; str:
 <h4><code><a title="llmflex.Memory.base_memory.BaseChatMemory" href="#llmflex.Memory.base_memory.BaseChatMemory">BaseChatMemory</a></code></h4>
 <ul class="">
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.chat_dir" href="#llmflex.Memory.base_memory.BaseChatMemory.chat_dir">chat_dir</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.chat_id" href="#llmflex.Memory.base_memory.BaseChatMemory.chat_id">chat_id</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.clear" href="#llmflex.Memory.base_memory.BaseChatMemory.clear">clear</a></code></li>
-<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.create_prompt_with_memory" href="#llmflex.Memory.base_memory.BaseChatMemory.create_prompt_with_memory">create_prompt_with_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory" href="#llmflex.Memory.base_memory.BaseChatMemory.get_recent_memory">get_recent_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.get_token_memory" href="#llmflex.Memory.base_memory.BaseChatMemory.get_token_memory">get_token_memory</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.history" href="#llmflex.Memory.base_memory.BaseChatMemory.history">history</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.history_dict" href="#llmflex.Memory.base_memory.BaseChatMemory.history_dict">history_dict</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.info" href="#llmflex.Memory.base_memory.BaseChatMemory.info">info</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.interaction_count" href="#llmflex.Memory.base_memory.BaseChatMemory.interaction_count">interaction_count</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction" href="#llmflex.Memory.base_memory.BaseChatMemory.remove_last_interaction">remove_last_interaction</a></code></li>
@@ -1254,6 +1389,7 @@ def title(self) -&gt; str:
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.system" href="#llmflex.Memory.base_memory.BaseChatMemory.system">system</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.title" href="#llmflex.Memory.base_memory.BaseChatMemory.title">title</a></code></li>
 <li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.update_system_message" href="#llmflex.Memory.base_memory.BaseChatMemory.update_system_message">update_system_message</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseChatMemory.update_title" href="#llmflex.Memory.base_memory.BaseChatMemory.update_title">update_title</a></code></li>
 </ul>
 </li>
 </ul>

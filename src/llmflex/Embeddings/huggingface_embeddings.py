@@ -53,7 +53,7 @@ class HuggingfaceEmbeddingsToolkit(BaseEmbeddingsToolkit):
         """
         from ..TextSplitters.token_text_splitter import TokenCountTextSplitter
         from ..Schemas.tokenizer import Tokenizer
-        embedding_model = HuggingFaceEmbeddings(model_name=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
+        embedding_model = HuggingFaceEmbeddings(model_id=model_id, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
         name = model_id
         type = 'huggingface_embeddings'
         chunk_size = min(embedding_model._max_seq_length, 512) if not isinstance(chunk_size, int) else chunk_size

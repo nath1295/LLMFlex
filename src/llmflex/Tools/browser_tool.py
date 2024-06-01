@@ -8,20 +8,29 @@ class BrowserTool(BaseTool):
     """Tool for browsing contents via the DuckDuckGo search engine given any search query. The output will be the most relevant chunks of content found from the search engine according to the search query.
     """
     def __init__(self, embeddings: BaseEmbeddingsToolkit, llm: Optional[BaseLLM] = None, ranker: Optional[BaseRanker] = None) -> None:
+        """Initialising the tool.
+
+        Args:
+            embeddings (BaseEmbeddingsToolkit): Embeddings toolkit for the vector database.
+            llm (Optional[BaseLLM], optional): LLM to count number of tokens for each chunk. Defaults to None.
+            ranker (Optional[BaseRanker], optional): Reranker to rerank results. If none is given, results will not be reranked after the search on the vector database. Defaults to None.
+        """
         from ..VectorDBs.faiss_vectordb import FaissVectorDatabase
         self.embeddings = embeddings
         self.vdb = FaissVectorDatabase.from_documents(embeddings=self.embeddings, docs=[])
         self.llm = llm
         self.ranker = ranker
+        super().__init__()
 
-    def __call__(self, search_query: str) -> List[Dict[str, str]]:
+    def __call__(self, search_query: str, max_num_results: int = 3) -> Dict[str, List[str]]:
         """Entry point of the tool.
 
         Args:
             search_query (str): Search query to browse on DuckDuckGo.
+            max_num_results (int, optional): Maximum number of relevant chunks of contents from the search results. Defaults to 3.
 
         Returns:
-            List[Dict[str, str]]: The most relevant chunks on contents along with their resepctive URLs.
+            Dict[str, List[str]]: The most relevant chunks on contents along with their resepctive URLs.
         """
         import gc
         from .web_search_utils import ddg_search, get_markdown, create_content_chunks
@@ -37,30 +46,21 @@ class BrowserTool(BaseTool):
                 docs.extend(doc)
         self.vdb.add_documents(docs, split_text=False)
         if self.ranker:
-            chunks = self.vdb.search(query=search_query, top_k=15, index_only=False)
+            chunks = self.vdb.search(query=search_query, top_k=max(int(max_num_results * 2), 15), index_only=False)
             self.vdb.clear()
-            res = self.ranker.rerank(query=search_query, elements=chunks, top_k=3)
-            res = map(lambda x: x.to_dict(), res)
-            chunks = list(map(self._create_chunk, res))
+            res = self.ranker.rerank(query=search_query, elements=chunks, top_k=max_num_results)
+            res = list(map(lambda x: x.to_dict(), res))
+            chunks = list(map(lambda x: x['index'], res))
+            sources = list(set(map(lambda x: x['metadata']['href'], res)))
         else:
-            chunks = self.vdb.search(query=search_query, top_k=3, index_only=False)
+            chunks = self.vdb.search(query=search_query, top_k=max_num_results, index_only=False)
             self.vdb.clear()
             res = chunks.copy()
-            chunks = list(map(self._create_chunk, res))
+            chunks = list(map(lambda x: x['index'], res))
+            sources = list(set(map(lambda x: x['metadata']['href'], res)))
         gc.collect()
-        return chunks
+        output = dict(relevant_contents=chunks, footnote=sources)
+        return output
     
-    def _create_chunk(self, result: Dict[str, Any]) -> Dict[str, str]:
-        """Formatting a content chunk into a dictionary.
 
-        Args:
-            result (Dict[str, Any]): Dictionary of the original search result.
-
-        Returns:
-            Dict[str, str]: Formatted dictionary of the search result.
-        """
-        return dict(
-            chunk_content=result['index'], 
-            source=result['metadata']['href']
-        )
     

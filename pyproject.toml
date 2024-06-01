@@ -20,17 +20,20 @@ dependencies = [
     "faiss-cpu",
     "optimum",
     "gradio>=4.2",
-    "duckduckgo-search>=5.2.2",
+    "duckduckgo-search>=6.1.0",
     "fake-useragent",
     "openai>=1.0.0",
     "tiktoken",
     "protobuf",
     "beautifulsoup4",
     "streamlit",
+    "streamlit-extras",
     "watchdog",
+    "guidance",
     "spacy>=3.7.0",
     "flask",
     "PyMuPDF",
+    "flashrank",
     "python-docx"
 ]
 

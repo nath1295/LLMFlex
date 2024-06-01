@@ -1,2 +1,2 @@
-from .gradio_interface import GradioInterface
-from .streamlit_interface import run_streamlit_interface
+from .app_resource import AppBackend
+from .streamlit_interface import AppInterface, create_streamlit_script
