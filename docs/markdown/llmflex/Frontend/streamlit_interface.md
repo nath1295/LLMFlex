@@ -120,6 +120,16 @@ Classes
     `model_settings(self) ‑> None`
     :   Create settings for text generation.
 
+    `process_image(self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) ‑> str`
+    :   Capture images in tool output.
+        
+        Args:
+            messages (List[Dict[str, Any]]): List of messages to form the prompt.
+            tool_output (Dict[str, Any]): Output of the tool.
+        
+        Returns:
+            str: Prompt for generation.
+
     `prompt_format_settings(self) ‑> None`
     :   Prompt format settings.
 

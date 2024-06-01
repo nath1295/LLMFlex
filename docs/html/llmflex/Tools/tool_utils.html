@@ -398,7 +398,7 @@ class ToolSelector:
             Dict[str, Union[Callable, Type[BaseTool]]]: Map of tool names and the tools.
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_tool_map&#39;):
-            names = [m[&#39;name&#39;] for m in self.metadatas]
+            names = [m[&#39;name&#39;] for m in self._metadatas]
             self._tool_map = dict(zip(names, self.tools))
         return {k: self._tool_map[k] for k in self.enabled_tools}
     
@@ -1128,6 +1128,7 @@ class ToolSelector:
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="llmflex.Tools.browser_tool.BrowserTool" href="browser_tool.html#llmflex.Tools.browser_tool.BrowserTool">BrowserTool</a></li>
+<li><a title="llmflex.Tools.sd_tool.StableDiffusionTool" href="sd_tool.html#llmflex.Tools.sd_tool.StableDiffusionTool">StableDiffusionTool</a></li>
 </ul>
 <h3>Instance variables</h3>
 <dl>
@@ -1250,7 +1251,7 @@ def name(self) -&gt; str:
             Dict[str, Union[Callable, Type[BaseTool]]]: Map of tool names and the tools.
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_tool_map&#39;):
-            names = [m[&#39;name&#39;] for m in self.metadatas]
+            names = [m[&#39;name&#39;] for m in self._metadatas]
             self._tool_map = dict(zip(names, self.tools))
         return {k: self._tool_map[k] for k in self.enabled_tools}
     
@@ -1589,7 +1590,7 @@ def tool_map(self) -&gt; Dict[str, Union[Callable, Type[BaseTool]]]:
         Dict[str, Union[Callable, Type[BaseTool]]]: Map of tool names and the tools.
     &#34;&#34;&#34;
     if not hasattr(self, &#39;_tool_map&#39;):
-        names = [m[&#39;name&#39;] for m in self.metadatas]
+        names = [m[&#39;name&#39;] for m in self._metadatas]
         self._tool_map = dict(zip(names, self.tools))
     return {k: self._tool_map[k] for k in self.enabled_tools}</code></pre>
 </details>

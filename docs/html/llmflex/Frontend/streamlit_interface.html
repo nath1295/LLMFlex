@@ -35,7 +35,7 @@ from ..Memory.memory_utils import create_prompt_with_history
 from ..Prompts.prompt_template import presets
 from ..Tools.tool_utils import gen_string
 from ..utils import PACKAGE_DISPLAY_NAME
-from typing import Dict, Any, Literal, Optional, Tuple
+from typing import Dict, Any, Literal, Optional, Tuple, List
 import yaml
 
 DEFAULT_CONFIG = dict(
@@ -451,6 +451,38 @@ class AppInterface:
             mode=generation_mode
         )
 
+    def process_image(self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) -&gt; str:
+        &#34;&#34;&#34;Capture images in tool output.
+
+        Args:
+            messages (List[Dict[str, Any]]): List of messages to form the prompt.
+            tool_output (Dict[str, Any]): Output of the tool.
+
+        Returns:
+            str: Prompt for generation.
+        &#34;&#34;&#34;
+        if tool_output.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
+            images = tool_output.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
+            begin_text = &#39;&#39;
+            img_dir = []
+            try:
+                for i, img in enumerate(images):
+                    try:
+                        st.image(img)
+                        img_dir.append(f&#39;![Image {i}]({img})&#39;)
+                    except:
+                        pass
+            except:
+                pass
+            if img_dir:
+                begin_text = &#39;  \n&#39;.join(img_dir) + &#39;\n\n&#39;
+                prompt = self.backend.prompt_template.create_custom_prompt(messages=messages) + begin_text
+                return prompt
+            else:
+                return self.backend.prompt_template.create_custom_prompt(messages=messages)
+        else:
+            return self.backend.prompt_template.create_custom_prompt(messages=messages)
+
     def generation_message(self) -&gt; None:
         &#34;&#34;&#34;Create streaming message.
         &#34;&#34;&#34;
@@ -481,7 +513,7 @@ class AppInterface:
                             with toolholder.status(label=f&#34;:hammer_and_pick: __{tool_name}__&#34;, state=&#39;complete&#39;):
                                 st.text(json.dumps(tool_output, indent=4))
                             prompt.append(dict(role=&#39;function_call&#39;, content=str(tool_output)))
-                            prompt = self.backend.prompt_template.create_custom_prompt(messages=prompt) + begin_text
+                            prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
                     placeholder = st.empty()
                     streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                     output = begin_text
@@ -521,6 +553,14 @@ class AppInterface:
                         else:
                             footnote = str(footnote)
                         content += &#39;\n\n---\n&#39; + footnote
+                    if fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
+                        images = fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
+                        if isinstance(images, list):
+                            for img in images:
+                                try:
+                                    st.image(img)
+                                except:
+                                    pass
                 st.markdown(content, help=f&#39;Number of tokens: {self.backend.llm.get_num_tokens(message[&#34;content&#34;])}&#39;)
         self.generation_message()
 
@@ -1012,6 +1052,38 @@ def get_backend() -&gt; AppBackend:
             mode=generation_mode
         )
 
+    def process_image(self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) -&gt; str:
+        &#34;&#34;&#34;Capture images in tool output.
+
+        Args:
+            messages (List[Dict[str, Any]]): List of messages to form the prompt.
+            tool_output (Dict[str, Any]): Output of the tool.
+
+        Returns:
+            str: Prompt for generation.
+        &#34;&#34;&#34;
+        if tool_output.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
+            images = tool_output.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
+            begin_text = &#39;&#39;
+            img_dir = []
+            try:
+                for i, img in enumerate(images):
+                    try:
+                        st.image(img)
+                        img_dir.append(f&#39;![Image {i}]({img})&#39;)
+                    except:
+                        pass
+            except:
+                pass
+            if img_dir:
+                begin_text = &#39;  \n&#39;.join(img_dir) + &#39;\n\n&#39;
+                prompt = self.backend.prompt_template.create_custom_prompt(messages=messages) + begin_text
+                return prompt
+            else:
+                return self.backend.prompt_template.create_custom_prompt(messages=messages)
+        else:
+            return self.backend.prompt_template.create_custom_prompt(messages=messages)
+
     def generation_message(self) -&gt; None:
         &#34;&#34;&#34;Create streaming message.
         &#34;&#34;&#34;
@@ -1042,7 +1114,7 @@ def get_backend() -&gt; AppBackend:
                             with toolholder.status(label=f&#34;:hammer_and_pick: __{tool_name}__&#34;, state=&#39;complete&#39;):
                                 st.text(json.dumps(tool_output, indent=4))
                             prompt.append(dict(role=&#39;function_call&#39;, content=str(tool_output)))
-                            prompt = self.backend.prompt_template.create_custom_prompt(messages=prompt) + begin_text
+                            prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
                     placeholder = st.empty()
                     streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                     output = begin_text
@@ -1082,6 +1154,14 @@ def get_backend() -&gt; AppBackend:
                         else:
                             footnote = str(footnote)
                         content += &#39;\n\n---\n&#39; + footnote
+                    if fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
+                        images = fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
+                        if isinstance(images, list):
+                            for img in images:
+                                try:
+                                    st.image(img)
+                                except:
+                                    pass
                 st.markdown(content, help=f&#39;Number of tokens: {self.backend.llm.get_num_tokens(message[&#34;content&#34;])}&#39;)
         self.generation_message()
 
@@ -1535,7 +1615,7 @@ def mobile(self) -&gt; bool:
                         with toolholder.status(label=f&#34;:hammer_and_pick: __{tool_name}__&#34;, state=&#39;complete&#39;):
                             st.text(json.dumps(tool_output, indent=4))
                         prompt.append(dict(role=&#39;function_call&#39;, content=str(tool_output)))
-                        prompt = self.backend.prompt_template.create_custom_prompt(messages=prompt) + begin_text
+                        prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
                 placeholder = st.empty()
                 streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                 output = begin_text
@@ -1585,6 +1665,14 @@ def mobile(self) -&gt; bool:
                     else:
                         footnote = str(footnote)
                     content += &#39;\n\n---\n&#39; + footnote
+                if fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
+                    images = fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
+                    if isinstance(images, list):
+                        for img in images:
+                            try:
+                                st.image(img)
+                            except:
+                                pass
             st.markdown(content, help=f&#39;Number of tokens: {self.backend.llm.get_num_tokens(message[&#34;content&#34;])}&#39;)
     self.generation_message()</code></pre>
 </details>
@@ -1736,6 +1824,60 @@ def mobile(self) -&gt; bool:
                           repetition_penalty=self.repetition_slidder,
                           top_p=self.topp_slidder,
                           top_k=self.topk_slidder))</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.streamlit_interface.AppInterface.process_image"><code class="name flex">
+<span>def <span class="ident">process_image</span></span>(<span>self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Capture images in tool output.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>messages</code></strong> :&ensp;<code>List[Dict[str, Any]]</code></dt>
+<dd>List of messages to form the prompt.</dd>
+<dt><strong><code>tool_output</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>Output of the tool.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Prompt for generation.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_image(self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) -&gt; str:
+    &#34;&#34;&#34;Capture images in tool output.
+
+    Args:
+        messages (List[Dict[str, Any]]): List of messages to form the prompt.
+        tool_output (Dict[str, Any]): Output of the tool.
+
+    Returns:
+        str: Prompt for generation.
+    &#34;&#34;&#34;
+    if tool_output.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
+        images = tool_output.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
+        begin_text = &#39;&#39;
+        img_dir = []
+        try:
+            for i, img in enumerate(images):
+                try:
+                    st.image(img)
+                    img_dir.append(f&#39;![Image {i}]({img})&#39;)
+                except:
+                    pass
+        except:
+            pass
+        if img_dir:
+            begin_text = &#39;  \n&#39;.join(img_dir) + &#39;\n\n&#39;
+            prompt = self.backend.prompt_template.create_custom_prompt(messages=messages) + begin_text
+            return prompt
+        else:
+            return self.backend.prompt_template.create_custom_prompt(messages=messages)
+    else:
+        return self.backend.prompt_template.create_custom_prompt(messages=messages)</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.streamlit_interface.AppInterface.prompt_format_settings"><code class="name flex">
@@ -1963,6 +2105,7 @@ def mobile(self) -&gt; bool:
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.mobile" href="#llmflex.Frontend.streamlit_interface.AppInterface.mobile">mobile</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.mobile_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.mobile_settings">mobile_settings</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.model_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.model_settings">model_settings</a></code></li>
+<li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.process_image" href="#llmflex.Frontend.streamlit_interface.AppInterface.process_image">process_image</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.prompt_format_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.prompt_format_settings">prompt_format_settings</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.run" href="#llmflex.Frontend.streamlit_interface.AppInterface.run">run</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.settings">settings</a></code></li>

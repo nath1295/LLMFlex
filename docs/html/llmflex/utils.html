@@ -166,11 +166,14 @@ def get_config_dir() -&gt; str:
         os.makedirs(config_dir)
     return os.path.join(config_dir, &#39;config.json&#39;)
 
-def get_config() -&gt; Dict[str, Any]:
+def get_config(element: Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;, &#39;st_home&#39;] = &#39;all&#39;) -&gt; Union[Dict[str, str], str]:
     &#34;&#34;&#34;Get the configuration of the package.
 
+    Args: 
+        element (Literal[&amp;#39;all&amp;#39;, &amp;#39;package_home&amp;#39;, &amp;#39;hf_home&amp;#39;, &amp;#39;st_home&amp;#39;], optional): The output element of the configuration. Defaults to &#39;all&#39;.
+
     Returns:
-        Dict[str, Any]: Configuration of the package.
+        Union[Dict[str, str], str]: Configuration of the package or one of hte configured directories.
     &#34;&#34;&#34;
     config_dir = get_config_dir()
 
@@ -197,8 +200,10 @@ def get_config() -&gt; Dict[str, Any]:
     for v in config.values():
         if not os.path.exists(v):
             os.makedirs(v)
-
-    return config
+    if element == &#39;all&#39;:
+        return config
+    else:
+        return config[element]
 
 def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -&gt; None:
     &#34;&#34;&#34;Setting paths for the package.
@@ -298,24 +303,29 @@ def validate_type(obj: Any, cls: Any) -&gt; Any:
 </details>
 </dd>
 <dt id="llmflex.utils.get_config"><code class="name flex">
-<span>def <span class="ident">get_config</span></span>(<span>) ‑> Dict[str, Any]</span>
+<span>def <span class="ident">get_config</span></span>(<span>element: Literal['all', 'package_home', 'hf_home', 'st_home'] = 'all') ‑> Union[Dict[str, str], str]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Get the configuration of the package.</p>
+<p>Args:
+element (Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;, &#39;st_home&#39;], optional): The output element of the configuration. Defaults to 'all'.</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Dict[str, Any]</code></dt>
-<dd>Configuration of the package.</dd>
+<dt><code>Union[Dict[str, str], str]</code></dt>
+<dd>Configuration of the package or one of hte configured directories.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_config() -&gt; Dict[str, Any]:
+<pre><code class="python">def get_config(element: Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;, &#39;st_home&#39;] = &#39;all&#39;) -&gt; Union[Dict[str, str], str]:
     &#34;&#34;&#34;Get the configuration of the package.
 
+    Args: 
+        element (Literal[&amp;#39;all&amp;#39;, &amp;#39;package_home&amp;#39;, &amp;#39;hf_home&amp;#39;, &amp;#39;st_home&amp;#39;], optional): The output element of the configuration. Defaults to &#39;all&#39;.
+
     Returns:
-        Dict[str, Any]: Configuration of the package.
+        Union[Dict[str, str], str]: Configuration of the package or one of hte configured directories.
     &#34;&#34;&#34;
     config_dir = get_config_dir()
 
@@ -342,8 +352,10 @@ def validate_type(obj: Any, cls: Any) -&gt; Any:
     for v in config.values():
         if not os.path.exists(v):
             os.makedirs(v)
-
-    return config</code></pre>
+    if element == &#39;all&#39;:
+        return config
+    else:
+        return config[element]</code></pre>
 </details>
 </dd>
 <dt id="llmflex.utils.get_config_dir"><code class="name flex">

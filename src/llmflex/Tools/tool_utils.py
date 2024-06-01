@@ -370,7 +370,7 @@ class ToolSelector:
             Dict[str, Union[Callable, Type[BaseTool]]]: Map of tool names and the tools.
         """
         if not hasattr(self, '_tool_map'):
-            names = [m['name'] for m in self.metadatas]
+            names = [m['name'] for m in self._metadatas]
             self._tool_map = dict(zip(names, self.tools))
         return {k: self._tool_map[k] for k in self.enabled_tools}
     

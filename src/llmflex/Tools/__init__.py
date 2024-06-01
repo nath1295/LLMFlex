@@ -1,2 +1,2 @@
 from .tool_utils import BaseTool, ToolSelector, gen_string, select, get_tool_metadata
-from .tool_classes import BrowserTool, math_tool
+from .tool_classes import *

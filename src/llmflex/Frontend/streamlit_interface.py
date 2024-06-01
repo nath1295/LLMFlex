@@ -7,7 +7,7 @@ from ..Memory.memory_utils import create_prompt_with_history
 from ..Prompts.prompt_template import presets
 from ..Tools.tool_utils import gen_string
 from ..utils import PACKAGE_DISPLAY_NAME
-from typing import Dict, Any, Literal, Optional, Tuple
+from typing import Dict, Any, Literal, Optional, Tuple, List
 import yaml
 
 DEFAULT_CONFIG = dict(
@@ -423,6 +423,38 @@ class AppInterface:
             mode=generation_mode
         )
 
+    def process_image(self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) -> str:
+        """Capture images in tool output.
+
+        Args:
+            messages (List[Dict[str, Any]]): List of messages to form the prompt.
+            tool_output (Dict[str, Any]): Output of the tool.
+
+        Returns:
+            str: Prompt for generation.
+        """
+        if tool_output.get('output', dict()).get('images') is not None:
+            images = tool_output.get('output', dict()).get('images')
+            begin_text = ''
+            img_dir = []
+            try:
+                for i, img in enumerate(images):
+                    try:
+                        st.image(img)
+                        img_dir.append(f'![Image {i}]({img})')
+                    except:
+                        pass
+            except:
+                pass
+            if img_dir:
+                begin_text = '  \n'.join(img_dir) + '\n\n'
+                prompt = self.backend.prompt_template.create_custom_prompt(messages=messages) + begin_text
+                return prompt
+            else:
+                return self.backend.prompt_template.create_custom_prompt(messages=messages)
+        else:
+            return self.backend.prompt_template.create_custom_prompt(messages=messages)
+
     def generation_message(self) -> None:
         """Create streaming message.
         """
@@ -453,7 +485,7 @@ class AppInterface:
                             with toolholder.status(label=f":hammer_and_pick: __{tool_name}__", state='complete'):
                                 st.text(json.dumps(tool_output, indent=4))
                             prompt.append(dict(role='function_call', content=str(tool_output)))
-                            prompt = self.backend.prompt_template.create_custom_prompt(messages=prompt) + begin_text
+                            prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
                     placeholder = st.empty()
                     streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                     output = begin_text
@@ -493,6 +525,14 @@ class AppInterface:
                         else:
                             footnote = str(footnote)
                         content += '\n\n---\n' + footnote
+                    if fn_call.get('output', dict()).get('images') is not None:
+                        images = fn_call.get('output', dict()).get('images')
+                        if isinstance(images, list):
+                            for img in images:
+                                try:
+                                    st.image(img)
+                                except:
+                                    pass
                 st.markdown(content, help=f'Number of tokens: {self.backend.llm.get_num_tokens(message["content"])}')
         self.generation_message()
 

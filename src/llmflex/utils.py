@@ -138,11 +138,14 @@ def get_config_dir() -> str:
         os.makedirs(config_dir)
     return os.path.join(config_dir, 'config.json')
 
-def get_config() -> Dict[str, Any]:
+def get_config(element: Literal['all', 'package_home', 'hf_home', 'st_home'] = 'all') -> Union[Dict[str, str], str]:
     """Get the configuration of the package.
 
+    Args: 
+        element (Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;, &#39;st_home&#39;], optional): The output element of the configuration. Defaults to 'all'.
+
     Returns:
-        Dict[str, Any]: Configuration of the package.
+        Union[Dict[str, str], str]: Configuration of the package or one of hte configured directories.
     """
     config_dir = get_config_dir()
 
@@ -169,8 +172,10 @@ def get_config() -> Dict[str, Any]:
     for v in config.values():
         if not os.path.exists(v):
             os.makedirs(v)
-
-    return config
+    if element == 'all':
+        return config
+    else:
+        return config[element]
 
 def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -> None:
     """Setting paths for the package.

@@ -116,6 +116,7 @@ Classes
     ### Descendants
 
     * llmflex.Tools.browser_tool.BrowserTool
+    * llmflex.Tools.sd_tool.StableDiffusionTool
 
     ### Instance variables
 

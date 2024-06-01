@@ -19,11 +19,14 @@ Functions
         str: Current python environment name.
 
     
-`get_config() ‑> Dict[str, Any]`
+`get_config(element: Literal['all', 'package_home', 'hf_home', 'st_home'] = 'all') ‑> Union[Dict[str, str], str]`
 :   Get the configuration of the package.
     
+    Args: 
+        element (Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;, &#39;st_home&#39;], optional): The output element of the configuration. Defaults to 'all'.
+    
     Returns:
-        Dict[str, Any]: Configuration of the package.
+        Union[Dict[str, str], str]: Configuration of the package or one of hte configured directories.
 
     
 `get_config_dir() ‑> str`
