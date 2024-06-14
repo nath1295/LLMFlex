@@ -44,6 +44,24 @@ Classes
         Returns:
             bool: Whether any tools exist in the tool selector.
 
+    `knowledge_base: Optional[llmflex.KnowledgeBase.knowledge_base.KnowledgeBase]`
+    :   Knowledge base.
+        
+        Returns:
+            Optional[KnowledgeBase]: Knowledge base.
+
+    `knowledge_base_map: Dict[str, Dict[str, Union[str, List[str]]]]`
+    :   Dictionary of knowledge bases.
+        
+        Returns:
+            Dict[str, Dict[str, Union[str, List[str]]]]: Dictionary of knowledge bases.
+
+    `knowledge_base_map_dir: str`
+    :   Directory of knowledge base mapping json file.
+        
+        Returns:
+            str: Directory of knowledge base mapping json file.
+
     `llm: llmflex.Models.Cores.base_core.BaseLLM`
     :   LLM.
         
@@ -91,14 +109,36 @@ Classes
 
     ### Methods
 
+    `create_knowledge_base(self, title: str, files: List[str]) ‑> None`
+    :   Create and return a knowledge base for a chat given the files.
+        
+        Args:
+            title (str): Title of the knowledge base.
+            files (List[str]): Files to create the knowledge base.
+
     `create_memory(self) ‑> None`
     :   Create a new chat memory.
+
+    `detach_knowledge_base(self) ‑> None`
+    :   Detach current knowledge base.
 
     `drop_memory(self, chat_id: str) ‑> None`
     :   Delete the chat memory give the chat ID.
         
         Args:
             chat_id (str): Chat ID.
+
+    `remove_knowledge_base(self, kb_id: str) ‑> None`
+    :   Remove the knowledge base.
+        
+        Args:
+            kb_id (str): Knowledge base ID to remove.
+
+    `select_knowledge_base(self, kb_id: str) ‑> None`
+    :   Attach current chat memory to an existing knowledge base.
+        
+        Args:
+            kb_id (str): Knowledge base ID to attach.
 
     `set_generation_config(self, temperature: Optional[float] = None, max_new_tokens: Optional[int] = None, top_p: Optional[float] = None, top_k: Optional[int] = None, repetition_penalty: Optional[float] = None) ‑> None`
     :   Update the LLM generation config. If None is given to any arguments, the argument will not change.

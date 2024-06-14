@@ -6,7 +6,8 @@ from ..Rankers.base_ranker import BaseRanker
 from ..Tools.tool_utils import BaseTool, ToolSelector, normalise_tool_name
 from ..Prompts.prompt_template import presets, PromptTemplate
 from ..Memory.long_short_memory import LongShortTermChatMemory
-from ..Memory.base_memory import list_titles, list_chat_ids, get_new_chat_id, get_title_from_id, get_dir_from_id
+from ..Memory.base_memory import list_chat_ids, get_new_chat_id, get_dir_from_id
+from ..KnowledgeBase.knowledge_base import KnowledgeBase
 from typing import List, Type, Dict, Any, Union, Optional
 
 class AppBackend:
@@ -23,6 +24,7 @@ class AppBackend:
         self._init_text_splitter()
         self._init_embeddings()
         self._init_tools()
+        self._knowledge_base = None
         
     @property
     def config(self) -> Dict[str, Any]:
@@ -163,6 +165,52 @@ class AppBackend:
         if not hasattr(self, '_has_tools'):
             self._has_tools = len(self.tool_status) > 0
         return self._has_tools
+    
+    @property
+    def knowledge_base_map_dir(self) -> str:
+        """Directory of knowledge base mapping json file.
+
+        Returns:
+            str: Directory of knowledge base mapping json file.
+        """
+        if not hasattr(self, '_knowledge_base_map_dir'):
+            import os
+            from ..utils import get_config
+            phome = get_config()['package_home']
+            self._knowledge_base_map_dir = os.path.join(phome, '.streamlit_scripts', 'knowledge_base_map.json')
+            os.makedirs(os.path.dirname(self._knowledge_base_map_dir), exist_ok=True)
+        return self._knowledge_base_map_dir
+    
+    @property
+    def knowledge_base_map(self) -> Dict[str, Dict[str, Union[str, List[str]]]]:
+        """Dictionary of knowledge bases.
+
+        Returns:
+            Dict[str, Dict[str, Union[str, List[str]]]]: Dictionary of knowledge bases.
+        """
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base
+        from ..utils import read_json
+        import os
+        kbs = list_knowledge_base()
+        kb_map = dict()
+        if os.path.exists(self.knowledge_base_map_dir):
+            kb_map_temp = read_json(self.knowledge_base_map_dir)
+        else:
+            kb_map_temp = dict()
+        for kb_id in kbs:
+            kb_map[kb_id] = dict(title=kb_map_temp.get(kb_id, dict(title=kb_id))['title'], chat_ids=kb_map_temp.get(kb_id, dict(chat_ids=[]))['chat_ids'])
+        return kb_map
+            
+    @property
+    def knowledge_base(self) -> Optional[KnowledgeBase]:
+        """Knowledge base.
+
+        Returns:
+            Optional[KnowledgeBase]: Knowledge base.
+        """
+        if not hasattr(self, '_knowledge_base'):
+            self._knowledge_base = None
+        return self._knowledge_base
 
     def _init_llm_factory(self) -> None:
         """Initialising the llm factory.
@@ -245,21 +293,33 @@ class AppBackend:
             chat_id (str): Chat ID.
         """
         if chat_id in list_chat_ids():
+            import gc
             self._memory = LongShortTermChatMemory(chat_id=chat_id, 
                     embeddings=self.embeddings, 
                     llm=self.llm, 
                     ranker=self.ranker, 
                     text_splitter=self.text_splitter,
                     from_exist=True)
+            del self._knowledge_base
+            self._knowledge_base = None
+            gc.collect()
+            for k, v in self.knowledge_base_map.items():
+                if chat_id in v['chat_ids']:
+                    self._knowledge_base = KnowledgeBase(kb_id=k, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter) 
+                    break
             
     def create_memory(self) -> None:
         """Create a new chat memory.
         """
+        import gc
         self._memory = LongShortTermChatMemory(chat_id=get_new_chat_id(), 
                 embeddings=self.embeddings, 
                 llm=self.llm, 
                 ranker=self.ranker, 
                 text_splitter=self.text_splitter)
+        del self._knowledge_base
+        self._knowledge_base = None
+        gc.collect()
 
     def drop_memory(self, chat_id: str) -> None:
         """Delete the chat memory give the chat ID.
@@ -271,6 +331,13 @@ class AppBackend:
         if chat_id in list_chat_ids():
             if chat_id == self.memory.chat_id:
                 self.create_memory()
+            kb_map = self.knowledge_base_map
+            kb_items = list(kb_map.items())
+            for k, v in kb_items:
+                if chat_id in v['chat_ids']:
+                    kb_map[k]['chat_ids'].remove(chat_id)
+                    from ..utils import save_json
+                    save_json(kb_map, self.knowledge_base_map_dir)
             chat_dir = get_dir_from_id(chat_id=chat_id)
             shutil.rmtree(chat_dir)
 
@@ -332,3 +399,81 @@ class AppBackend:
         """
         if tool_name in self.tool_status.keys():
             self.tool_selector._enabled[tool_name] = not self.tool_selector._enabled[tool_name]
+
+    def create_knowledge_base(self, title: str, files: List[str]) -> None:
+        """Create and return a knowledge base for a chat given the files.
+
+        Args:
+            title (str): Title of the knowledge base.
+            files (List[str]): Files to create the knowledge base.
+        """
+        from ..KnowledgeBase.knowledge_base import get_new_kb_id, load_file, list_knowledge_base
+        from ..utils import save_json
+        self.detach_knowledge_base()
+        kb = KnowledgeBase(kb_id=get_new_kb_id(), embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+        kb_map = self.knowledge_base_map
+        kb_map[kb.kb_id] = dict(title=title.strip(), chat_ids=[self.memory.chat_id])
+        save_json(kb_map, file_dir=self.knowledge_base_map_dir)
+        for file in files:
+            try:
+                kb.add_documents(docs=load_file(file_dir=file))
+            except:
+                print(f'File "{file}" cannot be loaded.')
+        self._knowledge_base = kb
+
+    def select_knowledge_base(self, kb_id: str) -> None:
+        """Attach current chat memory to an existing knowledge base.
+
+        Args:
+            kb_id (str): Knowledge base ID to attach.
+        """
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base
+        from ..utils import save_json
+        import gc
+        if kb_id in list_knowledge_base():
+            if self.knowledge_base is None:
+                kb_map = self.knowledge_base_map
+                kb_map[kb_id]['chat_ids'].append(self.memory.chat_id)
+                save_json(kb_map, self.knowledge_base_map_dir)
+                del self._knowledge_base
+                self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+                gc.collect()
+            elif kb_id != self.knowledge_base.kb_id:
+                kb_map = self.knowledge_base_map
+                kb_map[self.knowledge_base.kb_id]['chat_ids'].remove(self.memory.chat_id)
+                kb_map[kb_id]['chat_ids'].append(self.memory.chat_id)
+                del self._knowledge_base
+                self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+                gc.collect()
+
+    def detach_knowledge_base(self) -> None:
+        """Detach current knowledge base.
+        """
+        if self.knowledge_base is not None:
+            from ..utils import save_json
+            import gc
+            kb_map = self.knowledge_base_map
+            kb_map[self.knowledge_base.kb_id]['chat_ids'].remove(self.memory.chat_id)
+            save_json(kb_map, self.knowledge_base_map_dir)
+            self._knowledge_base = None
+            gc.collect()
+
+    def remove_knowledge_base(self, kb_id: str) -> None:
+        """Remove the knowledge base.
+
+        Args:
+            kb_id (str): Knowledge base ID to remove.
+        """
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base, knowledge_base_dir
+        if self.knowledge_base is not None:
+            if self.knowledge_base.kb_id == kb_id:
+                import gc
+                self._knowledge_base = None
+                gc.collect()
+        if kb_id in list_knowledge_base():
+            from shutil import rmtree
+            import os
+            rmtree(os.path.join(knowledge_base_dir(), kb_id))
+
+
+    

@@ -1,5 +1,6 @@
 from .base_memory import BaseChatMemory
 from ..Models.Cores.base_core import BaseLLM
+from ..KnowledgeBase.knowledge_base import KnowledgeBase
 from ..Prompts import PromptTemplate
 from ..Tools.tool_utils import ToolSelector
 from typing import Optional, Type, Dict, List, Union
@@ -7,7 +8,7 @@ from typing import Optional, Type, Dict, List, Union
 def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str, 
         llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None,
         system: Optional[str] = None, recent_token_limit: int = 400, relevant_token_limit: int = 300, relevance_score_threshold: float = 0.8, 
-        similarity_score_threshold: float = 0.5, tool_selector: Optional[ToolSelector] = None) -> Union[str, List[Dict[str, str]]]:
+        similarity_score_threshold: float = 0.5, tool_selector: Optional[ToolSelector] = None, knowledge_base: Optional[KnowledgeBase] = None) -> Union[str, List[Dict[str, str]]]:
     """Create the full prompt or a list of messages that can be passed to the prompt template given the conversation memory.
 
     Args:
@@ -17,10 +18,11 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
         prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is given, the default prompt template of the llm will be used. Defaults to None.
         system (Optional[str], optional): System messsage for the conversation. If None is given, the default system message from the chat memory will be used. Defaults to None.
         recent_token_limit (int, optional): Token limit for the most recent conversation history. Defaults to 400.
-        relevant_token_limit (int, optional): Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction. Defaults to 300.
-        relevance_score_threshold (float, optional): Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.8.
+        relevant_token_limit (int, optional): Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 300.
+        relevance_score_threshold (float, optional): Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 0.8.
         similarity_score_threshold (float, optional): Score threshold for the vector database search for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.5.
         tool_selector (Optional[ToolSelector], optional): Tool selector with all the available tools for function calling. If None is given, function calling is not enabled. Defaults to None.
+        knowledge_base (Optional[KnowledgeBase], optional): Knowledge base for RAG. Defaults to None.
 
     Returns:
         Union[str, List[Dict[str, str]]]: Return the full prompt as a string if function calling is not applicable. Otherwise a list of messages will be returned for further formatting for function calling.
@@ -43,16 +45,16 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
             if prompt_template.allow_custom_role:
                 messages.append(tool_selector.function_metadata)
                 return_list = True
-            else:
-                fns = json.loads(tool_selector.function_metadata)
-                messages[0]['content'] += '\n\n' + json.dumps(dict(function_metadata=fns), indent=4)
-                return_list = True
     short_mem = memory.get_token_memory(llm=llm, token_limit=recent_token_limit)
     messages.extend(prompt_template.format_history(history=short_mem, return_list=True))
+    if knowledge_base:
+        kb_content = knowledge_base.search(query=user_input, token_limit=relevant_token_limit, relevance_score_threshold=relevance_score_threshold)
+        if kb_content:
+            kb_content = list(map(lambda x: dict(content=x.index, source=x.metadata['filename']), kb_content))
+            messages.append(dict(role='relevant_contents_from_knowledge_base', content=json.dumps(kb_content, indent=4)))
     if mem_type =='longshort':
         long_mem = memory.get_long_term_memory(query=user_input, recent_history=short_mem, llm=llm, 
                 token_limit=relevant_token_limit, similarity_score_threshold=similarity_score_threshold, relevance_score_threshold=relevance_score_threshold)
-        # content = json.dumps(dict(relevant_contents_from_previous_conversation=long_mem), indent=4) + '\n\n' + user_input if long_mem else user_input
         if long_mem:
             if prompt_template.allow_custom_role:
                 messages.extend([

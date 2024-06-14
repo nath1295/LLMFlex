@@ -162,6 +162,28 @@ class AppInterface:
         return st.session_state.chat_delete_button
     
     @property
+    def kb_delete_button(self) -&gt; bool:
+        &#34;&#34;&#34;Whether to show knowledge base deletion buttons.
+
+        Returns:
+            bool: Whether to show knowledge base deletion buttons.
+        &#34;&#34;&#34;
+        if not hasattr(st.session_state, &#39;kb_delete_button&#39;):
+            st.session_state.kb_delete_button = False
+        return st.session_state.kb_delete_button
+
+    @property
+    def kb_create_button(self) -&gt; bool:
+        &#34;&#34;&#34;Whether to show knowledge base creation buttons.
+
+        Returns:
+            bool: Whether to show knowledge base creation buttons.
+        &#34;&#34;&#34;
+        if not hasattr(st.session_state, &#39;kb_create_button&#39;):
+            st.session_state.kb_create_button = False
+        return st.session_state.kb_create_button
+
+    @property
     def mobile(self) -&gt; bool:
         &#34;&#34;&#34;Whether on mobile device.
 
@@ -255,6 +277,70 @@ class AppInterface:
                           on_click=self.backend.switch_memory, kwargs=dict(chat_id=id), disabled=self.generating, help=real_title)
         st.toggle(label=&#39;:wastebasket:&#39;, key=f&#39;conv_delete&#39;, disabled=self.generating, 
                 value=self.chat_delete_button, on_change=toggle_delete_chats, help=&#39;Select conversations to remove.&#39;)
+
+    def knowledge_base_config(self) -&gt; None:
+        &#34;&#34;&#34;Creating knowledge base configurations.
+        &#34;&#34;&#34;
+        if self.kb_delete_button:
+            kbs = dict()
+            for k, v in self.backend.knowledge_base_map.items():
+                btn_type = &#39;secondary&#39;
+                if self.backend.knowledge_base is not None:
+                    if self.backend.knowledge_base.kb_id == k:
+                        btn_type = &#39;primary&#39;
+                title = v[&#39;title&#39;].replace(&#39;_&#39;, &#39; &#39;).title()
+                if len(title) &gt; 25:
+                    title = title[:25] + &#39;...&#39;
+                kbs[k] = row(spec=[0.8, 0.2])
+                kbs[k].button(label=title, key=k, type=btn_type, use_container_width=True, 
+                                 on_click=self.backend.select_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating, help=v[&#39;title&#39;])
+                kbs[k].button(label=&#39;:heavy_minus_sign:&#39;, key=f&#39;del_{k}&#39;, use_container_width=True, 
+                                 on_click=self.backend.remove_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating)
+        else:
+            for k, v in self.backend.knowledge_base_map.items():
+                btn_type = &#39;secondary&#39;
+                if self.backend.knowledge_base is not None:
+                    if self.backend.knowledge_base.kb_id == k:
+                        btn_type = &#39;primary&#39;
+                title = v[&#39;title&#39;].replace(&#39;_&#39;, &#39; &#39;).title()
+                if len(title) &gt; 25:
+                    title = title[:25] + &#39;...&#39;
+                st.button(label=title, key=k, type=btn_type, use_container_width=True, 
+                          on_click=self.backend.select_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating, help=v[&#39;title&#39;])
+
+        def toggle_delete_kb():
+            st.session_state.kb_delete_button = not st.session_state.kb_delete_button
+        st.toggle(label=&#39;:wastebasket:&#39;, key=f&#39;kb_delete&#39;, disabled=self.generating, 
+                value=self.kb_delete_button, on_change=toggle_delete_kb, help=&#39;Select knowledge base to remove.&#39;)
+        self.knowledge_base_creation()
+        
+    def knowledge_base_creation(self) -&gt; None:
+        &#34;&#34;&#34;Creating knowledge base.
+        &#34;&#34;&#34;
+        def toggle_create_kb():
+            st.session_state.kb_create_button = not st.session_state.kb_create_button
+        st.toggle(label=&#39;:heavy_plus_sign:&#39;, key=f&#39;kb_create&#39;, disabled=self.generating, 
+                value=self.kb_create_button, on_change=toggle_create_kb, help=&#39;Creating a new knowledge base.&#39;)
+        if self.kb_create_button:
+            import os
+            new_kb_title = st.text_input(label=&#39;Knowledge Base Title&#39;, value=&#39;&#39;, disabled=self.generating)
+            files = st.file_uploader(label=&#39;Upload files&#39;, disabled=self.generating, label_visibility=&#39;collapsed&#39;, accept_multiple_files=True, type=[&#39;pdf&#39;, &#39;txt&#39;, &#39;md&#39;, &#39;docx&#39;, &#39;py&#39;])
+            temp_files_dir = os.path.join(os.path.dirname(self.backend.knowledge_base_map_dir), &#39;temp_files&#39;)
+            os.makedirs(temp_files_dir, exist_ok=True)
+            def create_kb_fn():
+                if new_kb_title.strip() != &#39;&#39;:
+                    file_dirs = []
+                    if files:
+                        for file in files:
+                            file_dir = os.path.join(temp_files_dir, file.name)
+                            with open(file_dir, &#39;wb&#39;) as f:
+                                f.write(file.getvalue())
+                            file_dirs.append(file_dir)
+                        self.backend.create_knowledge_base(title=new_kb_title, files=file_dirs)
+                    from shutil import rmtree
+                    rmtree(temp_files_dir)
+            create_btn = st.button(label=&#39;__Create__&#39;, disabled=self.generating, on_click=create_kb_fn)
+
 
     def settings(self) -&gt; None:
         &#34;&#34;&#34;Creating the settings.
@@ -404,6 +490,9 @@ class AppInterface:
             with st.expander(label=&#39;:left_speech_bubble: Conversations&#39;, expanded=True):
                 self.chats()
 
+            with st.expander(label=&#39;:paperclip: Knowledge Bases&#39;, expanded=False):
+                self.knowledge_base_config()
+
             with st.expander(label=&#39;:gear: Settings&#39;, expanded=False):
                 self.settings()
 
@@ -433,7 +522,8 @@ class AppInterface:
             recent_token_limit=self.backend.memory_config[&#39;recent_token_limit&#39;],
             relevant_token_limit=self.backend.memory_config[&#39;relevant_token_limit&#39;],
             relevance_score_threshold=self.backend.memory_config[&#39;relevance_score_threshold&#39;],
-            similarity_score_threshold=self.backend.memory_config[&#39;similarity_score_threshold&#39;]
+            similarity_score_threshold=self.backend.memory_config[&#39;similarity_score_threshold&#39;],
+            knowledge_base = self.backend.knowledge_base
         )
         if ai_start.strip() != &#39;&#39;:
             prompt = create_prompt_with_history(**prompt_args) + ai_start
@@ -482,6 +572,29 @@ class AppInterface:
                 return self.backend.prompt_template.create_custom_prompt(messages=messages)
         else:
             return self.backend.prompt_template.create_custom_prompt(messages=messages)
+        
+    def process_footnote(self, tool_output: Dict[str, Any]) -&gt; str:
+        &#34;&#34;&#34;Check if footnote exist in the tool output.
+
+        Args:
+            tool_output (Dict[str, Any]): Tool output dictionary.
+
+        Returns:
+            str: If footnote exist, return the footnote string, otherwise return a empty string.
+        &#34;&#34;&#34;
+        footnote = tool_output.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;)
+        if footnote:
+            output = &#39;\n\n---\n&#39;
+            if isinstance(footnote, str):
+                return output + footnote
+            elif isinstance(footnote, list):
+                for i in footnote:
+                    output += str(i) + &#39;  \n&#39;
+                return output.rstrip()
+            else:
+                return output + str(footnote)
+        else:
+            return &#39;&#39;
 
     def generation_message(self) -&gt; None:
         &#34;&#34;&#34;Create streaming message.
@@ -499,6 +612,7 @@ class AppInterface:
                     prompt = self.input_config[&#39;prompt&#39;]
                     begin_text = self.input_config[&#39;begin_text&#39;]
                     save_args = dict()
+                    footnote = &#39;&#39;
                     if not isinstance(prompt, str):
                         tool_input = self.backend.tool_selector.tool_call_input(llm=self.backend.llm, messages=prompt, prompt_template=self.backend.prompt_template, **self.backend.generation_config)
                         if tool_input[&#39;name&#39;] == &#39;direct_response&#39;:
@@ -514,6 +628,8 @@ class AppInterface:
                                 st.text(json.dumps(tool_output, indent=4))
                             prompt.append(dict(role=&#39;function_call&#39;, content=str(tool_output)))
                             prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
+                            footnote = self.process_footnote(tool_output=tool_output)
+
                     placeholder = st.empty()
                     streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                     output = begin_text
@@ -521,6 +637,9 @@ class AppInterface:
                     for i in streamer:
                         output += i
                         placeholder.markdown(output.strip(&#39; \r\n\t&#39;))
+                    if footnote != &#39;&#39;:
+                        placeholder.markdown(output.strip(&#39; \r\n\t&#39;) + footnote)
+                    output = output.strip()
                     self.backend.memory.save_interaction(user_input=self.input_config[&#39;user_input&#39;], assistant_output=output, **save_args)
 
                     # Change title if the title is New Chat
@@ -547,12 +666,7 @@ class AppInterface:
                     with st.status(label=f&#34;:hammer_and_pick: __{fn_name}__&#34;, state=&#39;complete&#39;):
                         st.code(json.dumps(fn_call, indent=4), language=&#39;plaintext&#39;)
                     if fn_call.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;) is not None:
-                        footnote = fn_call.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;)
-                        if isinstance(footnote, list):
-                            footnote = &#39;  \n&#39;.join(footnote)
-                        else:
-                            footnote = str(footnote)
-                        content += &#39;\n\n---\n&#39; + footnote
+                        content += self.process_footnote(fn_call)
                     if fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
                         images = fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
                         if isinstance(images, list):
@@ -607,6 +721,10 @@ class AppInterface:
     def chatbot(self) -&gt; None:
         &#34;&#34;&#34;Creating the chatbot interface.
         &#34;&#34;&#34;
+        if self.backend.knowledge_base is not None:
+            title = self.backend.knowledge_base_map[self.backend.knowledge_base.kb_id][&#34;title&#34;].replace(&#34;_&#34;, &#34; &#34;).title()
+            files = &#39;Files:  \n&#39; + &#39;  \n&#39;.join(list(map(lambda x: x[0], self.backend.knowledge_base.files)))
+            st.button(f&#39;__{title}__ :heavy_multiplication_x:&#39;, on_click=self.backend.detach_knowledge_base, help=files)
         self.historical_conversation()
         self.input_box()
 
@@ -763,6 +881,28 @@ def get_backend() -&gt; AppBackend:
         return st.session_state.chat_delete_button
     
     @property
+    def kb_delete_button(self) -&gt; bool:
+        &#34;&#34;&#34;Whether to show knowledge base deletion buttons.
+
+        Returns:
+            bool: Whether to show knowledge base deletion buttons.
+        &#34;&#34;&#34;
+        if not hasattr(st.session_state, &#39;kb_delete_button&#39;):
+            st.session_state.kb_delete_button = False
+        return st.session_state.kb_delete_button
+
+    @property
+    def kb_create_button(self) -&gt; bool:
+        &#34;&#34;&#34;Whether to show knowledge base creation buttons.
+
+        Returns:
+            bool: Whether to show knowledge base creation buttons.
+        &#34;&#34;&#34;
+        if not hasattr(st.session_state, &#39;kb_create_button&#39;):
+            st.session_state.kb_create_button = False
+        return st.session_state.kb_create_button
+
+    @property
     def mobile(self) -&gt; bool:
         &#34;&#34;&#34;Whether on mobile device.
 
@@ -856,6 +996,70 @@ def get_backend() -&gt; AppBackend:
                           on_click=self.backend.switch_memory, kwargs=dict(chat_id=id), disabled=self.generating, help=real_title)
         st.toggle(label=&#39;:wastebasket:&#39;, key=f&#39;conv_delete&#39;, disabled=self.generating, 
                 value=self.chat_delete_button, on_change=toggle_delete_chats, help=&#39;Select conversations to remove.&#39;)
+
+    def knowledge_base_config(self) -&gt; None:
+        &#34;&#34;&#34;Creating knowledge base configurations.
+        &#34;&#34;&#34;
+        if self.kb_delete_button:
+            kbs = dict()
+            for k, v in self.backend.knowledge_base_map.items():
+                btn_type = &#39;secondary&#39;
+                if self.backend.knowledge_base is not None:
+                    if self.backend.knowledge_base.kb_id == k:
+                        btn_type = &#39;primary&#39;
+                title = v[&#39;title&#39;].replace(&#39;_&#39;, &#39; &#39;).title()
+                if len(title) &gt; 25:
+                    title = title[:25] + &#39;...&#39;
+                kbs[k] = row(spec=[0.8, 0.2])
+                kbs[k].button(label=title, key=k, type=btn_type, use_container_width=True, 
+                                 on_click=self.backend.select_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating, help=v[&#39;title&#39;])
+                kbs[k].button(label=&#39;:heavy_minus_sign:&#39;, key=f&#39;del_{k}&#39;, use_container_width=True, 
+                                 on_click=self.backend.remove_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating)
+        else:
+            for k, v in self.backend.knowledge_base_map.items():
+                btn_type = &#39;secondary&#39;
+                if self.backend.knowledge_base is not None:
+                    if self.backend.knowledge_base.kb_id == k:
+                        btn_type = &#39;primary&#39;
+                title = v[&#39;title&#39;].replace(&#39;_&#39;, &#39; &#39;).title()
+                if len(title) &gt; 25:
+                    title = title[:25] + &#39;...&#39;
+                st.button(label=title, key=k, type=btn_type, use_container_width=True, 
+                          on_click=self.backend.select_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating, help=v[&#39;title&#39;])
+
+        def toggle_delete_kb():
+            st.session_state.kb_delete_button = not st.session_state.kb_delete_button
+        st.toggle(label=&#39;:wastebasket:&#39;, key=f&#39;kb_delete&#39;, disabled=self.generating, 
+                value=self.kb_delete_button, on_change=toggle_delete_kb, help=&#39;Select knowledge base to remove.&#39;)
+        self.knowledge_base_creation()
+        
+    def knowledge_base_creation(self) -&gt; None:
+        &#34;&#34;&#34;Creating knowledge base.
+        &#34;&#34;&#34;
+        def toggle_create_kb():
+            st.session_state.kb_create_button = not st.session_state.kb_create_button
+        st.toggle(label=&#39;:heavy_plus_sign:&#39;, key=f&#39;kb_create&#39;, disabled=self.generating, 
+                value=self.kb_create_button, on_change=toggle_create_kb, help=&#39;Creating a new knowledge base.&#39;)
+        if self.kb_create_button:
+            import os
+            new_kb_title = st.text_input(label=&#39;Knowledge Base Title&#39;, value=&#39;&#39;, disabled=self.generating)
+            files = st.file_uploader(label=&#39;Upload files&#39;, disabled=self.generating, label_visibility=&#39;collapsed&#39;, accept_multiple_files=True, type=[&#39;pdf&#39;, &#39;txt&#39;, &#39;md&#39;, &#39;docx&#39;, &#39;py&#39;])
+            temp_files_dir = os.path.join(os.path.dirname(self.backend.knowledge_base_map_dir), &#39;temp_files&#39;)
+            os.makedirs(temp_files_dir, exist_ok=True)
+            def create_kb_fn():
+                if new_kb_title.strip() != &#39;&#39;:
+                    file_dirs = []
+                    if files:
+                        for file in files:
+                            file_dir = os.path.join(temp_files_dir, file.name)
+                            with open(file_dir, &#39;wb&#39;) as f:
+                                f.write(file.getvalue())
+                            file_dirs.append(file_dir)
+                        self.backend.create_knowledge_base(title=new_kb_title, files=file_dirs)
+                    from shutil import rmtree
+                    rmtree(temp_files_dir)
+            create_btn = st.button(label=&#39;__Create__&#39;, disabled=self.generating, on_click=create_kb_fn)
+
 
     def settings(self) -&gt; None:
         &#34;&#34;&#34;Creating the settings.
@@ -1005,6 +1209,9 @@ def get_backend() -&gt; AppBackend:
             with st.expander(label=&#39;:left_speech_bubble: Conversations&#39;, expanded=True):
                 self.chats()
 
+            with st.expander(label=&#39;:paperclip: Knowledge Bases&#39;, expanded=False):
+                self.knowledge_base_config()
+
             with st.expander(label=&#39;:gear: Settings&#39;, expanded=False):
                 self.settings()
 
@@ -1034,7 +1241,8 @@ def get_backend() -&gt; AppBackend:
             recent_token_limit=self.backend.memory_config[&#39;recent_token_limit&#39;],
             relevant_token_limit=self.backend.memory_config[&#39;relevant_token_limit&#39;],
             relevance_score_threshold=self.backend.memory_config[&#39;relevance_score_threshold&#39;],
-            similarity_score_threshold=self.backend.memory_config[&#39;similarity_score_threshold&#39;]
+            similarity_score_threshold=self.backend.memory_config[&#39;similarity_score_threshold&#39;],
+            knowledge_base = self.backend.knowledge_base
         )
         if ai_start.strip() != &#39;&#39;:
             prompt = create_prompt_with_history(**prompt_args) + ai_start
@@ -1083,6 +1291,29 @@ def get_backend() -&gt; AppBackend:
                 return self.backend.prompt_template.create_custom_prompt(messages=messages)
         else:
             return self.backend.prompt_template.create_custom_prompt(messages=messages)
+        
+    def process_footnote(self, tool_output: Dict[str, Any]) -&gt; str:
+        &#34;&#34;&#34;Check if footnote exist in the tool output.
+
+        Args:
+            tool_output (Dict[str, Any]): Tool output dictionary.
+
+        Returns:
+            str: If footnote exist, return the footnote string, otherwise return a empty string.
+        &#34;&#34;&#34;
+        footnote = tool_output.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;)
+        if footnote:
+            output = &#39;\n\n---\n&#39;
+            if isinstance(footnote, str):
+                return output + footnote
+            elif isinstance(footnote, list):
+                for i in footnote:
+                    output += str(i) + &#39;  \n&#39;
+                return output.rstrip()
+            else:
+                return output + str(footnote)
+        else:
+            return &#39;&#39;
 
     def generation_message(self) -&gt; None:
         &#34;&#34;&#34;Create streaming message.
@@ -1100,6 +1331,7 @@ def get_backend() -&gt; AppBackend:
                     prompt = self.input_config[&#39;prompt&#39;]
                     begin_text = self.input_config[&#39;begin_text&#39;]
                     save_args = dict()
+                    footnote = &#39;&#39;
                     if not isinstance(prompt, str):
                         tool_input = self.backend.tool_selector.tool_call_input(llm=self.backend.llm, messages=prompt, prompt_template=self.backend.prompt_template, **self.backend.generation_config)
                         if tool_input[&#39;name&#39;] == &#39;direct_response&#39;:
@@ -1115,6 +1347,8 @@ def get_backend() -&gt; AppBackend:
                                 st.text(json.dumps(tool_output, indent=4))
                             prompt.append(dict(role=&#39;function_call&#39;, content=str(tool_output)))
                             prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
+                            footnote = self.process_footnote(tool_output=tool_output)
+
                     placeholder = st.empty()
                     streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                     output = begin_text
@@ -1122,6 +1356,9 @@ def get_backend() -&gt; AppBackend:
                     for i in streamer:
                         output += i
                         placeholder.markdown(output.strip(&#39; \r\n\t&#39;))
+                    if footnote != &#39;&#39;:
+                        placeholder.markdown(output.strip(&#39; \r\n\t&#39;) + footnote)
+                    output = output.strip()
                     self.backend.memory.save_interaction(user_input=self.input_config[&#39;user_input&#39;], assistant_output=output, **save_args)
 
                     # Change title if the title is New Chat
@@ -1148,12 +1385,7 @@ def get_backend() -&gt; AppBackend:
                     with st.status(label=f&#34;:hammer_and_pick: __{fn_name}__&#34;, state=&#39;complete&#39;):
                         st.code(json.dumps(fn_call, indent=4), language=&#39;plaintext&#39;)
                     if fn_call.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;) is not None:
-                        footnote = fn_call.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;)
-                        if isinstance(footnote, list):
-                            footnote = &#39;  \n&#39;.join(footnote)
-                        else:
-                            footnote = str(footnote)
-                        content += &#39;\n\n---\n&#39; + footnote
+                        content += self.process_footnote(fn_call)
                     if fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
                         images = fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
                         if isinstance(images, list):
@@ -1208,6 +1440,10 @@ def get_backend() -&gt; AppBackend:
     def chatbot(self) -&gt; None:
         &#34;&#34;&#34;Creating the chatbot interface.
         &#34;&#34;&#34;
+        if self.backend.knowledge_base is not None:
+            title = self.backend.knowledge_base_map[self.backend.knowledge_base.kb_id][&#34;title&#34;].replace(&#34;_&#34;, &#34; &#34;).title()
+            files = &#39;Files:  \n&#39; + &#39;  \n&#39;.join(list(map(lambda x: x[0], self.backend.knowledge_base.files)))
+            st.button(f&#39;__{title}__ :heavy_multiplication_x:&#39;, on_click=self.backend.detach_knowledge_base, help=files)
         self.historical_conversation()
         self.input_box()
 
@@ -1409,6 +1645,54 @@ def is_login(self) -&gt; bool:
     return st.session_state.is_login</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Frontend.streamlit_interface.AppInterface.kb_create_button"><code class="name">var <span class="ident">kb_create_button</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Whether to show knowledge base creation buttons.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether to show knowledge base creation buttons.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def kb_create_button(self) -&gt; bool:
+    &#34;&#34;&#34;Whether to show knowledge base creation buttons.
+
+    Returns:
+        bool: Whether to show knowledge base creation buttons.
+    &#34;&#34;&#34;
+    if not hasattr(st.session_state, &#39;kb_create_button&#39;):
+        st.session_state.kb_create_button = False
+    return st.session_state.kb_create_button</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.streamlit_interface.AppInterface.kb_delete_button"><code class="name">var <span class="ident">kb_delete_button</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Whether to show knowledge base deletion buttons.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether to show knowledge base deletion buttons.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def kb_delete_button(self) -&gt; bool:
+    &#34;&#34;&#34;Whether to show knowledge base deletion buttons.
+
+    Returns:
+        bool: Whether to show knowledge base deletion buttons.
+    &#34;&#34;&#34;
+    if not hasattr(st.session_state, &#39;kb_delete_button&#39;):
+        st.session_state.kb_delete_button = False
+    return st.session_state.kb_delete_button</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Frontend.streamlit_interface.AppInterface.mobile"><code class="name">var <span class="ident">mobile</span> : bool</code></dt>
 <dd>
 <div class="desc"><p>Whether on mobile device.</p>
@@ -1465,6 +1749,10 @@ def mobile(self) -&gt; bool:
 <pre><code class="python">def chatbot(self) -&gt; None:
     &#34;&#34;&#34;Creating the chatbot interface.
     &#34;&#34;&#34;
+    if self.backend.knowledge_base is not None:
+        title = self.backend.knowledge_base_map[self.backend.knowledge_base.kb_id][&#34;title&#34;].replace(&#34;_&#34;, &#34; &#34;).title()
+        files = &#39;Files:  \n&#39; + &#39;  \n&#39;.join(list(map(lambda x: x[0], self.backend.knowledge_base.files)))
+        st.button(f&#39;__{title}__ :heavy_multiplication_x:&#39;, on_click=self.backend.detach_knowledge_base, help=files)
     self.historical_conversation()
     self.input_box()</code></pre>
 </details>
@@ -1557,7 +1845,8 @@ def mobile(self) -&gt; bool:
         recent_token_limit=self.backend.memory_config[&#39;recent_token_limit&#39;],
         relevant_token_limit=self.backend.memory_config[&#39;relevant_token_limit&#39;],
         relevance_score_threshold=self.backend.memory_config[&#39;relevance_score_threshold&#39;],
-        similarity_score_threshold=self.backend.memory_config[&#39;similarity_score_threshold&#39;]
+        similarity_score_threshold=self.backend.memory_config[&#39;similarity_score_threshold&#39;],
+        knowledge_base = self.backend.knowledge_base
     )
     if ai_start.strip() != &#39;&#39;:
         prompt = create_prompt_with_history(**prompt_args) + ai_start
@@ -1601,6 +1890,7 @@ def mobile(self) -&gt; bool:
                 prompt = self.input_config[&#39;prompt&#39;]
                 begin_text = self.input_config[&#39;begin_text&#39;]
                 save_args = dict()
+                footnote = &#39;&#39;
                 if not isinstance(prompt, str):
                     tool_input = self.backend.tool_selector.tool_call_input(llm=self.backend.llm, messages=prompt, prompt_template=self.backend.prompt_template, **self.backend.generation_config)
                     if tool_input[&#39;name&#39;] == &#39;direct_response&#39;:
@@ -1616,6 +1906,8 @@ def mobile(self) -&gt; bool:
                             st.text(json.dumps(tool_output, indent=4))
                         prompt.append(dict(role=&#39;function_call&#39;, content=str(tool_output)))
                         prompt = self.process_image(messages=prompt, tool_output=tool_output) + begin_text
+                        footnote = self.process_footnote(tool_output=tool_output)
+
                 placeholder = st.empty()
                 streamer = self.backend.llm.stream(prompt, stop=self.backend.prompt_template.stop, **self.backend.generation_config)
                 output = begin_text
@@ -1623,6 +1915,9 @@ def mobile(self) -&gt; bool:
                 for i in streamer:
                     output += i
                     placeholder.markdown(output.strip(&#39; \r\n\t&#39;))
+                if footnote != &#39;&#39;:
+                    placeholder.markdown(output.strip(&#39; \r\n\t&#39;) + footnote)
+                output = output.strip()
                 self.backend.memory.save_interaction(user_input=self.input_config[&#39;user_input&#39;], assistant_output=output, **save_args)
 
                 # Change title if the title is New Chat
@@ -1659,12 +1954,7 @@ def mobile(self) -&gt; bool:
                 with st.status(label=f&#34;:hammer_and_pick: __{fn_name}__&#34;, state=&#39;complete&#39;):
                     st.code(json.dumps(fn_call, indent=4), language=&#39;plaintext&#39;)
                 if fn_call.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;) is not None:
-                    footnote = fn_call.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;)
-                    if isinstance(footnote, list):
-                        footnote = &#39;  \n&#39;.join(footnote)
-                    else:
-                        footnote = str(footnote)
-                    content += &#39;\n\n---\n&#39; + footnote
+                    content += self.process_footnote(fn_call)
                 if fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;) is not None:
                     images = fn_call.get(&#39;output&#39;, dict()).get(&#39;images&#39;)
                     if isinstance(images, list):
@@ -1707,6 +1997,89 @@ def mobile(self) -&gt; bool:
                 self.util_buttons()
         else:
             self.util_buttons()</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.streamlit_interface.AppInterface.knowledge_base_config"><code class="name flex">
+<span>def <span class="ident">knowledge_base_config</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creating knowledge base configurations.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def knowledge_base_config(self) -&gt; None:
+    &#34;&#34;&#34;Creating knowledge base configurations.
+    &#34;&#34;&#34;
+    if self.kb_delete_button:
+        kbs = dict()
+        for k, v in self.backend.knowledge_base_map.items():
+            btn_type = &#39;secondary&#39;
+            if self.backend.knowledge_base is not None:
+                if self.backend.knowledge_base.kb_id == k:
+                    btn_type = &#39;primary&#39;
+            title = v[&#39;title&#39;].replace(&#39;_&#39;, &#39; &#39;).title()
+            if len(title) &gt; 25:
+                title = title[:25] + &#39;...&#39;
+            kbs[k] = row(spec=[0.8, 0.2])
+            kbs[k].button(label=title, key=k, type=btn_type, use_container_width=True, 
+                             on_click=self.backend.select_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating, help=v[&#39;title&#39;])
+            kbs[k].button(label=&#39;:heavy_minus_sign:&#39;, key=f&#39;del_{k}&#39;, use_container_width=True, 
+                             on_click=self.backend.remove_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating)
+    else:
+        for k, v in self.backend.knowledge_base_map.items():
+            btn_type = &#39;secondary&#39;
+            if self.backend.knowledge_base is not None:
+                if self.backend.knowledge_base.kb_id == k:
+                    btn_type = &#39;primary&#39;
+            title = v[&#39;title&#39;].replace(&#39;_&#39;, &#39; &#39;).title()
+            if len(title) &gt; 25:
+                title = title[:25] + &#39;...&#39;
+            st.button(label=title, key=k, type=btn_type, use_container_width=True, 
+                      on_click=self.backend.select_knowledge_base, kwargs=dict(kb_id=k), disabled=self.generating, help=v[&#39;title&#39;])
+
+    def toggle_delete_kb():
+        st.session_state.kb_delete_button = not st.session_state.kb_delete_button
+    st.toggle(label=&#39;:wastebasket:&#39;, key=f&#39;kb_delete&#39;, disabled=self.generating, 
+            value=self.kb_delete_button, on_change=toggle_delete_kb, help=&#39;Select knowledge base to remove.&#39;)
+    self.knowledge_base_creation()</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.streamlit_interface.AppInterface.knowledge_base_creation"><code class="name flex">
+<span>def <span class="ident">knowledge_base_creation</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creating knowledge base.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def knowledge_base_creation(self) -&gt; None:
+    &#34;&#34;&#34;Creating knowledge base.
+    &#34;&#34;&#34;
+    def toggle_create_kb():
+        st.session_state.kb_create_button = not st.session_state.kb_create_button
+    st.toggle(label=&#39;:heavy_plus_sign:&#39;, key=f&#39;kb_create&#39;, disabled=self.generating, 
+            value=self.kb_create_button, on_change=toggle_create_kb, help=&#39;Creating a new knowledge base.&#39;)
+    if self.kb_create_button:
+        import os
+        new_kb_title = st.text_input(label=&#39;Knowledge Base Title&#39;, value=&#39;&#39;, disabled=self.generating)
+        files = st.file_uploader(label=&#39;Upload files&#39;, disabled=self.generating, label_visibility=&#39;collapsed&#39;, accept_multiple_files=True, type=[&#39;pdf&#39;, &#39;txt&#39;, &#39;md&#39;, &#39;docx&#39;, &#39;py&#39;])
+        temp_files_dir = os.path.join(os.path.dirname(self.backend.knowledge_base_map_dir), &#39;temp_files&#39;)
+        os.makedirs(temp_files_dir, exist_ok=True)
+        def create_kb_fn():
+            if new_kb_title.strip() != &#39;&#39;:
+                file_dirs = []
+                if files:
+                    for file in files:
+                        file_dir = os.path.join(temp_files_dir, file.name)
+                        with open(file_dir, &#39;wb&#39;) as f:
+                            f.write(file.getvalue())
+                        file_dirs.append(file_dir)
+                    self.backend.create_knowledge_base(title=new_kb_title, files=file_dirs)
+                from shutil import rmtree
+                rmtree(temp_files_dir)
+        create_btn = st.button(label=&#39;__Create__&#39;, disabled=self.generating, on_click=create_kb_fn)</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.streamlit_interface.AppInterface.login"><code class="name flex">
@@ -1824,6 +2197,49 @@ def mobile(self) -&gt; bool:
                           repetition_penalty=self.repetition_slidder,
                           top_p=self.topp_slidder,
                           top_k=self.topk_slidder))</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.streamlit_interface.AppInterface.process_footnote"><code class="name flex">
+<span>def <span class="ident">process_footnote</span></span>(<span>self, tool_output: Dict[str, Any]) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Check if footnote exist in the tool output.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tool_output</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>Tool output dictionary.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>If footnote exist, return the footnote string, otherwise return a empty string.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process_footnote(self, tool_output: Dict[str, Any]) -&gt; str:
+    &#34;&#34;&#34;Check if footnote exist in the tool output.
+
+    Args:
+        tool_output (Dict[str, Any]): Tool output dictionary.
+
+    Returns:
+        str: If footnote exist, return the footnote string, otherwise return a empty string.
+    &#34;&#34;&#34;
+    footnote = tool_output.get(&#39;output&#39;, dict()).get(&#39;footnote&#39;)
+    if footnote:
+        output = &#39;\n\n---\n&#39;
+        if isinstance(footnote, str):
+            return output + footnote
+        elif isinstance(footnote, list):
+            for i in footnote:
+                output += str(i) + &#39;  \n&#39;
+            return output.rstrip()
+        else:
+            return output + str(footnote)
+    else:
+        return &#39;&#39;</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.streamlit_interface.AppInterface.process_image"><code class="name flex">
@@ -1991,6 +2407,9 @@ def mobile(self) -&gt; bool:
         with st.expander(label=&#39;:left_speech_bubble: Conversations&#39;, expanded=True):
             self.chats()
 
+        with st.expander(label=&#39;:paperclip: Knowledge Bases&#39;, expanded=False):
+            self.knowledge_base_config()
+
         with st.expander(label=&#39;:gear: Settings&#39;, expanded=False):
             self.settings()</code></pre>
 </details>
@@ -2100,11 +2519,16 @@ def mobile(self) -&gt; bool:
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.input_box" href="#llmflex.Frontend.streamlit_interface.AppInterface.input_box">input_box</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.input_config" href="#llmflex.Frontend.streamlit_interface.AppInterface.input_config">input_config</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.is_login" href="#llmflex.Frontend.streamlit_interface.AppInterface.is_login">is_login</a></code></li>
+<li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.kb_create_button" href="#llmflex.Frontend.streamlit_interface.AppInterface.kb_create_button">kb_create_button</a></code></li>
+<li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.kb_delete_button" href="#llmflex.Frontend.streamlit_interface.AppInterface.kb_delete_button">kb_delete_button</a></code></li>
+<li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.knowledge_base_config" href="#llmflex.Frontend.streamlit_interface.AppInterface.knowledge_base_config">knowledge_base_config</a></code></li>
+<li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.knowledge_base_creation" href="#llmflex.Frontend.streamlit_interface.AppInterface.knowledge_base_creation">knowledge_base_creation</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.login" href="#llmflex.Frontend.streamlit_interface.AppInterface.login">login</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.memory_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.memory_settings">memory_settings</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.mobile" href="#llmflex.Frontend.streamlit_interface.AppInterface.mobile">mobile</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.mobile_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.mobile_settings">mobile_settings</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.model_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.model_settings">model_settings</a></code></li>
+<li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.process_footnote" href="#llmflex.Frontend.streamlit_interface.AppInterface.process_footnote">process_footnote</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.process_image" href="#llmflex.Frontend.streamlit_interface.AppInterface.process_image">process_image</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.prompt_format_settings" href="#llmflex.Frontend.streamlit_interface.AppInterface.prompt_format_settings">prompt_format_settings</a></code></li>
 <li><code><a title="llmflex.Frontend.streamlit_interface.AppInterface.run" href="#llmflex.Frontend.streamlit_interface.AppInterface.run">run</a></code></li>

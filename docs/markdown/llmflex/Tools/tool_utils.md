@@ -196,12 +196,13 @@ Classes
         Returns:
             Dict[str, Any]: Metadata of the tool.
 
-    `structured_input_generation(self, raw_prompt: str, llm: Type[llmflex.Models.Cores.base_core.BaseLLM], **kwargs) ‑> Dict[str, Any]`
+    `structured_input_generation(self, raw_prompt: str, llm: Type[llmflex.Models.Cores.base_core.BaseLLM], return_raw: bool = False, **kwargs) ‑> Dict[str, Any]`
     :   Core part of tool input generation.
         
         Args:
             raw_prompt (str): The starting prompt.
             llm (Type[BaseLLM]): LLM for generation.
+            return_raw (bool, optional): Whether to return the raw string of failed generation. If False, "direct_response" tool will be returned. Defaults to False.
         
         Returns:
             Dict[str, Any]: Dictionary containing the name of the function and the input arguments.

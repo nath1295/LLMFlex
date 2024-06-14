@@ -3,6 +3,7 @@ Module llmflex
 
 Sub-modules
 -----------
+* llmflex.Agents
 * llmflex.Embeddings
 * llmflex.Frontend
 * llmflex.KnowledgeBase

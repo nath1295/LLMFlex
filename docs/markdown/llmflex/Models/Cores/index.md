@@ -1,5 +1,6 @@
 Module llmflex.Models.Cores
 ===========================
+Engines for running LLMs.
 
 Sub-modules
 -----------

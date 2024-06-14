@@ -74,6 +74,18 @@ Classes
         Returns:
             bool: Whether it is logged in or not.
 
+    `kb_create_button: bool`
+    :   Whether to show knowledge base creation buttons.
+        
+        Returns:
+            bool: Whether to show knowledge base creation buttons.
+
+    `kb_delete_button: bool`
+    :   Whether to show knowledge base deletion buttons.
+        
+        Returns:
+            bool: Whether to show knowledge base deletion buttons.
+
     `mobile: bool`
     :   Whether on mobile device.
         
@@ -108,6 +120,12 @@ Classes
     `input_box(self) ‑> None`
     :   Creating the input box.
 
+    `knowledge_base_config(self) ‑> None`
+    :   Creating knowledge base configurations.
+
+    `knowledge_base_creation(self) ‑> None`
+    :   Creating knowledge base.
+
     `login(self) ‑> None`
     :   Creating login page.
 
@@ -119,6 +137,15 @@ Classes
 
     `model_settings(self) ‑> None`
     :   Create settings for text generation.
+
+    `process_footnote(self, tool_output: Dict[str, Any]) ‑> str`
+    :   Check if footnote exist in the tool output.
+        
+        Args:
+            tool_output (Dict[str, Any]): Tool output dictionary.
+        
+        Returns:
+            str: If footnote exist, return the footnote string, otherwise return a empty string.
 
     `process_image(self, messages: List[Dict[str, Any]], tool_output: Dict[str, Any]) ‑> str`
     :   Capture images in tool output.

@@ -34,7 +34,8 @@ from ..Rankers.base_ranker import BaseRanker
 from ..Tools.tool_utils import BaseTool, ToolSelector, normalise_tool_name
 from ..Prompts.prompt_template import presets, PromptTemplate
 from ..Memory.long_short_memory import LongShortTermChatMemory
-from ..Memory.base_memory import list_titles, list_chat_ids, get_new_chat_id, get_title_from_id, get_dir_from_id
+from ..Memory.base_memory import list_chat_ids, get_new_chat_id, get_dir_from_id
+from ..KnowledgeBase.knowledge_base import KnowledgeBase
 from typing import List, Type, Dict, Any, Union, Optional
 
 class AppBackend:
@@ -51,6 +52,7 @@ class AppBackend:
         self._init_text_splitter()
         self._init_embeddings()
         self._init_tools()
+        self._knowledge_base = None
         
     @property
     def config(self) -&gt; Dict[str, Any]:
@@ -191,6 +193,52 @@ class AppBackend:
         if not hasattr(self, &#39;_has_tools&#39;):
             self._has_tools = len(self.tool_status) &gt; 0
         return self._has_tools
+    
+    @property
+    def knowledge_base_map_dir(self) -&gt; str:
+        &#34;&#34;&#34;Directory of knowledge base mapping json file.
+
+        Returns:
+            str: Directory of knowledge base mapping json file.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_knowledge_base_map_dir&#39;):
+            import os
+            from ..utils import get_config
+            phome = get_config()[&#39;package_home&#39;]
+            self._knowledge_base_map_dir = os.path.join(phome, &#39;.streamlit_scripts&#39;, &#39;knowledge_base_map.json&#39;)
+            os.makedirs(os.path.dirname(self._knowledge_base_map_dir), exist_ok=True)
+        return self._knowledge_base_map_dir
+    
+    @property
+    def knowledge_base_map(self) -&gt; Dict[str, Dict[str, Union[str, List[str]]]]:
+        &#34;&#34;&#34;Dictionary of knowledge bases.
+
+        Returns:
+            Dict[str, Dict[str, Union[str, List[str]]]]: Dictionary of knowledge bases.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base
+        from ..utils import read_json
+        import os
+        kbs = list_knowledge_base()
+        kb_map = dict()
+        if os.path.exists(self.knowledge_base_map_dir):
+            kb_map_temp = read_json(self.knowledge_base_map_dir)
+        else:
+            kb_map_temp = dict()
+        for kb_id in kbs:
+            kb_map[kb_id] = dict(title=kb_map_temp.get(kb_id, dict(title=kb_id))[&#39;title&#39;], chat_ids=kb_map_temp.get(kb_id, dict(chat_ids=[]))[&#39;chat_ids&#39;])
+        return kb_map
+            
+    @property
+    def knowledge_base(self) -&gt; Optional[KnowledgeBase]:
+        &#34;&#34;&#34;Knowledge base.
+
+        Returns:
+            Optional[KnowledgeBase]: Knowledge base.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_knowledge_base&#39;):
+            self._knowledge_base = None
+        return self._knowledge_base
 
     def _init_llm_factory(self) -&gt; None:
         &#34;&#34;&#34;Initialising the llm factory.
@@ -273,21 +321,33 @@ class AppBackend:
             chat_id (str): Chat ID.
         &#34;&#34;&#34;
         if chat_id in list_chat_ids():
+            import gc
             self._memory = LongShortTermChatMemory(chat_id=chat_id, 
                     embeddings=self.embeddings, 
                     llm=self.llm, 
                     ranker=self.ranker, 
                     text_splitter=self.text_splitter,
                     from_exist=True)
+            del self._knowledge_base
+            self._knowledge_base = None
+            gc.collect()
+            for k, v in self.knowledge_base_map.items():
+                if chat_id in v[&#39;chat_ids&#39;]:
+                    self._knowledge_base = KnowledgeBase(kb_id=k, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter) 
+                    break
             
     def create_memory(self) -&gt; None:
         &#34;&#34;&#34;Create a new chat memory.
         &#34;&#34;&#34;
+        import gc
         self._memory = LongShortTermChatMemory(chat_id=get_new_chat_id(), 
                 embeddings=self.embeddings, 
                 llm=self.llm, 
                 ranker=self.ranker, 
                 text_splitter=self.text_splitter)
+        del self._knowledge_base
+        self._knowledge_base = None
+        gc.collect()
 
     def drop_memory(self, chat_id: str) -&gt; None:
         &#34;&#34;&#34;Delete the chat memory give the chat ID.
@@ -299,6 +359,13 @@ class AppBackend:
         if chat_id in list_chat_ids():
             if chat_id == self.memory.chat_id:
                 self.create_memory()
+            kb_map = self.knowledge_base_map
+            kb_items = list(kb_map.items())
+            for k, v in kb_items:
+                if chat_id in v[&#39;chat_ids&#39;]:
+                    kb_map[k][&#39;chat_ids&#39;].remove(chat_id)
+                    from ..utils import save_json
+                    save_json(kb_map, self.knowledge_base_map_dir)
             chat_dir = get_dir_from_id(chat_id=chat_id)
             shutil.rmtree(chat_dir)
 
@@ -359,7 +426,85 @@ class AppBackend:
             tool_name (str): Tool to toggle.
         &#34;&#34;&#34;
         if tool_name in self.tool_status.keys():
-            self.tool_selector._enabled[tool_name] = not self.tool_selector._enabled[tool_name]</code></pre>
+            self.tool_selector._enabled[tool_name] = not self.tool_selector._enabled[tool_name]
+
+    def create_knowledge_base(self, title: str, files: List[str]) -&gt; None:
+        &#34;&#34;&#34;Create and return a knowledge base for a chat given the files.
+
+        Args:
+            title (str): Title of the knowledge base.
+            files (List[str]): Files to create the knowledge base.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import get_new_kb_id, load_file, list_knowledge_base
+        from ..utils import save_json
+        self.detach_knowledge_base()
+        kb = KnowledgeBase(kb_id=get_new_kb_id(), embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+        kb_map = self.knowledge_base_map
+        kb_map[kb.kb_id] = dict(title=title.strip(), chat_ids=[self.memory.chat_id])
+        save_json(kb_map, file_dir=self.knowledge_base_map_dir)
+        for file in files:
+            try:
+                kb.add_documents(docs=load_file(file_dir=file))
+            except:
+                print(f&#39;File &#34;{file}&#34; cannot be loaded.&#39;)
+        self._knowledge_base = kb
+
+    def select_knowledge_base(self, kb_id: str) -&gt; None:
+        &#34;&#34;&#34;Attach current chat memory to an existing knowledge base.
+
+        Args:
+            kb_id (str): Knowledge base ID to attach.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base
+        from ..utils import save_json
+        import gc
+        if kb_id in list_knowledge_base():
+            if self.knowledge_base is None:
+                kb_map = self.knowledge_base_map
+                kb_map[kb_id][&#39;chat_ids&#39;].append(self.memory.chat_id)
+                save_json(kb_map, self.knowledge_base_map_dir)
+                del self._knowledge_base
+                self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+                gc.collect()
+            elif kb_id != self.knowledge_base.kb_id:
+                kb_map = self.knowledge_base_map
+                kb_map[self.knowledge_base.kb_id][&#39;chat_ids&#39;].remove(self.memory.chat_id)
+                kb_map[kb_id][&#39;chat_ids&#39;].append(self.memory.chat_id)
+                del self._knowledge_base
+                self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+                gc.collect()
+
+    def detach_knowledge_base(self) -&gt; None:
+        &#34;&#34;&#34;Detach current knowledge base.
+        &#34;&#34;&#34;
+        if self.knowledge_base is not None:
+            from ..utils import save_json
+            import gc
+            kb_map = self.knowledge_base_map
+            kb_map[self.knowledge_base.kb_id][&#39;chat_ids&#39;].remove(self.memory.chat_id)
+            save_json(kb_map, self.knowledge_base_map_dir)
+            self._knowledge_base = None
+            gc.collect()
+
+    def remove_knowledge_base(self, kb_id: str) -&gt; None:
+        &#34;&#34;&#34;Remove the knowledge base.
+
+        Args:
+            kb_id (str): Knowledge base ID to remove.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base, knowledge_base_dir
+        if self.knowledge_base is not None:
+            if self.knowledge_base.kb_id == kb_id:
+                import gc
+                self._knowledge_base = None
+                gc.collect()
+        if kb_id in list_knowledge_base():
+            from shutil import rmtree
+            import os
+            rmtree(os.path.join(knowledge_base_dir(), kb_id))
+
+
+    </code></pre>
 </details>
 </section>
 <section>
@@ -401,6 +546,7 @@ class AppBackend:
         self._init_text_splitter()
         self._init_embeddings()
         self._init_tools()
+        self._knowledge_base = None
         
     @property
     def config(self) -&gt; Dict[str, Any]:
@@ -541,6 +687,52 @@ class AppBackend:
         if not hasattr(self, &#39;_has_tools&#39;):
             self._has_tools = len(self.tool_status) &gt; 0
         return self._has_tools
+    
+    @property
+    def knowledge_base_map_dir(self) -&gt; str:
+        &#34;&#34;&#34;Directory of knowledge base mapping json file.
+
+        Returns:
+            str: Directory of knowledge base mapping json file.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_knowledge_base_map_dir&#39;):
+            import os
+            from ..utils import get_config
+            phome = get_config()[&#39;package_home&#39;]
+            self._knowledge_base_map_dir = os.path.join(phome, &#39;.streamlit_scripts&#39;, &#39;knowledge_base_map.json&#39;)
+            os.makedirs(os.path.dirname(self._knowledge_base_map_dir), exist_ok=True)
+        return self._knowledge_base_map_dir
+    
+    @property
+    def knowledge_base_map(self) -&gt; Dict[str, Dict[str, Union[str, List[str]]]]:
+        &#34;&#34;&#34;Dictionary of knowledge bases.
+
+        Returns:
+            Dict[str, Dict[str, Union[str, List[str]]]]: Dictionary of knowledge bases.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base
+        from ..utils import read_json
+        import os
+        kbs = list_knowledge_base()
+        kb_map = dict()
+        if os.path.exists(self.knowledge_base_map_dir):
+            kb_map_temp = read_json(self.knowledge_base_map_dir)
+        else:
+            kb_map_temp = dict()
+        for kb_id in kbs:
+            kb_map[kb_id] = dict(title=kb_map_temp.get(kb_id, dict(title=kb_id))[&#39;title&#39;], chat_ids=kb_map_temp.get(kb_id, dict(chat_ids=[]))[&#39;chat_ids&#39;])
+        return kb_map
+            
+    @property
+    def knowledge_base(self) -&gt; Optional[KnowledgeBase]:
+        &#34;&#34;&#34;Knowledge base.
+
+        Returns:
+            Optional[KnowledgeBase]: Knowledge base.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_knowledge_base&#39;):
+            self._knowledge_base = None
+        return self._knowledge_base
 
     def _init_llm_factory(self) -&gt; None:
         &#34;&#34;&#34;Initialising the llm factory.
@@ -623,21 +815,33 @@ class AppBackend:
             chat_id (str): Chat ID.
         &#34;&#34;&#34;
         if chat_id in list_chat_ids():
+            import gc
             self._memory = LongShortTermChatMemory(chat_id=chat_id, 
                     embeddings=self.embeddings, 
                     llm=self.llm, 
                     ranker=self.ranker, 
                     text_splitter=self.text_splitter,
                     from_exist=True)
+            del self._knowledge_base
+            self._knowledge_base = None
+            gc.collect()
+            for k, v in self.knowledge_base_map.items():
+                if chat_id in v[&#39;chat_ids&#39;]:
+                    self._knowledge_base = KnowledgeBase(kb_id=k, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter) 
+                    break
             
     def create_memory(self) -&gt; None:
         &#34;&#34;&#34;Create a new chat memory.
         &#34;&#34;&#34;
+        import gc
         self._memory = LongShortTermChatMemory(chat_id=get_new_chat_id(), 
                 embeddings=self.embeddings, 
                 llm=self.llm, 
                 ranker=self.ranker, 
                 text_splitter=self.text_splitter)
+        del self._knowledge_base
+        self._knowledge_base = None
+        gc.collect()
 
     def drop_memory(self, chat_id: str) -&gt; None:
         &#34;&#34;&#34;Delete the chat memory give the chat ID.
@@ -649,6 +853,13 @@ class AppBackend:
         if chat_id in list_chat_ids():
             if chat_id == self.memory.chat_id:
                 self.create_memory()
+            kb_map = self.knowledge_base_map
+            kb_items = list(kb_map.items())
+            for k, v in kb_items:
+                if chat_id in v[&#39;chat_ids&#39;]:
+                    kb_map[k][&#39;chat_ids&#39;].remove(chat_id)
+                    from ..utils import save_json
+                    save_json(kb_map, self.knowledge_base_map_dir)
             chat_dir = get_dir_from_id(chat_id=chat_id)
             shutil.rmtree(chat_dir)
 
@@ -709,7 +920,82 @@ class AppBackend:
             tool_name (str): Tool to toggle.
         &#34;&#34;&#34;
         if tool_name in self.tool_status.keys():
-            self.tool_selector._enabled[tool_name] = not self.tool_selector._enabled[tool_name]</code></pre>
+            self.tool_selector._enabled[tool_name] = not self.tool_selector._enabled[tool_name]
+
+    def create_knowledge_base(self, title: str, files: List[str]) -&gt; None:
+        &#34;&#34;&#34;Create and return a knowledge base for a chat given the files.
+
+        Args:
+            title (str): Title of the knowledge base.
+            files (List[str]): Files to create the knowledge base.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import get_new_kb_id, load_file, list_knowledge_base
+        from ..utils import save_json
+        self.detach_knowledge_base()
+        kb = KnowledgeBase(kb_id=get_new_kb_id(), embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+        kb_map = self.knowledge_base_map
+        kb_map[kb.kb_id] = dict(title=title.strip(), chat_ids=[self.memory.chat_id])
+        save_json(kb_map, file_dir=self.knowledge_base_map_dir)
+        for file in files:
+            try:
+                kb.add_documents(docs=load_file(file_dir=file))
+            except:
+                print(f&#39;File &#34;{file}&#34; cannot be loaded.&#39;)
+        self._knowledge_base = kb
+
+    def select_knowledge_base(self, kb_id: str) -&gt; None:
+        &#34;&#34;&#34;Attach current chat memory to an existing knowledge base.
+
+        Args:
+            kb_id (str): Knowledge base ID to attach.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base
+        from ..utils import save_json
+        import gc
+        if kb_id in list_knowledge_base():
+            if self.knowledge_base is None:
+                kb_map = self.knowledge_base_map
+                kb_map[kb_id][&#39;chat_ids&#39;].append(self.memory.chat_id)
+                save_json(kb_map, self.knowledge_base_map_dir)
+                del self._knowledge_base
+                self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+                gc.collect()
+            elif kb_id != self.knowledge_base.kb_id:
+                kb_map = self.knowledge_base_map
+                kb_map[self.knowledge_base.kb_id][&#39;chat_ids&#39;].remove(self.memory.chat_id)
+                kb_map[kb_id][&#39;chat_ids&#39;].append(self.memory.chat_id)
+                del self._knowledge_base
+                self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+                gc.collect()
+
+    def detach_knowledge_base(self) -&gt; None:
+        &#34;&#34;&#34;Detach current knowledge base.
+        &#34;&#34;&#34;
+        if self.knowledge_base is not None:
+            from ..utils import save_json
+            import gc
+            kb_map = self.knowledge_base_map
+            kb_map[self.knowledge_base.kb_id][&#39;chat_ids&#39;].remove(self.memory.chat_id)
+            save_json(kb_map, self.knowledge_base_map_dir)
+            self._knowledge_base = None
+            gc.collect()
+
+    def remove_knowledge_base(self, kb_id: str) -&gt; None:
+        &#34;&#34;&#34;Remove the knowledge base.
+
+        Args:
+            kb_id (str): Knowledge base ID to remove.
+        &#34;&#34;&#34;
+        from ..KnowledgeBase.knowledge_base import list_knowledge_base, knowledge_base_dir
+        if self.knowledge_base is not None:
+            if self.knowledge_base.kb_id == kb_id:
+                import gc
+                self._knowledge_base = None
+                gc.collect()
+        if kb_id in list_knowledge_base():
+            from shutil import rmtree
+            import os
+            rmtree(os.path.join(knowledge_base_dir(), kb_id))</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -831,6 +1117,91 @@ def has_tools(self) -&gt; bool:
     if not hasattr(self, &#39;_has_tools&#39;):
         self._has_tools = len(self.tool_status) &gt; 0
     return self._has_tools</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.knowledge_base"><code class="name">var <span class="ident">knowledge_base</span> : Optional[<a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase" href="../KnowledgeBase/knowledge_base.html#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase">KnowledgeBase</a>]</code></dt>
+<dd>
+<div class="desc"><p>Knowledge base.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[KnowledgeBase]</code></dt>
+<dd>Knowledge base.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def knowledge_base(self) -&gt; Optional[KnowledgeBase]:
+    &#34;&#34;&#34;Knowledge base.
+
+    Returns:
+        Optional[KnowledgeBase]: Knowledge base.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_knowledge_base&#39;):
+        self._knowledge_base = None
+    return self._knowledge_base</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map"><code class="name">var <span class="ident">knowledge_base_map</span> : Dict[str, Dict[str, Union[str, List[str]]]]</code></dt>
+<dd>
+<div class="desc"><p>Dictionary of knowledge bases.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Dict[str, Union[str, List[str]]]]</code></dt>
+<dd>Dictionary of knowledge bases.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def knowledge_base_map(self) -&gt; Dict[str, Dict[str, Union[str, List[str]]]]:
+    &#34;&#34;&#34;Dictionary of knowledge bases.
+
+    Returns:
+        Dict[str, Dict[str, Union[str, List[str]]]]: Dictionary of knowledge bases.
+    &#34;&#34;&#34;
+    from ..KnowledgeBase.knowledge_base import list_knowledge_base
+    from ..utils import read_json
+    import os
+    kbs = list_knowledge_base()
+    kb_map = dict()
+    if os.path.exists(self.knowledge_base_map_dir):
+        kb_map_temp = read_json(self.knowledge_base_map_dir)
+    else:
+        kb_map_temp = dict()
+    for kb_id in kbs:
+        kb_map[kb_id] = dict(title=kb_map_temp.get(kb_id, dict(title=kb_id))[&#39;title&#39;], chat_ids=kb_map_temp.get(kb_id, dict(chat_ids=[]))[&#39;chat_ids&#39;])
+    return kb_map</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map_dir"><code class="name">var <span class="ident">knowledge_base_map_dir</span> : str</code></dt>
+<dd>
+<div class="desc"><p>Directory of knowledge base mapping json file.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Directory of knowledge base mapping json file.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def knowledge_base_map_dir(self) -&gt; str:
+    &#34;&#34;&#34;Directory of knowledge base mapping json file.
+
+    Returns:
+        str: Directory of knowledge base mapping json file.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_knowledge_base_map_dir&#39;):
+        import os
+        from ..utils import get_config
+        phome = get_config()[&#39;package_home&#39;]
+        self._knowledge_base_map_dir = os.path.join(phome, &#39;.streamlit_scripts&#39;, &#39;knowledge_base_map.json&#39;)
+        os.makedirs(os.path.dirname(self._knowledge_base_map_dir), exist_ok=True)
+    return self._knowledge_base_map_dir</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.llm"><code class="name">var <span class="ident">llm</span> : <a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a></code></dt>
@@ -1020,6 +1391,44 @@ def tool_status(self) -&gt; Dict[str, bool]:
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="llmflex.Frontend.app_resource.AppBackend.create_knowledge_base"><code class="name flex">
+<span>def <span class="ident">create_knowledge_base</span></span>(<span>self, title: str, files: List[str]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create and return a knowledge base for a chat given the files.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>title</code></strong> :&ensp;<code>str</code></dt>
+<dd>Title of the knowledge base.</dd>
+<dt><strong><code>files</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>Files to create the knowledge base.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def create_knowledge_base(self, title: str, files: List[str]) -&gt; None:
+    &#34;&#34;&#34;Create and return a knowledge base for a chat given the files.
+
+    Args:
+        title (str): Title of the knowledge base.
+        files (List[str]): Files to create the knowledge base.
+    &#34;&#34;&#34;
+    from ..KnowledgeBase.knowledge_base import get_new_kb_id, load_file, list_knowledge_base
+    from ..utils import save_json
+    self.detach_knowledge_base()
+    kb = KnowledgeBase(kb_id=get_new_kb_id(), embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+    kb_map = self.knowledge_base_map
+    kb_map[kb.kb_id] = dict(title=title.strip(), chat_ids=[self.memory.chat_id])
+    save_json(kb_map, file_dir=self.knowledge_base_map_dir)
+    for file in files:
+        try:
+            kb.add_documents(docs=load_file(file_dir=file))
+        except:
+            print(f&#39;File &#34;{file}&#34; cannot be loaded.&#39;)
+    self._knowledge_base = kb</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.create_memory"><code class="name flex">
 <span>def <span class="ident">create_memory</span></span>(<span>self) ‑> None</span>
 </code></dt>
@@ -1032,11 +1441,37 @@ def tool_status(self) -&gt; Dict[str, bool]:
 <pre><code class="python">def create_memory(self) -&gt; None:
     &#34;&#34;&#34;Create a new chat memory.
     &#34;&#34;&#34;
+    import gc
     self._memory = LongShortTermChatMemory(chat_id=get_new_chat_id(), 
             embeddings=self.embeddings, 
             llm=self.llm, 
             ranker=self.ranker, 
-            text_splitter=self.text_splitter)</code></pre>
+            text_splitter=self.text_splitter)
+    del self._knowledge_base
+    self._knowledge_base = None
+    gc.collect()</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.detach_knowledge_base"><code class="name flex">
+<span>def <span class="ident">detach_knowledge_base</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Detach current knowledge base.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detach_knowledge_base(self) -&gt; None:
+    &#34;&#34;&#34;Detach current knowledge base.
+    &#34;&#34;&#34;
+    if self.knowledge_base is not None:
+        from ..utils import save_json
+        import gc
+        kb_map = self.knowledge_base_map
+        kb_map[self.knowledge_base.kb_id][&#39;chat_ids&#39;].remove(self.memory.chat_id)
+        save_json(kb_map, self.knowledge_base_map_dir)
+        self._knowledge_base = None
+        gc.collect()</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.drop_memory"><code class="name flex">
@@ -1063,8 +1498,87 @@ def tool_status(self) -&gt; Dict[str, bool]:
     if chat_id in list_chat_ids():
         if chat_id == self.memory.chat_id:
             self.create_memory()
+        kb_map = self.knowledge_base_map
+        kb_items = list(kb_map.items())
+        for k, v in kb_items:
+            if chat_id in v[&#39;chat_ids&#39;]:
+                kb_map[k][&#39;chat_ids&#39;].remove(chat_id)
+                from ..utils import save_json
+                save_json(kb_map, self.knowledge_base_map_dir)
         chat_dir = get_dir_from_id(chat_id=chat_id)
         shutil.rmtree(chat_dir)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.remove_knowledge_base"><code class="name flex">
+<span>def <span class="ident">remove_knowledge_base</span></span>(<span>self, kb_id: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Remove the knowledge base.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>kb_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Knowledge base ID to remove.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_knowledge_base(self, kb_id: str) -&gt; None:
+    &#34;&#34;&#34;Remove the knowledge base.
+
+    Args:
+        kb_id (str): Knowledge base ID to remove.
+    &#34;&#34;&#34;
+    from ..KnowledgeBase.knowledge_base import list_knowledge_base, knowledge_base_dir
+    if self.knowledge_base is not None:
+        if self.knowledge_base.kb_id == kb_id:
+            import gc
+            self._knowledge_base = None
+            gc.collect()
+    if kb_id in list_knowledge_base():
+        from shutil import rmtree
+        import os
+        rmtree(os.path.join(knowledge_base_dir(), kb_id))</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.select_knowledge_base"><code class="name flex">
+<span>def <span class="ident">select_knowledge_base</span></span>(<span>self, kb_id: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attach current chat memory to an existing knowledge base.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>kb_id</code></strong> :&ensp;<code>str</code></dt>
+<dd>Knowledge base ID to attach.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def select_knowledge_base(self, kb_id: str) -&gt; None:
+    &#34;&#34;&#34;Attach current chat memory to an existing knowledge base.
+
+    Args:
+        kb_id (str): Knowledge base ID to attach.
+    &#34;&#34;&#34;
+    from ..KnowledgeBase.knowledge_base import list_knowledge_base
+    from ..utils import save_json
+    import gc
+    if kb_id in list_knowledge_base():
+        if self.knowledge_base is None:
+            kb_map = self.knowledge_base_map
+            kb_map[kb_id][&#39;chat_ids&#39;].append(self.memory.chat_id)
+            save_json(kb_map, self.knowledge_base_map_dir)
+            del self._knowledge_base
+            self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+            gc.collect()
+        elif kb_id != self.knowledge_base.kb_id:
+            kb_map = self.knowledge_base_map
+            kb_map[self.knowledge_base.kb_id][&#39;chat_ids&#39;].remove(self.memory.chat_id)
+            kb_map[kb_id][&#39;chat_ids&#39;].append(self.memory.chat_id)
+            del self._knowledge_base
+            self._knowledge_base = KnowledgeBase(kb_id=kb_id, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter)
+            gc.collect()</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.set_generation_config"><code class="name flex">
@@ -1206,12 +1720,20 @@ similarity_score_threshold (Optional[float], optional): Score threshold for the 
         chat_id (str): Chat ID.
     &#34;&#34;&#34;
     if chat_id in list_chat_ids():
+        import gc
         self._memory = LongShortTermChatMemory(chat_id=chat_id, 
                 embeddings=self.embeddings, 
                 llm=self.llm, 
                 ranker=self.ranker, 
                 text_splitter=self.text_splitter,
-                from_exist=True)</code></pre>
+                from_exist=True)
+        del self._knowledge_base
+        self._knowledge_base = None
+        gc.collect()
+        for k, v in self.knowledge_base_map.items():
+            if chat_id in v[&#39;chat_ids&#39;]:
+                self._knowledge_base = KnowledgeBase(kb_id=k, embeddings=self.embeddings, llm=self.llm, ranker=self.ranker, text_splitter=self.text_splitter) 
+                break</code></pre>
 </details>
 </dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.toggle_tool"><code class="name flex">
@@ -1260,17 +1782,24 @@ similarity_score_threshold (Optional[float], optional): Score threshold for the 
 <h4><code><a title="llmflex.Frontend.app_resource.AppBackend" href="#llmflex.Frontend.app_resource.AppBackend">AppBackend</a></code></h4>
 <ul class="">
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.config" href="#llmflex.Frontend.app_resource.AppBackend.config">config</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.create_knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.create_knowledge_base">create_knowledge_base</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.create_memory" href="#llmflex.Frontend.app_resource.AppBackend.create_memory">create_memory</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.detach_knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.detach_knowledge_base">detach_knowledge_base</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.drop_memory" href="#llmflex.Frontend.app_resource.AppBackend.drop_memory">drop_memory</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.embeddings" href="#llmflex.Frontend.app_resource.AppBackend.embeddings">embeddings</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.factory" href="#llmflex.Frontend.app_resource.AppBackend.factory">factory</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.generation_config" href="#llmflex.Frontend.app_resource.AppBackend.generation_config">generation_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.has_tools" href="#llmflex.Frontend.app_resource.AppBackend.has_tools">has_tools</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base">knowledge_base</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base_map">knowledge_base_map</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map_dir" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base_map_dir">knowledge_base_map_dir</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.llm" href="#llmflex.Frontend.app_resource.AppBackend.llm">llm</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.memory" href="#llmflex.Frontend.app_resource.AppBackend.memory">memory</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.memory_config" href="#llmflex.Frontend.app_resource.AppBackend.memory_config">memory_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.prompt_template" href="#llmflex.Frontend.app_resource.AppBackend.prompt_template">prompt_template</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.ranker" href="#llmflex.Frontend.app_resource.AppBackend.ranker">ranker</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.remove_knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.remove_knowledge_base">remove_knowledge_base</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.select_knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.select_knowledge_base">select_knowledge_base</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_generation_config" href="#llmflex.Frontend.app_resource.AppBackend.set_generation_config">set_generation_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_memory_config" href="#llmflex.Frontend.app_resource.AppBackend.set_memory_config">set_memory_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_prompt_template" href="#llmflex.Frontend.app_resource.AppBackend.set_prompt_template">set_prompt_template</a></code></li>

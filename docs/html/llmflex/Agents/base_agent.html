@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>llmflex.Agents.base_agent API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Agents.base_agent</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from ..Tools.tool_utils import ToolSelector, BaseTool
+from ..Prompts.prompt_template import PromptTemplate
+from ..Models.Cores.base_core import BaseLLM
+from typing import Type, List, Optional, Union, Callable, Iterator, Dict, Literal, Any
+
+GENERIC_EXAMPLES = &#34;&#34;&#34;Task given by user: How old will Joe Biden be after three years?
+
+&#34;thought&#34;: &#34;I need to know the current age of Joe Biden first.&#34;
+&#34;action_input&#34;: {
+    &#34;name&#34;: &#34;browser_tool&#34;,
+    &#34;inputs&#34;: {
+        &#34;search_query&#34;: &#34;Joe Biden current age&#34;
+    }
+}
+&#34;action_output&#34;: ... (Some contents that mentioned Joe Biden&#39;s age, let&#39;s say 81 years old)
+&#34;thought&#34;: &#34;Now I know that the age of Joe Biden is 81, I will need to calculate his age after three years.&#34;
+&#34;action_input&#34;: {
+    &#34;name&#34;: &#34;math_tool&#34;,
+    &#34;inputs&#34;: {
+        &#34;equation&#34;: &#34;81 + 3&#34;
+    } 
+}
+&#34;action_output&#34;: 84
+&#34;thought&#34;: &#34;I think I know the answer now.&#34;
+&#34;action_input&#34;: {
+    &#34;name&#34;: &#34;direct_response&#34;
+}
+&#34;response&#34;: &#34;Joe Biden will be 84 years old after three years.&#34;
+&#34;&#34;&#34;
+
+GENERIC_AGENT_SYSTEM_MESSAGE = &#34;&#34;&#34;You are an intelligent agent with access to the a range of functions. Solve the task given by the user by going through a series of thought-action loop with the functions you have access to. Think step by step and only use the &#34;direct_response&#34; function when you have a solution to the task given.
+
+Here is an example of How you should work.
+```
+{examples}
+```
+
+You will be given the information of the functions you have access to and the task given by the user. Solve the task with the given format in the example.
+&#34;&#34;&#34;
+
+class AgentProcess:
+    &#34;&#34;&#34;Class for hosting agent step outputs.
+    &#34;&#34;&#34;
+    def __init__(self, role: Literal[&#39;thought&#39;, &#39;action_input&#39;, &#39;action_output&#39;, &#39;response&#39;], content: Any) -&gt; None:
+        self._role = role
+        self._content = content
+
+    @property
+    def role(self) -&gt; Literal[&#39;thought&#39;, &#39;action_input&#39;, &#39;action_output&#39;, &#39;response&#39;]:
+        return self._role
+    
+    @property
+    def content(self) -&gt; Any:
+        return self._content
+    
+    def __repr__(self) -&gt; str:
+        return f&#39;AgentProcess(role={self.role}, content={self.content})&#39;
+    
+class Agent:
+    &#34;&#34;&#34;Base agent class.
+    &#34;&#34;&#34;
+    def __init__(self, llm: Type[BaseLLM], 
+                tools: Optional[List[Union[Callable, Type[BaseTool]]]] = None, 
+                tool_selector: Optional[ToolSelector] = None, 
+                prompt_template: Optional[PromptTemplate] = None,
+                system_message: Optional[str] = None,
+                examples: Optional[str] = None
+            ) -&gt; None:
+        &#34;&#34;&#34;Initialise the agent.
+
+        Args:
+            llm (Type[BaseLLM]): The llm of the agent.
+            tools (Optional[List[Union[Callable, Type[BaseTool]]]], optional): List of tools for the agent, can be None if the tool selector is provided. Defaults to None.
+            tool_selector (Optional[ToolSelector], optional): Tool selector for the agent, can be None if a list of tools is given. Defaults to None.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template for the agent, If None, the default prompt template of the llm will be used. Defaults to None.
+            system_message (Optional[str], optional): System message for the agent. If None, the GENERIC_AGENT_SYSTEM_MESSAGE will be used. Defaults to None.
+            examples (Optional[str], optional): Examples for the agent. If None, the GENERIC_EXAMPLES will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._llm = llm
+        self._prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
+        if tools is None and tool_selector is None:
+            raise RuntimeError(&#39;One of tool selector or a list of tools must be provided.&#39;)
+        self._tool_selector = ToolSelector(tools=tools) if tool_selector is None else tool_selector
+        system_format = GENERIC_AGENT_SYSTEM_MESSAGE if system_message is None else system_message
+        examples = GENERIC_EXAMPLES if examples is None else examples
+        self._system = system_format.format(examples=examples)
+        self._verbose = True
+        self._log = []
+    
+    @property
+    def llm(self) -&gt; BaseLLM:
+        &#34;&#34;&#34;The llm of the agent.
+
+        Returns:
+            BaseLLM: The llm of the agent.
+        &#34;&#34;&#34;
+        return self._llm
+
+    @property
+    def prompt_template(self) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Prompt template used by the agent.
+
+        Returns:
+            PromptTemplate: Pormpt template used by the agent.
+        &#34;&#34;&#34;
+        return self._prompt_template
+    
+    @property
+    def tool_selector(self) -&gt; ToolSelector:
+        &#34;&#34;&#34;Tool selector of the agent.
+
+        Returns:
+            ToolSelector: Tool selector of the agent.
+        &#34;&#34;&#34;
+        return self._tool_selector
+    
+    @property
+    def system(self) -&gt; str:
+        &#34;&#34;&#34;System message of the agent.
+
+        Returns:
+            str: System message of the agent.
+        &#34;&#34;&#34;
+        return self._system
+    
+    @property
+    def log(self) -&gt; List[AgentProcess]:
+        &#34;&#34;&#34;Logs of the latest run of the agent.
+
+        Returns:
+            List[AgentProcess]: Logs of the latest run of the agent.
+        &#34;&#34;&#34;
+        return self._log
+
+    def show(self, content: Any, role: Optional[str] = None, max_char: Optional[int] = None, end: str = &#39;\n&#39;) -&gt; None:
+        &#34;&#34;&#34;Print the given content.
+
+        Args:
+            content (Any): Content to print.
+            role (Optional[str], optional): Prefix for the content. Defaults to None.
+            max_char (Optional[int], optional): Maximum character of the content to print. Defaults to None.
+            end (str, optional): End character for the print function. Defaults to &#39;\n&#39;.
+        &#34;&#34;&#34;
+        if self._verbose:
+            import json
+            if isinstance(content, str):
+                print_str = content
+            else:
+                try:
+                    print_str = json.dumps(content)
+                except:
+                    print_str = str(content)
+            if max_char is not None:
+                if len(print_str) &gt;= max_char:
+                    print_str = print_str[:max_char] + &#39;...&#39;
+            if role is not None:
+                print_str = f&#39;{role}: {print_str}&#39;
+            print(print_str, end=end)
+
+    def prerun_config(self, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Any processes that should be run before the main action reaction loop.
+        &#34;&#34;&#34;
+        pass
+
+    def final_response(self, prompt: str, response_stream: bool  = False) -&gt; AgentProcess:
+        &#34;&#34;&#34;Handling final direct response from the agent.
+
+        Args:
+            prompt (str): The full prompt for direct response.
+            response_stream (bool, optional): Whether to stream the response. Defaults to False.
+
+        Returns:
+            AgentProcess: Agent process with the final response (Or response stream).
+        &#34;&#34;&#34;
+        from ..Tools.tool_utils import gen_string
+        if response_stream:
+            process = AgentProcess(role=&#39;response&#39;, content=self.llm.stream(prompt + &#39;&#34;&#39;, stop=self.prompt_template.stop + [&#39;&#34;&#39;]))
+            return process
+        else:
+            self.show(content=&#39;Response: &#39;, end=&#39;&#39;)
+            response = gen_string(self.llm, prompt=prompt).strip()
+            self.show(response)
+            process = AgentProcess(role=&#39;response&#39;, content=response)
+            self._log.append(process)
+            return process
+
+    def run_iter(self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) -&gt; Iterator[AgentProcess]:
+        &#34;&#34;&#34;Run the agent and yield all itermediate processes.
+
+        Args:
+            task (str): Task for the agent.
+            max_iter (int, optional): Maximum number of thought-action iteractions. Defaults to 10.
+            verbose (bool, optional): Whether to print the processes. Defaults to True.
+            response_stream (bool, optional): Whether to return the final response as an iterator of text tokens. Defaults to False.
+            force_response (bool, optional): When the max_iter is hit, whether to force a response. Defaults to True.
+
+        Yields:
+            Iterator[AgentProcess]: Iterator a agent processes.
+        &#34;&#34;&#34;
+        import json
+        from ..Tools.tool_utils import gen_string
+        self._log = []
+        self._verbose = verbose
+        self.prerun_config(**kwargs)
+        if self.prompt_template.allow_custom_role:
+            messages = [
+                dict(role=&#39;system&#39;, content=self.system),
+                self.tool_selector.function_metadata,
+                dict(role=&#39;user&#39;, content=task.strip())
+            ]
+        else:
+            system = self.system + &#39;\n\n&#39; + json.dumps(dict(function_metadata=self.tool_selector.function_metadata[&#39;content&#39;]), indent=4)
+            messages = [
+                dict(role=&#39;system&#39;, content=system),
+                dict(role=&#39;user&#39;, content=task.strip())
+            ]
+        prompt = self.prompt_template.create_custom_prompt(messages=messages)
+        for i in range(max_iter):
+            # Generating thought
+            prompt += &#39;&#34;thought&#34;: &#39;
+            self.show(content=&#39;Thought: &#39;, end=&#39;&#39;)
+            thought = gen_string(self.llm, prompt=prompt).strip()
+            prompt += f&#39;&#34;{thought}&#34;&#39;
+            self.show(thought)
+            process = AgentProcess(role=&#39;thought&#39;, content=thought)
+            self._log.append(process)
+            yield process
+
+            # Generating action input
+            prompt += &#39;\n&#34;action_input&#34;: &#39;
+            self.show(content=&#39;Action Input: &#39;, end=&#39;&#39;)
+            action_input = self.tool_selector.structured_input_generation(prompt, llm=self.llm)
+            prompt += json.dumps(action_input, indent=4)
+            self.show(action_input)
+            process = AgentProcess(role=&#39;action_input&#39;, content=action_input)
+            self._log.append(process)
+            yield process
+
+            # Generate response if action input is &#34;direct_response&#34;
+            if action_input[&#39;name&#39;] == &#39;direct_response&#39;:
+                prompt += &#39;\n&#34;response&#34;: &#39;
+                yield self.final_response(prompt, response_stream=response_stream)
+            
+            # Generate action output
+            else:
+                prompt += &#39;\n&#34;action_output&#34;: &#39;
+                self.show(content=&#39;Action Output: &#39;, end=&#39;&#39;)
+                action_output = self.tool_selector.tool_call_output(action_input, return_error=True)
+                if &#39;error&#39; in action_output.keys():
+                    action_output = &#39;error - &#39; + action_output[&#39;error&#39;]
+                else:
+                    action_output = action_output[&#39;output&#39;]
+                try:
+                    output_str = json.dumps(action_output, indent=4)
+                except:
+                    output_str = f&#39;&#34;{str(action_output)}&#34;&#39;
+                prompt += output_str + &#39;\n&#39;
+                self.show(action_output, max_char=100)
+                process = AgentProcess(role=&#39;action_output&#39;, content=action_output)
+                self._log.append(process)
+                if i != max_iter - 1:
+                    self.show(&#39;&#39;)
+                yield process
+            
+        if force_response:
+            prompt += &#39;&#34;response&#34;: &#39;
+            yield self.final_response(prompt, response_stream=response_stream)
+
+    def run(self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Run the agent.
+
+        Args:
+            task (str): Task for the agent.
+            max_iter (int, optional): Maximum number of thought-action iteractions. Defaults to 10.
+            verbose (bool, optional): Whether to print the processes. Defaults to True.
+            response_stream (bool, optional): Whether to return the final response as an iterator of text tokens. Defaults to False.
+            force_response (bool, optional): When the max_iter is hit, whether to force a response. Defaults to True.
+
+        Returns:
+            Union[str, Iterator[str]]: Final response.
+        &#34;&#34;&#34;
+        step_generator = self.run_iter(
+            task=task,
+            max_iter=max_iter,
+            verbose=verbose,
+            response_stream=response_stream,
+            force_response=force_response,
+            **kwargs
+        )
+        for step in step_generator:
+            if step.role == &#39;response&#39;:
+                return step.content
+            
+        return &#39;Reached max iteration.&#39;</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Agents.base_agent.Agent"><code class="flex name class">
+<span>class <span class="ident">Agent</span></span>
+<span>(</span><span>llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], tools: Optional[List[Union[Callable, Type[<a title="llmflex.Tools.tool_utils.BaseTool" href="../Tools/tool_utils.html#llmflex.Tools.tool_utils.BaseTool">BaseTool</a>]]]] = None, tool_selector: Optional[<a title="llmflex.Tools.tool_utils.ToolSelector" href="../Tools/tool_utils.html#llmflex.Tools.tool_utils.ToolSelector">ToolSelector</a>] = None, prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, system_message: Optional[str] = None, examples: Optional[str] = None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base agent class.</p>
+<p>Initialise the agent.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>llm</code></strong> :&ensp;<code>Type[BaseLLM]</code></dt>
+<dd>The llm of the agent.</dd>
+<dt><strong><code>tools</code></strong> :&ensp;<code>Optional[List[Union[Callable, Type[BaseTool]]]]</code>, optional</dt>
+<dd>List of tools for the agent, can be None if the tool selector is provided. Defaults to None.</dd>
+<dt><strong><code>tool_selector</code></strong> :&ensp;<code>Optional[ToolSelector]</code>, optional</dt>
+<dd>Tool selector for the agent, can be None if a list of tools is given. Defaults to None.</dd>
+<dt><strong><code>prompt_template</code></strong> :&ensp;<code>Optional[PromptTemplate]</code>, optional</dt>
+<dd>Prompt template for the agent, If None, the default prompt template of the llm will be used. Defaults to None.</dd>
+<dt><strong><code>system_message</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>System message for the agent. If None, the GENERIC_AGENT_SYSTEM_MESSAGE will be used. Defaults to None.</dd>
+<dt><strong><code>examples</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>Examples for the agent. If None, the GENERIC_EXAMPLES will be used. Defaults to None.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Agent:
+    &#34;&#34;&#34;Base agent class.
+    &#34;&#34;&#34;
+    def __init__(self, llm: Type[BaseLLM], 
+                tools: Optional[List[Union[Callable, Type[BaseTool]]]] = None, 
+                tool_selector: Optional[ToolSelector] = None, 
+                prompt_template: Optional[PromptTemplate] = None,
+                system_message: Optional[str] = None,
+                examples: Optional[str] = None
+            ) -&gt; None:
+        &#34;&#34;&#34;Initialise the agent.
+
+        Args:
+            llm (Type[BaseLLM]): The llm of the agent.
+            tools (Optional[List[Union[Callable, Type[BaseTool]]]], optional): List of tools for the agent, can be None if the tool selector is provided. Defaults to None.
+            tool_selector (Optional[ToolSelector], optional): Tool selector for the agent, can be None if a list of tools is given. Defaults to None.
+            prompt_template (Optional[PromptTemplate], optional): Prompt template for the agent, If None, the default prompt template of the llm will be used. Defaults to None.
+            system_message (Optional[str], optional): System message for the agent. If None, the GENERIC_AGENT_SYSTEM_MESSAGE will be used. Defaults to None.
+            examples (Optional[str], optional): Examples for the agent. If None, the GENERIC_EXAMPLES will be used. Defaults to None.
+        &#34;&#34;&#34;
+        self._llm = llm
+        self._prompt_template = self.llm.core.prompt_template if prompt_template is None else prompt_template
+        if tools is None and tool_selector is None:
+            raise RuntimeError(&#39;One of tool selector or a list of tools must be provided.&#39;)
+        self._tool_selector = ToolSelector(tools=tools) if tool_selector is None else tool_selector
+        system_format = GENERIC_AGENT_SYSTEM_MESSAGE if system_message is None else system_message
+        examples = GENERIC_EXAMPLES if examples is None else examples
+        self._system = system_format.format(examples=examples)
+        self._verbose = True
+        self._log = []
+    
+    @property
+    def llm(self) -&gt; BaseLLM:
+        &#34;&#34;&#34;The llm of the agent.
+
+        Returns:
+            BaseLLM: The llm of the agent.
+        &#34;&#34;&#34;
+        return self._llm
+
+    @property
+    def prompt_template(self) -&gt; PromptTemplate:
+        &#34;&#34;&#34;Prompt template used by the agent.
+
+        Returns:
+            PromptTemplate: Pormpt template used by the agent.
+        &#34;&#34;&#34;
+        return self._prompt_template
+    
+    @property
+    def tool_selector(self) -&gt; ToolSelector:
+        &#34;&#34;&#34;Tool selector of the agent.
+
+        Returns:
+            ToolSelector: Tool selector of the agent.
+        &#34;&#34;&#34;
+        return self._tool_selector
+    
+    @property
+    def system(self) -&gt; str:
+        &#34;&#34;&#34;System message of the agent.
+
+        Returns:
+            str: System message of the agent.
+        &#34;&#34;&#34;
+        return self._system
+    
+    @property
+    def log(self) -&gt; List[AgentProcess]:
+        &#34;&#34;&#34;Logs of the latest run of the agent.
+
+        Returns:
+            List[AgentProcess]: Logs of the latest run of the agent.
+        &#34;&#34;&#34;
+        return self._log
+
+    def show(self, content: Any, role: Optional[str] = None, max_char: Optional[int] = None, end: str = &#39;\n&#39;) -&gt; None:
+        &#34;&#34;&#34;Print the given content.
+
+        Args:
+            content (Any): Content to print.
+            role (Optional[str], optional): Prefix for the content. Defaults to None.
+            max_char (Optional[int], optional): Maximum character of the content to print. Defaults to None.
+            end (str, optional): End character for the print function. Defaults to &#39;\n&#39;.
+        &#34;&#34;&#34;
+        if self._verbose:
+            import json
+            if isinstance(content, str):
+                print_str = content
+            else:
+                try:
+                    print_str = json.dumps(content)
+                except:
+                    print_str = str(content)
+            if max_char is not None:
+                if len(print_str) &gt;= max_char:
+                    print_str = print_str[:max_char] + &#39;...&#39;
+            if role is not None:
+                print_str = f&#39;{role}: {print_str}&#39;
+            print(print_str, end=end)
+
+    def prerun_config(self, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Any processes that should be run before the main action reaction loop.
+        &#34;&#34;&#34;
+        pass
+
+    def final_response(self, prompt: str, response_stream: bool  = False) -&gt; AgentProcess:
+        &#34;&#34;&#34;Handling final direct response from the agent.
+
+        Args:
+            prompt (str): The full prompt for direct response.
+            response_stream (bool, optional): Whether to stream the response. Defaults to False.
+
+        Returns:
+            AgentProcess: Agent process with the final response (Or response stream).
+        &#34;&#34;&#34;
+        from ..Tools.tool_utils import gen_string
+        if response_stream:
+            process = AgentProcess(role=&#39;response&#39;, content=self.llm.stream(prompt + &#39;&#34;&#39;, stop=self.prompt_template.stop + [&#39;&#34;&#39;]))
+            return process
+        else:
+            self.show(content=&#39;Response: &#39;, end=&#39;&#39;)
+            response = gen_string(self.llm, prompt=prompt).strip()
+            self.show(response)
+            process = AgentProcess(role=&#39;response&#39;, content=response)
+            self._log.append(process)
+            return process
+
+    def run_iter(self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) -&gt; Iterator[AgentProcess]:
+        &#34;&#34;&#34;Run the agent and yield all itermediate processes.
+
+        Args:
+            task (str): Task for the agent.
+            max_iter (int, optional): Maximum number of thought-action iteractions. Defaults to 10.
+            verbose (bool, optional): Whether to print the processes. Defaults to True.
+            response_stream (bool, optional): Whether to return the final response as an iterator of text tokens. Defaults to False.
+            force_response (bool, optional): When the max_iter is hit, whether to force a response. Defaults to True.
+
+        Yields:
+            Iterator[AgentProcess]: Iterator a agent processes.
+        &#34;&#34;&#34;
+        import json
+        from ..Tools.tool_utils import gen_string
+        self._log = []
+        self._verbose = verbose
+        self.prerun_config(**kwargs)
+        if self.prompt_template.allow_custom_role:
+            messages = [
+                dict(role=&#39;system&#39;, content=self.system),
+                self.tool_selector.function_metadata,
+                dict(role=&#39;user&#39;, content=task.strip())
+            ]
+        else:
+            system = self.system + &#39;\n\n&#39; + json.dumps(dict(function_metadata=self.tool_selector.function_metadata[&#39;content&#39;]), indent=4)
+            messages = [
+                dict(role=&#39;system&#39;, content=system),
+                dict(role=&#39;user&#39;, content=task.strip())
+            ]
+        prompt = self.prompt_template.create_custom_prompt(messages=messages)
+        for i in range(max_iter):
+            # Generating thought
+            prompt += &#39;&#34;thought&#34;: &#39;
+            self.show(content=&#39;Thought: &#39;, end=&#39;&#39;)
+            thought = gen_string(self.llm, prompt=prompt).strip()
+            prompt += f&#39;&#34;{thought}&#34;&#39;
+            self.show(thought)
+            process = AgentProcess(role=&#39;thought&#39;, content=thought)
+            self._log.append(process)
+            yield process
+
+            # Generating action input
+            prompt += &#39;\n&#34;action_input&#34;: &#39;
+            self.show(content=&#39;Action Input: &#39;, end=&#39;&#39;)
+            action_input = self.tool_selector.structured_input_generation(prompt, llm=self.llm)
+            prompt += json.dumps(action_input, indent=4)
+            self.show(action_input)
+            process = AgentProcess(role=&#39;action_input&#39;, content=action_input)
+            self._log.append(process)
+            yield process
+
+            # Generate response if action input is &#34;direct_response&#34;
+            if action_input[&#39;name&#39;] == &#39;direct_response&#39;:
+                prompt += &#39;\n&#34;response&#34;: &#39;
+                yield self.final_response(prompt, response_stream=response_stream)
+            
+            # Generate action output
+            else:
+                prompt += &#39;\n&#34;action_output&#34;: &#39;
+                self.show(content=&#39;Action Output: &#39;, end=&#39;&#39;)
+                action_output = self.tool_selector.tool_call_output(action_input, return_error=True)
+                if &#39;error&#39; in action_output.keys():
+                    action_output = &#39;error - &#39; + action_output[&#39;error&#39;]
+                else:
+                    action_output = action_output[&#39;output&#39;]
+                try:
+                    output_str = json.dumps(action_output, indent=4)
+                except:
+                    output_str = f&#39;&#34;{str(action_output)}&#34;&#39;
+                prompt += output_str + &#39;\n&#39;
+                self.show(action_output, max_char=100)
+                process = AgentProcess(role=&#39;action_output&#39;, content=action_output)
+                self._log.append(process)
+                if i != max_iter - 1:
+                    self.show(&#39;&#39;)
+                yield process
+            
+        if force_response:
+            prompt += &#39;&#34;response&#34;: &#39;
+            yield self.final_response(prompt, response_stream=response_stream)
+
+    def run(self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Run the agent.
+
+        Args:
+            task (str): Task for the agent.
+            max_iter (int, optional): Maximum number of thought-action iteractions. Defaults to 10.
+            verbose (bool, optional): Whether to print the processes. Defaults to True.
+            response_stream (bool, optional): Whether to return the final response as an iterator of text tokens. Defaults to False.
+            force_response (bool, optional): When the max_iter is hit, whether to force a response. Defaults to True.
+
+        Returns:
+            Union[str, Iterator[str]]: Final response.
+        &#34;&#34;&#34;
+        step_generator = self.run_iter(
+            task=task,
+            max_iter=max_iter,
+            verbose=verbose,
+            response_stream=response_stream,
+            force_response=force_response,
+            **kwargs
+        )
+        for step in step_generator:
+            if step.role == &#39;response&#39;:
+                return step.content
+            
+        return &#39;Reached max iteration.&#39;</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Agents.base_agent.Agent.llm"><code class="name">var <span class="ident">llm</span> : <a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a></code></dt>
+<dd>
+<div class="desc"><p>The llm of the agent.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseLLM</code></dt>
+<dd>The llm of the agent.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def llm(self) -&gt; BaseLLM:
+    &#34;&#34;&#34;The llm of the agent.
+
+    Returns:
+        BaseLLM: The llm of the agent.
+    &#34;&#34;&#34;
+    return self._llm</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.log"><code class="name">var <span class="ident">log</span> : List[<a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a>]</code></dt>
+<dd>
+<div class="desc"><p>Logs of the latest run of the agent.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[<a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a>]</code></dt>
+<dd>Logs of the latest run of the agent.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def log(self) -&gt; List[AgentProcess]:
+    &#34;&#34;&#34;Logs of the latest run of the agent.
+
+    Returns:
+        List[AgentProcess]: Logs of the latest run of the agent.
+    &#34;&#34;&#34;
+    return self._log</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.prompt_template"><code class="name">var <span class="ident">prompt_template</span> : <a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a></code></dt>
+<dd>
+<div class="desc"><p>Prompt template used by the agent.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>PromptTemplate</code></dt>
+<dd>Pormpt template used by the agent.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def prompt_template(self) -&gt; PromptTemplate:
+    &#34;&#34;&#34;Prompt template used by the agent.
+
+    Returns:
+        PromptTemplate: Pormpt template used by the agent.
+    &#34;&#34;&#34;
+    return self._prompt_template</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.system"><code class="name">var <span class="ident">system</span> : str</code></dt>
+<dd>
+<div class="desc"><p>System message of the agent.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>System message of the agent.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def system(self) -&gt; str:
+    &#34;&#34;&#34;System message of the agent.
+
+    Returns:
+        str: System message of the agent.
+    &#34;&#34;&#34;
+    return self._system</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.tool_selector"><code class="name">var <span class="ident">tool_selector</span> : <a title="llmflex.Tools.tool_utils.ToolSelector" href="../Tools/tool_utils.html#llmflex.Tools.tool_utils.ToolSelector">ToolSelector</a></code></dt>
+<dd>
+<div class="desc"><p>Tool selector of the agent.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ToolSelector</code></dt>
+<dd>Tool selector of the agent.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tool_selector(self) -&gt; ToolSelector:
+    &#34;&#34;&#34;Tool selector of the agent.
+
+    Returns:
+        ToolSelector: Tool selector of the agent.
+    &#34;&#34;&#34;
+    return self._tool_selector</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Agents.base_agent.Agent.final_response"><code class="name flex">
+<span>def <span class="ident">final_response</span></span>(<span>self, prompt: str, response_stream: bool = False) ‑> <a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Handling final direct response from the agent.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The full prompt for direct response.</dd>
+<dt><strong><code>response_stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the response. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a></code></dt>
+<dd>Agent process with the final response (Or response stream).</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def final_response(self, prompt: str, response_stream: bool  = False) -&gt; AgentProcess:
+    &#34;&#34;&#34;Handling final direct response from the agent.
+
+    Args:
+        prompt (str): The full prompt for direct response.
+        response_stream (bool, optional): Whether to stream the response. Defaults to False.
+
+    Returns:
+        AgentProcess: Agent process with the final response (Or response stream).
+    &#34;&#34;&#34;
+    from ..Tools.tool_utils import gen_string
+    if response_stream:
+        process = AgentProcess(role=&#39;response&#39;, content=self.llm.stream(prompt + &#39;&#34;&#39;, stop=self.prompt_template.stop + [&#39;&#34;&#39;]))
+        return process
+    else:
+        self.show(content=&#39;Response: &#39;, end=&#39;&#39;)
+        response = gen_string(self.llm, prompt=prompt).strip()
+        self.show(response)
+        process = AgentProcess(role=&#39;response&#39;, content=response)
+        self._log.append(process)
+        return process</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.prerun_config"><code class="name flex">
+<span>def <span class="ident">prerun_config</span></span>(<span>self, **kwargs) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Any processes that should be run before the main action reaction loop.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prerun_config(self, **kwargs) -&gt; None:
+    &#34;&#34;&#34;Any processes that should be run before the main action reaction loop.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) ‑> Union[str, Iterator[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run the agent.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>task</code></strong> :&ensp;<code>str</code></dt>
+<dd>Task for the agent.</dd>
+<dt><strong><code>max_iter</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of thought-action iteractions. Defaults to 10.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to print the processes. Defaults to True.</dd>
+<dt><strong><code>response_stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the final response as an iterator of text tokens. Defaults to False.</dd>
+<dt><strong><code>force_response</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>When the max_iter is hit, whether to force a response. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>Final response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Run the agent.
+
+    Args:
+        task (str): Task for the agent.
+        max_iter (int, optional): Maximum number of thought-action iteractions. Defaults to 10.
+        verbose (bool, optional): Whether to print the processes. Defaults to True.
+        response_stream (bool, optional): Whether to return the final response as an iterator of text tokens. Defaults to False.
+        force_response (bool, optional): When the max_iter is hit, whether to force a response. Defaults to True.
+
+    Returns:
+        Union[str, Iterator[str]]: Final response.
+    &#34;&#34;&#34;
+    step_generator = self.run_iter(
+        task=task,
+        max_iter=max_iter,
+        verbose=verbose,
+        response_stream=response_stream,
+        force_response=force_response,
+        **kwargs
+    )
+    for step in step_generator:
+        if step.role == &#39;response&#39;:
+            return step.content
+        
+    return &#39;Reached max iteration.&#39;</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.run_iter"><code class="name flex">
+<span>def <span class="ident">run_iter</span></span>(<span>self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) ‑> Iterator[<a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Run the agent and yield all itermediate processes.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>task</code></strong> :&ensp;<code>str</code></dt>
+<dd>Task for the agent.</dd>
+<dt><strong><code>max_iter</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of thought-action iteractions. Defaults to 10.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to print the processes. Defaults to True.</dd>
+<dt><strong><code>response_stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return the final response as an iterator of text tokens. Defaults to False.</dd>
+<dt><strong><code>force_response</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>When the max_iter is hit, whether to force a response. Defaults to True.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Iterator[<a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a>]</code></dt>
+<dd>Iterator a agent processes.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_iter(self, task: str, max_iter: int = 10, verbose: bool = True, response_stream: bool = False, force_response: bool = True, **kwargs) -&gt; Iterator[AgentProcess]:
+    &#34;&#34;&#34;Run the agent and yield all itermediate processes.
+
+    Args:
+        task (str): Task for the agent.
+        max_iter (int, optional): Maximum number of thought-action iteractions. Defaults to 10.
+        verbose (bool, optional): Whether to print the processes. Defaults to True.
+        response_stream (bool, optional): Whether to return the final response as an iterator of text tokens. Defaults to False.
+        force_response (bool, optional): When the max_iter is hit, whether to force a response. Defaults to True.
+
+    Yields:
+        Iterator[AgentProcess]: Iterator a agent processes.
+    &#34;&#34;&#34;
+    import json
+    from ..Tools.tool_utils import gen_string
+    self._log = []
+    self._verbose = verbose
+    self.prerun_config(**kwargs)
+    if self.prompt_template.allow_custom_role:
+        messages = [
+            dict(role=&#39;system&#39;, content=self.system),
+            self.tool_selector.function_metadata,
+            dict(role=&#39;user&#39;, content=task.strip())
+        ]
+    else:
+        system = self.system + &#39;\n\n&#39; + json.dumps(dict(function_metadata=self.tool_selector.function_metadata[&#39;content&#39;]), indent=4)
+        messages = [
+            dict(role=&#39;system&#39;, content=system),
+            dict(role=&#39;user&#39;, content=task.strip())
+        ]
+    prompt = self.prompt_template.create_custom_prompt(messages=messages)
+    for i in range(max_iter):
+        # Generating thought
+        prompt += &#39;&#34;thought&#34;: &#39;
+        self.show(content=&#39;Thought: &#39;, end=&#39;&#39;)
+        thought = gen_string(self.llm, prompt=prompt).strip()
+        prompt += f&#39;&#34;{thought}&#34;&#39;
+        self.show(thought)
+        process = AgentProcess(role=&#39;thought&#39;, content=thought)
+        self._log.append(process)
+        yield process
+
+        # Generating action input
+        prompt += &#39;\n&#34;action_input&#34;: &#39;
+        self.show(content=&#39;Action Input: &#39;, end=&#39;&#39;)
+        action_input = self.tool_selector.structured_input_generation(prompt, llm=self.llm)
+        prompt += json.dumps(action_input, indent=4)
+        self.show(action_input)
+        process = AgentProcess(role=&#39;action_input&#39;, content=action_input)
+        self._log.append(process)
+        yield process
+
+        # Generate response if action input is &#34;direct_response&#34;
+        if action_input[&#39;name&#39;] == &#39;direct_response&#39;:
+            prompt += &#39;\n&#34;response&#34;: &#39;
+            yield self.final_response(prompt, response_stream=response_stream)
+        
+        # Generate action output
+        else:
+            prompt += &#39;\n&#34;action_output&#34;: &#39;
+            self.show(content=&#39;Action Output: &#39;, end=&#39;&#39;)
+            action_output = self.tool_selector.tool_call_output(action_input, return_error=True)
+            if &#39;error&#39; in action_output.keys():
+                action_output = &#39;error - &#39; + action_output[&#39;error&#39;]
+            else:
+                action_output = action_output[&#39;output&#39;]
+            try:
+                output_str = json.dumps(action_output, indent=4)
+            except:
+                output_str = f&#39;&#34;{str(action_output)}&#34;&#39;
+            prompt += output_str + &#39;\n&#39;
+            self.show(action_output, max_char=100)
+            process = AgentProcess(role=&#39;action_output&#39;, content=action_output)
+            self._log.append(process)
+            if i != max_iter - 1:
+                self.show(&#39;&#39;)
+            yield process
+        
+    if force_response:
+        prompt += &#39;&#34;response&#34;: &#39;
+        yield self.final_response(prompt, response_stream=response_stream)</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.Agent.show"><code class="name flex">
+<span>def <span class="ident">show</span></span>(<span>self, content: Any, role: Optional[str] = None, max_char: Optional[int] = None, end: str = '\n') ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Print the given content.</p>
+<pre><code>    Args:
+        content (Any): Content to print.
+        role (Optional[str], optional): Prefix for the content. Defaults to None.
+        max_char (Optional[int], optional): Maximum character of the content to print. Defaults to None.
+        end (str, optional): End character for the print function. Defaults to '
+</code></pre>
+<p>'.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def show(self, content: Any, role: Optional[str] = None, max_char: Optional[int] = None, end: str = &#39;\n&#39;) -&gt; None:
+    &#34;&#34;&#34;Print the given content.
+
+    Args:
+        content (Any): Content to print.
+        role (Optional[str], optional): Prefix for the content. Defaults to None.
+        max_char (Optional[int], optional): Maximum character of the content to print. Defaults to None.
+        end (str, optional): End character for the print function. Defaults to &#39;\n&#39;.
+    &#34;&#34;&#34;
+    if self._verbose:
+        import json
+        if isinstance(content, str):
+            print_str = content
+        else:
+            try:
+                print_str = json.dumps(content)
+            except:
+                print_str = str(content)
+        if max_char is not None:
+            if len(print_str) &gt;= max_char:
+                print_str = print_str[:max_char] + &#39;...&#39;
+        if role is not None:
+            print_str = f&#39;{role}: {print_str}&#39;
+        print(print_str, end=end)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Agents.base_agent.AgentProcess"><code class="flex name class">
+<span>class <span class="ident">AgentProcess</span></span>
+<span>(</span><span>role: Literal['thought', 'action_input', 'action_output', 'response'], content: Any)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class for hosting agent step outputs.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AgentProcess:
+    &#34;&#34;&#34;Class for hosting agent step outputs.
+    &#34;&#34;&#34;
+    def __init__(self, role: Literal[&#39;thought&#39;, &#39;action_input&#39;, &#39;action_output&#39;, &#39;response&#39;], content: Any) -&gt; None:
+        self._role = role
+        self._content = content
+
+    @property
+    def role(self) -&gt; Literal[&#39;thought&#39;, &#39;action_input&#39;, &#39;action_output&#39;, &#39;response&#39;]:
+        return self._role
+    
+    @property
+    def content(self) -&gt; Any:
+        return self._content
+    
+    def __repr__(self) -&gt; str:
+        return f&#39;AgentProcess(role={self.role}, content={self.content})&#39;</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Agents.base_agent.AgentProcess.content"><code class="name">var <span class="ident">content</span> : Any</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def content(self) -&gt; Any:
+    return self._content</code></pre>
+</details>
+</dd>
+<dt id="llmflex.Agents.base_agent.AgentProcess.role"><code class="name">var <span class="ident">role</span> : Literal['thought', 'action_input', 'action_output', 'response']</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def role(self) -&gt; Literal[&#39;thought&#39;, &#39;action_input&#39;, &#39;action_output&#39;, &#39;response&#39;]:
+    return self._role</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Agents" href="index.html">llmflex.Agents</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Agents.base_agent.Agent" href="#llmflex.Agents.base_agent.Agent">Agent</a></code></h4>
+<ul class="two-column">
+<li><code><a title="llmflex.Agents.base_agent.Agent.final_response" href="#llmflex.Agents.base_agent.Agent.final_response">final_response</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.llm" href="#llmflex.Agents.base_agent.Agent.llm">llm</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.log" href="#llmflex.Agents.base_agent.Agent.log">log</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.prerun_config" href="#llmflex.Agents.base_agent.Agent.prerun_config">prerun_config</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.prompt_template" href="#llmflex.Agents.base_agent.Agent.prompt_template">prompt_template</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.run" href="#llmflex.Agents.base_agent.Agent.run">run</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.run_iter" href="#llmflex.Agents.base_agent.Agent.run_iter">run_iter</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.show" href="#llmflex.Agents.base_agent.Agent.show">show</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.system" href="#llmflex.Agents.base_agent.Agent.system">system</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.Agent.tool_selector" href="#llmflex.Agents.base_agent.Agent.tool_selector">tool_selector</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Agents.base_agent.AgentProcess" href="#llmflex.Agents.base_agent.AgentProcess">AgentProcess</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Agents.base_agent.AgentProcess.content" href="#llmflex.Agents.base_agent.AgentProcess.content">content</a></code></li>
+<li><code><a title="llmflex.Agents.base_agent.AgentProcess.role" href="#llmflex.Agents.base_agent.AgentProcess.role">role</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

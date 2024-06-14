@@ -149,8 +149,8 @@ def get_args_dtypes(fn: Callable) -> Dict[str, Dict[str, Any]]:
         if arg in ['return', 'cls', 'self']:
             continue
 
-        if getattr(arg_type, '__name__') in PYTHON_TO_JSON_TYPES.keys():
-            args[arg] = dict(type=PYTHON_TO_JSON_TYPES[arg_type.__name__])
+        if getattr(arg_type, '__name__').lower() in PYTHON_TO_JSON_TYPES.keys():
+            args[arg] = dict(type=PYTHON_TO_JSON_TYPES[arg_type.__name__.lower()])
             if arg in args_desc:
                 args[arg]['description'] = args_desc[arg]
             if arg not in required:
@@ -288,10 +288,18 @@ def gen_string(llm: Type[BaseLLM], prompt: str, double_quote: bool = True, max_g
             assert isinstance(eval(text), str)
             not_string = False
         except:
-            new = llm.invoke(original, stop=[quote], **kwargs)
-            text += new + quote
-            original += new + quote
-            count += 1
+            try:
+                # try to fix issue with newline characters
+                original = original.removesuffix(text)
+                text = text.replace('\n', '\\n')
+                original += text
+                assert isinstance(eval(text), str)
+                not_string = False
+            except:
+                new = llm.invoke(original, stop=[quote], **kwargs)
+                text += new + quote
+                original += new + quote
+                count += 1
     if not not_string:
         return eval(text)
     else:
@@ -404,12 +412,13 @@ class ToolSelector:
         """
         return list(filter(lambda x: x['name'] == tool_name, self.metadatas))[0]
     
-    def structured_input_generation(self, raw_prompt: str, llm: Type[BaseLLM], **kwargs) -> Dict[str, Any]:
+    def structured_input_generation(self, raw_prompt: str, llm: Type[BaseLLM], return_raw: bool = False, **kwargs) -> Dict[str, Any]:
         """Core part of tool input generation.
 
         Args:
             raw_prompt (str): The starting prompt.
             llm (Type[BaseLLM]): LLM for generation.
+            return_raw (bool, optional): Whether to return the raw string of failed generation. If False, "direct_response" tool will be returned. Defaults to False.
 
         Returns:
             Dict[str, Any]: Dictionary containing the name of the function and the input arguments.
@@ -444,6 +453,25 @@ class ToolSelector:
                             if val is not None:
                                 prompt +=  f'"{val}"' + ','
                             else:
+                                if return_raw:
+                                    return dict(generated_text = prompt.removeprefix(original_prompt))
+                                else:
+                                    return dict(name='direct_response')
+                    elif args_info[arg].get('type') == 'array':
+                        val = llm.invoke(prompt + '[', stop=[']'], **kwargs)
+                        try:
+                            is_list = isinstance(eval(f'[{val}]'), list)
+                            if is_list:
+                                prompt += f'[{val}],'
+                            else:
+                                if return_raw:
+                                    return dict(generated_text = (prompt + f'[{val}]').removeprefix(original_prompt))
+                                else:
+                                    return dict(name='direct_response')
+                        except:
+                            if return_raw:
+                                return dict(generated_text = (prompt + f'[{val}]').removeprefix(original_prompt))
+                            else:
                                 return dict(name='direct_response')
                     elif enum is None:
                         prompt += llm.invoke(prompt, stop=['\n\t'], **kwargs)
@@ -452,7 +480,10 @@ class ToolSelector:
                         if val is not None:
                             prompt += val + ','
                         else:
-                            return dict(name='direct_response')
+                            if return_raw:
+                                return dict(generated_text = prompt.removeprefix(original_prompt))
+                            else:
+                                return dict(name='direct_response')
                 prompt = prompt.rstrip(',') # strip off the comma, see if the llm wants to continue on optional arguments
                 if len(optional_args) > 0:
                     from copy import deepcopy
@@ -480,6 +511,16 @@ class ToolSelector:
                                     val = select(llm, prompt=prompt + '"', options=enum, **kwargs)
                                     val = default if val is None else f'"{val}"'
                                     prompt += val
+                            elif args_info[arg].get('type') == 'array':
+                                val = llm.invoke(prompt + '[', stop=[']'], **kwargs)
+                                try:
+                                    is_list = isinstance(eval(f'[{val}]'), list)
+                                    if is_list:
+                                        prompt += f'[{val}],'
+                                    else:
+                                        prompt += f'{default},'
+                                except:
+                                    prompt += f'{default},'
                             elif enum is None:
                                 prompt += llm.invoke(prompt, stop=['\n\t'], **kwargs)
                                 prompt = prompt.strip(', \n\r\t')
@@ -494,7 +535,10 @@ class ToolSelector:
         try:
             return json.loads(prompt.removeprefix(original_prompt))
         except:
-            return dict(name='direct_response')
+            if return_raw:
+                return dict(generated_text = prompt.removeprefix(original_prompt))
+            else:
+                return dict(name='direct_response')
     
     def tool_call_input(self, llm: Type[BaseLLM], messages: List[Dict[str, str]], prompt_template: Optional[PromptTemplate] = None, **kwargs) -> Dict[str, Any]:
         """Generate a dictionary of the tool to use and the input arguments.

@@ -28,6 +28,7 @@
 </summary>
 <pre><code class="python">from .base_memory import BaseChatMemory
 from ..Models.Cores.base_core import BaseLLM
+from ..KnowledgeBase.knowledge_base import KnowledgeBase
 from ..Prompts import PromptTemplate
 from ..Tools.tool_utils import ToolSelector
 from typing import Optional, Type, Dict, List, Union
@@ -35,7 +36,7 @@ from typing import Optional, Type, Dict, List, Union
 def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str, 
         llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None,
         system: Optional[str] = None, recent_token_limit: int = 400, relevant_token_limit: int = 300, relevance_score_threshold: float = 0.8, 
-        similarity_score_threshold: float = 0.5, tool_selector: Optional[ToolSelector] = None) -&gt; Union[str, List[Dict[str, str]]]:
+        similarity_score_threshold: float = 0.5, tool_selector: Optional[ToolSelector] = None, knowledge_base: Optional[KnowledgeBase] = None) -&gt; Union[str, List[Dict[str, str]]]:
     &#34;&#34;&#34;Create the full prompt or a list of messages that can be passed to the prompt template given the conversation memory.
 
     Args:
@@ -45,10 +46,11 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
         prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is given, the default prompt template of the llm will be used. Defaults to None.
         system (Optional[str], optional): System messsage for the conversation. If None is given, the default system message from the chat memory will be used. Defaults to None.
         recent_token_limit (int, optional): Token limit for the most recent conversation history. Defaults to 400.
-        relevant_token_limit (int, optional): Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction. Defaults to 300.
-        relevance_score_threshold (float, optional): Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.8.
+        relevant_token_limit (int, optional): Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 300.
+        relevance_score_threshold (float, optional): Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 0.8.
         similarity_score_threshold (float, optional): Score threshold for the vector database search for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.5.
         tool_selector (Optional[ToolSelector], optional): Tool selector with all the available tools for function calling. If None is given, function calling is not enabled. Defaults to None.
+        knowledge_base (Optional[KnowledgeBase], optional): Knowledge base for RAG. Defaults to None.
 
     Returns:
         Union[str, List[Dict[str, str]]]: Return the full prompt as a string if function calling is not applicable. Otherwise a list of messages will be returned for further formatting for function calling.
@@ -71,16 +73,16 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
             if prompt_template.allow_custom_role:
                 messages.append(tool_selector.function_metadata)
                 return_list = True
-            else:
-                fns = json.loads(tool_selector.function_metadata)
-                messages[0][&#39;content&#39;] += &#39;\n\n&#39; + json.dumps(dict(function_metadata=fns), indent=4)
-                return_list = True
     short_mem = memory.get_token_memory(llm=llm, token_limit=recent_token_limit)
     messages.extend(prompt_template.format_history(history=short_mem, return_list=True))
+    if knowledge_base:
+        kb_content = knowledge_base.search(query=user_input, token_limit=relevant_token_limit, relevance_score_threshold=relevance_score_threshold)
+        if kb_content:
+            kb_content = list(map(lambda x: dict(content=x.index, source=x.metadata[&#39;filename&#39;]), kb_content))
+            messages.append(dict(role=&#39;relevant_contents_from_knowledge_base&#39;, content=json.dumps(kb_content, indent=4)))
     if mem_type ==&#39;longshort&#39;:
         long_mem = memory.get_long_term_memory(query=user_input, recent_history=short_mem, llm=llm, 
                 token_limit=relevant_token_limit, similarity_score_threshold=similarity_score_threshold, relevance_score_threshold=relevance_score_threshold)
-        # content = json.dumps(dict(relevant_contents_from_previous_conversation=long_mem), indent=4) + &#39;\n\n&#39; + user_input if long_mem else user_input
         if long_mem:
             if prompt_template.allow_custom_role:
                 messages.extend([
@@ -108,7 +110,7 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="llmflex.Memory.memory_utils.create_prompt_with_history"><code class="name flex">
-<span>def <span class="ident">create_prompt_with_history</span></span>(<span>memory: Type[<a title="llmflex.Memory.base_memory.BaseChatMemory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory">BaseChatMemory</a>], user_input: str, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, system: Optional[str] = None, recent_token_limit: int = 400, relevant_token_limit: int = 300, relevance_score_threshold: float = 0.8, similarity_score_threshold: float = 0.5, tool_selector: Optional[<a title="llmflex.Tools.tool_utils.ToolSelector" href="../Tools/tool_utils.html#llmflex.Tools.tool_utils.ToolSelector">ToolSelector</a>] = None) ‑> Union[str, List[Dict[str, str]]]</span>
+<span>def <span class="ident">create_prompt_with_history</span></span>(<span>memory: Type[<a title="llmflex.Memory.base_memory.BaseChatMemory" href="base_memory.html#llmflex.Memory.base_memory.BaseChatMemory">BaseChatMemory</a>], user_input: str, llm: Type[<a title="llmflex.Models.Cores.base_core.BaseLLM" href="../Models/Cores/base_core.html#llmflex.Models.Cores.base_core.BaseLLM">BaseLLM</a>], prompt_template: Optional[<a title="llmflex.Prompts.prompt_template.PromptTemplate" href="../Prompts/prompt_template.html#llmflex.Prompts.prompt_template.PromptTemplate">PromptTemplate</a>] = None, system: Optional[str] = None, recent_token_limit: int = 400, relevant_token_limit: int = 300, relevance_score_threshold: float = 0.8, similarity_score_threshold: float = 0.5, tool_selector: Optional[<a title="llmflex.Tools.tool_utils.ToolSelector" href="../Tools/tool_utils.html#llmflex.Tools.tool_utils.ToolSelector">ToolSelector</a>] = None, knowledge_base: Optional[<a title="llmflex.KnowledgeBase.knowledge_base.KnowledgeBase" href="../KnowledgeBase/knowledge_base.html#llmflex.KnowledgeBase.knowledge_base.KnowledgeBase">KnowledgeBase</a>] = None) ‑> Union[str, List[Dict[str, str]]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Create the full prompt or a list of messages that can be passed to the prompt template given the conversation memory.</p>
@@ -127,13 +129,15 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
 <dt><strong><code>recent_token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
 <dd>Token limit for the most recent conversation history. Defaults to 400.</dd>
 <dt><strong><code>relevant_token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction. Defaults to 300.</dd>
+<dd>Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 300.</dd>
 <dt><strong><code>relevance_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
-<dd>Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.8.</dd>
+<dd>Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 0.8.</dd>
 <dt><strong><code>similarity_score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
 <dd>Score threshold for the vector database search for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.5.</dd>
 <dt><strong><code>tool_selector</code></strong> :&ensp;<code>Optional[ToolSelector]</code>, optional</dt>
 <dd>Tool selector with all the available tools for function calling. If None is given, function calling is not enabled. Defaults to None.</dd>
+<dt><strong><code>knowledge_base</code></strong> :&ensp;<code>Optional[KnowledgeBase]</code>, optional</dt>
+<dd>Knowledge base for RAG. Defaults to None.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -147,7 +151,7 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
 <pre><code class="python">def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str, 
         llm: Type[BaseLLM], prompt_template: Optional[PromptTemplate] = None,
         system: Optional[str] = None, recent_token_limit: int = 400, relevant_token_limit: int = 300, relevance_score_threshold: float = 0.8, 
-        similarity_score_threshold: float = 0.5, tool_selector: Optional[ToolSelector] = None) -&gt; Union[str, List[Dict[str, str]]]:
+        similarity_score_threshold: float = 0.5, tool_selector: Optional[ToolSelector] = None, knowledge_base: Optional[KnowledgeBase] = None) -&gt; Union[str, List[Dict[str, str]]]:
     &#34;&#34;&#34;Create the full prompt or a list of messages that can be passed to the prompt template given the conversation memory.
 
     Args:
@@ -157,10 +161,11 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
         prompt_template (Optional[PromptTemplate], optional): Prompt template to format the prompt. If None is given, the default prompt template of the llm will be used. Defaults to None.
         system (Optional[str], optional): System messsage for the conversation. If None is given, the default system message from the chat memory will be used. Defaults to None.
         recent_token_limit (int, optional): Token limit for the most recent conversation history. Defaults to 400.
-        relevant_token_limit (int, optional): Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction. Defaults to 300.
-        relevance_score_threshold (float, optional): Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.8.
+        relevant_token_limit (int, optional): Token limit for the relevant contents from older conversation history. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 300.
+        relevance_score_threshold (float, optional): Score threshold for the reranker for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction or knowledge base is given. Defaults to 0.8.
         similarity_score_threshold (float, optional): Score threshold for the vector database search for relevant conversation history content extraction. Only used if the memory provided allow relevant content extraction. Defaults to 0.5.
         tool_selector (Optional[ToolSelector], optional): Tool selector with all the available tools for function calling. If None is given, function calling is not enabled. Defaults to None.
+        knowledge_base (Optional[KnowledgeBase], optional): Knowledge base for RAG. Defaults to None.
 
     Returns:
         Union[str, List[Dict[str, str]]]: Return the full prompt as a string if function calling is not applicable. Otherwise a list of messages will be returned for further formatting for function calling.
@@ -183,16 +188,16 @@ def create_prompt_with_history(memory: Type[BaseChatMemory], user_input: str,
             if prompt_template.allow_custom_role:
                 messages.append(tool_selector.function_metadata)
                 return_list = True
-            else:
-                fns = json.loads(tool_selector.function_metadata)
-                messages[0][&#39;content&#39;] += &#39;\n\n&#39; + json.dumps(dict(function_metadata=fns), indent=4)
-                return_list = True
     short_mem = memory.get_token_memory(llm=llm, token_limit=recent_token_limit)
     messages.extend(prompt_template.format_history(history=short_mem, return_list=True))
+    if knowledge_base:
+        kb_content = knowledge_base.search(query=user_input, token_limit=relevant_token_limit, relevance_score_threshold=relevance_score_threshold)
+        if kb_content:
+            kb_content = list(map(lambda x: dict(content=x.index, source=x.metadata[&#39;filename&#39;]), kb_content))
+            messages.append(dict(role=&#39;relevant_contents_from_knowledge_base&#39;, content=json.dumps(kb_content, indent=4)))
     if mem_type ==&#39;longshort&#39;:
         long_mem = memory.get_long_term_memory(query=user_input, recent_history=short_mem, llm=llm, 
                 token_limit=relevant_token_limit, similarity_score_threshold=similarity_score_threshold, relevance_score_threshold=relevance_score_threshold)
-        # content = json.dumps(dict(relevant_contents_from_previous_conversation=long_mem), indent=4) + &#39;\n\n&#39; + user_input if long_mem else user_input
         if long_mem:
             if prompt_template.allow_custom_role:
                 messages.extend([
