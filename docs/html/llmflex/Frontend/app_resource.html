@@ -160,6 +160,11 @@ class AppBackend:
 
     @property
     def memory_config(self) -&gt; Dict[str, float]:
+        &#34;&#34;&#34;Memory extraction config.
+
+        Returns:
+            Dict[str, float]: Memory extraction config.
+        &#34;&#34;&#34;
         if not hasattr(self, &#39;_memory_config&#39;):
             self._memory_config = dict(
                 recent_token_limit = 600, 
@@ -168,6 +173,20 @@ class AppBackend:
                 similarity_score_threshold = 0.5
             )
         return self._memory_config
+    
+    @property
+    def knowledge_base_config(self) -&gt; Dict[str, float]:
+        &#34;&#34;&#34;Knowledge base search config.
+
+        Returns:
+            Dict[str, float]: Knowledge base search config.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_knowledge_base_config&#39;):
+            self._knowledge_base_config = dict(
+                kb_token_limit = 500,
+                kb_score_threshold = 0.0
+            )
+        return self._knowledge_base_config
 
     @property
     def tool_status(self) -&gt; Dict[str, bool]:
@@ -401,6 +420,19 @@ class AppBackend:
         for i, arg in enumerate(args):
             if arg is not None:
                 self._memory_config[arg_names[i]] = arg
+
+    def set_knowledge_base_config(self, kb_token_limit: Optional[int] = None, kb_score_threshold: Optional[float] = None) -&gt; None:
+        &#34;&#34;&#34;Update the knowledge base config. If None is given to any arguments, the argument will not change.
+
+        Args:
+            kb_token_limit (Optional[int], optional): Token limit for the search. Defaults to None.
+            kb_score_threshold (Optional[float], optional): Score threshold for the reranker for knowledge base search. Defaults to None.
+        &#34;&#34;&#34;
+        args = [kb_token_limit, kb_score_threshold]
+        arg_names = [&#39;kb_token_limit&#39;, &#39;kb_score_threshold&#39;]
+        for i, arg in enumerate(args):
+            if arg is not None:
+                self._knowledge_base_config[arg_names[i]] = arg
 
     def set_system_message(self, system: str) -&gt; None:
         &#34;&#34;&#34;Update the system message of the current conversation.
@@ -654,6 +686,11 @@ class AppBackend:
 
     @property
     def memory_config(self) -&gt; Dict[str, float]:
+        &#34;&#34;&#34;Memory extraction config.
+
+        Returns:
+            Dict[str, float]: Memory extraction config.
+        &#34;&#34;&#34;
         if not hasattr(self, &#39;_memory_config&#39;):
             self._memory_config = dict(
                 recent_token_limit = 600, 
@@ -662,6 +699,20 @@ class AppBackend:
                 similarity_score_threshold = 0.5
             )
         return self._memory_config
+    
+    @property
+    def knowledge_base_config(self) -&gt; Dict[str, float]:
+        &#34;&#34;&#34;Knowledge base search config.
+
+        Returns:
+            Dict[str, float]: Knowledge base search config.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_knowledge_base_config&#39;):
+            self._knowledge_base_config = dict(
+                kb_token_limit = 500,
+                kb_score_threshold = 0.0
+            )
+        return self._knowledge_base_config
 
     @property
     def tool_status(self) -&gt; Dict[str, bool]:
@@ -895,6 +946,19 @@ class AppBackend:
         for i, arg in enumerate(args):
             if arg is not None:
                 self._memory_config[arg_names[i]] = arg
+
+    def set_knowledge_base_config(self, kb_token_limit: Optional[int] = None, kb_score_threshold: Optional[float] = None) -&gt; None:
+        &#34;&#34;&#34;Update the knowledge base config. If None is given to any arguments, the argument will not change.
+
+        Args:
+            kb_token_limit (Optional[int], optional): Token limit for the search. Defaults to None.
+            kb_score_threshold (Optional[float], optional): Score threshold for the reranker for knowledge base search. Defaults to None.
+        &#34;&#34;&#34;
+        args = [kb_token_limit, kb_score_threshold]
+        arg_names = [&#39;kb_token_limit&#39;, &#39;kb_score_threshold&#39;]
+        for i, arg in enumerate(args):
+            if arg is not None:
+                self._knowledge_base_config[arg_names[i]] = arg
 
     def set_system_message(self, system: str) -&gt; None:
         &#34;&#34;&#34;Update the system message of the current conversation.
@@ -1143,6 +1207,33 @@ def knowledge_base(self) -&gt; Optional[KnowledgeBase]:
     return self._knowledge_base</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.knowledge_base_config"><code class="name">var <span class="ident">knowledge_base_config</span> : Dict[str, float]</code></dt>
+<dd>
+<div class="desc"><p>Knowledge base search config.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, float]</code></dt>
+<dd>Knowledge base search config.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def knowledge_base_config(self) -&gt; Dict[str, float]:
+    &#34;&#34;&#34;Knowledge base search config.
+
+    Returns:
+        Dict[str, float]: Knowledge base search config.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_knowledge_base_config&#39;):
+        self._knowledge_base_config = dict(
+            kb_token_limit = 500,
+            kb_score_threshold = 0.0
+        )
+    return self._knowledge_base_config</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map"><code class="name">var <span class="ident">knowledge_base_map</span> : Dict[str, Dict[str, Union[str, List[str]]]]</code></dt>
 <dd>
 <div class="desc"><p>Dictionary of knowledge bases.</p>
@@ -1254,13 +1345,23 @@ def memory(self) -&gt; LongShortTermChatMemory:
 </dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.memory_config"><code class="name">var <span class="ident">memory_config</span> : Dict[str, float]</code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Memory extraction config.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, float]</code></dt>
+<dd>Memory extraction config.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
 def memory_config(self) -&gt; Dict[str, float]:
+    &#34;&#34;&#34;Memory extraction config.
+
+    Returns:
+        Dict[str, float]: Memory extraction config.
+    &#34;&#34;&#34;
     if not hasattr(self, &#39;_memory_config&#39;):
         self._memory_config = dict(
             recent_token_limit = 600, 
@@ -1621,6 +1722,36 @@ def tool_status(self) -&gt; Dict[str, bool]:
             self._generation_config[arg_names[i]] = arg</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Frontend.app_resource.AppBackend.set_knowledge_base_config"><code class="name flex">
+<span>def <span class="ident">set_knowledge_base_config</span></span>(<span>self, kb_token_limit: Optional[int] = None, kb_score_threshold: Optional[float] = None) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Update the knowledge base config. If None is given to any arguments, the argument will not change.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>kb_token_limit</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>Token limit for the search. Defaults to None.</dd>
+<dt><strong><code>kb_score_threshold</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>Score threshold for the reranker for knowledge base search. Defaults to None.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_knowledge_base_config(self, kb_token_limit: Optional[int] = None, kb_score_threshold: Optional[float] = None) -&gt; None:
+    &#34;&#34;&#34;Update the knowledge base config. If None is given to any arguments, the argument will not change.
+
+    Args:
+        kb_token_limit (Optional[int], optional): Token limit for the search. Defaults to None.
+        kb_score_threshold (Optional[float], optional): Score threshold for the reranker for knowledge base search. Defaults to None.
+    &#34;&#34;&#34;
+    args = [kb_token_limit, kb_score_threshold]
+    arg_names = [&#39;kb_token_limit&#39;, &#39;kb_score_threshold&#39;]
+    for i, arg in enumerate(args):
+        if arg is not None:
+            self._knowledge_base_config[arg_names[i]] = arg</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Frontend.app_resource.AppBackend.set_memory_config"><code class="name flex">
 <span>def <span class="ident">set_memory_config</span></span>(<span>self, recent_token_limit: Optional[int] = None, relevant_token_limit: Optional[int] = None, relevance_score_threshold: Optional[float] = None, similarity_score_threshold: Optional[float] = None) ‑> None</span>
 </code></dt>
@@ -1791,6 +1922,7 @@ similarity_score_threshold (Optional[float], optional): Score threshold for the 
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.generation_config" href="#llmflex.Frontend.app_resource.AppBackend.generation_config">generation_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.has_tools" href="#llmflex.Frontend.app_resource.AppBackend.has_tools">has_tools</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base">knowledge_base</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base_config" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base_config">knowledge_base_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base_map">knowledge_base_map</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.knowledge_base_map_dir" href="#llmflex.Frontend.app_resource.AppBackend.knowledge_base_map_dir">knowledge_base_map_dir</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.llm" href="#llmflex.Frontend.app_resource.AppBackend.llm">llm</a></code></li>
@@ -1801,6 +1933,7 @@ similarity_score_threshold (Optional[float], optional): Score threshold for the 
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.remove_knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.remove_knowledge_base">remove_knowledge_base</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.select_knowledge_base" href="#llmflex.Frontend.app_resource.AppBackend.select_knowledge_base">select_knowledge_base</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_generation_config" href="#llmflex.Frontend.app_resource.AppBackend.set_generation_config">set_generation_config</a></code></li>
+<li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_knowledge_base_config" href="#llmflex.Frontend.app_resource.AppBackend.set_knowledge_base_config">set_knowledge_base_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_memory_config" href="#llmflex.Frontend.app_resource.AppBackend.set_memory_config">set_memory_config</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_prompt_template" href="#llmflex.Frontend.app_resource.AppBackend.set_prompt_template">set_prompt_template</a></code></li>
 <li><code><a title="llmflex.Frontend.app_resource.AppBackend.set_system_message" href="#llmflex.Frontend.app_resource.AppBackend.set_system_message">set_system_message</a></code></li>

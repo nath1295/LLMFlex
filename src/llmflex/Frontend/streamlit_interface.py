@@ -320,7 +320,8 @@ class AppInterface:
         page_dict = {
             'Prompt Format Settings': self.prompt_format_settings, 
             'System Message Settings': self.system_message_setttings, 
-            'Memory Settings': self.memory_settings, 
+            'Memory Settings': self.memory_settings,
+            'Knowledge Base Settings': self.knowledge_base_settings,
             'Model Settings': self.model_settings
             }
         if self.backend.has_tools:
@@ -408,6 +409,25 @@ class AppInterface:
                               relevant_token_limit=self.long_limit_slidder,
                               relevance_score_threshold=self.rel_score_threshold_slidder,
                               similarity_score_threshold=self.sim_score_threshold_slidder))
+        
+    def knowledge_base_settings(self) -> None:
+        """Create settings for memory.
+        """
+        self.kb_limit_slidder = st.slider('Knowledge base token limit', min_value=0, max_value=6000, step=1, 
+                value=self.backend.knowledge_base_config['kb_token_limit'], disabled=self.generating)
+        self.kb_score_threshold_slidder = st.slider('Relevance score threshold for knowledge base', min_value=0.0, max_value=1.0, step=0.01,
+                value=self.backend.knowledge_base_config['kb_score_threshold'], disabled=self.generating)
+        summary = [
+            'Current settings:',
+            f"Short term memory token limit: {self.backend.knowledge_base_config['kb_token_limit']}",
+            f"Relevance score threshold: {self.backend.knowledge_base_config['kb_score_threshold']}"
+        ]
+        st.markdown('  \n'.join(summary))
+        st.button(label=':floppy_disk:', key='kb_token_save', disabled=self.generating, 
+                  use_container_width=True,
+                  on_click=self.backend.set_knowledge_base_config,
+                  kwargs=dict(kb_token_limit=self.kb_limit_slidder,
+                              kb_score_threshold=self.kb_score_threshold_slidder))
 
     def model_settings(self) -> None:
         """Create settings for text generation.
@@ -495,7 +515,9 @@ class AppInterface:
             relevant_token_limit=self.backend.memory_config['relevant_token_limit'],
             relevance_score_threshold=self.backend.memory_config['relevance_score_threshold'],
             similarity_score_threshold=self.backend.memory_config['similarity_score_threshold'],
-            knowledge_base = self.backend.knowledge_base
+            knowledge_base=self.backend.knowledge_base,
+            kb_token_limit=self.backend.knowledge_base_config['kb_token_limit'],
+            kb_score_threshold=self.backend.knowledge_base_config['kb_score_threshold']
         )
         if ai_start.strip() != '':
             prompt = create_prompt_with_history(**prompt_args) + ai_start

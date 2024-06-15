@@ -126,6 +126,9 @@ Classes
     `knowledge_base_creation(self) ‑> None`
     :   Creating knowledge base.
 
+    `knowledge_base_settings(self) ‑> None`
+    :   Create settings for memory.
+
     `login(self) ‑> None`
     :   Creating login page.
 

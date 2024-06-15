@@ -50,6 +50,12 @@ Classes
         Returns:
             Optional[KnowledgeBase]: Knowledge base.
 
+    `knowledge_base_config: Dict[str, float]`
+    :   Knowledge base search config.
+        
+        Returns:
+            Dict[str, float]: Knowledge base search config.
+
     `knowledge_base_map: Dict[str, Dict[str, Union[str, List[str]]]]`
     :   Dictionary of knowledge bases.
         
@@ -75,7 +81,10 @@ Classes
             LongShortTermChatMemory: Current chat memory.
 
     `memory_config: Dict[str, float]`
-    :
+    :   Memory extraction config.
+        
+        Returns:
+            Dict[str, float]: Memory extraction config.
 
     `prompt_template: llmflex.Prompts.prompt_template.PromptTemplate`
     :   Prompt template.
@@ -149,6 +158,13 @@ Classes
             top_p (Optional[float], optional): While sampling the next token, only consider the tokens above this p value. Defaults to None.
             top_k (Optional[int], optional): While sampling the next token, only consider the top "top_k" tokens. Defaults to None.
             repetition_penalty (Optional[float], optional): The value to penalise the model for generating repetitive text. Defaults to None.
+
+    `set_knowledge_base_config(self, kb_token_limit: Optional[int] = None, kb_score_threshold: Optional[float] = None) ‑> None`
+    :   Update the knowledge base config. If None is given to any arguments, the argument will not change.
+        
+        Args:
+            kb_token_limit (Optional[int], optional): Token limit for the search. Defaults to None.
+            kb_score_threshold (Optional[float], optional): Score threshold for the reranker for knowledge base search. Defaults to None.
 
     `set_memory_config(self, recent_token_limit: Optional[int] = None, relevant_token_limit: Optional[int] = None, relevance_score_threshold: Optional[float] = None, similarity_score_threshold: Optional[float] = None) ‑> None`
     :   Update the memory config. If None is given to any arguments, the argument will not change.

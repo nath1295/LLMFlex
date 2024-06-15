@@ -28,35 +28,36 @@ All the LLMs created with `LlmFactory` are langchain compatible, and can be seam
 ### 3. Multiple model formats support
 Multiple model formats are all supported, and the loading process are all handled in the `LlmFactory` class, so it is just plug and play. 
 Supported formats:
-* __PyTorch__ (using transformers)
-* __GGUF__ (using llama-cpp-python)
-* __AWQ__ (using transformers)
-* __GPTQ__ (using transformers)
+* __PyTorch__, __AWQ__, __GPTQ__ (uvia transformers)
+* __GGUF__ (via llama-cpp-python)
 * __OpenAI API__ (Work with any local servers that serve models with OpenAI API format)
-* __EXL2__ (using exllamav2)
+* __EXL2__ (via exllamav2)
 
-### 4. Embedding Toolkits
+### 4. Custom tools
+A base class `BaseTool` for creating llm powered tools. A `BrowserTool` powered by __DuckDuckGo__ is implemented as an example.
+
+### 5. LLM Agents
+An `Agent` class is provided. You can pass your tools and LLM to initialise the agent, after giving the agent a task, the agent will work out the magic for you with the given tools.
+
+### 6. Embedding Toolkits
 Bundled classes for using embedding models which contains the embedding model and a tokens-count-based text splitter using the embedding model.
 
-### 5. Vector database
-Utilising Embedding toolkits and FAISS, a `VectorDatabase` class can allow you to store and search texts for your RAG tasks.
+### 7. Vector database
+Utilising Embedding toolkits and FAISS, a `FaissVectorDatabase` class can allow you to store and search texts for your RAG tasks.
 
-### 6. Chat memories
+### 8. Chat memories
 Chat memory classes for storing chat memory on disk.  
 1. `BaseChatMemory`  
 Memory class without using any embedding models or vector databases.  
 
 2. `LongShortTermChatMemory`  
-Memory class using an underlying `VectorDatabase` to maintain long term memory along with the most recent memory.
+Memory class using an underlying `FaissVectorDatabase` to maintain long term memory along with the most recent memory.
 
-### 7. Prompt template
-A `PromptTemplate` class is implemented to format your prompt with different prompt formats for models from different sources. Some presets like `Llama2`, `ChatML`, `Vicuna`, and more are already implemented, but you can alway add your own prompt format template.
+### 9. Prompt template
+A `PromptTemplate` class is implemented to format your prompt with different prompt formats for models from different sources. Some presets like `Llama3`, `ChatML`, `Vicuna`, and more are already implemented, but you can alway add your own prompt format template.
 
-### 8. Custom tools
-A base class `BaseTool` for creating llm powered tools. A `BrowserTool` powered by __DuckDuckGo__ is implemented as an example.
-
-### 9. Chatbot frontend interface
-If you simply want to play with a model, there is a streamlit frontend chatbot that allows you to chat with a model with different generation configurations. You can switch between chat histories and prompt format, and you can set your system prompt and other model text generation sampling configurations in the webapp.
+### 10. Chatbot frontend interface
+A streamlit webapp is provided for local AI chatbot usage. Function calling and RAG on your own documents are supported on the webapp. You can also steer the response of the LLM by providing the beginning text for the response.
 
 ## Using LLMFlex
 
@@ -73,12 +74,7 @@ model = LlmFactory("TheBloke/OpenHermes-2.5-Mistral-7B-GGUF")
 llm = model(temperature=0.7, max_new_tokens=512, stop=['```'])
 
 # Use the LLM for your task
-prompt = """Instruction:
-Write a python script to load a Pandas Dataframe from the csv file 'test.csv'
-
-Solution:
-```python
-"""
+prompt = "Q: What is the colour of an apple? A:"
 script = llm.invoke(prompt)
 print(script)
 
@@ -106,18 +102,31 @@ print(vectordb.search("Beef"))
 ```
 
 ### 3. Use tools
-A `WebSearchTool` class is implemented as an example to build a tool with LLMFlex. The tool is using __DuckDuckGo__ by default. Here is how you can use it:
+A `BrowserTool` class is implemented as an example to build a tool with LLMFlex. The tool is using __DuckDuckGo__ by default. Here is how you can use it:
 ```python
 from llmflex.Tools import BrowserTool
+from llmflex.Rankers import FlashrankRanker
+
+# Create a reranker
+ranker = FlashrankRanker()
 
 # Create a broswer tool with the embeddings toolkit created earlier
-tool = BrowserTool(embeddings=embeddings)
+tool = BrowserTool(embeddings=embeddings, llm=llm, ranker=ranker)
 
 # Run the tool
 tool(search_query='Install python')
 ```
 
-### 4. Chat with the model in a Streamlit web app
+### 4. Running an agent
+Use the one-shot ReAct agent to go through more complicated workflows.
+```python
+from llmflex.Agents import Agent
+
+agent = Agent(llm=llm, tools=[tool], prompt_template=model.prompt_template)
+agent.run("Do some research online to find out the latest trends about Generative AI.")
+```
+
+### 5. Chat with the model in a Streamlit web app
 If you just want a GUI to start chatting with your LLM model with both long term and short term memory, type this command in the terminal:
 ```bash
 llmflex interface
@@ -131,14 +140,12 @@ after modifying the file, run the following:
 ```bash
 llmflex interface --config_dir chatbot_config.yaml
 ```
-You will see a streamlit frontend, use it to chat with the LLM model.  
-![Streamlit GUI](imgs/webapp.png)
+You will see a streamlit frontend, use it to chat with the LLM model. 
 
-### 5. Serve an OpenAI API with a GGUF model
-To serve a GGUF model with OpenAI API:
-```bash
-llmflex serve --model_id TheBloke/OpenHermes-2.5-Mistral-7B-GGUF --model_file openhermes-2.5-mistral-7b.Q6_K.gguf --context_size 4096
-```
+Now you can upload your text files to create knowledge bases and talk about your documents with your AI assistant.
+
+For further details on how to configure your yaml, please read the documentation provided.
+![Streamlit GUI](imgs/webapp.png)
 
 ## Documentations
 Python documentation for all the classes, methods, and functions is provided in the `./docs` directory in this repository.

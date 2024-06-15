@@ -132,6 +132,11 @@ class AppBackend:
 
     @property
     def memory_config(self) -> Dict[str, float]:
+        """Memory extraction config.
+
+        Returns:
+            Dict[str, float]: Memory extraction config.
+        """
         if not hasattr(self, '_memory_config'):
             self._memory_config = dict(
                 recent_token_limit = 600, 
@@ -140,6 +145,20 @@ class AppBackend:
                 similarity_score_threshold = 0.5
             )
         return self._memory_config
+    
+    @property
+    def knowledge_base_config(self) -> Dict[str, float]:
+        """Knowledge base search config.
+
+        Returns:
+            Dict[str, float]: Knowledge base search config.
+        """
+        if not hasattr(self, '_knowledge_base_config'):
+            self._knowledge_base_config = dict(
+                kb_token_limit = 500,
+                kb_score_threshold = 0.0
+            )
+        return self._knowledge_base_config
 
     @property
     def tool_status(self) -> Dict[str, bool]:
@@ -373,6 +392,19 @@ class AppBackend:
         for i, arg in enumerate(args):
             if arg is not None:
                 self._memory_config[arg_names[i]] = arg
+
+    def set_knowledge_base_config(self, kb_token_limit: Optional[int] = None, kb_score_threshold: Optional[float] = None) -> None:
+        """Update the knowledge base config. If None is given to any arguments, the argument will not change.
+
+        Args:
+            kb_token_limit (Optional[int], optional): Token limit for the search. Defaults to None.
+            kb_score_threshold (Optional[float], optional): Score threshold for the reranker for knowledge base search. Defaults to None.
+        """
+        args = [kb_token_limit, kb_score_threshold]
+        arg_names = ['kb_token_limit', 'kb_score_threshold']
+        for i, arg in enumerate(args):
+            if arg is not None:
+                self._knowledge_base_config[arg_names[i]] = arg
 
     def set_system_message(self, system: str) -> None:
         """Update the system message of the current conversation.
