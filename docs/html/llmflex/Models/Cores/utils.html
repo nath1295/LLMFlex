@@ -104,6 +104,26 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -&gt; Tuple[str,
     text  = text[:-len(root)] if root else text
     return text, root
 
+def enforce_stop_tokens(text: str, stop: List[str]) -&gt; str:
+    &#34;&#34;&#34;Strip text with the given stop words.
+
+    Args:
+        text (str): Text to strip.
+        stop (List[str]): List of stop words.
+
+    Returns:
+        str: Stripped text.
+    &#34;&#34;&#34;
+    stop_pos = list(map(lambda x: text.find(x), stop))
+    stop_map = list(zip(stop, stop_pos))
+    stop_map = list(filter(lambda x: x[1] != -1, stop_map))
+    if len(stop_map) != 0:
+        stop_map.sort(key=lambda x: x[1])
+        stop_word = stop_map[0][0]
+        return text.split(sep=stop_word)[0]
+    else:
+        return text
+
 def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -&gt; Iterator[str]:
     &#34;&#34;&#34;Make a text generator stop before spitting out the stop words.
 
@@ -377,6 +397,48 @@ def list_local_models() -&gt; List[Dict[str, str]]:
     return &#39;Default&#39;</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Models.Cores.utils.enforce_stop_tokens"><code class="name flex">
+<span>def <span class="ident">enforce_stop_tokens</span></span>(<span>text: str, stop: List[str]) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Strip text with the given stop words.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text to strip.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>List of stop words.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Stripped text.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def enforce_stop_tokens(text: str, stop: List[str]) -&gt; str:
+    &#34;&#34;&#34;Strip text with the given stop words.
+
+    Args:
+        text (str): Text to strip.
+        stop (List[str]): List of stop words.
+
+    Returns:
+        str: Stripped text.
+    &#34;&#34;&#34;
+    stop_pos = list(map(lambda x: text.find(x), stop))
+    stop_map = list(zip(stop, stop_pos))
+    stop_map = list(filter(lambda x: x[1] != -1, stop_map))
+    if len(stop_map) != 0:
+        stop_map.sort(key=lambda x: x[1])
+        stop_word = stop_map[0][0]
+        return text.split(sep=stop_word)[0]
+    else:
+        return text</code></pre>
+</details>
+</dd>
 <dt id="llmflex.Models.Cores.utils.find_roots"><code class="name flex">
 <span>def <span class="ident">find_roots</span></span>(<span>text: str, stop: List[str], stop_len: List[int]) ‑> Tuple[str, str]</span>
 </code></dt>
@@ -634,6 +696,7 @@ def list_local_models() -&gt; List[Dict[str, str]]:
 <li><code><a title="llmflex.Models.Cores.utils.add_newline_char_to_stopwords" href="#llmflex.Models.Cores.utils.add_newline_char_to_stopwords">add_newline_char_to_stopwords</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.detect_prompt_template_by_id" href="#llmflex.Models.Cores.utils.detect_prompt_template_by_id">detect_prompt_template_by_id</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.detect_prompt_template_by_jinja" href="#llmflex.Models.Cores.utils.detect_prompt_template_by_jinja">detect_prompt_template_by_jinja</a></code></li>
+<li><code><a title="llmflex.Models.Cores.utils.enforce_stop_tokens" href="#llmflex.Models.Cores.utils.enforce_stop_tokens">enforce_stop_tokens</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.find_roots" href="#llmflex.Models.Cores.utils.find_roots">find_roots</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.get_prompt_template_by_jinja" href="#llmflex.Models.Cores.utils.get_prompt_template_by_jinja">get_prompt_template_by_jinja</a></code></li>
 <li><code><a title="llmflex.Models.Cores.utils.get_stop_words" href="#llmflex.Models.Cores.utils.get_stop_words">get_stop_words</a></code></li>

@@ -19,7 +19,7 @@ pip install llmflex
 You can also install [ExLlamaV2](https://github.com/turboderp/exllamav2), [AutoAWQ](https://pypi.org/project/autoawq/0.1.1/), and [AutoGPTQ](https://pypi.org/project/auto-gptq/) if you have CUDA devices. Please visit the links provided for the respective packages for more detailed installation guides.
 
 ## Features
-### 1. Multilple LLMs with different genration configurations from one model 
+### 1. Multilple LLMs with different generation configurations from one model 
 Unlike Langchain, you can create multiple LLMs with different temperature, max new tokens, stop words etc. with the same underlying model without loading the model several times using the `LlmFactory` class. This can be useful when you create your own agent with different LLM tasks which requires different configurations.
 
 ### 2. Langchain compatibility with enhanced performances
@@ -71,15 +71,15 @@ from llmflex import LlmFactory
 model = LlmFactory("TheBloke/OpenHermes-2.5-Mistral-7B-GGUF")
 
 # Create a llm
-llm = model(temperature=0.7, max_new_tokens=512, stop=['```'])
+llm = model(temperature=0.7, max_new_tokens=512)
 
 # Use the LLM for your task
 prompt = "Q: What is the colour of an apple? A:"
-script = llm.invoke(prompt)
-print(script)
+ans = llm.invoke(prompt, stop=['Q:'])
+print(ans)
 
 # Or if you prefer to generate the output with token streamming.
-for token in llm.stream(prompt):
+for token in llm.stream(prompt, stop=['Q:']):
     print(token, end="")
 ```
 

@@ -35,6 +35,17 @@ Functions
         str: Prompt template preset.
 
     
+`enforce_stop_tokens(text: str, stop: List[str]) ‑> str`
+:   Strip text with the given stop words.
+    
+    Args:
+        text (str): Text to strip.
+        stop (List[str]): List of stop words.
+    
+    Returns:
+        str: Stripped text.
+
+    
 `find_roots(text: str, stop: List[str], stop_len: List[int]) ‑> Tuple[str, str]`
 :   This function is a helper function for stopping stop words from showing up while doing work streaming in some custom llm classes. Not intended to be used alone.
     

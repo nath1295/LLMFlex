@@ -374,6 +374,14 @@ class AppInterface:
         )
         if not self.backend.prompt_template.allow_custom_role:
             st.warning('Current prompt format does not support function calling.')
+        st.markdown('Format Example')
+        prompt_example = [
+            dict(role='system', content='This is system message.'),
+            dict(role='user', content='Hi there!'),
+            dict(role='assistant', content='Hello to you too!'),
+            dict(role='user', content='Shall we talk?')
+            ]
+        st.text(self.backend.prompt_template.create_custom_prompt(prompt_example))
         
     def system_message_setttings(self) -> None:
         """Create settings for system message.
@@ -413,9 +421,9 @@ class AppInterface:
     def knowledge_base_settings(self) -> None:
         """Create settings for memory.
         """
-        self.kb_limit_slidder = st.slider('Knowledge base token limit', min_value=0, max_value=6000, step=1, 
+        self.kb_limit_slider = st.slider('Knowledge base token limit', min_value=0, max_value=6000, step=1, 
                 value=self.backend.knowledge_base_config['kb_token_limit'], disabled=self.generating)
-        self.kb_score_threshold_slidder = st.slider('Relevance score threshold for knowledge base', min_value=0.0, max_value=1.0, step=0.01,
+        self.kb_score_threshold_slider = st.slider('Relevance score threshold for knowledge base', min_value=0.0, max_value=1.0, step=0.01,
                 value=self.backend.knowledge_base_config['kb_score_threshold'], disabled=self.generating)
         summary = [
             'Current settings:',
@@ -426,17 +434,17 @@ class AppInterface:
         st.button(label=':floppy_disk:', key='kb_token_save', disabled=self.generating, 
                   use_container_width=True,
                   on_click=self.backend.set_knowledge_base_config,
-                  kwargs=dict(kb_token_limit=self.kb_limit_slidder,
-                              kb_score_threshold=self.kb_score_threshold_slidder))
+                  kwargs=dict(kb_token_limit=self.kb_limit_slider,
+                              kb_score_threshold=self.kb_score_threshold_slider))
 
     def model_settings(self) -> None:
         """Create settings for text generation.
         """
-        self.temperature_slidder = st.slider('Temparature', min_value=0.0, max_value=2.0, step=0.01, value=self.backend.generation_config['temperature'], disabled=self.generating)
-        self.max_new_token_slidder = st.slider('Maximum number of new tokens', min_value=0, max_value=4096, step=1, value=self.backend.generation_config['max_new_tokens'], disabled=self.generating)
-        self.repetition_slidder = st.slider('Repetition penalty', min_value=1.0, max_value=2.0, step=0.01, value=self.backend.generation_config['repetition_penalty'], disabled=self.generating)
-        self.topp_slidder = st.slider('Top P', min_value=0.0, max_value=1.0, step=0.01, value=self.backend.generation_config['top_p'], disabled=self.generating)
-        self.topk_slidder = st.slider('Top K', min_value=0, max_value=30000, step=1, value=self.backend.generation_config['top_k'], disabled=self.generating)
+        self.temperature_slider = st.slider('Temparature', min_value=0.0, max_value=2.0, step=0.01, value=self.backend.generation_config['temperature'], disabled=self.generating)
+        self.max_new_token_slider = st.slider('Maximum number of new tokens', min_value=0, max_value=4096, step=1, value=self.backend.generation_config['max_new_tokens'], disabled=self.generating)
+        self.repetition_slider = st.slider('Repetition penalty', min_value=1.0, max_value=2.0, step=0.01, value=self.backend.generation_config['repetition_penalty'], disabled=self.generating)
+        self.topp_slider = st.slider('Top P', min_value=0.0, max_value=1.0, step=0.01, value=self.backend.generation_config['top_p'], disabled=self.generating)
+        self.topk_slider = st.slider('Top K', min_value=0, max_value=30000, step=1, value=self.backend.generation_config['top_k'], disabled=self.generating)
         summary = [
             'Current settings:',
             f"Temperature: {self.backend.generation_config['temperature']}",
@@ -451,11 +459,11 @@ class AppInterface:
                   disabled=self.generating, 
                   use_container_width=True,
                   on_click=self.backend.set_generation_config,
-                  kwargs=dict(temperature=self.temperature_slidder,
-                              max_new_tokens=self.max_new_token_slidder,
-                              repetition_penalty=self.repetition_slidder,
-                              top_p=self.topp_slidder,
-                              top_k=self.topk_slidder))
+                  kwargs=dict(temperature=self.temperature_slider,
+                              max_new_tokens=self.max_new_token_slider,
+                              repetition_penalty=self.repetition_slider,
+                              top_p=self.topp_slider,
+                              top_k=self.topk_slider))
 
     def tool_settings(self) -> None:
         """Create settings for tools.

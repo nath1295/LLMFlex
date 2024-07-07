@@ -27,9 +27,29 @@
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from __future__ import annotations
-import os
+import os, json
+from requests.models import Response
+from requests import get, post
 from .base_core import BaseCore
 from typing import List, Any, Optional, Dict, Union, Iterator
+
+def parse_sse(response: Response) -&gt; Iterator[Dict[str, Any]]:
+    &#34;&#34;&#34;Parsing streaming response from llama server.
+
+    Args:
+        response (Response): Response object from the llama server.
+
+    Yields:
+        Generator[Dict[str, Any]]: Dictionary with text tokens in the content.
+    &#34;&#34;&#34;
+    buffer = &#34;&#34;
+    for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+        buffer += chunk
+        while &#34;\n\n&#34; in buffer:
+            event, buffer = buffer.split(&#34;\n\n&#34;, 1)
+            event = event.strip()
+            if event.startswith(&#34;data: &#34;):
+                yield json.loads(event[6:])
 
 class OpenAICore(BaseCore):
     &#34;&#34;&#34;Core class for llm models using openai api interface.
@@ -94,6 +114,8 @@ class OpenAICore(BaseCore):
         from openai import OpenAI
         api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;, &#39;NOAPIKEY&#39;) if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
+        self._openai_url = base_url.removesuffix(&#39;/&#39;) if base_url is not None else base_url
+        self._llama_url = self._openai_url.removesuffix(&#39;/v1&#39;) if self._openai_url is not None else self._openai_url
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
         self._is_openai = &#39;gpt-3.5-turbo&#39; in models
@@ -120,6 +142,27 @@ class OpenAICore(BaseCore):
             str: The base url of the API.
         &#34;&#34;&#34;
         return str(self.model.base_url._uri_reference)
+    
+    @property
+    def is_llama(self) -&gt; bool:
+        &#34;&#34;&#34;Whether or not the server is a llama.cpp server.
+
+        Returns:
+            bool: Whether or not the server is a llama.cpp server.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_is_llama&#39;):
+            self.base_url
+            if self._llama_url is None:
+                self._is_llama = False
+            else:
+                health = get(self._llama_url + &#39;/health&#39;).text
+                try:
+                    health = json.loads(health)
+                    health = health.get(&#39;status&#39;)
+                    self._is_llama = health is not None
+                except:
+                    self._is_llama = False
+        return self._is_llama
     
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -166,6 +209,10 @@ class OpenAICore(BaseCore):
         Returns:
             Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         &#34;&#34;&#34;
+        if self.is_llama:
+            return self.llama_generate(prompt=prompt, 
+            temperature=temperature, max_new_tokens=max_new_tokens, 
+            top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=stop_newline_version, stream=stream, **kwargs)
         import warnings
         from .utils import get_stop_words, textgen_iterator
         warnings.filterwarnings(&#39;ignore&#39;)
@@ -186,10 +233,7 @@ class OpenAICore(BaseCore):
                     prompt=prompt,
                     **gen_config
                 ):
-                    if i.choices is None:
-                        yield i.content
-                    else:
-                        yield i.choices[0].text
+                    yield i.choices[0].text
             return textgen_iterator(generate(), stop=stop)
         else:
             from langchain.llms.utils import enforce_stop_tokens
@@ -199,7 +243,62 @@ class OpenAICore(BaseCore):
                 prompt=prompt,
                 **gen_config
             )
-            output = output.content if output.choices is None else output.choices[0].text
+            output = output.choices[0].text
+            output = enforce_stop_tokens(output, stop=stop)
+            return output
+
+    def llama_generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generate the output with the given prompt for llama.cpp server.
+
+        Args:
+            prompt (str): The prompt for the text generation.
+            temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+
+        Returns:
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
+        &#34;&#34;&#34;
+        import warnings
+        from .utils import get_stop_words, textgen_iterator
+        warnings.filterwarnings(&#39;ignore&#39;)
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        gen_config = dict(
+            temperature=temperature,
+            top_p=top_p,
+            repeat_penalty=repetition_penalty,
+            n_predict=max_new_tokens,
+            stop=stop,
+            cache_prompt=True
+        )
+        gen_config.update(kwargs)
+        if stream:
+            gen_config[&#39;stream&#39;] = True
+            def generate():
+                headers = {
+                    &#34;Content-Type&#34;: &#34;application/json&#34;
+                }
+                gen_config[&#39;prompt&#39;] = prompt
+                response = post(self._llama_url + &#39;/completion&#39;, data=json.dumps(gen_config), headers=headers, stream=True)
+                for i in parse_sse(response=response):
+                    yield i[&#39;content&#39;]
+            return textgen_iterator(generate(), stop=stop)
+        else:
+            from .utils import enforce_stop_tokens
+            gen_config[&#39;stream&#39;] = False
+            gen_config[&#39;prompt&#39;] = prompt
+            headers = {
+                &#34;Content-Type&#34;: &#34;application/json&#34;
+            }
+            output = post(self._llama_url + &#39;/completion&#39;, data=json.dumps(gen_config), headers=headers).text
+            output = json.loads(output)[&#39;content&#39;]
             output = enforce_stop_tokens(output, stop=stop)
             return output</code></pre>
 </details>
@@ -209,6 +308,47 @@ class OpenAICore(BaseCore):
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Models.Cores.openai_core.parse_sse"><code class="name flex">
+<span>def <span class="ident">parse_sse</span></span>(<span>response: Response) ‑> Iterator[Dict[str, Any]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parsing streaming response from llama server.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>response</code></strong> :&ensp;<code>Response</code></dt>
+<dd>Response object from the llama server.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Generator[Dict[str, Any]]</code></dt>
+<dd>Dictionary with text tokens in the content.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_sse(response: Response) -&gt; Iterator[Dict[str, Any]]:
+    &#34;&#34;&#34;Parsing streaming response from llama server.
+
+    Args:
+        response (Response): Response object from the llama server.
+
+    Yields:
+        Generator[Dict[str, Any]]: Dictionary with text tokens in the content.
+    &#34;&#34;&#34;
+    buffer = &#34;&#34;
+    for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+        buffer += chunk
+        while &#34;\n\n&#34; in buffer:
+            event, buffer = buffer.split(&#34;\n\n&#34;, 1)
+            event = event.strip()
+            if event.startswith(&#34;data: &#34;):
+                yield json.loads(event[6:])</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -300,6 +440,8 @@ class OpenAICore(BaseCore):
         from openai import OpenAI
         api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;, &#39;NOAPIKEY&#39;) if api_key is None else api_key
         self._model = OpenAI(api_key=api_key, base_url=base_url)
+        self._openai_url = base_url.removesuffix(&#39;/&#39;) if base_url is not None else base_url
+        self._llama_url = self._openai_url.removesuffix(&#39;/v1&#39;) if self._openai_url is not None else self._openai_url
         models = list(map(lambda x: x.id, self._model.models.list().data))
         self._model_id = model_id if model_id is not None else (&#39;gpt-3.5-turbo&#39; if &#39;gpt-3.5-turbo&#39; in models else models[0])
         self._is_openai = &#39;gpt-3.5-turbo&#39; in models
@@ -326,6 +468,27 @@ class OpenAICore(BaseCore):
             str: The base url of the API.
         &#34;&#34;&#34;
         return str(self.model.base_url._uri_reference)
+    
+    @property
+    def is_llama(self) -&gt; bool:
+        &#34;&#34;&#34;Whether or not the server is a llama.cpp server.
+
+        Returns:
+            bool: Whether or not the server is a llama.cpp server.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_is_llama&#39;):
+            self.base_url
+            if self._llama_url is None:
+                self._is_llama = False
+            else:
+                health = get(self._llama_url + &#39;/health&#39;).text
+                try:
+                    health = json.loads(health)
+                    health = health.get(&#39;status&#39;)
+                    self._is_llama = health is not None
+                except:
+                    self._is_llama = False
+        return self._is_llama
     
     def encode(self, text: str) -&gt; List[int]:
         &#34;&#34;&#34;Tokenize the given text.
@@ -372,6 +535,10 @@ class OpenAICore(BaseCore):
         Returns:
             Union[str, Iterator[str]]: Completed generation or a generator of tokens.
         &#34;&#34;&#34;
+        if self.is_llama:
+            return self.llama_generate(prompt=prompt, 
+            temperature=temperature, max_new_tokens=max_new_tokens, 
+            top_p=top_p, top_k=top_k, repetition_penalty=repetition_penalty, stop=stop, stop_newline_version=stop_newline_version, stream=stream, **kwargs)
         import warnings
         from .utils import get_stop_words, textgen_iterator
         warnings.filterwarnings(&#39;ignore&#39;)
@@ -392,10 +559,7 @@ class OpenAICore(BaseCore):
                     prompt=prompt,
                     **gen_config
                 ):
-                    if i.choices is None:
-                        yield i.content
-                    else:
-                        yield i.choices[0].text
+                    yield i.choices[0].text
             return textgen_iterator(generate(), stop=stop)
         else:
             from langchain.llms.utils import enforce_stop_tokens
@@ -405,7 +569,62 @@ class OpenAICore(BaseCore):
                 prompt=prompt,
                 **gen_config
             )
-            output = output.content if output.choices is None else output.choices[0].text
+            output = output.choices[0].text
+            output = enforce_stop_tokens(output, stop=stop)
+            return output
+
+    def llama_generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+                 repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+                 stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generate the output with the given prompt for llama.cpp server.
+
+        Args:
+            prompt (str): The prompt for the text generation.
+            temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
+            max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+            top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+            top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
+            repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+            stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+            stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+            stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+
+        Returns:
+            Union[str, Iterator[str]]: Completed generation or a generator of tokens.
+        &#34;&#34;&#34;
+        import warnings
+        from .utils import get_stop_words, textgen_iterator
+        warnings.filterwarnings(&#39;ignore&#39;)
+        stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+        gen_config = dict(
+            temperature=temperature,
+            top_p=top_p,
+            repeat_penalty=repetition_penalty,
+            n_predict=max_new_tokens,
+            stop=stop,
+            cache_prompt=True
+        )
+        gen_config.update(kwargs)
+        if stream:
+            gen_config[&#39;stream&#39;] = True
+            def generate():
+                headers = {
+                    &#34;Content-Type&#34;: &#34;application/json&#34;
+                }
+                gen_config[&#39;prompt&#39;] = prompt
+                response = post(self._llama_url + &#39;/completion&#39;, data=json.dumps(gen_config), headers=headers, stream=True)
+                for i in parse_sse(response=response):
+                    yield i[&#39;content&#39;]
+            return textgen_iterator(generate(), stop=stop)
+        else:
+            from .utils import enforce_stop_tokens
+            gen_config[&#39;stream&#39;] = False
+            gen_config[&#39;prompt&#39;] = prompt
+            headers = {
+                &#34;Content-Type&#34;: &#34;application/json&#34;
+            }
+            output = post(self._llama_url + &#39;/completion&#39;, data=json.dumps(gen_config), headers=headers).text
+            output = json.loads(output)[&#39;content&#39;]
             output = enforce_stop_tokens(output, stop=stop)
             return output</code></pre>
 </details>
@@ -490,6 +709,134 @@ def base_url(self) -&gt; str:
     return str(self.model.base_url._uri_reference)</code></pre>
 </details>
 </dd>
+<dt id="llmflex.Models.Cores.openai_core.OpenAICore.is_llama"><code class="name">var <span class="ident">is_llama</span> : bool</code></dt>
+<dd>
+<div class="desc"><p>Whether or not the server is a llama.cpp server.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether or not the server is a llama.cpp server.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def is_llama(self) -&gt; bool:
+    &#34;&#34;&#34;Whether or not the server is a llama.cpp server.
+
+    Returns:
+        bool: Whether or not the server is a llama.cpp server.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_is_llama&#39;):
+        self.base_url
+        if self._llama_url is None:
+            self._is_llama = False
+        else:
+            health = get(self._llama_url + &#39;/health&#39;).text
+            try:
+                health = json.loads(health)
+                health = health.get(&#39;status&#39;)
+                self._is_llama = health is not None
+            except:
+                self._is_llama = False
+    return self._is_llama</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Models.Cores.openai_core.OpenAICore.llama_generate"><code class="name flex">
+<span>def <span class="ident">llama_generate</span></span>(<span>self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True, stream: bool = False, **kwargs) ‑> Union[str, Iterator[str]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate the output with the given prompt for llama.cpp server.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The prompt for the text generation.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Set how "creative" the model is, the smaller it is, the more static of the output. Defaults to 0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Maximum number of tokens to generate by the llm. Defaults to 2048.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>While sampling the next token, only consider the top "top_k" tokens. Defaults to 40.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The value to penalise the model for generating repetitive text. Defaults to 1.1.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>List of strings to stop the generation of the llm. Defaults to None.</dd>
+<dt><strong><code>stop_newline_version</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If True, a generator of the token generation will be returned instead. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>Completed generation or a generator of tokens.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def llama_generate(self, prompt: str, temperature: float = 0, max_new_tokens: int = 2048, top_p: float = 0.95, top_k: int = 40, 
+             repetition_penalty: float = 1.1, stop: Optional[List[str]] = None, stop_newline_version: bool = True,
+             stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Generate the output with the given prompt for llama.cpp server.
+
+    Args:
+        prompt (str): The prompt for the text generation.
+        temperature (float, optional): Set how &#34;creative&#34; the model is, the smaller it is, the more static of the output. Defaults to 0.
+        max_new_tokens (int, optional): Maximum number of tokens to generate by the llm. Defaults to 2048.
+        top_p (float, optional): While sampling the next token, only consider the tokens above this p value. Defaults to 0.95.
+        top_k (int, optional): While sampling the next token, only consider the top &#34;top_k&#34; tokens. Defaults to 40.
+        repetition_penalty (float, optional): The value to penalise the model for generating repetitive text. Defaults to 1.1.
+        stop (Optional[List[str]], optional): List of strings to stop the generation of the llm. Defaults to None.
+        stop_newline_version (bool, optional): Whether to add duplicates of the list of stop words starting with a new line character. Defaults to True.
+        stream (bool, optional): If True, a generator of the token generation will be returned instead. Defaults to False.
+
+    Returns:
+        Union[str, Iterator[str]]: Completed generation or a generator of tokens.
+    &#34;&#34;&#34;
+    import warnings
+    from .utils import get_stop_words, textgen_iterator
+    warnings.filterwarnings(&#39;ignore&#39;)
+    stop = get_stop_words(stop, tokenizer=self.tokenizer, add_newline_version=stop_newline_version, tokenizer_type=self.tokenizer_type)
+    gen_config = dict(
+        temperature=temperature,
+        top_p=top_p,
+        repeat_penalty=repetition_penalty,
+        n_predict=max_new_tokens,
+        stop=stop,
+        cache_prompt=True
+    )
+    gen_config.update(kwargs)
+    if stream:
+        gen_config[&#39;stream&#39;] = True
+        def generate():
+            headers = {
+                &#34;Content-Type&#34;: &#34;application/json&#34;
+            }
+            gen_config[&#39;prompt&#39;] = prompt
+            response = post(self._llama_url + &#39;/completion&#39;, data=json.dumps(gen_config), headers=headers, stream=True)
+            for i in parse_sse(response=response):
+                yield i[&#39;content&#39;]
+        return textgen_iterator(generate(), stop=stop)
+    else:
+        from .utils import enforce_stop_tokens
+        gen_config[&#39;stream&#39;] = False
+        gen_config[&#39;prompt&#39;] = prompt
+        headers = {
+            &#34;Content-Type&#34;: &#34;application/json&#34;
+        }
+        output = post(self._llama_url + &#39;/completion&#39;, data=json.dumps(gen_config), headers=headers).text
+        output = json.loads(output)[&#39;content&#39;]
+        output = enforce_stop_tokens(output, stop=stop)
+        return output</code></pre>
+</details>
+</dd>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
@@ -523,6 +870,11 @@ def base_url(self) -&gt; str:
 <li><code><a title="llmflex.Models.Cores" href="index.html">llmflex.Models.Cores</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Models.Cores.openai_core.parse_sse" href="#llmflex.Models.Cores.openai_core.parse_sse">parse_sse</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -530,6 +882,8 @@ def base_url(self) -&gt; str:
 <ul class="">
 <li><code><a title="llmflex.Models.Cores.openai_core.OpenAICore.base_url" href="#llmflex.Models.Cores.openai_core.OpenAICore.base_url">base_url</a></code></li>
 <li><code><a title="llmflex.Models.Cores.openai_core.OpenAICore.from_model_object" href="#llmflex.Models.Cores.openai_core.OpenAICore.from_model_object">from_model_object</a></code></li>
+<li><code><a title="llmflex.Models.Cores.openai_core.OpenAICore.is_llama" href="#llmflex.Models.Cores.openai_core.OpenAICore.is_llama">is_llama</a></code></li>
+<li><code><a title="llmflex.Models.Cores.openai_core.OpenAICore.llama_generate" href="#llmflex.Models.Cores.openai_core.OpenAICore.llama_generate">llama_generate</a></code></li>
 </ul>
 </li>
 </ul>

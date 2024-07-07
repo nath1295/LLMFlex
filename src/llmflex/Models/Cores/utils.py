@@ -76,6 +76,26 @@ def find_roots(text: str, stop: List[str], stop_len: List[int]) -> Tuple[str, st
     text  = text[:-len(root)] if root else text
     return text, root
 
+def enforce_stop_tokens(text: str, stop: List[str]) -> str:
+    """Strip text with the given stop words.
+
+    Args:
+        text (str): Text to strip.
+        stop (List[str]): List of stop words.
+
+    Returns:
+        str: Stripped text.
+    """
+    stop_pos = list(map(lambda x: text.find(x), stop))
+    stop_map = list(zip(stop, stop_pos))
+    stop_map = list(filter(lambda x: x[1] != -1, stop_map))
+    if len(stop_map) != 0:
+        stop_map.sort(key=lambda x: x[1])
+        stop_word = stop_map[0][0]
+        return text.split(sep=stop_word)[0]
+    else:
+        return text
+
 def textgen_iterator(text_generator: Iterator[str], stop: List[str]) -> Iterator[str]:
     """Make a text generator stop before spitting out the stop words.
 
