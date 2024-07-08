@@ -196,7 +196,20 @@ def get_prompt_template_by_jinja(model_id: str, tokenizer: Any) -> PromptTemplat
     """
     if tokenizer.chat_template is not None:
         jinja = tokenizer.chat_template
-        priority = True
+        if not isinstance(jinja, str):
+            if isinstance(jinja, dict):
+                jinja = jinja.get('default')
+                if jinja:
+                    priority = True
+                else:
+                    jinja = tokenizer.default_chat_template
+                    priority = False
+            else:
+                jinja = tokenizer.default_chat_template
+                priority = False
+        else:
+            jinja = tokenizer.default_chat_template
+            priority = False
     else:
         jinja = tokenizer.default_chat_template
         priority = False

@@ -224,7 +224,20 @@ def get_prompt_template_by_jinja(model_id: str, tokenizer: Any) -&gt; PromptTemp
     &#34;&#34;&#34;
     if tokenizer.chat_template is not None:
         jinja = tokenizer.chat_template
-        priority = True
+        if not isinstance(jinja, str):
+            if isinstance(jinja, dict):
+                jinja = jinja.get(&#39;default&#39;)
+                if jinja:
+                    priority = True
+                else:
+                    jinja = tokenizer.default_chat_template
+                    priority = False
+            else:
+                jinja = tokenizer.default_chat_template
+                priority = False
+        else:
+            jinja = tokenizer.default_chat_template
+            priority = False
     else:
         jinja = tokenizer.default_chat_template
         priority = False
@@ -521,7 +534,20 @@ def list_local_models() -&gt; List[Dict[str, str]]:
     &#34;&#34;&#34;
     if tokenizer.chat_template is not None:
         jinja = tokenizer.chat_template
-        priority = True
+        if not isinstance(jinja, str):
+            if isinstance(jinja, dict):
+                jinja = jinja.get(&#39;default&#39;)
+                if jinja:
+                    priority = True
+                else:
+                    jinja = tokenizer.default_chat_template
+                    priority = False
+            else:
+                jinja = tokenizer.default_chat_template
+                priority = False
+        else:
+            jinja = tokenizer.default_chat_template
+            priority = False
     else:
         jinja = tokenizer.default_chat_template
         priority = False
