@@ -138,11 +138,11 @@ def get_config_dir() -> str:
         os.makedirs(config_dir)
     return os.path.join(config_dir, 'config.json')
 
-def get_config(element: Literal['all', 'package_home', 'hf_home', 'st_home'] = 'all') -> Union[Dict[str, str], str]:
+def get_config(element: Literal['all', 'package_home', 'hf_home'] = 'all') -> Union[Dict[str, str], str]:
     """Get the configuration of the package.
 
     Args: 
-        element (Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;, &#39;st_home&#39;], optional): The output element of the configuration. Defaults to 'all'.
+        element (Literal[&#39;all&#39;, &#39;package_home&#39;, &#39;hf_home&#39;], optional): The output element of the configuration. Defaults to 'all'.
 
     Returns:
         Union[Dict[str, str], str]: Configuration of the package or one of hte configured directories.
@@ -151,8 +151,7 @@ def get_config(element: Literal['all', 'package_home', 'hf_home', 'st_home'] = '
 
     default_config = dict(
         package_home = home_dir,
-        hf_home = os.path.join(home_dir, 'hf_home') if is_colab() else os.path.join(user_home, '.cache', 'huggingface'),
-        st_home = os.path.join(home_dir, 'st_home') if is_colab() else os.path.join(user_home, '.cache', 'torch', 'sentence_transformers')
+        hf_home = os.path.join(home_dir, 'hf_home') if is_colab() else os.path.join(user_home, '.cache', 'huggingface', 'hub')
     )
 
     if os.path.exists(config_dir):
@@ -177,22 +176,18 @@ def get_config(element: Literal['all', 'package_home', 'hf_home', 'st_home'] = '
     else:
         return config[element]
 
-def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None, st_home: Optional[str] = None) -> None:
+def set_config(package_home: Optional[str] = None, hf_home: Optional[str] = None) -> None:
     """Setting paths for the package.
 
     Args:
         package_home (Optional[str], optional): Home directory for the package if a path is provided. Defaults to None.
         hf_home (Optional[str], optional): Home directory for Huggingface if a path is provided. Defaults to None.
-        st_home (Optional[str], optional): Home directory for sentence-transformer if a path is provided. Defaults to None.
     """
     config = get_config()
     if isinstance(package_home, str):
         config['package_home'] = os.path.abspath(package_home)
     if isinstance(hf_home, str):
         config['hf_home'] = os.path.abspath(hf_home)
-    if isinstance(st_home, str):
-        config['st_home'] = os.path.abspath(st_home)
-
     save_json(config, get_config_dir())
 
 def validate_type(obj: Any, cls: Any) -> Any:
@@ -209,3 +204,40 @@ def validate_type(obj: Any, cls: Any) -> Any:
         raise ValueError(f'{obj} is not a {cls} instance.')
     return obj
 
+def list_repo_files(repo_id: str, revision: Optional[str] = None) -> List[str]:
+    """List the files in a HuggingFace repository.
+
+    Args:
+        repo_id (str): Repository ID.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+
+    Returns:
+        List[str]: List of files in the repository.
+    """
+    from huggingface_hub import model_info
+    files = model_info(repo_id=repo_id, revision=revision).siblings
+    files = [file.rfilename for file in files]
+    return files
+
+def download_file_from_repo(repo_id: str, filename: str, revision: Optional[str] = None, cache_dir: Optional[str] = None, **kwargs) -> str:
+    """Download a file from a HuggingFace repository.
+
+    Args:
+        repo_id (str): Repository ID.
+        filename (str): Filename.
+        revision (Optional[str], optional): Branch of the repository. If None is given, the main branch will be used. Defaults to None.
+        cache_dir (Optional[str], optional): Cache directory for saving files from HuggingFace. Defaults to None.
+
+    Raises:
+        FileExistsError: Raised if the file does not exist in the repository.
+
+    Returns:
+        str: The local path of the downloaded file.
+    """
+    from huggingface_hub import hf_hub_download
+    files = list_repo_files(repo_id=repo_id, revision=revision)
+    if filename not in files:
+        raise FileExistsError(f'File "{files}" does not exist in repository "{repo_id}".')
+    else:
+        file_path = hf_hub_download(repo_id=repo_id, filename=filename, revision=revision, cache_dir=cache_dir, **kwargs)
+        return file_path
