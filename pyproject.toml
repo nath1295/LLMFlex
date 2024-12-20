@@ -10,50 +10,17 @@ requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "MIT"}
 dependencies = [
-    "click",
     "torch",
-    "llama-cpp-python",
     "transformers>=4.35.0",
-    "accelerate>=0.25.0",
-    "sentence-transformers",
-    "langchain",
-    "faiss-cpu",
-    "optimum",
-    "gradio>=4.2",
-    "duckduckgo-search>=6.1.0",
-    "fake-useragent",
     "openai>=1.0.0",
-    "tiktoken",
-    "protobuf",
-    "beautifulsoup4",
-    "streamlit",
-    "streamlit-extras",
-    "watchdog",
-    "guidance",
-    "spacy>=3.7.0",
-    "flask",
-    "PyMuPDF",
-    "flashrank",
-    "python-docx"
+    "tiktoken"
 ]
 
 [project.urls]
 Homepage = "https://github.com/nath1295/LLMFlex"
 
 [project.scripts]
-llmflex = "llmflex.cli:cli"
-
-[project.optional-dependencies]
-cu121 = [
-    "auto-gptq>=0.6.0",
-    "autoawq",
-    "exllamav2"
-]
-cu118 = [
-    "auto-gptq",
-    "autoawq",
-    "exllamav2"
-]
+llmflex = "llmflex.cli:main"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]

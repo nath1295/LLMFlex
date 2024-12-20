@@ -1,9 +1,4 @@
-from .Models.Factory.llm_factory import LlmFactory
-import os as __os
-from .utils import get_config as __get_config
 
-__config = __get_config()
-__os.environ['HF_HOME'] = __config['hf_home']
-__os.environ['SENTENCE_TRANSFORMERS_HOME'] = __config['st_home']
+__doc__ = """LLMFlex is a python package that allows python developers to work with different large language models (LLM) and do prompt engineering with a simple python interface. It favours free and local resources instead of using paid APIs to develop truly local and private AI-powered solutions."""
 
-__version__ = '0.1.15'
+__version__ = '0.2.0'

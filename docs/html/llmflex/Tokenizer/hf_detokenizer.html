@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.Tokenizer.hf_detokenizer API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Tokenizer.hf_detokenizer</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Tokenizer.hf_detokenizer.get_detokenizer"><code class="name flex">
+<span>def <span class="ident">get_detokenizer</span></span>(<span>pretrained_model_name_or_path: str,<br>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer) ‑> <a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer">NaiveDetokenizer</a> | <a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer">SPMDetokenizer</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_detokenizer(pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) -&gt; Union[NaiveDetokenizer, SPMDetokenizer]:
+    &#34;&#34;&#34;Get the detokenizer.
+
+    Note, to use a fast streaming tokenizer, pass a local file path rather than
+    a Hugging Face repo ID.
+    &#34;&#34;&#34;
+    from ..utils import get_config
+    detokenizer_class = NaiveDetokenizer
+
+    tokenizer_file = os.path.join(&#34;tokenizer.json&#34;)
+    if not os.path.exists(tokenizer_file):
+        tokenizer_file = hf_hub_download(repo_id=pretrained_model_name_or_path, filename=&#39;tokenizer.json&#39;, cache_dir=get_config(&#39;hf_home&#39;))
+    with open(tokenizer_file, &#34;r&#34;) as fid:
+        tokenizer_content = json.load(fid)
+    if &#34;decoder&#34; in tokenizer_content:
+        if _is_spm_decoder(tokenizer_content[&#34;decoder&#34;]):
+            detokenizer_class = SPMDetokenizer
+        elif _is_spm_decoder_no_space(tokenizer_content[&#34;decoder&#34;]):
+            detokenizer_class = partial(SPMDetokenizer, trim_space=False)
+    return detokenizer_class(tokenizer=tokenizer)</code></pre>
+</details>
+<div class="desc"><p>Get the detokenizer.</p>
+<p>Note, to use a fast streaming tokenizer, pass a local file path rather than
+a Hugging Face repo ID.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer"><code class="flex name class">
+<span>class <span class="ident">NaiveDetokenizer</span></span>
+<span>(</span><span>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NaiveDetokenizer:
+
+    def __init__(self, tokenizer: PreTrainedTokenizer) -&gt; None:
+        self._tokenizer = tokenizer
+        self.reset()
+
+    def reset(self, num_seqs: Optional[int] = None) -&gt; None:
+        self.num_seqs = num_seqs
+        self.texts = [] if self.num_seqs is None else [&#39;&#39;] * self.num_seqs
+        self.tokens = [] if self.num_seqs is None else [[]] * self.num_seqs
+        self.current_tokens = [] if self.num_seqs is None else [[]] * self.num_seqs
+        self.final_segments = None
+
+    def add_tokens(self, token_ids: List[List[int]]) -&gt; None:
+        if self.num_seqs is None:
+            self.reset(num_seqs=len(token_ids))
+        elif len(token_ids) != self.num_seqs:
+            raise Exception(&#39;Number of tokens does not match with number of existing sequences.&#39;)
+        self.current_tokens = [tids + nids for tids, nids in zip(self.current_tokens, token_ids)]
+
+    def finalize(self) -&gt; None:
+        new_texts = self._tokenizer.batch_decode(self.current_tokens)
+        new_texts = [nt.rstrip(REPLACEMENT_CHAR) for nt in new_texts]
+        self.tokens = [t + ct for t, ct in zip(self.tokens, self.current_tokens)]
+        self.texts = [t + nt for t, nt in zip(self.texts, new_texts)]
+        self.current_tokens = [[]] * self.num_seqs
+        self.final_segments = new_texts        
+
+    @property
+    def last_segments(self) -&gt; List[str]:
+        if self.final_segments is not None:
+            return self.final_segments
+        new_texts = self._tokenizer.batch_decode(self.current_tokens)
+        with_repl = [newt.endswith(REPLACEMENT_CHAR) for newt in new_texts]
+        bundle = [(ot if wr else ot + nt, nt if wr else [], os if wr else os + ns, &#39;&#39; if wr else ns) for ot, nt, os, ns, wr in zip(self.tokens, self.current_tokens, self.texts, new_texts, with_repl)]
+        tokens, current_tokens, texts, new_segments = list(zip(*bundle))
+        self.tokens = list(tokens)
+        self.current_tokens = list(current_tokens)
+        self.texts = list(texts)
+        new_segments = list(new_segments)
+        return new_segments</code></pre>
+</details>
+<div class="desc"></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.last_segments"><code class="name">prop <span class="ident">last_segments</span> : List[str]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def last_segments(self) -&gt; List[str]:
+    if self.final_segments is not None:
+        return self.final_segments
+    new_texts = self._tokenizer.batch_decode(self.current_tokens)
+    with_repl = [newt.endswith(REPLACEMENT_CHAR) for newt in new_texts]
+    bundle = [(ot if wr else ot + nt, nt if wr else [], os if wr else os + ns, &#39;&#39; if wr else ns) for ot, nt, os, ns, wr in zip(self.tokens, self.current_tokens, self.texts, new_texts, with_repl)]
+    tokens, current_tokens, texts, new_segments = list(zip(*bundle))
+    self.tokens = list(tokens)
+    self.current_tokens = list(current_tokens)
+    self.texts = list(texts)
+    new_segments = list(new_segments)
+    return new_segments</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.add_tokens"><code class="name flex">
+<span>def <span class="ident">add_tokens</span></span>(<span>self, token_ids: List[List[int]]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_tokens(self, token_ids: List[List[int]]) -&gt; None:
+    if self.num_seqs is None:
+        self.reset(num_seqs=len(token_ids))
+    elif len(token_ids) != self.num_seqs:
+        raise Exception(&#39;Number of tokens does not match with number of existing sequences.&#39;)
+    self.current_tokens = [tids + nids for tids, nids in zip(self.current_tokens, token_ids)]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.finalize"><code class="name flex">
+<span>def <span class="ident">finalize</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def finalize(self) -&gt; None:
+    new_texts = self._tokenizer.batch_decode(self.current_tokens)
+    new_texts = [nt.rstrip(REPLACEMENT_CHAR) for nt in new_texts]
+    self.tokens = [t + ct for t, ct in zip(self.tokens, self.current_tokens)]
+    self.texts = [t + nt for t, nt in zip(self.texts, new_texts)]
+    self.current_tokens = [[]] * self.num_seqs
+    self.final_segments = new_texts        </code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.reset"><code class="name flex">
+<span>def <span class="ident">reset</span></span>(<span>self, num_seqs: int | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset(self, num_seqs: Optional[int] = None) -&gt; None:
+    self.num_seqs = num_seqs
+    self.texts = [] if self.num_seqs is None else [&#39;&#39;] * self.num_seqs
+    self.tokens = [] if self.num_seqs is None else [[]] * self.num_seqs
+    self.current_tokens = [] if self.num_seqs is None else [[]] * self.num_seqs
+    self.final_segments = None</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer"><code class="flex name class">
+<span>class <span class="ident">SPMDetokenizer</span></span>
+<span>(</span><span>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer,<br>trim_space=True)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SPMDetokenizer:
+    &#34;&#34;&#34;A streaming detokenizer for SPM models.
+
+    It adds tokens to the text if the next token starts with the special SPM
+    underscore which results in linear complexity.
+    &#34;&#34;&#34;
+
+    def __init__(self, tokenizer: PreTrainedTokenizer, trim_space=True):
+        self.trim_space = trim_space
+        self.eos_token = tokenizer.eos_token
+
+        # Extract the tokens in a list from id to text
+        self.tokenmap = [&#34;&#34;] * (max(tokenizer.vocab.values()) + 1)
+        for value, tokenid in tokenizer.vocab.items():
+            self.tokenmap[tokenid] = value
+
+        self.hexcode_tokens = [i for i, t in enumerate(self.tokenmap) if t.startswith(&#39;&lt;0x&#39;)]
+
+        self.reset()
+
+    def reset(self, num_seqs: Optional[int] = None) -&gt; None:
+        self.num_seqs = num_seqs
+        self.range = [] if self.num_seqs is None else list(range(self.num_seqs))
+        self.texts = [] if self.num_seqs is None else [&#39;&#39;] * self.num_seqs
+        self.tokens = [] if self.num_seqs is None else [[]] * self.num_seqs
+        self.hexcodes = [] if self.num_seqs is None else [[]] * self.num_seqs
+        self.segments = [] if self.num_seqs is None else [&#39;&#39;] * self.num_seqs
+
+    def _get_text_token(self, token_id, raw_token, token_condition, index) -&gt; str:
+        self.tokens[index].append(token_id[0])
+        is_space, is_hex = token_condition
+        output = &#39;&#39;
+        if is_hex:
+            self.hexcodes[index].append(int(raw_token[3:5], 16))
+        elif is_space:
+            if self.texts[index] or (not self.trim_space):
+                output = (&#39;&#39; if len(self.hexcodes[index]) == 0 else bytes(self.hexcodes[index]).decode()) + raw_token.replace(SPECIAL_SPACE, &#39; &#39;)
+            else:
+                output = (&#39;&#39; if len(self.hexcodes[index]) == 0 else bytes(self.hexcodes[index]).decode()) + _remove_space(raw_token.replace(SPECIAL_SPACE, &#39; &#39;))
+            self.hexcodes[index] = []
+        else:
+            output = (&#39;&#39; if len(self.hexcodes[index]) == 0 else bytes(self.hexcodes[index]).decode()) + raw_token
+            self.hexcodes[index] = []
+        self.texts[index] += output
+        return output
+
+    def add_tokens(self, token_ids: List[List[int]]) -&gt; None:
+        if self.num_seqs is None:
+            self.reset(num_seqs=len(token_ids))
+        elif len(token_ids) != self.num_seqs:
+            raise Exception(&#39;Number of tokens does not match with number of existing sequences.&#39;)
+        raw_tokens = [self.tokenmap[token[0]] for token in token_ids]
+        token_conditions = [((rt[0] == SPECIAL_SPACE), (tid[0] in self.hexcode_tokens)) for rt, tid in zip(raw_tokens, token_ids)]
+        self.segments = [self._get_text_token(tid, rt, tc, i) for tid, rt, tc, i in zip(token_ids, raw_tokens, token_conditions, self.range)]
+
+    def finalize(self):
+        hex_str = [(&#39;&#39; if len(self.hexcodes[index]) == 0 else bytes(self.hexcodes[index]).decode()) for index in self.range]
+        self.segments = [s + hs for s, hs in zip(self.segments, hex_str)]
+
+    @property
+    def last_segments(self) -&gt; List[str]:
+        &#34;&#34;&#34;Return the last segment of readable text since last time this property was accessed.&#34;&#34;&#34;
+        segments = self.segments
+        self.segments = [&#39;&#39;] * self.num_seqs
+        return segments</code></pre>
+</details>
+<div class="desc"><p>A streaming detokenizer for SPM models.</p>
+<p>It adds tokens to the text if the next token starts with the special SPM
+underscore which results in linear complexity.</p></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.last_segments"><code class="name">prop <span class="ident">last_segments</span> : List[str]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def last_segments(self) -&gt; List[str]:
+    &#34;&#34;&#34;Return the last segment of readable text since last time this property was accessed.&#34;&#34;&#34;
+    segments = self.segments
+    self.segments = [&#39;&#39;] * self.num_seqs
+    return segments</code></pre>
+</details>
+<div class="desc"><p>Return the last segment of readable text since last time this property was accessed.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.add_tokens"><code class="name flex">
+<span>def <span class="ident">add_tokens</span></span>(<span>self, token_ids: List[List[int]]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_tokens(self, token_ids: List[List[int]]) -&gt; None:
+    if self.num_seqs is None:
+        self.reset(num_seqs=len(token_ids))
+    elif len(token_ids) != self.num_seqs:
+        raise Exception(&#39;Number of tokens does not match with number of existing sequences.&#39;)
+    raw_tokens = [self.tokenmap[token[0]] for token in token_ids]
+    token_conditions = [((rt[0] == SPECIAL_SPACE), (tid[0] in self.hexcode_tokens)) for rt, tid in zip(raw_tokens, token_ids)]
+    self.segments = [self._get_text_token(tid, rt, tc, i) for tid, rt, tc, i in zip(token_ids, raw_tokens, token_conditions, self.range)]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.finalize"><code class="name flex">
+<span>def <span class="ident">finalize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def finalize(self):
+    hex_str = [(&#39;&#39; if len(self.hexcodes[index]) == 0 else bytes(self.hexcodes[index]).decode()) for index in self.range]
+    self.segments = [s + hs for s, hs in zip(self.segments, hex_str)]</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.reset"><code class="name flex">
+<span>def <span class="ident">reset</span></span>(<span>self, num_seqs: int | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def reset(self, num_seqs: Optional[int] = None) -&gt; None:
+    self.num_seqs = num_seqs
+    self.range = [] if self.num_seqs is None else list(range(self.num_seqs))
+    self.texts = [] if self.num_seqs is None else [&#39;&#39;] * self.num_seqs
+    self.tokens = [] if self.num_seqs is None else [[]] * self.num_seqs
+    self.hexcodes = [] if self.num_seqs is None else [[]] * self.num_seqs
+    self.segments = [] if self.num_seqs is None else [&#39;&#39;] * self.num_seqs</code></pre>
+</details>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Tokenizer" href="index.html">llmflex.Tokenizer</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.get_detokenizer" href="#llmflex.Tokenizer.hf_detokenizer.get_detokenizer">get_detokenizer</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer">NaiveDetokenizer</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.add_tokens" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.add_tokens">add_tokens</a></code></li>
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.finalize" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.finalize">finalize</a></code></li>
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.last_segments" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.last_segments">last_segments</a></code></li>
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.reset" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer.reset">reset</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer">SPMDetokenizer</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.add_tokens" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.add_tokens">add_tokens</a></code></li>
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.finalize" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.finalize">finalize</a></code></li>
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.last_segments" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.last_segments">last_segments</a></code></li>
+<li><code><a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.reset" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer.reset">reset</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

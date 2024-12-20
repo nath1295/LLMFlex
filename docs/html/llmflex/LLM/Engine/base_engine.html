@@ -1,0 +1,2472 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.LLM.Engine.base_engine API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.LLM.Engine.base_engine</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine"><code class="flex name class">
+<span>class <span class="ident">BaseEngine</span></span>
+<span>(</span><span>model: Any,<br>model_id: str,<br>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a>,<br>model_name: str | None = None,<br>default_chat_template: Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi'] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseEngine(ABC):
+    &#34;&#34;&#34;Base class for LLM engine.
+    &#34;&#34;&#34;
+    def __init__(self, model: Any, model_id: str, tokenizer: BaseTokenizer, model_name: Optional[str] = None, default_chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None) -&gt; None:
+        self._model = model
+        self._model_id = model_id
+        self._tokenizer = tokenizer
+        self._model_name = model_name
+        self._default_chat_template = default_chat_template
+
+    @property
+    def model(self) -&gt; Any:
+        &#34;&#34;&#34;LLM model.
+
+        Returns:
+            Any: LLM model.
+        &#34;&#34;&#34;
+        return self._model
+    
+    @property
+    def model_id(self) -&gt; str:
+        &#34;&#34;&#34;Model ID.
+
+        Returns:
+            str: Model ID.
+        &#34;&#34;&#34;
+        return self._model_id
+    
+    @property
+    def model_name(self) -&gt; str:
+        &#34;&#34;&#34;Prettified version of model ID.
+
+        Returns:
+            str: Prettified version of model ID.
+        &#34;&#34;&#34;
+        if self._model_name is None:
+            import re
+            model_name = re.split(&#39;\\\|/&#39;, self.model_id)[-1]
+            self._model_name = model_name.replace(&#39;_&#39;, &#39;-&#39;).lower().strip(&#39;-&#39;).strip()
+        return self._model_name
+    
+    @property
+    def tokenizer(self) -&gt; BaseTokenizer:
+        &#34;&#34;&#34;Tokenizer.
+
+        Returns:
+            BaseTokenizer: Tokenizer.
+        &#34;&#34;&#34;
+        return self._tokenizer
+    
+    @property
+    def chat_template(self) -&gt; ChatTemplate:
+        &#34;&#34;&#34;Chat template for the LLM engine.
+
+        This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.
+        
+        Returns:
+            ChatTemplate: Chat template for the LLM engine.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_chat_template&#39;):
+            from ...Prompt.presets import PRESETS
+            chat_template = self._default_chat_template
+            chat_template = None if chat_template not in PRESETS.keys() else chat_template
+            self._chat_template = ChatTemplate(tokenizer=self.tokenizer, chat_template=chat_template)
+        return self._chat_template
+    
+    @abstractmethod
+    def batch_generate(self,
+            prompts: List[str],
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; List[str]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Returns:
+            List[str]: A list of generated texts, one for each input prompt.
+        &#34;&#34;&#34;
+        pass
+
+    @abstractmethod
+    def batch_generate_stream(self,
+            prompts: List[str],
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; Iterator[List[str]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model in a streaming manner.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Yields:
+            Iterator[List[str]]: A generator that yields a list of generated texts, one for each input prompt,
+                one token at a time.
+        &#34;&#34;&#34;
+        pass
+
+    def batch_generate_json(self,
+            prompts: List[str],
+            json_schema: Dict[str, Any],
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, following a given JSON schema.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is formatted according to the provided JSON schema.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                formatted according to the JSON schema. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        raise NotImplementedError(f&#39;&#34;batch_generate_json&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)
+
+    def batch_generate_choice(self,
+            prompts: List[str],
+            choices: List[str],
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, choosing from a list of options.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is chosen from a list of options.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            choices (List[str]): A list of options to choose from.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                chosen from the list of options. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        raise NotImplementedError(f&#39;&#34;batch_generate_choice&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)
+
+    def batch_generate_regex(self,
+            prompts: List[str],
+            regex: str,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it matches a given regular expression.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is ensured to match the provided regular expression.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            regex (str): A regular expression to match the generated text against.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                that match the provided regular expression. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        raise NotImplementedError(f&#39;&#34;batch_generate_regex&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)
+
+    def batch_generate_grammar(self,
+            prompts: List[str],
+            cfg_grammar: str,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it adheres to a given grammar.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is ensured to adhere to the provided grammar.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            cfg_grammar (str): A string representing the grammar to adhere to.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                that adhere to the provided grammar. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        raise NotImplementedError(f&#39;&#34;batch_generate_grammar&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)
+
+    def generate(self, 
+            prompt: str,
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; str:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model.
+
+        This method takes a single prompt and generates text using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed.
+
+        Args:
+            prompt (str): The input prompt.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Returns:
+            str: The generated text.
+        &#34;&#34;&#34;
+        return self.batch_generate(
+            prompts=[prompt],
+            stop=stop,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            **kwargs
+        )[0]
+
+    def generate_stream(self, 
+            prompt: str,
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; Iterator[str]:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model in a streaming manner.
+
+        This method takes a single prompt and generates text using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.
+
+        Args:
+            prompt (str): The input prompt.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Yields:
+            Iterator[str]: A generator that yields the generated text, one token at a time.
+        &#34;&#34;&#34;
+        def generate():
+            for tokens in self.batch_generate_stream(
+                prompts=[prompt],
+                stop=stop,
+                temperature=temperature,
+                max_new_tokens=max_new_tokens,
+                top_p=top_p,
+                min_p=min_p,
+                top_k=top_k,
+                repetition_penalty=repetition_penalty,
+                seed=seed,
+                **kwargs
+            ):
+                yield tokens[0]
+        return generate()
+
+    def unload(self) -&gt; None:
+        &#34;&#34;&#34;Unload the LLM model from memory.
+        &#34;&#34;&#34;
+        import gc
+        del self._model, self._tokenizer
+        gc.collect()</code></pre>
+</details>
+<div class="desc"><p>Base class for LLM engine.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="llmflex.LLM.Engine.huggingface_engine.HuggingFaceEngine" href="huggingface_engine.html#llmflex.LLM.Engine.huggingface_engine.HuggingFaceEngine">HuggingFaceEngine</a></li>
+<li><a title="llmflex.LLM.Engine.llamacpp_engine.LlamaCppEngine" href="llamacpp_engine.html#llmflex.LLM.Engine.llamacpp_engine.LlamaCppEngine">LlamaCppEngine</a></li>
+<li><a title="llmflex.LLM.Engine.mlx_engine.MLXEngine" href="mlx_engine.html#llmflex.LLM.Engine.mlx_engine.MLXEngine">MLXEngine</a></li>
+<li><a title="llmflex.LLM.Engine.openai_engine.OpenAIEngine" href="openai_engine.html#llmflex.LLM.Engine.openai_engine.OpenAIEngine">OpenAIEngine</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.chat_template"><code class="name">prop <span class="ident">chat_template</span> : <a title="llmflex.Prompt.chat_template.ChatTemplate" href="../../Prompt/chat_template.html#llmflex.Prompt.chat_template.ChatTemplate">ChatTemplate</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def chat_template(self) -&gt; ChatTemplate:
+    &#34;&#34;&#34;Chat template for the LLM engine.
+
+    This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.
+    
+    Returns:
+        ChatTemplate: Chat template for the LLM engine.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_chat_template&#39;):
+        from ...Prompt.presets import PRESETS
+        chat_template = self._default_chat_template
+        chat_template = None if chat_template not in PRESETS.keys() else chat_template
+        self._chat_template = ChatTemplate(tokenizer=self.tokenizer, chat_template=chat_template)
+    return self._chat_template</code></pre>
+</details>
+<div class="desc"><p>Chat template for the LLM engine.</p>
+<p>This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ChatTemplate</code></dt>
+<dd>Chat template for the LLM engine.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.model"><code class="name">prop <span class="ident">model</span> : Any</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def model(self) -&gt; Any:
+    &#34;&#34;&#34;LLM model.
+
+    Returns:
+        Any: LLM model.
+    &#34;&#34;&#34;
+    return self._model</code></pre>
+</details>
+<div class="desc"><p>LLM model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>LLM model.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.model_id"><code class="name">prop <span class="ident">model_id</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def model_id(self) -&gt; str:
+    &#34;&#34;&#34;Model ID.
+
+    Returns:
+        str: Model ID.
+    &#34;&#34;&#34;
+    return self._model_id</code></pre>
+</details>
+<div class="desc"><p>Model ID.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Model ID.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.model_name"><code class="name">prop <span class="ident">model_name</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def model_name(self) -&gt; str:
+    &#34;&#34;&#34;Prettified version of model ID.
+
+    Returns:
+        str: Prettified version of model ID.
+    &#34;&#34;&#34;
+    if self._model_name is None:
+        import re
+        model_name = re.split(&#39;\\\|/&#39;, self.model_id)[-1]
+        self._model_name = model_name.replace(&#39;_&#39;, &#39;-&#39;).lower().strip(&#39;-&#39;).strip()
+    return self._model_name</code></pre>
+</details>
+<div class="desc"><p>Prettified version of model ID.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Prettified version of model ID.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tokenizer(self) -&gt; BaseTokenizer:
+    &#34;&#34;&#34;Tokenizer.
+
+    Returns:
+        BaseTokenizer: Tokenizer.
+    &#34;&#34;&#34;
+    return self._tokenizer</code></pre>
+</details>
+<div class="desc"><p>Tokenizer.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseTokenizer</code></dt>
+<dd>Tokenizer.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate"><code class="name flex">
+<span>def <span class="ident">batch_generate</span></span>(<span>self,<br>prompts: List[str],<br>stop: List[str] | None = None,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>**kwargs) ‑> List[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def batch_generate(self,
+        prompts: List[str],
+        stop: Optional[List[str]] = None,
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        **kwargs
+    ) -&gt; List[str]:
+    &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+    Returns:
+        List[str]: A list of generated texts, one for each input prompt.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<div class="desc"><p>Generates text for a batch of prompts using the LLM model.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>A list of stop words to end generation. Defaults to None.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[str]</code></dt>
+<dd>A list of generated texts, one for each input prompt.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice"><code class="name flex">
+<span>def <span class="ident">batch_generate_choice</span></span>(<span>self,<br>prompts: List[str],<br>choices: List[str],<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>stream: bool = False,<br>**kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_choice(self,
+        prompts: List[str],
+        choices: List[str],
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, choosing from a list of options.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed. The generated text is chosen from a list of options.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        choices (List[str]): A list of options to choose from.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+        stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+            chosen from the list of options. If `stream` is True, a generator that yields the generated
+            texts one token at a time is returned instead.
+    &#34;&#34;&#34;
+    raise NotImplementedError(f&#39;&#34;batch_generate_choice&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a batch of prompts using the LLM model, choosing from a list of options.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed. The generated text is chosen from a list of options.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>choices</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of options to choose from.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text one token at a time. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>A list of generated texts, one for each input prompt,
+chosen from the list of options. If <code>stream</code> is True, a generator that yields the generated
+texts one token at a time is returned instead.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar"><code class="name flex">
+<span>def <span class="ident">batch_generate_grammar</span></span>(<span>self,<br>prompts: List[str],<br>cfg_grammar: str,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>stream: bool = False,<br>**kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_grammar(self,
+        prompts: List[str],
+        cfg_grammar: str,
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it adheres to a given grammar.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed. The generated text is ensured to adhere to the provided grammar.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        cfg_grammar (str): A string representing the grammar to adhere to.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+        stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+            that adhere to the provided grammar. If `stream` is True, a generator that yields the generated
+            texts one token at a time is returned instead.
+    &#34;&#34;&#34;
+    raise NotImplementedError(f&#39;&#34;batch_generate_grammar&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a batch of prompts using the LLM model, ensuring it adheres to a given grammar.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed. The generated text is ensured to adhere to the provided grammar.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>cfg_grammar</code></strong> :&ensp;<code>str</code></dt>
+<dd>A string representing the grammar to adhere to.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text one token at a time. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>A list of generated texts, one for each input prompt,
+that adhere to the provided grammar. If <code>stream</code> is True, a generator that yields the generated
+texts one token at a time is returned instead.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json"><code class="name flex">
+<span>def <span class="ident">batch_generate_json</span></span>(<span>self,<br>prompts: List[str],<br>json_schema: Dict[str, Any],<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>stream: bool = False,<br>**kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_json(self,
+        prompts: List[str],
+        json_schema: Dict[str, Any],
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, following a given JSON schema.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed. The generated text is formatted according to the provided JSON schema.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+        stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+            formatted according to the JSON schema. If `stream` is True, a generator that yields the generated
+            texts one token at a time is returned instead.
+    &#34;&#34;&#34;
+    raise NotImplementedError(f&#39;&#34;batch_generate_json&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a batch of prompts using the LLM model, following a given JSON schema.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed. The generated text is formatted according to the provided JSON schema.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>json_schema</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>A JSON schema defining the structure of the generated text.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text one token at a time. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>A list of generated texts, one for each input prompt,
+formatted according to the JSON schema. If <code>stream</code> is True, a generator that yields the generated
+texts one token at a time is returned instead.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex"><code class="name flex">
+<span>def <span class="ident">batch_generate_regex</span></span>(<span>self,<br>prompts: List[str],<br>regex: str,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>stream: bool = False,<br>**kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_regex(self,
+        prompts: List[str],
+        regex: str,
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it matches a given regular expression.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed. The generated text is ensured to match the provided regular expression.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        regex (str): A regular expression to match the generated text against.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+        stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+            that match the provided regular expression. If `stream` is True, a generator that yields the generated
+            texts one token at a time is returned instead.
+    &#34;&#34;&#34;
+    raise NotImplementedError(f&#39;&#34;batch_generate_regex&#34; not implemented for &#34;{self.__class__.__name__}&#34;.&#39;)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a batch of prompts using the LLM model, ensuring it matches a given regular expression.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed. The generated text is ensured to match the provided regular expression.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>regex</code></strong> :&ensp;<code>str</code></dt>
+<dd>A regular expression to match the generated text against.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text one token at a time. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>A list of generated texts, one for each input prompt,
+that match the provided regular expression. If <code>stream</code> is True, a generator that yields the generated
+texts one token at a time is returned instead.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream"><code class="name flex">
+<span>def <span class="ident">batch_generate_stream</span></span>(<span>self,<br>prompts: List[str],<br>stop: List[str] | None = None,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>**kwargs) ‑> Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def batch_generate_stream(self,
+        prompts: List[str],
+        stop: Optional[List[str]] = None,
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        **kwargs
+    ) -&gt; Iterator[List[str]]:
+    &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model in a streaming manner.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.
+    Args:
+        prompts (List[str]): A list of input prompts.
+        stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+    Yields:
+        Iterator[List[str]]: A generator that yields a list of generated texts, one for each input prompt,
+            one token at a time.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<div class="desc"><p>Generates text for a batch of prompts using the LLM model in a streaming manner.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>A list of stop words to end generation. Defaults to None.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Iterator[List[str]]</code></dt>
+<dd>A generator that yields a list of generated texts, one for each input prompt,
+one token at a time.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.generate"><code class="name flex">
+<span>def <span class="ident">generate</span></span>(<span>self,<br>prompt: str,<br>stop: List[str] | None = None,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>**kwargs) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate(self, 
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        **kwargs
+    ) -&gt; str:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model.
+
+    This method takes a single prompt and generates text using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed.
+
+    Args:
+        prompt (str): The input prompt.
+        stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+    Returns:
+        str: The generated text.
+    &#34;&#34;&#34;
+    return self.batch_generate(
+        prompts=[prompt],
+        stop=stop,
+        temperature=temperature,
+        max_new_tokens=max_new_tokens,
+        top_p=top_p,
+        min_p=min_p,
+        top_k=top_k,
+        repetition_penalty=repetition_penalty,
+        seed=seed,
+        **kwargs
+    )[0]</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model.</p>
+<p>This method takes a single prompt and generates text using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>A list of stop words to end generation. Defaults to None.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The generated text.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream"><code class="name flex">
+<span>def <span class="ident">generate_stream</span></span>(<span>self,<br>prompt: str,<br>stop: List[str] | None = None,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>seed: int | None = None,<br>**kwargs) ‑> Iterator[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_stream(self, 
+        prompt: str,
+        stop: Optional[List[str]] = None,
+        temperature: float = 0.0,
+        max_new_tokens: int = 512,
+        top_p: Optional[float] = None,
+        min_p: Optional[float] = None,
+        top_k: Optional[int] = None,
+        repetition_penalty: Optional[float] = None,
+        seed: Optional[int] = None,
+        **kwargs
+    ) -&gt; Iterator[str]:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model in a streaming manner.
+
+    This method takes a single prompt and generates text using the LLM model.
+    It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+    top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.
+
+    Args:
+        prompt (str): The input prompt.
+        stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+        temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+        max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+        top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+        min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+        top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+        repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+        seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+    Yields:
+        Iterator[str]: A generator that yields the generated text, one token at a time.
+    &#34;&#34;&#34;
+    def generate():
+        for tokens in self.batch_generate_stream(
+            prompts=[prompt],
+            stop=stop,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            **kwargs
+        ):
+            yield tokens[0]
+    return generate()</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model in a streaming manner.</p>
+<p>This method takes a single prompt and generates text using the LLM model.
+It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>A list of stop words to end generation. Defaults to None.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Iterator[str]</code></dt>
+<dd>A generator that yields the generated text, one token at a time.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.unload"><code class="name flex">
+<span>def <span class="ident">unload</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unload(self) -&gt; None:
+    &#34;&#34;&#34;Unload the LLM model from memory.
+    &#34;&#34;&#34;
+    import gc
+    del self._model, self._tokenizer
+    gc.collect()</code></pre>
+</details>
+<div class="desc"><p>Unload the LLM model from memory.</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM"><code class="flex name class">
+<span>class <span class="ident">BaseLLM</span></span>
+<span>(</span><span>engine: <a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a>,<br>temperature: float = 0.0,<br>max_new_tokens: int = 512,<br>top_p: float | None = None,<br>min_p: float | None = None,<br>top_k: int | None = None,<br>repetition_penalty: float | None = None,<br>stop: List[str] | None = None,<br>seed: int | None = None,<br>**kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseLLM:
+    &#34;&#34;&#34;LLM class for text generation. 
+    &#34;&#34;&#34;
+    def __init__(self,
+            engine: BaseEngine,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            stop: Optional[List[str]] = None,
+            seed: Optional[int] = None,
+            **kwargs        
+        ) -&gt; None:
+        &#34;&#34;&#34;Initialise the LLM.
+
+        Args:
+            engine (BaseEngine): Engine used in the LLM.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+        &#34;&#34;&#34;
+        self._engine = engine
+        stop = stop if stop else [self.tokenizer.eos_token]
+        stop = list(set(stop))
+        if self.tokenizer.eos_token not in stop:
+            stop.append(self.tokenizer.eos_token)
+        self._gen_kwargs = dict(
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            stop=stop,
+            seed=seed
+        )
+        self._gen_kwargs.update(kwargs)
+
+    @property
+    def engine(self) -&gt; BaseEngine:
+        &#34;&#34;&#34;Engine used in the LLM.
+
+        Returns:
+            BaseEngine: Engine used in the LLM.
+        &#34;&#34;&#34;
+        return self._engine
+
+    @property
+    def tokenizer(self) -&gt; BaseTokenizer:
+        &#34;&#34;&#34;Returns the tokenizer used in the LLM.
+
+        Returns:
+            BaseTokenizer: The tokenizer used in the LLM.
+        &#34;&#34;&#34;
+        return self.engine.tokenizer
+    
+    @property
+    def chat_template(self) -&gt; ChatTemplate:
+        &#34;&#34;&#34;Returns the default chat template for the LLM.
+
+        Returns:
+            ChatTemplate: The default chat template for the LLM.
+        &#34;&#34;&#34;
+        return self.engine.chat_template
+    
+    @property
+    def model_id(self) -&gt; str:
+        &#34;&#34;&#34;Returns the ID of the LLM model.
+
+        Returns:
+            str: The ID of the LLM model.
+        &#34;&#34;&#34;
+        return self.engine.model_id
+    
+    @property
+    def model_name(self) -&gt; str:
+        &#34;&#34;&#34;Returns the name of the LLM model.
+
+        Returns:
+            str: The name of the LLM model.
+        &#34;&#34;&#34;
+        return self.engine.model_name
+    
+    @property
+    def gen_kwargs(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Returns the generation parameters used in the LLM.
+
+        These parameters are used in the `generate` and `stream` methods.
+        They include temperature, max_new_tokens, top_p, min_p, top_k, repetition_penalty,
+        stop, and seed.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing the generation parameters.
+        &#34;&#34;&#34;
+        return self._gen_kwargs
+    
+    def batch_generate(self, prompts: List[str], stream: bool = False, **kwargs) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a list of prompts using the LLM model.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+            If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        gen_kwargs = deepcopy(self._gen_kwargs)
+        gen_kwargs.update(kwargs)
+        if stream:
+            return self.engine.batch_generate_stream(prompts=prompts, **gen_kwargs)
+        else:
+            return self.engine.batch_generate(prompts=prompts, **gen_kwargs)
+        
+    def batch_generate_json(
+            self,
+            prompts: List[str],
+            json_schema: Dict[str, Any],
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a JSON schema.
+
+        This method takes a list of prompts and a JSON schema, and generates text for each prompt
+        using the LLM model. The generated text is expected to follow the structure defined by the
+        JSON schema.
+        
+        Args:
+            prompts (List[str]): A list of input prompts.
+            json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+            If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        gen_kwargs = dict(
+            prompts=prompts,
+            json_schema=json_schema,
+            stream=stream
+        )
+        gen_kwargs.update(deepcopy(self._gen_kwargs))
+        gen_kwargs.update(kwargs)
+        gen_kwargs.pop(&#39;stop&#39;, None)
+        return self.engine.batch_generate_json(**gen_kwargs)
+    
+    def batch_generate_choice(
+            self,
+            prompts: List[str],
+            choices: List[str],
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a list of choices.
+
+        This method takes a list of prompts and a list of choices, and generates text for each prompt
+        using the LLM model. The generated text is expected to be one of the choices provided.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            choices (List[str]): A list of possible choices for the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+            If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        gen_kwargs = dict(
+            prompts=prompts,
+            choices=choices,
+            stream=stream
+        )
+        gen_kwargs.update(deepcopy(self._gen_kwargs))
+        gen_kwargs.update(kwargs)
+        gen_kwargs.pop(&#39;stop&#39;, None)
+        return self.engine.batch_generate_choice(**gen_kwargs)
+    
+    def batch_generate_regex(
+            self,
+            prompts: List[str],
+            regex: str,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a regular expression.
+
+        This method takes a list of prompts and a regular expression, and generates text for each prompt
+        using the LLM model. The generated text is expected to match the regular expression provided.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            regex (str): A regular expression defining the structure of the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+            If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        gen_kwargs = dict(
+            prompts=prompts,
+            regex=regex,
+            stream=stream
+        )
+        gen_kwargs.update(deepcopy(self._gen_kwargs))
+        gen_kwargs.update(kwargs)
+        gen_kwargs.pop(&#39;stop&#39;, None)
+        return self.engine.batch_generate_regex(**gen_kwargs)
+    
+    def batch_generate_grammar(
+            self,
+            prompts: List[str],
+            cfg_grammar: str,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a grammar configuration.
+
+        This method takes a list of prompts and a grammar configuration, and generates text for each prompt
+        using the LLM model. The generated text is expected to follow the grammar rules defined by the
+        configuration.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            cfg_grammar (str): A grammar configuration defining the grammar rules for the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+            If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        gen_kwargs = dict(
+            prompts=prompts,
+            cfg_grammar=cfg_grammar,
+            stream=stream
+        )
+        gen_kwargs.update(deepcopy(self._gen_kwargs))
+        gen_kwargs.update(kwargs)
+        gen_kwargs.pop(&#39;stop&#39;, None)
+        return self.engine.batch_generate_grammar(**gen_kwargs)
+
+    def generate(self, prompt: str, **kwargs) -&gt; str:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model.
+
+        This method takes a single prompt and generates text using the LLM model.
+        Args:
+            prompt (str): The input prompt.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            str: The generated text.
+        &#34;&#34;&#34;
+        return self.batch_generate(prompts=[prompt], stream=False, **kwargs)[0]
+    
+    def stream(self, prompt: str, **kwargs) -&gt; Iterator[str]:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model in a streaming manner.
+
+        This method takes a single prompt and generates text using the LLM model.
+
+        Args:
+            prompt (str): The input prompt.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Yields:
+            Iterator[str]: A generator that yields the generated text, one token at a time.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        gen_kwargs = deepcopy(self._gen_kwargs)
+        gen_kwargs.update(kwargs)
+        return self.engine.generate_stream(prompt=prompt, **gen_kwargs)
+    
+    def generate_json(self, prompt: str, json_schema: Dict[str, Any], stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a JSON schema.
+
+        This method takes a single prompt and a JSON schema, and generates text using the LLM model.
+        The generated text is expected to follow the structure defined by the JSON schema.
+
+        Args:
+            prompt (str): The input prompt.
+            json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+            If `stream` is True, returns a generator that yields the generated text, one token at a time.
+        &#34;&#34;&#34;
+        output = self.batch_generate_json(prompts=[prompt], json_schema=json_schema, stream=stream, **kwargs)
+        if stream:
+            def output_iterator():
+                for tokens in output:
+                    yield tokens[0]
+            return output_iterator()
+        else:
+            return output[0]
+
+    def generate_choice(self, prompt: str, choices: List[str], stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a list of choices.
+
+        This method takes a single prompt and a list of choices, and generates text using the LLM model.
+        The generated text is expected to be one of the choices provided.
+
+        Args:
+            prompt (str): The input prompt.
+            choices (List[str]): A list of possible choices for the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+            If `stream` is True, returns a generator that yields the generated text, one token at a time.
+        &#34;&#34;&#34;
+        output = self.batch_generate_choice(prompts=[prompt], choices=choices, stream=stream, **kwargs)
+        if stream:
+            def output_iterator():
+                for tokens in output:
+                    yield tokens[0]
+            return output_iterator()
+        else:
+            return output[0]
+        
+    def generate_regex(self, prompt: str, regex: str, stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a regular expression.
+
+        This method takes a single prompt and a regular expression, and generates text using the LLM model.
+        The generated text is expected to match the regular expression provided.
+
+        Args:
+            prompt (str): The input prompt.
+            regex (str): A regular expression defining the structure of the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+            If `stream` is True, returns a generator that yields the generated text, one token at a time.
+        &#34;&#34;&#34;
+        output = self.batch_generate_regex(prompts=[prompt], regex=regex, stream=stream, **kwargs)
+        if stream:
+            def output_iterator():
+                for tokens in output:
+                    yield tokens[0]
+            return output_iterator()
+        else:
+            return output[0]
+    
+    def generate_grammar(self, prompt: str, cfg_grammar: str, stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+        &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a grammar configuration.
+
+        This method takes a single prompt and a grammar configuration, and generates text using the LLM model.
+        The generated text is expected to follow the grammar rules defined by the configuration.
+
+        Args:
+            prompt (str): The input prompt.
+            cfg_grammar (str): A grammar configuration defining the grammar rules for the generated text.
+            stream (bool, optional): Whether to stream the generated text. Defaults to False.
+            **kwargs: Additional generation parameters to overwrite the default parameters.
+
+        Returns:
+            Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+            If `stream` is True, returns a generator that yields the generated text, one token at a time.
+        &#34;&#34;&#34;
+        output = self.batch_generate_regex(prompts=[prompt], cfg_grammar=cfg_grammar, stream=stream, **kwargs)
+        if stream:
+            def output_iterator():
+                for tokens in output:
+                    yield tokens[0]
+            return output_iterator()
+        else:
+            return output[0]</code></pre>
+</details>
+<div class="desc"><p>LLM class for text generation. </p>
+<p>Initialise the LLM.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>engine</code></strong> :&ensp;<code><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></code></dt>
+<dd>Engine used in the LLM.</dd>
+<dt><strong><code>temperature</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The temperature to use for generation. Defaults to 0.0.</dd>
+<dt><strong><code>max_new_tokens</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of new tokens to generate. Defaults to 512.</dd>
+<dt><strong><code>top_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The top-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>min_p</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The min-p parameter for generation. Defaults to None.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The top-k parameter for generation. Defaults to None.</dd>
+<dt><strong><code>repetition_penalty</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The repetition penalty for generation. Defaults to None.</dd>
+<dt><strong><code>stop</code></strong> :&ensp;<code>Optional[List[str]]</code>, optional</dt>
+<dd>A list of stop words to end generation. Defaults to None.</dd>
+<dt><strong><code>seed</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The seed for generation. Defaults to None.</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.chat_template"><code class="name">prop <span class="ident">chat_template</span> : <a title="llmflex.Prompt.chat_template.ChatTemplate" href="../../Prompt/chat_template.html#llmflex.Prompt.chat_template.ChatTemplate">ChatTemplate</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def chat_template(self) -&gt; ChatTemplate:
+    &#34;&#34;&#34;Returns the default chat template for the LLM.
+
+    Returns:
+        ChatTemplate: The default chat template for the LLM.
+    &#34;&#34;&#34;
+    return self.engine.chat_template</code></pre>
+</details>
+<div class="desc"><p>Returns the default chat template for the LLM.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ChatTemplate</code></dt>
+<dd>The default chat template for the LLM.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.engine"><code class="name">prop <span class="ident">engine</span> : <a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def engine(self) -&gt; BaseEngine:
+    &#34;&#34;&#34;Engine used in the LLM.
+
+    Returns:
+        BaseEngine: Engine used in the LLM.
+    &#34;&#34;&#34;
+    return self._engine</code></pre>
+</details>
+<div class="desc"><p>Engine used in the LLM.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></code></dt>
+<dd>Engine used in the LLM.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.gen_kwargs"><code class="name">prop <span class="ident">gen_kwargs</span> : Dict[str, Any]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def gen_kwargs(self) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Returns the generation parameters used in the LLM.
+
+    These parameters are used in the `generate` and `stream` methods.
+    They include temperature, max_new_tokens, top_p, min_p, top_k, repetition_penalty,
+    stop, and seed.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the generation parameters.
+    &#34;&#34;&#34;
+    return self._gen_kwargs</code></pre>
+</details>
+<div class="desc"><p>Returns the generation parameters used in the LLM.</p>
+<p>These parameters are used in the <code>generate</code> and <code>stream</code> methods.
+They include temperature, max_new_tokens, top_p, min_p, top_k, repetition_penalty,
+stop, and seed.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>A dictionary containing the generation parameters.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.model_id"><code class="name">prop <span class="ident">model_id</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def model_id(self) -&gt; str:
+    &#34;&#34;&#34;Returns the ID of the LLM model.
+
+    Returns:
+        str: The ID of the LLM model.
+    &#34;&#34;&#34;
+    return self.engine.model_id</code></pre>
+</details>
+<div class="desc"><p>Returns the ID of the LLM model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The ID of the LLM model.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.model_name"><code class="name">prop <span class="ident">model_name</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def model_name(self) -&gt; str:
+    &#34;&#34;&#34;Returns the name of the LLM model.
+
+    Returns:
+        str: The name of the LLM model.
+    &#34;&#34;&#34;
+    return self.engine.model_name</code></pre>
+</details>
+<div class="desc"><p>Returns the name of the LLM model.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The name of the LLM model.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tokenizer(self) -&gt; BaseTokenizer:
+    &#34;&#34;&#34;Returns the tokenizer used in the LLM.
+
+    Returns:
+        BaseTokenizer: The tokenizer used in the LLM.
+    &#34;&#34;&#34;
+    return self.engine.tokenizer</code></pre>
+</details>
+<div class="desc"><p>Returns the tokenizer used in the LLM.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseTokenizer</code></dt>
+<dd>The tokenizer used in the LLM.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate"><code class="name flex">
+<span>def <span class="ident">batch_generate</span></span>(<span>self, prompts: List[str], stream: bool = False, **kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate(self, prompts: List[str], stream: bool = False, **kwargs) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a list of prompts using the LLM model.
+
+    This method takes a list of prompts and generates text for each prompt using the LLM model.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+        If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    gen_kwargs = deepcopy(self._gen_kwargs)
+    gen_kwargs.update(kwargs)
+    if stream:
+        return self.engine.batch_generate_stream(prompts=prompts, **gen_kwargs)
+    else:
+        return self.engine.batch_generate(prompts=prompts, **gen_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a list of prompts using the LLM model.</p>
+<p>This method takes a list of prompts and generates text for each prompt using the LLM model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>If <code>stream</code> is False, returns a list of generated texts.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields a list of generated texts, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_choice"><code class="name flex">
+<span>def <span class="ident">batch_generate_choice</span></span>(<span>self, prompts: List[str], choices: List[str], stream: bool = False, **kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_choice(
+        self,
+        prompts: List[str],
+        choices: List[str],
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a list of choices.
+
+    This method takes a list of prompts and a list of choices, and generates text for each prompt
+    using the LLM model. The generated text is expected to be one of the choices provided.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        choices (List[str]): A list of possible choices for the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+        If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    gen_kwargs = dict(
+        prompts=prompts,
+        choices=choices,
+        stream=stream
+    )
+    gen_kwargs.update(deepcopy(self._gen_kwargs))
+    gen_kwargs.update(kwargs)
+    gen_kwargs.pop(&#39;stop&#39;, None)
+    return self.engine.batch_generate_choice(**gen_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a list of prompts using the LLM model and a list of choices.</p>
+<p>This method takes a list of prompts and a list of choices, and generates text for each prompt
+using the LLM model. The generated text is expected to be one of the choices provided.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>choices</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of possible choices for the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>If <code>stream</code> is False, returns a list of generated texts.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields a list of generated texts, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_grammar"><code class="name flex">
+<span>def <span class="ident">batch_generate_grammar</span></span>(<span>self, prompts: List[str], cfg_grammar: str, stream: bool = False, **kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_grammar(
+        self,
+        prompts: List[str],
+        cfg_grammar: str,
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a grammar configuration.
+
+    This method takes a list of prompts and a grammar configuration, and generates text for each prompt
+    using the LLM model. The generated text is expected to follow the grammar rules defined by the
+    configuration.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        cfg_grammar (str): A grammar configuration defining the grammar rules for the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+        If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    gen_kwargs = dict(
+        prompts=prompts,
+        cfg_grammar=cfg_grammar,
+        stream=stream
+    )
+    gen_kwargs.update(deepcopy(self._gen_kwargs))
+    gen_kwargs.update(kwargs)
+    gen_kwargs.pop(&#39;stop&#39;, None)
+    return self.engine.batch_generate_grammar(**gen_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a list of prompts using the LLM model and a grammar configuration.</p>
+<p>This method takes a list of prompts and a grammar configuration, and generates text for each prompt
+using the LLM model. The generated text is expected to follow the grammar rules defined by the
+configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>cfg_grammar</code></strong> :&ensp;<code>str</code></dt>
+<dd>A grammar configuration defining the grammar rules for the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>If <code>stream</code> is False, returns a list of generated texts.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields a list of generated texts, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_json"><code class="name flex">
+<span>def <span class="ident">batch_generate_json</span></span>(<span>self,<br>prompts: List[str],<br>json_schema: Dict[str, Any],<br>stream: bool = False,<br>**kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_json(
+        self,
+        prompts: List[str],
+        json_schema: Dict[str, Any],
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a JSON schema.
+
+    This method takes a list of prompts and a JSON schema, and generates text for each prompt
+    using the LLM model. The generated text is expected to follow the structure defined by the
+    JSON schema.
+    
+    Args:
+        prompts (List[str]): A list of input prompts.
+        json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+        If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    gen_kwargs = dict(
+        prompts=prompts,
+        json_schema=json_schema,
+        stream=stream
+    )
+    gen_kwargs.update(deepcopy(self._gen_kwargs))
+    gen_kwargs.update(kwargs)
+    gen_kwargs.pop(&#39;stop&#39;, None)
+    return self.engine.batch_generate_json(**gen_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a list of prompts using the LLM model and a JSON schema.</p>
+<p>This method takes a list of prompts and a JSON schema, and generates text for each prompt
+using the LLM model. The generated text is expected to follow the structure defined by the
+JSON schema.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>json_schema</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>A JSON schema defining the structure of the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>If <code>stream</code> is False, returns a list of generated texts.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields a list of generated texts, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_regex"><code class="name flex">
+<span>def <span class="ident">batch_generate_regex</span></span>(<span>self, prompts: List[str], regex: str, stream: bool = False, **kwargs) ‑> List[str] | Iterator[List[str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_generate_regex(
+        self,
+        prompts: List[str],
+        regex: str,
+        stream: bool = False,
+        **kwargs
+    ) -&gt; Union[List[str], Iterator[List[str]]]:
+    &#34;&#34;&#34;Generates text for a list of prompts using the LLM model and a regular expression.
+
+    This method takes a list of prompts and a regular expression, and generates text for each prompt
+    using the LLM model. The generated text is expected to match the regular expression provided.
+
+    Args:
+        prompts (List[str]): A list of input prompts.
+        regex (str): A regular expression defining the structure of the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[List[str], Iterator[List[str]]]: If `stream` is False, returns a list of generated texts.
+        If `stream` is True, returns a generator that yields a list of generated texts, one token at a time.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    gen_kwargs = dict(
+        prompts=prompts,
+        regex=regex,
+        stream=stream
+    )
+    gen_kwargs.update(deepcopy(self._gen_kwargs))
+    gen_kwargs.update(kwargs)
+    gen_kwargs.pop(&#39;stop&#39;, None)
+    return self.engine.batch_generate_regex(**gen_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a list of prompts using the LLM model and a regular expression.</p>
+<p>This method takes a list of prompts and a regular expression, and generates text for each prompt
+using the LLM model. The generated text is expected to match the regular expression provided.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompts</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input prompts.</dd>
+<dt><strong><code>regex</code></strong> :&ensp;<code>str</code></dt>
+<dd>A regular expression defining the structure of the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[str], Iterator[List[str]]]</code></dt>
+<dd>If <code>stream</code> is False, returns a list of generated texts.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields a list of generated texts, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.generate"><code class="name flex">
+<span>def <span class="ident">generate</span></span>(<span>self, prompt: str, **kwargs) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate(self, prompt: str, **kwargs) -&gt; str:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model.
+
+    This method takes a single prompt and generates text using the LLM model.
+    Args:
+        prompt (str): The input prompt.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        str: The generated text.
+    &#34;&#34;&#34;
+    return self.batch_generate(prompts=[prompt], stream=False, **kwargs)[0]</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model.</p>
+<p>This method takes a single prompt and generates text using the LLM model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The generated text.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.generate_choice"><code class="name flex">
+<span>def <span class="ident">generate_choice</span></span>(<span>self, prompt: str, choices: List[str], stream: bool = False, **kwargs) ‑> str | Iterator[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_choice(self, prompt: str, choices: List[str], stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a list of choices.
+
+    This method takes a single prompt and a list of choices, and generates text using the LLM model.
+    The generated text is expected to be one of the choices provided.
+
+    Args:
+        prompt (str): The input prompt.
+        choices (List[str]): A list of possible choices for the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+        If `stream` is True, returns a generator that yields the generated text, one token at a time.
+    &#34;&#34;&#34;
+    output = self.batch_generate_choice(prompts=[prompt], choices=choices, stream=stream, **kwargs)
+    if stream:
+        def output_iterator():
+            for tokens in output:
+                yield tokens[0]
+        return output_iterator()
+    else:
+        return output[0]</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model and a list of choices.</p>
+<p>This method takes a single prompt and a list of choices, and generates text using the LLM model.
+The generated text is expected to be one of the choices provided.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>choices</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of possible choices for the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>If <code>stream</code> is False, returns the generated text.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields the generated text, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.generate_grammar"><code class="name flex">
+<span>def <span class="ident">generate_grammar</span></span>(<span>self, prompt: str, cfg_grammar: str, stream: bool = False, **kwargs) ‑> str | Iterator[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_grammar(self, prompt: str, cfg_grammar: str, stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a grammar configuration.
+
+    This method takes a single prompt and a grammar configuration, and generates text using the LLM model.
+    The generated text is expected to follow the grammar rules defined by the configuration.
+
+    Args:
+        prompt (str): The input prompt.
+        cfg_grammar (str): A grammar configuration defining the grammar rules for the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+        If `stream` is True, returns a generator that yields the generated text, one token at a time.
+    &#34;&#34;&#34;
+    output = self.batch_generate_regex(prompts=[prompt], cfg_grammar=cfg_grammar, stream=stream, **kwargs)
+    if stream:
+        def output_iterator():
+            for tokens in output:
+                yield tokens[0]
+        return output_iterator()
+    else:
+        return output[0]</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model and a grammar configuration.</p>
+<p>This method takes a single prompt and a grammar configuration, and generates text using the LLM model.
+The generated text is expected to follow the grammar rules defined by the configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>cfg_grammar</code></strong> :&ensp;<code>str</code></dt>
+<dd>A grammar configuration defining the grammar rules for the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>If <code>stream</code> is False, returns the generated text.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields the generated text, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.generate_json"><code class="name flex">
+<span>def <span class="ident">generate_json</span></span>(<span>self, prompt: str, json_schema: Dict[str, Any], stream: bool = False, **kwargs) ‑> str | Iterator[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_json(self, prompt: str, json_schema: Dict[str, Any], stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a JSON schema.
+
+    This method takes a single prompt and a JSON schema, and generates text using the LLM model.
+    The generated text is expected to follow the structure defined by the JSON schema.
+
+    Args:
+        prompt (str): The input prompt.
+        json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+        If `stream` is True, returns a generator that yields the generated text, one token at a time.
+    &#34;&#34;&#34;
+    output = self.batch_generate_json(prompts=[prompt], json_schema=json_schema, stream=stream, **kwargs)
+    if stream:
+        def output_iterator():
+            for tokens in output:
+                yield tokens[0]
+        return output_iterator()
+    else:
+        return output[0]</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model and a JSON schema.</p>
+<p>This method takes a single prompt and a JSON schema, and generates text using the LLM model.
+The generated text is expected to follow the structure defined by the JSON schema.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>json_schema</code></strong> :&ensp;<code>Dict[str, Any]</code></dt>
+<dd>A JSON schema defining the structure of the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>If <code>stream</code> is False, returns the generated text.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields the generated text, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.generate_regex"><code class="name flex">
+<span>def <span class="ident">generate_regex</span></span>(<span>self, prompt: str, regex: str, stream: bool = False, **kwargs) ‑> str | Iterator[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def generate_regex(self, prompt: str, regex: str, stream: bool = False, **kwargs) -&gt; Union[str, Iterator[str]]:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model and a regular expression.
+
+    This method takes a single prompt and a regular expression, and generates text using the LLM model.
+    The generated text is expected to match the regular expression provided.
+
+    Args:
+        prompt (str): The input prompt.
+        regex (str): A regular expression defining the structure of the generated text.
+        stream (bool, optional): Whether to stream the generated text. Defaults to False.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Returns:
+        Union[str, Iterator[str]]: If `stream` is False, returns the generated text.
+        If `stream` is True, returns a generator that yields the generated text, one token at a time.
+    &#34;&#34;&#34;
+    output = self.batch_generate_regex(prompts=[prompt], regex=regex, stream=stream, **kwargs)
+    if stream:
+        def output_iterator():
+            for tokens in output:
+                yield tokens[0]
+        return output_iterator()
+    else:
+        return output[0]</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model and a regular expression.</p>
+<p>This method takes a single prompt and a regular expression, and generates text using the LLM model.
+The generated text is expected to match the regular expression provided.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>regex</code></strong> :&ensp;<code>str</code></dt>
+<dd>A regular expression defining the structure of the generated text.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the generated text. Defaults to False.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Iterator[str]]</code></dt>
+<dd>If <code>stream</code> is False, returns the generated text.</dd>
+</dl>
+<p>If <code>stream</code> is True, returns a generator that yields the generated text, one token at a time.</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.stream"><code class="name flex">
+<span>def <span class="ident">stream</span></span>(<span>self, prompt: str, **kwargs) ‑> Iterator[str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stream(self, prompt: str, **kwargs) -&gt; Iterator[str]:
+    &#34;&#34;&#34;Generates text for a single prompt using the LLM model in a streaming manner.
+
+    This method takes a single prompt and generates text using the LLM model.
+
+    Args:
+        prompt (str): The input prompt.
+        **kwargs: Additional generation parameters to overwrite the default parameters.
+
+    Yields:
+        Iterator[str]: A generator that yields the generated text, one token at a time.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    gen_kwargs = deepcopy(self._gen_kwargs)
+    gen_kwargs.update(kwargs)
+    return self.engine.generate_stream(prompt=prompt, **gen_kwargs)</code></pre>
+</details>
+<div class="desc"><p>Generates text for a single prompt using the LLM model in a streaming manner.</p>
+<p>This method takes a single prompt and generates text using the LLM model.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>prompt</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input prompt.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional generation parameters to overwrite the default parameters.</dd>
+</dl>
+<h2 id="yields">Yields</h2>
+<dl>
+<dt><code>Iterator[str]</code></dt>
+<dd>A generator that yields the generated text, one token at a time.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.LLM.Engine" href="index.html">llmflex.LLM.Engine</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate" href="#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate">batch_generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice" href="#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice">batch_generate_choice</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar" href="#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar">batch_generate_grammar</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json" href="#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json">batch_generate_json</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex" href="#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex">batch_generate_regex</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream" href="#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream">batch_generate_stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.chat_template" href="#llmflex.LLM.Engine.base_engine.BaseEngine.chat_template">chat_template</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.generate" href="#llmflex.LLM.Engine.base_engine.BaseEngine.generate">generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream" href="#llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream">generate_stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model" href="#llmflex.LLM.Engine.base_engine.BaseEngine.model">model</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model_id" href="#llmflex.LLM.Engine.base_engine.BaseEngine.model_id">model_id</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model_name" href="#llmflex.LLM.Engine.base_engine.BaseEngine.model_name">model_name</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer" href="#llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer">tokenizer</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.unload" href="#llmflex.LLM.Engine.base_engine.BaseEngine.unload">unload</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM" href="#llmflex.LLM.Engine.base_engine.BaseLLM">BaseLLM</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate" href="#llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate">batch_generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_choice" href="#llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_choice">batch_generate_choice</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_grammar" href="#llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_grammar">batch_generate_grammar</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_json" href="#llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_json">batch_generate_json</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_regex" href="#llmflex.LLM.Engine.base_engine.BaseLLM.batch_generate_regex">batch_generate_regex</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.chat_template" href="#llmflex.LLM.Engine.base_engine.BaseLLM.chat_template">chat_template</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.engine" href="#llmflex.LLM.Engine.base_engine.BaseLLM.engine">engine</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.gen_kwargs" href="#llmflex.LLM.Engine.base_engine.BaseLLM.gen_kwargs">gen_kwargs</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.generate" href="#llmflex.LLM.Engine.base_engine.BaseLLM.generate">generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.generate_choice" href="#llmflex.LLM.Engine.base_engine.BaseLLM.generate_choice">generate_choice</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.generate_grammar" href="#llmflex.LLM.Engine.base_engine.BaseLLM.generate_grammar">generate_grammar</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.generate_json" href="#llmflex.LLM.Engine.base_engine.BaseLLM.generate_json">generate_json</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.generate_regex" href="#llmflex.LLM.Engine.base_engine.BaseLLM.generate_regex">generate_regex</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.model_id" href="#llmflex.LLM.Engine.base_engine.BaseLLM.model_id">model_id</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.model_name" href="#llmflex.LLM.Engine.base_engine.BaseLLM.model_name">model_name</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.stream" href="#llmflex.LLM.Engine.base_engine.BaseLLM.stream">stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseLLM.tokenizer" href="#llmflex.LLM.Engine.base_engine.BaseLLM.tokenizer">tokenizer</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

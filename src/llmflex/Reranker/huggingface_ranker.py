@@ -7,11 +7,12 @@ class HuggingFaceRanker(BaseRanker):
 
     This ranker uses a pre-trained transformer model from the HugginFace transformers library to score and rank documents.
     """
-    def __init__(self, pretrained_model_name_or_path: str, model_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -> None:
+    def __init__(self, pretrained_model_name_or_path: str = "cross-encoder/ms-marco-TinyBERT-L-2-v2", 
+                 model_kwargs: Optional[Dict[str, Any]] = None, tokenizer_kwargs: Optional[Dict[str, Any]] = None) -> None:
         """Initializes the HuggingFaceRanker with a pretrained model and optional model and tokenizer kwargs.
 
         Args:
-            pretrained_model_name_or_path (str): The name or path of the pretrained model to use.
+            pretrained_model_name_or_path (str): The name or path of the pretrained model to use. Defaults to "cross-encoder/ms-marco-TinyBERT-L-2-v2".
             model_kwargs (Optional[Dict[str, Any]], optional): Optional keyword arguments to pass to the model. Defaults to None.
             tokenizer_kwargs (Optional[Dict[str, Any]], optional): Optional keyword arguments to pass to the tokenizer. Defaults to None.
         """

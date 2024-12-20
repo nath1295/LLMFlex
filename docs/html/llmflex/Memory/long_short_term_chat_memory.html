@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.Memory.long_short_term_chat_memory API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Memory.long_short_term_chat_memory</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory"><code class="flex name class">
+<span>class <span class="ident">LongShortTermChatMemory</span></span>
+<span>(</span><span>embeddings: BaseEmbeddings,<br>ranker: Optional[BaseRanker] = None,<br>text_splitter: Optional[BaseTextSplitter] = None,<br>vdb_type: VDB_TYPE = 'numpy',<br>title: Optional[str] = None,<br>memory_dir: Optional[str] = None,<br>**kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LongShortTermChatMemory(BaseMemory):
+    &#34;&#34;&#34;Long short term chat memory class.&#34;&#34;&#34;
+    def __init__(self,
+            embeddings: BaseEmbeddings,
+            ranker: Optional[BaseRanker] = None,
+            text_splitter: Optional[BaseTextSplitter] = None,
+            vdb_type: VDB_TYPE = &#39;numpy&#39;,
+            title: Optional[str] = None, 
+            memory_dir: Optional[str] = None,
+            **kwargs
+        ) -&gt; None:
+        &#34;&#34;&#34;Initializes the LongShortTermChatMemory class.
+
+        Args:
+            embeddings (BaseEmbeddings): The embeddings model to use for encoding and decoding.
+            ranker (Optional[BaseRanker], optional): The ranker model to use for ranking the messages during search. Defaults to None.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting the longer messages. Defaults to None.
+            vdb_type (VDB_TYPE, optional): The type of vector database to use. Defaults to &#39;numpy&#39;.
+            title (Optional[str], optional): The title of the memory. Defaults to None.
+            memory_dir (Optional[str], optional): The directory to store the memory. Defaults to None.
+        &#34;&#34;&#34;
+        from ..TextSplitter.sentence_splitter import SentenceTextSplitter
+        from ..Reranker.huggingface_ranker import HuggingFaceRanker
+        super().__init__(title, memory_dir)
+        from_exist = kwargs.get(&#39;from_exist&#39;, False)
+        self._vdb_dir = None if self.memory_dir is None else os.path.join(self.memory_dir, &#39;vdb&#39;)
+        self._embeddings = embeddings
+        self._ranker = ranker if ranker else HuggingFaceRanker()
+        self._text_splitter = SentenceTextSplitter(tokenizer=embeddings.tokenizer, chunk_size=100, chunk_overlap=20) if text_splitter is None else text_splitter
+        if vdb_type == &#39;numpy&#39;:
+            from ..VectorDatabase.numpy_vectordb import NumpyVectorDatabase
+            if from_exist:
+                self._vdb = NumpyVectorDatabase.from_exist(embeddings=embeddings, vdb_dir=self._vdb_dir, text_splitter=self._text_splitter)
+            else:
+                self._vdb = NumpyVectorDatabase(embeddings=embeddings, text_splitter=self._text_splitter, vdb_dir=self._vdb_dir)
+        elif vdb_type == &#39;faiss&#39;:
+            from ..VectorDatabase.faiss_vectordb import FaissVectorDatabase
+            if from_exist:
+                self._vdb = FaissVectorDatabase.from_exist(embeddings=embeddings, vdb_dir=self._vdb_dir, text_splitter=self._text_splitter)
+            else:
+                self._vdb = FaissVectorDatabase(embeddings=embeddings, text_splitter=self._text_splitter, vdb_dir=self._vdb_dir)
+
+    @classmethod
+    def from_exist(cls, embeddings: BaseEmbeddings, memory_dir: str,
+            ranker: Optional[BaseRanker] = None,
+            text_splitter: Optional[BaseTextSplitter] = None) -&gt; LongShortTermChatMemory:
+        &#34;&#34;&#34;Initializes the LongShortTermChatMemory class from an existing memory directory.
+
+        Args:
+            embeddings (BaseEmbeddings): The embeddings model to use for encoding and decoding.
+            memory_dir (str): The directory that stores the memory.
+            ranker (Optional[BaseRanker], optional): The ranker model to use for ranking the messages during search. Defaults to None.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting the longer messages. Defaults to None.
+
+        Returns:
+            LongShortTermChatMemory: An instance of LongShortTermChatMemory initialized from the existing vector database.
+        &#34;&#34;&#34;
+        if not os.path.exists(memory_dir):
+            raise FileExistsError(f&#39;Directory &#34;{memory_dir}&#34; does not exist.&#39;)
+        elif not os.path.exists(os.path.join(memory_dir, &#39;info.json&#39;)):
+            raise FileNotFoundError(f&#39;&#34;info.json&#34; does not exist in &#34;{memory_dir}&#34;.&#39;)
+        import json
+        with open(os.path.join(memory_dir, &#39;info.json&#39;), &#39;r&#39;) as f:
+            info = json.load(f)
+        title = info[&#39;title&#39;]
+        if cls.__name__ != info[&#39;memory_class&#39;]:
+            raise Exception(f&#39;The existing memory was not created with &#34;{cls.__name__}&#34; class.&#39;)
+        
+        vdb_info_dir = os.path.join(memory_dir, &#39;vdb&#39;, &#39;info.json&#39;)
+        with open(vdb_info_dir, &#39;r&#39;) as f:
+            vdb_info = json.load(f)
+        vdb_class = vdb_info[&#39;vdb_class&#39;]
+        if &#39;numpy&#39; in vdb_class.lower():
+            vdb_type = &#39;numpy&#39;
+        elif &#39;faiss&#39; in vdb_class.lower():
+            vdb_type = &#39;faiss&#39;
+
+        memory = cls(embeddings=embeddings, ranker=ranker, text_splitter=text_splitter, vdb_type=vdb_type, title=title, memory_dir=memory_dir, from_exist=True)
+        docs = memory._vdb.data
+        orders = [doc.metadata[&#39;message_index&#39;] for doc in docs]
+        history = []
+        if len(orders) != 0:
+            max_order = max(orders) + 1
+            for i in range(max_order):
+                message = [doc for doc in docs if doc.metadata[&#39;message_index&#39;] == i][0]
+                history.append(dict(role=message.metadata[&#39;role&#39;], content=message.metadata.get(&#39;content&#39;), tool_calls=message.metadata.get(&#39;tool_calls&#39;)))
+        memory._history = history
+        return memory
+        
+
+    def _update_history(self, messages: List[Dict[str, Any]]) -&gt; None:
+        &#34;&#34;&#34;Updates the conversation history with the given messages.
+
+        Args:
+            messages (List[Dict[str, Any]]): A list of dictionaries, each representing a conversation turn.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        import json
+        start_index = len(self.history)
+        self.history.extend(messages)
+        for i, msg in enumerate(messages):
+            metadata = deepcopy(msg)
+            metadata[&#39;message_index&#39;] = i + start_index
+            content = msg.get(&#39;content&#39;, None)
+            tool_calls = msg.get(&#39;tool_calls&#39;, None)
+            if content:
+                if not isinstance(content, str):
+                    try:
+                        content = json.dumps(content)
+                    except:
+                        content = str(content)
+                self._vdb.add_texts(texts=content, metadata=metadata)
+            if tool_calls:
+                for tool_call in tool_calls:
+                    arguments = tool_call[&#39;function&#39;][&#39;arguments&#39;]
+                    try:
+                        arg_dict = json.loads(arguments)
+                    except:
+                        arg_dict = arguments
+                    tc_dict = deepcopy(tool_call)
+                    tc_dict[&#39;function&#39;][&#39;arguments&#39;] = arg_dict
+                    tc_str = json.dumps(tc_dict)
+                    self._vdb.add_texts(texts=tc_str, metadata=metadata)
+
+    def _remove_last_message(self) -&gt; None:
+        &#34;&#34;&#34;Remove the latest message.
+        &#34;&#34;&#34;
+        if len(self.history) &gt; 0:
+            last_index = len(self.history) - 1
+            self._history = self.history[:-1]
+            doc_ids = self._vdb.search_by_doc(message_index=last_index)
+            if len(doc_ids) &gt; 0:
+                self._vdb.drop_ids(doc_ids)
+
+    def get_related_messages(self, 
+            query: str,
+            token_limit: int = 300, 
+            score_threshold: float = 0.0,
+            exclude_messages: Optional[List[Dict[str, Any]]] = None
+        ) -&gt; List[Dict[str, str]]:
+        &#34;&#34;&#34;Retrieves related messages based on a query.
+
+        Args:
+            query (str): The query to search for related messages.
+            token_limit (int, optional): The maximum number of tokens to consider for each message. Defaults to 300.
+            score_threshold (float, optional): The minimum score required for a message to be considered related. Defaults to 0.0.
+            exclude_messages (Optional[List[Dict[str, Any]]], optional): A list of messages to exclude from the search. Defaults to None.
+
+        Returns:
+            List[Dict[str, str]]: A list of related messages, each represented as a dictionary with &#39;role&#39;, &#39;content&#39;, and &#39;tool_calls&#39; keys.
+        &#34;&#34;&#34;
+        import json         
+        def filter_fn(doc) -&gt; bool:
+            for msg in exclude_messages:
+                if (doc.metadata[&#39;role&#39;] == msg[&#39;role&#39;]):
+                    if (msg.get(&#39;content&#39;) == doc.metadata.get(&#39;content&#39;)) and (msg.get(&#39;tool_calls&#39;) == doc.metadata.get(&#39;tool_calls&#39;)):
+                        return False
+            return True
+        doc_ids = self._vdb.search_by_doc(filter_fn) if exclude_messages is not None else None
+        if isinstance(doc_ids, list) and len(doc_ids) == 0:
+            return []
+        results = self._vdb.search(query=query, scope_ids=doc_ids, top_k=50)
+        results = [res for res in results if res.score &gt;= score_threshold]
+        if len(results) == 0:
+            return []
+        ranked = self._ranker.rerank(query=query, docs=[res.doc for res in results])
+        
+        if hasattr(self._text_splitter, &#39;_tokenizer&#39;):
+            tokenizer = self._text_splitter._tokenizer
+        else:
+            tokenizer = self._embeddings._tokenizer
+        
+        token_count = 0
+        msg_list = []
+        for res in ranked:
+            doc = res.doc
+            role = doc.metadata[&#39;role&#39;]
+            res_dict = dict(role=role, content=doc.text)
+            res_str = json.dumps(res_dict)
+            res_token_count = tokenizer.get_num_tokens(res_str, add_special_tokens=False)
+            if (token_count + res_token_count) &lt; token_limit:
+                msg_list.append(res_dict)
+                token_count += res_token_count
+            else:
+                break
+        return msg_list</code></pre>
+</details>
+<div class="desc"><p>Long short term chat memory class.</p>
+<p>Initializes the LongShortTermChatMemory class.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embeddings model to use for encoding and decoding.</dd>
+<dt><strong><code>ranker</code></strong> :&ensp;<code>Optional[BaseRanker]</code>, optional</dt>
+<dd>The ranker model to use for ranking the messages during search. Defaults to None.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting the longer messages. Defaults to None.</dd>
+<dt><strong><code>vdb_type</code></strong> :&ensp;<code>VDB_TYPE</code>, optional</dt>
+<dd>The type of vector database to use. Defaults to 'numpy'.</dd>
+<dt><strong><code>title</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>The title of the memory. Defaults to None.</dd>
+<dt><strong><code>memory_dir</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>The directory to store the memory. Defaults to None.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.Memory.base_memory.BaseMemory" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory">BaseMemory</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.from_exist"><code class="name flex">
+<span>def <span class="ident">from_exist</span></span>(<span>embeddings: BaseEmbeddings,<br>memory_dir: str,<br>ranker: Optional[BaseRanker] = None,<br>text_splitter: Optional[BaseTextSplitter] = None) ‑> <a title="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory" href="#llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initializes the LongShortTermChatMemory class from an existing memory directory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embeddings model to use for encoding and decoding.</dd>
+<dt><strong><code>memory_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory that stores the memory.</dd>
+<dt><strong><code>ranker</code></strong> :&ensp;<code>Optional[BaseRanker]</code>, optional</dt>
+<dd>The ranker model to use for ranking the messages during search. Defaults to None.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting the longer messages. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory" href="#llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></code></dt>
+<dd>An instance of LongShortTermChatMemory initialized from the existing vector database.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.get_related_messages"><code class="name flex">
+<span>def <span class="ident">get_related_messages</span></span>(<span>self,<br>query: str,<br>token_limit: int = 300,<br>score_threshold: float = 0.0,<br>exclude_messages: Optional[List[Dict[str, Any]]] = None) ‑> List[Dict[str, str]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_related_messages(self, 
+        query: str,
+        token_limit: int = 300, 
+        score_threshold: float = 0.0,
+        exclude_messages: Optional[List[Dict[str, Any]]] = None
+    ) -&gt; List[Dict[str, str]]:
+    &#34;&#34;&#34;Retrieves related messages based on a query.
+
+    Args:
+        query (str): The query to search for related messages.
+        token_limit (int, optional): The maximum number of tokens to consider for each message. Defaults to 300.
+        score_threshold (float, optional): The minimum score required for a message to be considered related. Defaults to 0.0.
+        exclude_messages (Optional[List[Dict[str, Any]]], optional): A list of messages to exclude from the search. Defaults to None.
+
+    Returns:
+        List[Dict[str, str]]: A list of related messages, each represented as a dictionary with &#39;role&#39;, &#39;content&#39;, and &#39;tool_calls&#39; keys.
+    &#34;&#34;&#34;
+    import json         
+    def filter_fn(doc) -&gt; bool:
+        for msg in exclude_messages:
+            if (doc.metadata[&#39;role&#39;] == msg[&#39;role&#39;]):
+                if (msg.get(&#39;content&#39;) == doc.metadata.get(&#39;content&#39;)) and (msg.get(&#39;tool_calls&#39;) == doc.metadata.get(&#39;tool_calls&#39;)):
+                    return False
+        return True
+    doc_ids = self._vdb.search_by_doc(filter_fn) if exclude_messages is not None else None
+    if isinstance(doc_ids, list) and len(doc_ids) == 0:
+        return []
+    results = self._vdb.search(query=query, scope_ids=doc_ids, top_k=50)
+    results = [res for res in results if res.score &gt;= score_threshold]
+    if len(results) == 0:
+        return []
+    ranked = self._ranker.rerank(query=query, docs=[res.doc for res in results])
+    
+    if hasattr(self._text_splitter, &#39;_tokenizer&#39;):
+        tokenizer = self._text_splitter._tokenizer
+    else:
+        tokenizer = self._embeddings._tokenizer
+    
+    token_count = 0
+    msg_list = []
+    for res in ranked:
+        doc = res.doc
+        role = doc.metadata[&#39;role&#39;]
+        res_dict = dict(role=role, content=doc.text)
+        res_str = json.dumps(res_dict)
+        res_token_count = tokenizer.get_num_tokens(res_str, add_special_tokens=False)
+        if (token_count + res_token_count) &lt; token_limit:
+            msg_list.append(res_dict)
+            token_count += res_token_count
+        else:
+            break
+    return msg_list</code></pre>
+</details>
+<div class="desc"><p>Retrieves related messages based on a query.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>The query to search for related messages.</dd>
+<dt><strong><code>token_limit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of tokens to consider for each message. Defaults to 300.</dd>
+<dt><strong><code>score_threshold</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>The minimum score required for a message to be considered related. Defaults to 0.0.</dd>
+<dt><strong><code>exclude_messages</code></strong> :&ensp;<code>Optional[List[Dict[str, Any]]]</code>, optional</dt>
+<dd>A list of messages to exclude from the search. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Dict[str, str]]</code></dt>
+<dd>A list of related messages, each represented as a dictionary with 'role', 'content', and 'tool_calls' keys.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.Memory.base_memory.BaseMemory" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory">BaseMemory</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.get_last_n_messages" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.get_last_n_messages">get_last_n_messages</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.get_messages_by_token_limit" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.get_messages_by_token_limit">get_messages_by_token_limit</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.history" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.history">history</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.info" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.info">info</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.memory_dir" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.memory_dir">memory_dir</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.remove_last_message" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.remove_last_message">remove_last_message</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.save_messages" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.save_messages">save_messages</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.set_title" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.set_title">set_title</a></code></li>
+<li><code><a title="llmflex.Memory.base_memory.BaseMemory.title" href="base_memory.html#llmflex.Memory.base_memory.BaseMemory.title">title</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Memory" href="index.html">llmflex.Memory</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory" href="#llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.from_exist" href="#llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.from_exist">from_exist</a></code></li>
+<li><code><a title="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.get_related_messages" href="#llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.get_related_messages">get_related_messages</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

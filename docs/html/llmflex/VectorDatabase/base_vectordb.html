@@ -1,0 +1,1306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.VectorDatabase.base_vectordb API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.VectorDatabase.base_vectordb</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase"><code class="flex name class">
+<span>class <span class="ident">BaseVectorDatabase</span></span>
+<span>(</span><span>embeddings: BaseEmbeddings,<br>text_splitter: Optional[BaseTextSplitter] = None,<br>split_text: bool = True,<br>vdb_dir: Optional[str] = None,<br>init_save: bool = True,<br>**kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseVectorDatabase(ABC):
+    &#34;&#34;&#34;Base class of vector database.
+    &#34;&#34;&#34;
+    def __init__(self, 
+            embeddings: BaseEmbeddings, 
+            text_splitter: Optional[BaseTextSplitter] = None, 
+            split_text: bool = True,
+            vdb_dir: Optional[str] = None,
+            init_save: bool = True,
+            **kwargs
+        ) -&gt; None:
+        &#34;&#34;&#34;Initializes the base vector database.
+
+        Args:
+            embeddings (BaseEmbeddings): The embedding model to use for vectorization.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+            split_text (bool, optional): Whether to split the input text into chunks using the text splitter by default. Defaults to True.
+            vdb_dir (Optional[str], optional): The directory to store the vector database. Defaults to None.
+            init_save (bool, optional): Whether to save the vector database while initialising it. Defaults to True.
+        &#34;&#34;&#34;
+        self._embeddings = embeddings
+        self._text_splitter = text_splitter
+        if not self._text_splitter:
+            from ..TextSplitter.sentence_splitter import SentenceTextSplitter
+            self._text_splitter = SentenceTextSplitter(tokenizer=self._embeddings.tokenizer)
+        self._split_text = split_text
+        self._vdb_dir = vdb_dir
+        if init_save:
+            self.save()
+
+    @property
+    def embeddings(self) -&gt; BaseEmbeddings:
+        &#34;&#34;&#34;Gets the embedding model used for vectorization.
+        
+        Returns:
+            BaseEmbeddings: The embedding model.
+        &#34;&#34;&#34;
+        return self._embeddings
+    
+    @property
+    def text_splitter(self) -&gt; BaseTextSplitter:
+        &#34;&#34;&#34;Gets the text splitter used for splitting input text into chunks.
+        
+        Returns:
+            BaseTextSplitter: The text splitter.
+        &#34;&#34;&#34;
+        return self._text_splitter
+    
+    @property
+    def split_text(self) -&gt; bool:
+        &#34;&#34;&#34;Gets whether the input text is split into chunks using the text splitter by default.
+        
+        Returns:
+            bool: True if the input text is split by default, False otherwise.
+        &#34;&#34;&#34;
+        return self._split_text
+    
+    @property
+    def vdb_dir(self) -&gt; Optional[str]:
+        &#34;&#34;&#34;Gets the directory to store the vector database.
+
+        Returns:
+            Optional[str]: The directory path, or None if not set.
+        &#34;&#34;&#34;
+        if self._vdb_dir:
+            os.makedirs(self._vdb_dir, exist_ok=True)
+        return self._vdb_dir
+    
+    @property
+    def info(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Returns a dictionary containing information about the vector database.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing information about the vector database.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_info&#39;):
+            self._info = dict(
+                vdb_class=self.__class__.__name__,
+                embeddings=self.embeddings.model_id,
+                embedding_size=self.embeddings.embedding_size
+            )
+        return self._info
+    
+    @property
+    def data(self) -&gt; np.ndarray:
+        &#34;&#34;&#34;Gets the list of documents stored in the vector database.
+
+        Returns:
+            np.ndarray: A list of documents stored in the vector database.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_data&#39;):
+            self._data = np.array([], dtype=Document)
+        return self._data
+    
+    @property
+    def doc_ids(self) -&gt; np.ndarray:
+        &#34;&#34;&#34;Gets the unique identifiers of the documents stored in the vector database.
+
+        Returns:
+            np.ndarray: A 1D NumPy array containing the unique identifiers of the documents.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_doc_ids&#39;):
+            self._doc_ids = np.array([], dtype=np.int32)
+        return self._doc_ids
+    
+    @property
+    def size(self) -&gt; int:
+        &#34;&#34;&#34;Gets the number of documents stored in the vector database.
+
+        Returns:
+            int: The number of documents stored in the vector database.
+        &#34;&#34;&#34;
+        return int(self.doc_ids.shape[0])
+    
+    @property
+    @abstractmethod
+    def vectors(self) -&gt; np.ndarray:
+        &#34;&#34;&#34;Gets the vectors of the documents stored in the vector database.
+
+        Returns:
+            np.ndarray: A 2D NumPy array containing the vectors of the documents, where each row represents a document vector.
+        &#34;&#34;&#34;
+        pass
+    
+    @classmethod
+    @abstractmethod
+    def from_exist(cls,
+            embeddings: BaseEmbeddings,
+            vdb_dir: str,
+            text_splitter: Optional[BaseTextSplitter] = None, 
+            split_text: bool = True,
+            **kwargs
+        ) -&gt; BaseVectorDatabase:
+        &#34;&#34;&#34;Creates a new vector database instance from an existing vector database.
+
+        This method is used to load a vector database that has already been saved to disk.
+
+        Args:
+            embeddings (BaseEmbeddings): The embedding model to use for vectorization.
+            vdb_dir (str): The directory path to the existing vector database.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+            split_text (bool, optional): Whether to split the input text into chunks using the text splitter by default. Defaults to True.
+            **kwargs: Additional keyword arguments to pass to the vector database constructor.
+
+        Returns:
+            BaseVectorDatabase: A new vector database instance loaded from the existing vector database.
+        &#34;&#34;&#34;
+        pass
+    
+    def _save_info(self) -&gt; None:
+        &#34;&#34;&#34;Saves the information about the vector database to a file.
+        &#34;&#34;&#34;
+        if self.vdb_dir:
+            import json
+            with open(os.path.join(self.vdb_dir, &#39;info.json&#39;), &#39;w&#39;) as f:
+                json.dump(self.info, f, indent=4)
+
+    def _save_data(self) -&gt; None:
+        &#34;&#34;&#34;Saves the data of the vector database to a file.
+        &#34;&#34;&#34;
+        if self.vdb_dir:
+            import pickle
+            data_dict = [doc.model_dump() for doc in self.data]
+            with open(os.path.join(self.vdb_dir, &#39;data.pkl&#39;), &#39;wb&#39;) as f:
+                pickle.dump(data_dict, f)
+            with open(os.path.join(self.vdb_dir, &#39;doc_ids.pkl&#39;), &#39;wb&#39;) as f:
+                pickle.dump(self.doc_ids, f)
+
+    @abstractmethod
+    def _save_vectors(self) -&gt; None:
+        &#34;&#34;&#34;Save the vectors to a file.
+        &#34;&#34;&#34;
+        pass
+
+    def save(self) -&gt; None:
+        &#34;&#34;&#34;Save everything of the vector database.
+        &#34;&#34;&#34;
+        self._save_data()
+        self._save_info()
+        self._save_vectors()
+
+    def export_to_dir(self, export_dir: str) -&gt; None:
+        &#34;&#34;&#34;Save the vector database in the given directory.
+
+        Args:
+            export_dir (str): Directory to save.
+        &#34;&#34;&#34;
+        current_dir = self._vdb_dir
+        self._vdb_dir = export_dir
+        self.save()     
+        self._vdb_dir = current_dir
+
+    @abstractmethod
+    def _add(self, vectors: np.ndarray, docs: List[Document], new_ids: np.ndarray) -&gt; None:
+        &#34;&#34;&#34;Adds new vectors, documents, and their corresponding unique identifiers to the vector database.
+
+        Args:
+            vectors (np.ndarray): A 2D NumPy array containing the new document vectors to add to the vector database.
+            docs (List[Document]): A list of new documents to add to the vector database.
+            new_ids (np.ndarray): A 1D NumPy array containing the unique identifiers for the new documents.
+        &#34;&#34;&#34;
+        pass
+
+    @abstractmethod
+    def _drop(self, doc_ids: Union[List[int], np.array]) -&gt; None:
+        &#34;&#34;&#34;Removes the documents with the specified unique identifiers from the vector database.
+
+        Args:
+            doc_ids (Union[List[int], np.array]): A list or NumPy array containing the unique identifiers of the documents to remove.
+        &#34;&#34;&#34;
+        pass
+
+    @abstractmethod
+    def _batch_search_by_vectors(self, vectors: np.ndarray, top_k: int = 5, scope_ids: Optional[np.ndarray] = None, **kwargs) -&gt; Tuple[np.ndarray, np.ndarray]:
+        &#34;&#34;&#34;Performs a batch search in the vector database using the provided vectors.
+
+        This method finds the top `top_k` most similar documents for each input vector in the batch.
+
+        Args:
+            vectors (np.ndarray): A 2D NumPy array containing the input vectors for which to perform the search. Each row represents a vector.
+            top_k (int, optional): The number of most similar documents to return for each input vector. Defaults to 5.
+            scope_ids (Optional[np.ndarray], optional): A 1D NumPy array containing the unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: A tuple containing two 1D NumPy arrays. The first array contains the unique identifiers of the most similar documents for each input vector, and the second array contains the similarity scores for each pair of documents.
+        &#34;&#34;&#34;
+        pass
+
+    @abstractmethod
+    def get_vectors_by_ids(self, doc_ids: Union[List[int], np.ndarray]) -&gt; np.ndarray:
+        &#34;&#34;&#34;Retrieves the vectors of the documents with the specified unique identifiers from the vector database.
+
+        Args:
+            doc_ids (Union[List[int], np.ndarray]): A list or NumPy array containing the unique identifiers of the documents for which to retrieve the vectors.
+            
+        Returns:
+            np.ndarray: A 2D NumPy array containing the vectors of the specified documents, where each row represents a document vector.
+        &#34;&#34;&#34;
+        pass
+
+    def _get_new_doc_ids(self, length: int) -&gt; np.ndarray:
+        &#34;&#34;&#34;Generates new unique identifiers for documents to be added to the vector database.
+
+        This method generates a 1D NumPy array containing `length` unique identifiers, starting from the current maximum unique identifier plus one.
+
+        Args:
+            length (int): The number of new unique identifiers to generate.
+
+        Returns:
+            np.ndarray: A 1D NumPy array containing the new unique identifiers.
+        &#34;&#34;&#34;
+        start = 0 if self.doc_ids.shape[0] == 0 else self.doc_ids.max() + 1
+        new_ids = np.arange(length, dtype=np.int32) + start
+        return new_ids
+
+    def add_documents(self, docs: Union[Document, List[Document]], split_text: Optional[bool] = None, text_splitter: Optional[BaseTextSplitter] = None) -&gt; None:
+        &#34;&#34;&#34;Adds new documents to the vector database.
+
+        If `split_text` is True or not provided, the input documents will be split into chunks using the provided `text_splitter` before being added to the vector database.
+        
+        Args:
+            docs (Union[Document, List[Document]]): The document(s) to add to the vector database. Can be a single `Document` object or a list of `Document` objects.
+            split_text (Optional[bool], optional): Whether to split the input text into chunks using the text splitter. Defaults to None.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+        &#34;&#34;&#34;
+        docs = [docs] if isinstance(docs, Document) else docs
+        if len(docs) == 0:
+            return
+        split_text = self.split_text if split_text is None else split_text
+        if split_text:
+            text_splitter = self.text_splitter if text_splitter is None else text_splitter
+            docs = text_splitter.split_documents(docs)
+        vectors = self.embeddings.batch_embed([doc.text for doc in docs])
+        self._add(vectors=vectors, docs=docs, new_ids=self._get_new_doc_ids(vectors.shape[0]))
+        self.save()
+
+    def add_texts(self, 
+            texts: Union[str, List[str]], 
+            metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
+            split_text: Optional[bool] = None,
+            text_splitter: Optional[BaseTextSplitter] = None) -&gt; None:
+        &#34;&#34;&#34;Adds new texts to the vector database.
+
+        If `split_text` is True or not provided, the input texts will be split into chunks using the provided `text_splitter` before being added to the vector database.
+
+        Args:
+            texts (Union[str, List[str]]): The text(s) to add to the vector database. Can be a single string or a list of strings.
+            metadata (Optional[Union[Dict[str, Any], List[Dict[str, Any]]]], optional): The metadata to associate with the new documents. Can be a single dictionary or a list of dictionaries. Defaults to None.
+            split_text (Optional[bool], optional): Whether to split the input text into chunks using the text splitter. Defaults to None.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+
+        Raises:
+            Exception: Number of texts and number of metadata mismatch
+        &#34;&#34;&#34;
+        texts = [texts] if isinstance(texts, str) else texts
+        num_docs = len(texts)
+        if num_docs == 0:
+            return
+        if metadata is None:
+            metadata = [dict()] * num_docs
+        elif isinstance(metadata, dict):
+            metadata = [metadata] * num_docs
+        if len(metadata) != num_docs:
+            raise Exception(&#39;Number of texts and number of metadata mismatch.&#39;)
+        docs = [Document(text=t, metadata=mt) for t, mt in zip(texts, metadata)]
+        self.add_documents(docs, split_text=split_text, text_splitter=text_splitter)
+
+    def batch_search(self,
+            queries: List[str],
+            top_k: int = 5,
+            scope_ids: Optional[List[int]] = None,
+            batch_size: int = 256,
+            **kwargs     
+        ) -&gt; List[List[SearchResult]]:
+        &#34;&#34;&#34;Performs a batch search in the vector database using the provided queries.
+
+        This method finds the top `top_k` most similar documents for each input query in the batch.
+
+        Args:
+            queries (List[str]): A list of input queries for which to perform the search.
+            top_k (int, optional): The number of most similar documents to return for each input query. Defaults to 5.
+            scope_ids (Optional[List[int]], optional): A list of unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.
+            batch_size (int, optional): The number of queries to process at a time. Defaults to 256.
+
+        Raises:
+            ValueError: If the number of queries is zero.
+
+        Returns:
+            List[List[SearchResult]]: A list of lists, where each inner list contains the top `top_k` most similar documents for the corresponding input query.
+        &#34;&#34;&#34;
+        if len(queries) == 0:
+            raise ValueError(&#39;Cannot provide an empty list of queries.&#39;)
+        if self.size == 0:
+            return [[]] * len(queries)
+        if isinstance(scope_ids, list):
+            scope_ids = np.array(scope_ids, dtype=np.int32)
+
+        num_q = len(queries)
+        num_batch = num_q // batch_size if (num_q // batch_size) == (num_q / batch_size) else (num_q // batch_size) + 1
+        batches = [((i * batch_size), min((i + 1) * batch_size, num_q)) for i in range(num_batch)]
+        doc_ids = []
+        scores = []
+        for b0, b1 in batches:
+            q_vectors = self.embeddings.batch_embed(queries[b0:b1])
+            ids, scs = self._batch_search_by_vectors(vectors=q_vectors, top_k=top_k, scope_ids=scope_ids, **kwargs)
+            doc_ids.append(ids)
+            scores.append(scs)
+            del q_vectors
+        doc_ids = np.concatenate(doc_ids, axis=0)
+        scores = np.concatenate(scores, axis=0)
+        indices = np.searchsorted(self.doc_ids, doc_ids)
+        docs = self.data[indices]
+        results = np.vectorize(lambda doc, doc_id, score: SearchResult(doc=doc, doc_id=doc_id, score=score))(docs, doc_ids, scores).tolist()
+        del docs, scores, doc_ids, indices
+        return results
+    
+    def search(self,
+            query: str,
+            top_k: int = 5,
+            scope_ids: Optional[List[int]] = None,
+            **kwargs          
+        ) -&gt; List[SearchResult]:
+        &#34;&#34;&#34;Performs a search in the vector database using the provided query.
+
+        This method finds the top `top_k` most similar documents for the input query.
+
+        Args:
+            query (str): The input query for which to perform the search.
+            top_k (int, optional): The number of most similar documents to return for the input query. Defaults to 5.
+            scope_ids (Optional[List[int]], optional): A list of unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.
+
+        Returns:
+            List[SearchResult]: A list of the top `top_k` most similar documents for the input query.
+        &#34;&#34;&#34;
+        return self.batch_search(queries=[query], top_k=top_k, scope_ids=scope_ids, **kwargs)[0]
+
+    def search_by_doc(self, filter_fn: Optional[Callable[[Document], bool]] = None, ids_only: bool = True, **kwargs) -&gt; Union[List[int], Dict[int, Document]]:
+        &#34;&#34;&#34;Searches for documents in the vector database based on a filter function.
+
+        This method finds documents that satisfy the provided filter function. If `ids_only` is True, it returns a list of document IDs that match the filter. Otherwise, it returns a dictionary mapping document IDs to their corresponding documents.
+
+        Args:
+            filter_fn (Optional[Callable[[Document], bool]], optional): A function that takes a `Document` object and returns a boolean indicating whether the document matches the filter. Defaults to None.
+            ids_only (bool, optional): Whether to return only the IDs of the matching documents or the documents themselves. Defaults to True.
+
+        Returns:
+            Union[List[int], Dict[int, Document]]: A list of document IDs that match the filter if `ids_only` is True, or a dictionary mapping document IDs to their corresponding documents otherwise.
+        &#34;&#34;&#34;
+        if self.size == 0:
+            if ids_only:
+                return []
+            else:
+                return dict()
+        def bool_filter(doc: Document) -&gt; bool:
+            output = True
+            if filter_fn:
+                output = filter_fn(doc)
+            if kwargs:
+               for k, v in kwargs.items():
+                   if doc.metadata.get(k) != v:
+                       output = False
+            return output
+        mask = np.vectorize(bool_filter)(self.data)
+        doc_ids = self.doc_ids[mask]
+        if ids_only:
+            return doc_ids.tolist()
+        docs = self.data[mask]
+        return dict(zip(doc_ids, docs))
+    
+    def drop_ids(self, doc_ids: List[int]) -&gt; None:
+        &#34;&#34;&#34;Removes documents from the vector database based on their IDs.
+
+        This method removes the documents with the provided IDs from the vector database.
+
+        Args:
+            doc_ids (List[int]): A list of document IDs to remove from the vector database.
+        &#34;&#34;&#34;
+        self._drop(doc_ids=doc_ids)
+        self.save()
+
+    def clear(self) -&gt; None:
+        &#34;&#34;&#34;Removes all documents from the vector database.
+
+        This method removes all documents from the vector database, effectively clearing it.
+        &#34;&#34;&#34;
+        self.drop_ids(self.doc_ids)</code></pre>
+</details>
+<div class="desc"><p>Base class of vector database.</p>
+<p>Initializes the base vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embedding model to use for vectorization.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting text into chunks. Defaults to None.</dd>
+<dt><strong><code>split_text</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to split the input text into chunks using the text splitter by default. Defaults to True.</dd>
+<dt><strong><code>vdb_dir</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>The directory to store the vector database. Defaults to None.</dd>
+<dt><strong><code>init_save</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to save the vector database while initialising it. Defaults to True.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase" href="faiss_vectordb.html#llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></li>
+<li><a title="llmflex.VectorDatabase.numpy_vectordb.NumpyVectorDatabase" href="numpy_vectordb.html#llmflex.VectorDatabase.numpy_vectordb.NumpyVectorDatabase">NumpyVectorDatabase</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.from_exist"><code class="name flex">
+<span>def <span class="ident">from_exist</span></span>(<span>embeddings: BaseEmbeddings,<br>vdb_dir: str,<br>text_splitter: Optional[BaseTextSplitter] = None,<br>split_text: bool = True,<br>**kwargs) ‑> <a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new vector database instance from an existing vector database.</p>
+<p>This method is used to load a vector database that has already been saved to disk.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embedding model to use for vectorization.</dd>
+<dt><strong><code>vdb_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory path to the existing vector database.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting text into chunks. Defaults to None.</dd>
+<dt><strong><code>split_text</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to split the input text into chunks using the text splitter by default. Defaults to True.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional keyword arguments to pass to the vector database constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></code></dt>
+<dd>A new vector database instance loaded from the existing vector database.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.data"><code class="name">prop <span class="ident">data</span> : np.ndarray</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def data(self) -&gt; np.ndarray:
+    &#34;&#34;&#34;Gets the list of documents stored in the vector database.
+
+    Returns:
+        np.ndarray: A list of documents stored in the vector database.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_data&#39;):
+        self._data = np.array([], dtype=Document)
+    return self._data</code></pre>
+</details>
+<div class="desc"><p>Gets the list of documents stored in the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.ndarray</code></dt>
+<dd>A list of documents stored in the vector database.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.doc_ids"><code class="name">prop <span class="ident">doc_ids</span> : np.ndarray</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def doc_ids(self) -&gt; np.ndarray:
+    &#34;&#34;&#34;Gets the unique identifiers of the documents stored in the vector database.
+
+    Returns:
+        np.ndarray: A 1D NumPy array containing the unique identifiers of the documents.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_doc_ids&#39;):
+        self._doc_ids = np.array([], dtype=np.int32)
+    return self._doc_ids</code></pre>
+</details>
+<div class="desc"><p>Gets the unique identifiers of the documents stored in the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.ndarray</code></dt>
+<dd>A 1D NumPy array containing the unique identifiers of the documents.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.embeddings"><code class="name">prop <span class="ident">embeddings</span> : BaseEmbeddings</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def embeddings(self) -&gt; BaseEmbeddings:
+    &#34;&#34;&#34;Gets the embedding model used for vectorization.
+    
+    Returns:
+        BaseEmbeddings: The embedding model.
+    &#34;&#34;&#34;
+    return self._embeddings</code></pre>
+</details>
+<div class="desc"><p>Gets the embedding model used for vectorization.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseEmbeddings</code></dt>
+<dd>The embedding model.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.info"><code class="name">prop <span class="ident">info</span> : Dict[str, Any]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def info(self) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Returns a dictionary containing information about the vector database.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing information about the vector database.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_info&#39;):
+        self._info = dict(
+            vdb_class=self.__class__.__name__,
+            embeddings=self.embeddings.model_id,
+            embedding_size=self.embeddings.embedding_size
+        )
+    return self._info</code></pre>
+</details>
+<div class="desc"><p>Returns a dictionary containing information about the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>A dictionary containing information about the vector database.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.size"><code class="name">prop <span class="ident">size</span> : int</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def size(self) -&gt; int:
+    &#34;&#34;&#34;Gets the number of documents stored in the vector database.
+
+    Returns:
+        int: The number of documents stored in the vector database.
+    &#34;&#34;&#34;
+    return int(self.doc_ids.shape[0])</code></pre>
+</details>
+<div class="desc"><p>Gets the number of documents stored in the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>The number of documents stored in the vector database.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.split_text"><code class="name">prop <span class="ident">split_text</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def split_text(self) -&gt; bool:
+    &#34;&#34;&#34;Gets whether the input text is split into chunks using the text splitter by default.
+    
+    Returns:
+        bool: True if the input text is split by default, False otherwise.
+    &#34;&#34;&#34;
+    return self._split_text</code></pre>
+</details>
+<div class="desc"><p>Gets whether the input text is split into chunks using the text splitter by default.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the input text is split by default, False otherwise.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.text_splitter"><code class="name">prop <span class="ident">text_splitter</span> : BaseTextSplitter</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def text_splitter(self) -&gt; BaseTextSplitter:
+    &#34;&#34;&#34;Gets the text splitter used for splitting input text into chunks.
+    
+    Returns:
+        BaseTextSplitter: The text splitter.
+    &#34;&#34;&#34;
+    return self._text_splitter</code></pre>
+</details>
+<div class="desc"><p>Gets the text splitter used for splitting input text into chunks.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseTextSplitter</code></dt>
+<dd>The text splitter.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vdb_dir"><code class="name">prop <span class="ident">vdb_dir</span> : Optional[str]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def vdb_dir(self) -&gt; Optional[str]:
+    &#34;&#34;&#34;Gets the directory to store the vector database.
+
+    Returns:
+        Optional[str]: The directory path, or None if not set.
+    &#34;&#34;&#34;
+    if self._vdb_dir:
+        os.makedirs(self._vdb_dir, exist_ok=True)
+    return self._vdb_dir</code></pre>
+</details>
+<div class="desc"><p>Gets the directory to store the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>The directory path, or None if not set.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vectors"><code class="name">prop <span class="ident">vectors</span> : np.ndarray</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+@abstractmethod
+def vectors(self) -&gt; np.ndarray:
+    &#34;&#34;&#34;Gets the vectors of the documents stored in the vector database.
+
+    Returns:
+        np.ndarray: A 2D NumPy array containing the vectors of the documents, where each row represents a document vector.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<div class="desc"><p>Gets the vectors of the documents stored in the vector database.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.ndarray</code></dt>
+<dd>A 2D NumPy array containing the vectors of the documents, where each row represents a document vector.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_documents"><code class="name flex">
+<span>def <span class="ident">add_documents</span></span>(<span>self,<br>docs: Union[Document, List[Document]],<br>split_text: Optional[bool] = None,<br>text_splitter: Optional[BaseTextSplitter] = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_documents(self, docs: Union[Document, List[Document]], split_text: Optional[bool] = None, text_splitter: Optional[BaseTextSplitter] = None) -&gt; None:
+    &#34;&#34;&#34;Adds new documents to the vector database.
+
+    If `split_text` is True or not provided, the input documents will be split into chunks using the provided `text_splitter` before being added to the vector database.
+    
+    Args:
+        docs (Union[Document, List[Document]]): The document(s) to add to the vector database. Can be a single `Document` object or a list of `Document` objects.
+        split_text (Optional[bool], optional): Whether to split the input text into chunks using the text splitter. Defaults to None.
+        text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+    &#34;&#34;&#34;
+    docs = [docs] if isinstance(docs, Document) else docs
+    if len(docs) == 0:
+        return
+    split_text = self.split_text if split_text is None else split_text
+    if split_text:
+        text_splitter = self.text_splitter if text_splitter is None else text_splitter
+        docs = text_splitter.split_documents(docs)
+    vectors = self.embeddings.batch_embed([doc.text for doc in docs])
+    self._add(vectors=vectors, docs=docs, new_ids=self._get_new_doc_ids(vectors.shape[0]))
+    self.save()</code></pre>
+</details>
+<div class="desc"><p>Adds new documents to the vector database.</p>
+<p>If <code>split_text</code> is True or not provided, the input documents will be split into chunks using the provided <code>text_splitter</code> before being added to the vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>docs</code></strong> :&ensp;<code>Union[Document, List[Document]]</code></dt>
+<dd>The document(s) to add to the vector database. Can be a single <code>Document</code> object or a list of <code>Document</code> objects.</dd>
+<dt><strong><code>split_text</code></strong> :&ensp;<code>Optional[bool]</code>, optional</dt>
+<dd>Whether to split the input text into chunks using the text splitter. Defaults to None.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting text into chunks. Defaults to None.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_texts"><code class="name flex">
+<span>def <span class="ident">add_texts</span></span>(<span>self,<br>texts: Union[str, List[str]],<br>metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,<br>split_text: Optional[bool] = None,<br>text_splitter: Optional[BaseTextSplitter] = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_texts(self, 
+        texts: Union[str, List[str]], 
+        metadata: Optional[Union[Dict[str, Any], List[Dict[str, Any]]]] = None,
+        split_text: Optional[bool] = None,
+        text_splitter: Optional[BaseTextSplitter] = None) -&gt; None:
+    &#34;&#34;&#34;Adds new texts to the vector database.
+
+    If `split_text` is True or not provided, the input texts will be split into chunks using the provided `text_splitter` before being added to the vector database.
+
+    Args:
+        texts (Union[str, List[str]]): The text(s) to add to the vector database. Can be a single string or a list of strings.
+        metadata (Optional[Union[Dict[str, Any], List[Dict[str, Any]]]], optional): The metadata to associate with the new documents. Can be a single dictionary or a list of dictionaries. Defaults to None.
+        split_text (Optional[bool], optional): Whether to split the input text into chunks using the text splitter. Defaults to None.
+        text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+
+    Raises:
+        Exception: Number of texts and number of metadata mismatch
+    &#34;&#34;&#34;
+    texts = [texts] if isinstance(texts, str) else texts
+    num_docs = len(texts)
+    if num_docs == 0:
+        return
+    if metadata is None:
+        metadata = [dict()] * num_docs
+    elif isinstance(metadata, dict):
+        metadata = [metadata] * num_docs
+    if len(metadata) != num_docs:
+        raise Exception(&#39;Number of texts and number of metadata mismatch.&#39;)
+    docs = [Document(text=t, metadata=mt) for t, mt in zip(texts, metadata)]
+    self.add_documents(docs, split_text=split_text, text_splitter=text_splitter)</code></pre>
+</details>
+<div class="desc"><p>Adds new texts to the vector database.</p>
+<p>If <code>split_text</code> is True or not provided, the input texts will be split into chunks using the provided <code>text_splitter</code> before being added to the vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>texts</code></strong> :&ensp;<code>Union[str, List[str]]</code></dt>
+<dd>The text(s) to add to the vector database. Can be a single string or a list of strings.</dd>
+<dt><strong><code>metadata</code></strong> :&ensp;<code>Optional[Union[Dict[str, Any], List[Dict[str, Any]]]]</code>, optional</dt>
+<dd>The metadata to associate with the new documents. Can be a single dictionary or a list of dictionaries. Defaults to None.</dd>
+<dt><strong><code>split_text</code></strong> :&ensp;<code>Optional[bool]</code>, optional</dt>
+<dd>Whether to split the input text into chunks using the text splitter. Defaults to None.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting text into chunks. Defaults to None.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>Exception</code></dt>
+<dd>Number of texts and number of metadata mismatch</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.batch_search"><code class="name flex">
+<span>def <span class="ident">batch_search</span></span>(<span>self,<br>queries: List[str],<br>top_k: int = 5,<br>scope_ids: Optional[List[int]] = None,<br>batch_size: int = 256,<br>**kwargs) ‑> List[List[<a title="llmflex.VectorDatabase.base_vectordb.SearchResult" href="#llmflex.VectorDatabase.base_vectordb.SearchResult">SearchResult</a>]]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def batch_search(self,
+        queries: List[str],
+        top_k: int = 5,
+        scope_ids: Optional[List[int]] = None,
+        batch_size: int = 256,
+        **kwargs     
+    ) -&gt; List[List[SearchResult]]:
+    &#34;&#34;&#34;Performs a batch search in the vector database using the provided queries.
+
+    This method finds the top `top_k` most similar documents for each input query in the batch.
+
+    Args:
+        queries (List[str]): A list of input queries for which to perform the search.
+        top_k (int, optional): The number of most similar documents to return for each input query. Defaults to 5.
+        scope_ids (Optional[List[int]], optional): A list of unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.
+        batch_size (int, optional): The number of queries to process at a time. Defaults to 256.
+
+    Raises:
+        ValueError: If the number of queries is zero.
+
+    Returns:
+        List[List[SearchResult]]: A list of lists, where each inner list contains the top `top_k` most similar documents for the corresponding input query.
+    &#34;&#34;&#34;
+    if len(queries) == 0:
+        raise ValueError(&#39;Cannot provide an empty list of queries.&#39;)
+    if self.size == 0:
+        return [[]] * len(queries)
+    if isinstance(scope_ids, list):
+        scope_ids = np.array(scope_ids, dtype=np.int32)
+
+    num_q = len(queries)
+    num_batch = num_q // batch_size if (num_q // batch_size) == (num_q / batch_size) else (num_q // batch_size) + 1
+    batches = [((i * batch_size), min((i + 1) * batch_size, num_q)) for i in range(num_batch)]
+    doc_ids = []
+    scores = []
+    for b0, b1 in batches:
+        q_vectors = self.embeddings.batch_embed(queries[b0:b1])
+        ids, scs = self._batch_search_by_vectors(vectors=q_vectors, top_k=top_k, scope_ids=scope_ids, **kwargs)
+        doc_ids.append(ids)
+        scores.append(scs)
+        del q_vectors
+    doc_ids = np.concatenate(doc_ids, axis=0)
+    scores = np.concatenate(scores, axis=0)
+    indices = np.searchsorted(self.doc_ids, doc_ids)
+    docs = self.data[indices]
+    results = np.vectorize(lambda doc, doc_id, score: SearchResult(doc=doc, doc_id=doc_id, score=score))(docs, doc_ids, scores).tolist()
+    del docs, scores, doc_ids, indices
+    return results</code></pre>
+</details>
+<div class="desc"><p>Performs a batch search in the vector database using the provided queries.</p>
+<p>This method finds the top <code>top_k</code> most similar documents for each input query in the batch.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>queries</code></strong> :&ensp;<code>List[str]</code></dt>
+<dd>A list of input queries for which to perform the search.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The number of most similar documents to return for each input query. Defaults to 5.</dd>
+<dt><strong><code>scope_ids</code></strong> :&ensp;<code>Optional[List[int]]</code>, optional</dt>
+<dd>A list of unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.</dd>
+<dt><strong><code>batch_size</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The number of queries to process at a time. Defaults to 256.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If the number of queries is zero.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[List[<a title="llmflex.VectorDatabase.base_vectordb.SearchResult" href="#llmflex.VectorDatabase.base_vectordb.SearchResult">SearchResult</a>]]</code></dt>
+<dd>A list of lists, where each inner list contains the top <code>top_k</code> most similar documents for the corresponding input query.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.clear"><code class="name flex">
+<span>def <span class="ident">clear</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clear(self) -&gt; None:
+    &#34;&#34;&#34;Removes all documents from the vector database.
+
+    This method removes all documents from the vector database, effectively clearing it.
+    &#34;&#34;&#34;
+    self.drop_ids(self.doc_ids)</code></pre>
+</details>
+<div class="desc"><p>Removes all documents from the vector database.</p>
+<p>This method removes all documents from the vector database, effectively clearing it.</p></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.drop_ids"><code class="name flex">
+<span>def <span class="ident">drop_ids</span></span>(<span>self, doc_ids: List[int]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def drop_ids(self, doc_ids: List[int]) -&gt; None:
+    &#34;&#34;&#34;Removes documents from the vector database based on their IDs.
+
+    This method removes the documents with the provided IDs from the vector database.
+
+    Args:
+        doc_ids (List[int]): A list of document IDs to remove from the vector database.
+    &#34;&#34;&#34;
+    self._drop(doc_ids=doc_ids)
+    self.save()</code></pre>
+</details>
+<div class="desc"><p>Removes documents from the vector database based on their IDs.</p>
+<p>This method removes the documents with the provided IDs from the vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>doc_ids</code></strong> :&ensp;<code>List[int]</code></dt>
+<dd>A list of document IDs to remove from the vector database.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.export_to_dir"><code class="name flex">
+<span>def <span class="ident">export_to_dir</span></span>(<span>self, export_dir: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def export_to_dir(self, export_dir: str) -&gt; None:
+    &#34;&#34;&#34;Save the vector database in the given directory.
+
+    Args:
+        export_dir (str): Directory to save.
+    &#34;&#34;&#34;
+    current_dir = self._vdb_dir
+    self._vdb_dir = export_dir
+    self.save()     
+    self._vdb_dir = current_dir</code></pre>
+</details>
+<div class="desc"><p>Save the vector database in the given directory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>export_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>Directory to save.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.get_vectors_by_ids"><code class="name flex">
+<span>def <span class="ident">get_vectors_by_ids</span></span>(<span>self, doc_ids: Union[List[int], np.ndarray]) ‑> numpy.ndarray</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def get_vectors_by_ids(self, doc_ids: Union[List[int], np.ndarray]) -&gt; np.ndarray:
+    &#34;&#34;&#34;Retrieves the vectors of the documents with the specified unique identifiers from the vector database.
+
+    Args:
+        doc_ids (Union[List[int], np.ndarray]): A list or NumPy array containing the unique identifiers of the documents for which to retrieve the vectors.
+        
+    Returns:
+        np.ndarray: A 2D NumPy array containing the vectors of the specified documents, where each row represents a document vector.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<div class="desc"><p>Retrieves the vectors of the documents with the specified unique identifiers from the vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>doc_ids</code></strong> :&ensp;<code>Union[List[int], np.ndarray]</code></dt>
+<dd>A list or NumPy array containing the unique identifiers of the documents for which to retrieve the vectors.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>np.ndarray</code></dt>
+<dd>A 2D NumPy array containing the vectors of the specified documents, where each row represents a document vector.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.save"><code class="name flex">
+<span>def <span class="ident">save</span></span>(<span>self) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save(self) -&gt; None:
+    &#34;&#34;&#34;Save everything of the vector database.
+    &#34;&#34;&#34;
+    self._save_data()
+    self._save_info()
+    self._save_vectors()</code></pre>
+</details>
+<div class="desc"><p>Save everything of the vector database.</p></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search"><code class="name flex">
+<span>def <span class="ident">search</span></span>(<span>self, query: str, top_k: int = 5, scope_ids: Optional[List[int]] = None, **kwargs) ‑> List[<a title="llmflex.VectorDatabase.base_vectordb.SearchResult" href="#llmflex.VectorDatabase.base_vectordb.SearchResult">SearchResult</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def search(self,
+        query: str,
+        top_k: int = 5,
+        scope_ids: Optional[List[int]] = None,
+        **kwargs          
+    ) -&gt; List[SearchResult]:
+    &#34;&#34;&#34;Performs a search in the vector database using the provided query.
+
+    This method finds the top `top_k` most similar documents for the input query.
+
+    Args:
+        query (str): The input query for which to perform the search.
+        top_k (int, optional): The number of most similar documents to return for the input query. Defaults to 5.
+        scope_ids (Optional[List[int]], optional): A list of unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.
+
+    Returns:
+        List[SearchResult]: A list of the top `top_k` most similar documents for the input query.
+    &#34;&#34;&#34;
+    return self.batch_search(queries=[query], top_k=top_k, scope_ids=scope_ids, **kwargs)[0]</code></pre>
+</details>
+<div class="desc"><p>Performs a search in the vector database using the provided query.</p>
+<p>This method finds the top <code>top_k</code> most similar documents for the input query.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>query</code></strong> :&ensp;<code>str</code></dt>
+<dd>The input query for which to perform the search.</dd>
+<dt><strong><code>top_k</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The number of most similar documents to return for the input query. Defaults to 5.</dd>
+<dt><strong><code>scope_ids</code></strong> :&ensp;<code>Optional[List[int]]</code>, optional</dt>
+<dd>A list of unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[<a title="llmflex.VectorDatabase.base_vectordb.SearchResult" href="#llmflex.VectorDatabase.base_vectordb.SearchResult">SearchResult</a>]</code></dt>
+<dd>A list of the top <code>top_k</code> most similar documents for the input query.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search_by_doc"><code class="name flex">
+<span>def <span class="ident">search_by_doc</span></span>(<span>self,<br>filter_fn: Optional[Callable[[Document], bool]] = None,<br>ids_only: bool = True,<br>**kwargs) ‑> List[int] | Dict[int, <a title="llmflex.Schema.document.Document" href="../Schema/document.html#llmflex.Schema.document.Document">Document</a>]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def search_by_doc(self, filter_fn: Optional[Callable[[Document], bool]] = None, ids_only: bool = True, **kwargs) -&gt; Union[List[int], Dict[int, Document]]:
+    &#34;&#34;&#34;Searches for documents in the vector database based on a filter function.
+
+    This method finds documents that satisfy the provided filter function. If `ids_only` is True, it returns a list of document IDs that match the filter. Otherwise, it returns a dictionary mapping document IDs to their corresponding documents.
+
+    Args:
+        filter_fn (Optional[Callable[[Document], bool]], optional): A function that takes a `Document` object and returns a boolean indicating whether the document matches the filter. Defaults to None.
+        ids_only (bool, optional): Whether to return only the IDs of the matching documents or the documents themselves. Defaults to True.
+
+    Returns:
+        Union[List[int], Dict[int, Document]]: A list of document IDs that match the filter if `ids_only` is True, or a dictionary mapping document IDs to their corresponding documents otherwise.
+    &#34;&#34;&#34;
+    if self.size == 0:
+        if ids_only:
+            return []
+        else:
+            return dict()
+    def bool_filter(doc: Document) -&gt; bool:
+        output = True
+        if filter_fn:
+            output = filter_fn(doc)
+        if kwargs:
+           for k, v in kwargs.items():
+               if doc.metadata.get(k) != v:
+                   output = False
+        return output
+    mask = np.vectorize(bool_filter)(self.data)
+    doc_ids = self.doc_ids[mask]
+    if ids_only:
+        return doc_ids.tolist()
+    docs = self.data[mask]
+    return dict(zip(doc_ids, docs))</code></pre>
+</details>
+<div class="desc"><p>Searches for documents in the vector database based on a filter function.</p>
+<p>This method finds documents that satisfy the provided filter function. If <code>ids_only</code> is True, it returns a list of document IDs that match the filter. Otherwise, it returns a dictionary mapping document IDs to their corresponding documents.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>filter_fn</code></strong> :&ensp;<code>Optional[Callable[[Document], bool]]</code>, optional</dt>
+<dd>A function that takes a <code>Document</code> object and returns a boolean indicating whether the document matches the filter. Defaults to None.</dd>
+<dt><strong><code>ids_only</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to return only the IDs of the matching documents or the documents themselves. Defaults to True.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[List[int], Dict[int, Document]]</code></dt>
+<dd>A list of document IDs that match the filter if <code>ids_only</code> is True, or a dictionary mapping document IDs to their corresponding documents otherwise.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult"><code class="flex name class">
+<span>class <span class="ident">SearchResult</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SearchResult(BaseModel):
+    doc: Document
+    doc_id: int
+    score: float</code></pre>
+</details>
+<div class="desc"><p>Usage docs: <a href="https://docs.pydantic.dev/2.7/concepts/models/">https://docs.pydantic.dev/2.7/concepts/models/</a></p>
+<p>A base class for creating Pydantic models.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>__class_vars__</code></strong></dt>
+<dd>The names of classvars defined on the model.</dd>
+<dt><strong><code>__private_attributes__</code></strong></dt>
+<dd>Metadata about the private attributes of the model.</dd>
+<dt><strong><code>__signature__</code></strong></dt>
+<dd>The signature for instantiating the model.</dd>
+<dt><strong><code>__pydantic_complete__</code></strong></dt>
+<dd>Whether model building is completed, or if there are still undefined fields.</dd>
+<dt><strong><code>__pydantic_core_schema__</code></strong></dt>
+<dd>The pydantic-core schema used to build the SchemaValidator and SchemaSerializer.</dd>
+<dt><strong><code>__pydantic_custom_init__</code></strong></dt>
+<dd>Whether the model has a custom <code>__init__</code> function.</dd>
+<dt><strong><code>__pydantic_decorators__</code></strong></dt>
+<dd>Metadata containing the decorators defined on the model.
+This replaces <code>Model.__validators__</code> and <code>Model.__root_validators__</code> from Pydantic V1.</dd>
+<dt><strong><code>__pydantic_generic_metadata__</code></strong></dt>
+<dd>Metadata for generic models; contains data used for a similar purpose to
+<strong>args</strong>, <strong>origin</strong>, <strong>parameters</strong> in typing-module generics. May eventually be replaced by these.</dd>
+<dt><strong><code>__pydantic_parent_namespace__</code></strong></dt>
+<dd>Parent namespace of the model, used for automatic rebuilding of models.</dd>
+<dt><strong><code>__pydantic_post_init__</code></strong></dt>
+<dd>The name of the post-init method for the model, if defined.</dd>
+<dt><strong><code>__pydantic_root_model__</code></strong></dt>
+<dd>Whether the model is a <code>RootModel</code>.</dd>
+<dt><strong><code>__pydantic_serializer__</code></strong></dt>
+<dd>The pydantic-core SchemaSerializer used to dump instances of the model.</dd>
+<dt><strong><code>__pydantic_validator__</code></strong></dt>
+<dd>The pydantic-core SchemaValidator used to validate instances of the model.</dd>
+<dt><strong><code>__pydantic_extra__</code></strong></dt>
+<dd>An instance attribute with the values of extra fields from validation when
+<code>model_config['extra'] == 'allow'</code>.</dd>
+<dt><strong><code>__pydantic_fields_set__</code></strong></dt>
+<dd>An instance attribute with the names of fields explicitly set.</dd>
+<dt><strong><code>__pydantic_private__</code></strong></dt>
+<dd>Instance attribute with the values of private attributes set on the model instance.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult.doc"><code class="name">var <span class="ident">doc</span> : <a title="llmflex.Schema.document.Document" href="../Schema/document.html#llmflex.Schema.document.Document">Document</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult.doc_id"><code class="name">var <span class="ident">doc_id</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult.model_computed_fields"><code class="name">var <span class="ident">model_computed_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult.model_fields"><code class="name">var <span class="ident">model_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.VectorDatabase.base_vectordb.SearchResult.score"><code class="name">var <span class="ident">score</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.VectorDatabase" href="index.html">llmflex.VectorDatabase</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></code></h4>
+<ul class="two-column">
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_documents" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_documents">add_documents</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_texts" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_texts">add_texts</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.batch_search" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.batch_search">batch_search</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.clear" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.clear">clear</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.data" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.data">data</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.doc_ids" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.doc_ids">doc_ids</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.drop_ids" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.drop_ids">drop_ids</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.embeddings" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.embeddings">embeddings</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.export_to_dir" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.export_to_dir">export_to_dir</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.from_exist" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.from_exist">from_exist</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.get_vectors_by_ids" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.get_vectors_by_ids">get_vectors_by_ids</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.info" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.info">info</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.save" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.save">save</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search">search</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search_by_doc" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search_by_doc">search_by_doc</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.size" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.size">size</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.split_text" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.split_text">split_text</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.text_splitter" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.text_splitter">text_splitter</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vdb_dir" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vdb_dir">vdb_dir</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vectors" href="#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vectors">vectors</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult" href="#llmflex.VectorDatabase.base_vectordb.SearchResult">SearchResult</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult.doc" href="#llmflex.VectorDatabase.base_vectordb.SearchResult.doc">doc</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult.doc_id" href="#llmflex.VectorDatabase.base_vectordb.SearchResult.doc_id">doc_id</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult.model_computed_fields" href="#llmflex.VectorDatabase.base_vectordb.SearchResult.model_computed_fields">model_computed_fields</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult.model_config" href="#llmflex.VectorDatabase.base_vectordb.SearchResult.model_config">model_config</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult.model_fields" href="#llmflex.VectorDatabase.base_vectordb.SearchResult.model_fields">model_fields</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.SearchResult.score" href="#llmflex.VectorDatabase.base_vectordb.SearchResult.score">score</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

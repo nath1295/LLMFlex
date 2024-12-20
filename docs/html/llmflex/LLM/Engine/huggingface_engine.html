@@ -1,0 +1,826 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.LLM.Engine.huggingface_engine API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.LLM.Engine.huggingface_engine</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.LLM.Engine.huggingface_engine.sequence_overlap"><code class="name flex">
+<span>def <span class="ident">sequence_overlap</span></span>(<span>s1: str, s2: str) ‑> bool</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sequence_overlap(s1: str, s2: str) -&gt; bool:
+    &#34;&#34;&#34;Determine if there is overlapping string between the suffix of the first string and the prefix of the second string.
+
+    Args:
+        s1 (str): First string.
+        s2 (str): Second string.
+
+    Returns:
+        bool: Whether there is overlap.
+    &#34;&#34;&#34;
+    max_overlap = min(len(s1), len(s2))
+    return any(s1[-i:] == s2[:i] for i in range(1, max_overlap + 1))</code></pre>
+</details>
+<div class="desc"><p>Determine if there is overlapping string between the suffix of the first string and the prefix of the second string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>s1</code></strong> :&ensp;<code>str</code></dt>
+<dd>First string.</dd>
+<dt><strong><code>s2</code></strong> :&ensp;<code>str</code></dt>
+<dd>Second string.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>Whether there is overlap.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.LLM.Engine.huggingface_engine.stopping_criteria"><code class="name flex">
+<span>def <span class="ident">stopping_criteria</span></span>(<span>text: str, stop_tuple: List[Tuple[str, int]]) ‑> <a title="llmflex.LLM.Engine.huggingface_engine.StopCondition" href="#llmflex.LLM.Engine.huggingface_engine.StopCondition">StopCondition</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stopping_criteria(
+        text: str,
+        stop_tuple: List[Tuple[str, int]]
+    ) -&gt; StopCondition:
+    &#34;&#34;&#34;Get the stopping condition with stop words and eos token.
+
+    Args:
+        text (str): Text to be determined to stop or not.
+        stop_tuple (List[Tuple[str, int]]): List of tuple with the stop word string and the length of the string. Must be ordered descendingly by length.
+
+    Returns:
+        StopCondition: A status class stating whether the generation should stop and the length of text to trim.
+    &#34;&#34;&#34;
+    return next(
+        (StopCondition(stop_met=True, trim_length=len(text) - len(text.split(stop)[0]), stop_text=stop)
+        for stop, length in stop_tuple if stop in text), StopCondition(stop_met=False, trim_length=0, stop_text=None)
+    )</code></pre>
+</details>
+<div class="desc"><p>Get the stopping condition with stop words and eos token.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text to be determined to stop or not.</dd>
+<dt><strong><code>stop_tuple</code></strong> :&ensp;<code>List[Tuple[str, int]]</code></dt>
+<dd>List of tuple with the stop word string and the length of the string. Must be ordered descendingly by length.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.LLM.Engine.huggingface_engine.StopCondition" href="#llmflex.LLM.Engine.huggingface_engine.StopCondition">StopCondition</a></code></dt>
+<dd>A status class stating whether the generation should stop and the length of text to trim.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.LLM.Engine.huggingface_engine.HuggingFaceEngine"><code class="flex name class">
+<span>class <span class="ident">HuggingFaceEngine</span></span>
+<span>(</span><span>pretrained_model_name_or_path: str,<br>tokenizer_name_or_path: str | None = None,<br>model_kwargs: Dict[str, Any] | None = None,<br>tokenizer_kwargs: Dict[str, Any] | None = None,<br>**kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HuggingFaceEngine(BaseEngine):
+    &#34;&#34;&#34;Class for LLM engine using llama-cpp-python.
+    &#34;&#34;&#34;
+    def __init__(self,
+            pretrained_model_name_or_path: str,
+            tokenizer_name_or_path: Optional[str] = None,
+            model_kwargs: Optional[Dict[str, Any]] = None,
+            tokenizer_kwargs: Optional[Dict[str, Any]] = None,
+            **kwargs
+        ) -&gt; None:
+        &#34;&#34;&#34;Initializes the HuggingFaceEngine with the given parameters.
+
+        Args:
+            pretrained_model_name_or_path (str): The HuggingFace repository name or the full path of the model file.
+            tokenizer_name_or_path (str, optional): The Huggingface repository name or the full path to load the HuggingFace tokenizer. If not provided, pretrained_model_name_or_path would be used. Defaults to None.
+            model_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the model. Defaults to None.
+            tokenizer_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the tokenizer. Defaults to None.
+            **kwargs: Additional keyword arguments to pass to the BaseEngine class.
+        &#34;&#34;&#34;
+        try:
+            import torch
+        except:
+            raise ModuleNotFoundError(&#39;&#34;torch&#34; not installed, Please install it with `pip install torch`.&#39;)
+        from transformers import AutoModelForCausalLM
+        from ...Tokenizer.huggingface_tokenizer import HuggingFaceTokenizer
+        from ...utils import get_config
+        model_kwargs = dict() if model_kwargs is None else model_kwargs
+        tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
+        model_cache_dir = model_kwargs.pop(&#39;cache_dir&#39;, get_config(&#39;hf_home&#39;))
+        model = AutoModelForCausalLM.from_pretrained(pretrained_model_name_or_path, cache_dir=model_cache_dir, **model_kwargs)
+        tokenizer = HuggingFaceTokenizer(pretrained_model_name_or_path if tokenizer_name_or_path is None else tokenizer_name_or_path, **tokenizer_kwargs)
+        # handling pad tokens
+        if not tokenizer.pad_token:
+            tokenizer._pad_token = tokenizer.eos_token
+            tokenizer._pad_token_id = tokenizer.eos_token_id
+            tokenizer.hf_tokenizer.pad_token = tokenizer.eos_token
+            tokenizer.hf_tokenizer.pad_token_id = tokenizer.eos_token_id
+        model_id = pretrained_model_name_or_path
+        model_name = kwargs.pop(&#39;model_name&#39;, None)
+        default_chat_template = kwargs.pop(&#39;default_chat_template&#39;, None)
+        self._device = model.device
+        self._detokenizer_dir = pretrained_model_name_or_path if tokenizer_name_or_path is None else tokenizer_name_or_path
+
+        super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
+    
+    @property
+    def model(self) -&gt; PreTrainedModel:
+        &#34;&#34;&#34;LLM model.
+
+        Returns:
+            Any: LLM model.
+        &#34;&#34;&#34;
+        return self._model
+
+    def batch_generate(self,
+            prompts: List[str],
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; List[str]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Returns:
+            List[str]: A list of generated texts, one for each input prompt.
+        &#34;&#34;&#34;
+        gen_kwargs = dict(
+            do_sample=(temperature != 0),
+            max_new_tokens=max_new_tokens,
+            tokenizer=self.tokenizer.hf_tokenizer
+            )
+        if temperature &gt; 0:
+            gen_kwargs[&#39;temperature&#39;] = temperature
+        if stop:
+            kwargs.pop(&#39;stop_strings&#39;, None)
+            gen_kwargs[&#39;stop_strings&#39;] = stop
+        if top_p is not None:
+            gen_kwargs[&#39;top_p&#39;] = top_p
+        if min_p is not None:
+            gen_kwargs[&#39;min_p&#39;] = min_p
+        if top_k is not None:
+            gen_kwargs[&#39;top_k&#39;] = top_k
+        if repetition_penalty is not None:
+            gen_kwargs[&#39;repetition_penalty&#39;] = repetition_penalty
+        if seed is not None:
+            from transformers import set_seed
+            set_seed(seed)
+        gen_kwargs.update(kwargs)
+                
+        inputs = self.tokenizer.hf_tokenizer(prompts, return_tensors=&#39;pt&#39;, padding=True, padding_side=&#39;left&#39;).to(self._device)
+        token_ids = self.model.generate(**inputs, **gen_kwargs)[:, inputs[&#39;input_ids&#39;].shape[1]:]
+        outputs = self.tokenizer.batch_detokenize(token_ids.cpu().tolist())
+        del token_ids
+        if self._device.type == &#39;mps&#39;:
+            import torch
+            torch.mps.empty_cache()
+        elif self._device.type == &#39;cuda&#39;:
+            import torch
+            torch.cuda.empty_cache()
+
+        if stop is not None:
+            for s in stop:
+                outputs = [o.split(s)[0] for o in outputs]
+        return outputs
+
+    def batch_generate_stream(self,
+            prompts: List[str],
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; Iterator[List[str]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model in a streaming manner.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Yields:
+            Iterator[List[str]]: A generator that yields a list of generated texts, one for each input prompt,
+                one token at a time.
+        &#34;&#34;&#34;
+        from threading import Thread
+        kwargs.pop(&#39;streamer&#39;, None)
+        streamer = TokenStreamer(self._detokenizer_dir, tokenizer=self.tokenizer.hf_tokenizer)
+        stop_ls = [self.tokenizer.eos_token] if (stop is None) else [self.tokenizer.eos_token] + stop
+        stop_ls = list(set(stop_ls))
+        stop_len = [len(s) for s in stop]
+        stop_tuple = list(zip(stop, stop_len))
+        stop_tuple.sort(key=lambda x: x[1], reverse=True)
+
+
+        def process_stop_condition(text: str, 
+                                stop: List[str], 
+                                stop_condition: StopCondition,
+                                is_stop: bool,
+                                is_last: bool) -&gt; Tuple[str, str]:
+            if is_stop:
+                return &#39;&#39;, &#39;&#39;
+            elif stop_condition.stop_met:
+                return text[:-stop_condition.trim_length], &#39;&#39;, stop_condition.stop_text
+            elif any(sequence_overlap(text, s) for s in stop) and (not is_last):
+                return &#39;&#39;, text
+            else:
+                return text, &#39;&#39;
+
+        def call_generate():
+            try:
+                self.batch_generate(
+                    prompts=prompts,
+                    stop=stop,
+                    temperature=temperature,
+                    max_new_tokens=max_new_tokens,
+                    top_p=top_p,
+                    min_p=min_p,
+                    top_k=top_k,
+                    repetition_penalty=repetition_penalty,
+                    seed=seed,
+                    streamer=streamer,
+                    **kwargs
+                )
+            except Exception as e:
+                streamer.end()
+                raise e
+        trd = Thread(target=call_generate)
+        def gen_tokens():
+            trd.start()
+            texts = [&#39;&#39;] * len(prompts)
+            is_stopped = [False] * len(prompts)
+            for tokens in streamer:
+                if not all(is_stopped):
+                    texts  = [t + nt for t, nt in zip(texts, tokens)]
+                    stop_conditions = [stopping_criteria(t, stop_tuple=stop_tuple) for t in texts]
+                    outputs = [process_stop_condition(t, stop_ls, sc, s, False) for t, sc, s in zip(texts, stop_conditions, is_stopped)]
+                    is_stopped = [s if s else sc.stop_met for sc, s in zip(stop_conditions, is_stopped)]
+                    out_texts, texts = [list(ls) for ls in zip(*outputs)]
+                    if not all([ot == &#39;&#39; for ot in out_texts]):
+                        yield out_texts
+            if not all(is_stopped):
+                stop_conditions = [stopping_criteria(t, stop_tuple=stop_tuple) for t in texts]
+                outputs = [process_stop_condition(t, stop_ls, sc, s, True) for t, sc, s in zip(texts, stop_conditions, is_stopped)]
+                out_texts, texts = [list(ls) for ls in zip(*outputs)]
+                if not all([ot == &#39;&#39; for ot in out_texts]):
+                    yield out_texts
+            trd.join()
+        return gen_tokens()
+
+    def batch_generate_json(self,
+            prompts: List[str],
+            json_schema: Dict[str, Any],
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, following a given JSON schema.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is formatted according to the provided JSON schema.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                formatted according to the JSON schema. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from transformers import LogitsProcessorList
+        from .engine_utils import get_json_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_json_processor(schema=json_schema, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)
+
+    def batch_generate_choice(self,
+            prompts: List[str],
+            choices: List[str],
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, choosing from a list of options.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is chosen from a list of options.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            choices (List[str]): A list of options to choose from.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                chosen from the list of options. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from transformers import LogitsProcessorList
+        from .engine_utils import get_choice_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_choice_processor(choices=choices, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)
+
+    def batch_generate_regex(self,
+            prompts: List[str],
+            regex: str,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it matches a given regular expression.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is ensured to match the provided regular expression.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            regex (str): A regular expression to match the generated text against.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                that match the provided regular expression. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from transformers import LogitsProcessorList
+        from .engine_utils import get_regex_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_regex_processor(regex_str=regex, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)
+
+    def batch_generate_grammar(self,
+            prompts: List[str],
+            cfg_grammar: str,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it adheres to a given grammar.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is ensured to adhere to the provided grammar.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            cfg_grammar (str): A string representing the grammar to adhere to.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                that adhere to the provided grammar. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from transformers import LogitsProcessorList
+        from .engine_utils import get_grammar_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_grammar_processor(cfg_str=cfg_grammar, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)</code></pre>
+</details>
+<div class="desc"><p>Class for LLM engine using llama-cpp-python.</p>
+<p>Initializes the HuggingFaceEngine with the given parameters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pretrained_model_name_or_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The HuggingFace repository name or the full path of the model file.</dd>
+<dt><strong><code>tokenizer_name_or_path</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The Huggingface repository name or the full path to load the HuggingFace tokenizer. If not provided, pretrained_model_name_or_path would be used. Defaults to None.</dd>
+<dt><strong><code>model_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
+<dd>Additional keyword arguments to pass to the model. Defaults to None.</dd>
+<dt><strong><code>tokenizer_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
+<dd>Additional keyword arguments to pass to the tokenizer. Defaults to None.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional keyword arguments to pass to the BaseEngine class.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate">batch_generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice">batch_generate_choice</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar">batch_generate_grammar</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json">batch_generate_json</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex">batch_generate_regex</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream">batch_generate_stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.chat_template" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.chat_template">chat_template</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.generate" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.generate">generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream">generate_stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.model">model</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model_id" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.model_id">model_id</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model_name" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.model_name">model_name</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer">tokenizer</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.unload" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.unload">unload</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="llmflex.LLM.Engine.huggingface_engine.StopCondition"><code class="flex name class">
+<span>class <span class="ident">StopCondition</span></span>
+<span>(</span><span>stop_met: bool, trim_length: int, stop_text: str | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StopCondition(NamedTuple):
+    stop_met: bool
+    trim_length: int
+    stop_text: Optional[str] = None</code></pre>
+</details>
+<div class="desc"><p>StopCondition(stop_met, trim_length, stop_text)</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.tuple</li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.LLM.Engine.huggingface_engine.StopCondition.stop_met"><code class="name">var <span class="ident">stop_met</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StopCondition(NamedTuple):
+    stop_met: bool
+    trim_length: int
+    stop_text: Optional[str] = None</code></pre>
+</details>
+<div class="desc"><p>Alias for field number 0</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.huggingface_engine.StopCondition.stop_text"><code class="name">var <span class="ident">stop_text</span> : str | None</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StopCondition(NamedTuple):
+    stop_met: bool
+    trim_length: int
+    stop_text: Optional[str] = None</code></pre>
+</details>
+<div class="desc"><p>Alias for field number 2</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.huggingface_engine.StopCondition.trim_length"><code class="name">var <span class="ident">trim_length</span> : int</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StopCondition(NamedTuple):
+    stop_met: bool
+    trim_length: int
+    stop_text: Optional[str] = None</code></pre>
+</details>
+<div class="desc"><p>Alias for field number 1</p></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.LLM.Engine.huggingface_engine.TokenStreamer"><code class="flex name class">
+<span>class <span class="ident">TokenStreamer</span></span>
+<span>(</span><span>pretrained_model_name_or_path: str,<br>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TokenStreamer(BaseStreamer):
+    &#34;&#34;&#34;Class for streaming text tokens.
+    &#34;&#34;&#34;
+    def __init__(self, pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) -&gt; None:
+        from queue import Queue
+        from ...Tokenizer.hf_detokenizer import get_detokenizer
+        self._detokenizer = get_detokenizer(pretrained_model_name_or_path, tokenizer)
+        self.queue = Queue()
+        self.start = False
+
+    def put(self, value):
+        if self.start:
+            self._detokenizer.add_tokens(value[:, None].cpu().tolist())
+            str_tokens = self._detokenizer.last_segments
+            self.queue.put(str_tokens)
+        else:
+            # To eliminate the prompt.
+            self.start = True
+    
+    def end(self):
+        if self.start:
+            self._detokenizer.finalize()
+            str_tokens = self._detokenizer.last_segments
+            self.queue.put(str_tokens)
+        del self._detokenizer
+        self.queue.put(&#39;ended&#39;)
+
+    def __iter__(self):
+        return self
+    
+    def __next__(self):
+        val = self.queue.get()
+        if val == &#39;ended&#39;:
+            raise StopIteration()
+        else:
+            return val</code></pre>
+</details>
+<div class="desc"><p>Class for streaming text tokens.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>transformers.generation.streamers.BaseStreamer</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.LLM.Engine.huggingface_engine.TokenStreamer.end"><code class="name flex">
+<span>def <span class="ident">end</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def end(self):
+    if self.start:
+        self._detokenizer.finalize()
+        str_tokens = self._detokenizer.last_segments
+        self.queue.put(str_tokens)
+    del self._detokenizer
+    self.queue.put(&#39;ended&#39;)</code></pre>
+</details>
+<div class="desc"><p>Function that is called by <code>.generate()</code> to signal the end of generation</p></div>
+</dd>
+<dt id="llmflex.LLM.Engine.huggingface_engine.TokenStreamer.put"><code class="name flex">
+<span>def <span class="ident">put</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def put(self, value):
+    if self.start:
+        self._detokenizer.add_tokens(value[:, None].cpu().tolist())
+        str_tokens = self._detokenizer.last_segments
+        self.queue.put(str_tokens)
+    else:
+        # To eliminate the prompt.
+        self.start = True</code></pre>
+</details>
+<div class="desc"><p>Function that is called by <code>.generate()</code> to push new tokens</p></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.LLM.Engine" href="index.html">llmflex.LLM.Engine</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.sequence_overlap" href="#llmflex.LLM.Engine.huggingface_engine.sequence_overlap">sequence_overlap</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.stopping_criteria" href="#llmflex.LLM.Engine.huggingface_engine.stopping_criteria">stopping_criteria</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.LLM.Engine.huggingface_engine.HuggingFaceEngine" href="#llmflex.LLM.Engine.huggingface_engine.HuggingFaceEngine">HuggingFaceEngine</a></code></h4>
+</li>
+<li>
+<h4><code><a title="llmflex.LLM.Engine.huggingface_engine.StopCondition" href="#llmflex.LLM.Engine.huggingface_engine.StopCondition">StopCondition</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.StopCondition.stop_met" href="#llmflex.LLM.Engine.huggingface_engine.StopCondition.stop_met">stop_met</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.StopCondition.stop_text" href="#llmflex.LLM.Engine.huggingface_engine.StopCondition.stop_text">stop_text</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.StopCondition.trim_length" href="#llmflex.LLM.Engine.huggingface_engine.StopCondition.trim_length">trim_length</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.LLM.Engine.huggingface_engine.TokenStreamer" href="#llmflex.LLM.Engine.huggingface_engine.TokenStreamer">TokenStreamer</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.TokenStreamer.end" href="#llmflex.LLM.Engine.huggingface_engine.TokenStreamer.end">end</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.huggingface_engine.TokenStreamer.put" href="#llmflex.LLM.Engine.huggingface_engine.TokenStreamer.put">put</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

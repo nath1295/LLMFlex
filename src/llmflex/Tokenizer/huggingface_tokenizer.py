@@ -34,6 +34,10 @@ class HuggingFaceTokenizer(BaseTokenizer):
         super().__init__(tokenizer_type='huggingface_tokenizer', 
                 bos_token=bos_token, eos_token=eos_token, pad_token=pad_token,
                 bos_token_id=bos_token_id, eos_token_id=eos_token_id, pad_token_id=pad_token_id)
+        
+        if self.hf_tokenizer.pad_token != self.pad_token:
+            self.hf_tokenizer.pad_token = self.pad_token
+            self.hf_tokenizer.pad_token_id = self.pad_token_id
 
     @classmethod
     def from_hf_tokenizer(cls, tokenizer: PreTrainedTokenizerBase) -> HuggingFaceTokenizer:

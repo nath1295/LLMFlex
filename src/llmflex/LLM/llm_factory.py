@@ -177,7 +177,7 @@ class LLMFactory:
     
     @classmethod
     def from_openai(cls,
-            model_id: str,
+            model_id: Optional[str],
             tokenizer_name_or_path: Optional[str], 
             tokenizer_kwargs: Optional[Dict[str, Any]] = None, 
             base_url: Optional[str] = None,
@@ -188,11 +188,11 @@ class LLMFactory:
         """Initializes the llm factory with openai client.
 
         Args:
-            model_id (str): The ID of the OpenAI model to use.
+            model_id (Optional[str]): The ID of the OpenAI model to use. If None is provided, the first model in the list of models from the API backend will be used.
             tokenizer_name_or_path (Optional[str]): The name or path of the tokenizer to use. If None is given, it will use the tiktoken tokenizer from openai.
             tokenizer_kwargs (Optional[Dict[str, Any]], optional): Additional keyword arguments to pass to the tokenizer. Defaults to None.
             base_url (Optional[str], optional): The base URL for the OpenAI API. Defaults to None.
-            api_engine (Optional[Literal['mlx-textgen', 'vllm', 'llama.cpp', 'llama-cpp-python']], optional): The backend LLM engine. This will help to decide the way of doing structured text generation. If not provided, not all structured text generation methods might work properly. Defaults to None.
+            api_engine (Optional[Literal[KNOWN_BACKEND]], optional): The backend LLM engine. This will help to decide the way of doing structured text generation. If not provided, not all structured text generation methods might work properly. Defaults to None.
             api_key (Optional[str], optional): The API key for the OpenAI API. Defaults to None.
             **kwargs: Additional keyword arguments to pass to the BaseEngine initializer.
         """
@@ -205,5 +205,31 @@ class LLMFactory:
             api_engine=api_engine,
             api_key=api_key,
             **kwargs
+        )
+        return cls(engine)
+    
+    @classmethod
+    def from_huggingface(cls,
+            pretrained_model_name_or_path: str,
+            tokenizer_name_or_path: Optional[str] = None,
+            model_kwargs: Optional[Dict[str, Any]] = None,
+            tokenizer_kwargs: Optional[Dict[str, Any]] = None,
+            **kwargs
+        ) -> LLMFactory:
+        """Initializes the HuggingFaceEngine with the given parameters.
+
+        Args:
+            pretrained_model_name_or_path (str): The HuggingFace repository name or the full path of the model file.
+            tokenizer_name_or_path (str, optional): The Huggingface repository name or the full path to load the HuggingFace tokenizer. If not provided, pretrained_model_name_or_path would be used. Defaults to None.
+            model_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the model. Defaults to None.
+            tokenizer_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the tokenizer. Defaults to None.
+            **kwargs: Additional keyword arguments to pass to the BaseEngine class.
+        """
+        from .Engine.huggingface_engine import HuggingFaceEngine
+        engine = HuggingFaceEngine(
+            pretrained_model_name_or_path=pretrained_model_name_or_path,
+            tokenizer_name_or_path=tokenizer_name_or_path,
+            model_kwargs=model_kwargs,
+            tokenizer_kwargs=tokenizer_kwargs
         )
         return cls(engine)

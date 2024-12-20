@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.LLM.Engine.llamacpp_engine API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.LLM.Engine.llamacpp_engine</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.LLM.Engine.llamacpp_engine.LlamaCppEngine"><code class="flex name class">
+<span>class <span class="ident">LlamaCppEngine</span></span>
+<span>(</span><span>pretrained_model_name_or_path: str,<br>model_file: str | None = None,<br>tokenizer_name_or_path: str | None = None,<br>context_size: int = 8192,<br>verbose: bool = False,<br>download_kwargs: Dict[str, Any] | None = None,<br>**kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class LlamaCppEngine(BaseEngine):
+    &#34;&#34;&#34;Class for LLM engine using llama-cpp-python.
+    &#34;&#34;&#34;
+    def __init__(self,
+            pretrained_model_name_or_path: str, 
+            model_file: Optional[str] = None,
+            tokenizer_name_or_path: Optional[str] = None,
+            context_size: int = 8192,
+            verbose: bool = False,
+            download_kwargs: Optional[Dict[str, Any]] = None,
+            **kwargs
+        ) -&gt; None:
+        &#34;&#34;&#34;Initializes the LlamaCppEngine with the given parameters.
+
+        Args:
+            pretrained_model_name_or_path (str): The HuggingFace repository name or the full path of the model file.
+            model_file (str, optional): The model filename if a HuggingFace repository name is given for tokenizer_id_or_path. Defaults to None.
+            tokenizer_name_or_path (str, optional): The Huggingface repository name or the full path to load the HuggingFace tokenizer. If not provided, structured text generation might encounter problems. Defaults to None.
+            context_size (int, optional): The size of the context window. Defaults to 8192.
+            verbose (bool, optional): Whether to print verbose output. Defaults to False.
+            download_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the download function. Defaults to None.
+            **kwargs: Additional keyword arguments to pass to the Llama class.
+        &#34;&#34;&#34;
+        if not lcpp_installed:
+            raise ModuleNotFoundError(&#39;&#34;llama-cpp-python&#34; not installed. To use LlamaCppEngine, please install &#34;llama-cpp-python&#34; by running &#34;pip install llama-cpp-python&#34;.&#39;)
+        from ...utils import get_config, download_file_from_repo
+        from ...Tokenizer.llamacpp_tokenizer import LlamaCppTokenizer
+        is_file = pretrained_model_name_or_path.endswith(&#39;.gguf&#39;)
+        if model_file:
+            file_dir = os.path.join(pretrained_model_name_or_path, model_file) if not is_file else pretrained_model_name_or_path
+        else:
+            file_dir = pretrained_model_name_or_path
+        file_exist = os.path.exists(file_dir)
+        load_kwargs = dict(
+            verbose=verbose,
+            n_ctx=context_size
+        )
+        kwargs.pop(&#39;verbose&#39;, None)
+        kwargs.pop(&#39;n_ctx&#39;, None)
+        default_chat_template = kwargs.pop(&#39;default_chat_template&#39;, None)
+        load_kwargs.update(kwargs)
+        if tokenizer_name_or_path:
+            from llama_cpp.llama_tokenizer import LlamaHFTokenizer
+            llama_tokenizer = LlamaHFTokenizer.from_pretrained(tokenizer_name_or_path)
+            load_kwargs[&#39;tokenizer&#39;] = llama_tokenizer
+        else:
+            import warnings
+            warnings.warn(&#39;&#34;tokenizer_name_or_path&#34; is not provided. Might encounter issues while using structured text generation.&#39;)
+        if file_exist:
+            model = Llama(model_path=file_dir, **load_kwargs)
+        else:
+            download_kwargs = dict() if download_kwargs is None else download_kwargs
+            cache_dir = download_kwargs.pop(&#39;cache_dir&#39;, get_config(&#39;hf_home&#39;))
+            file_dir = download_file_from_repo(repo_id=pretrained_model_name_or_path, filename=model_file, cache_dir=cache_dir, **download_kwargs)
+            model = Llama(model_path=file_dir, **load_kwargs)
+        tokenizer = LlamaCppTokenizer.from_llama_model(llama_model=model)
+        model_id = os.path.basename(file_dir).removesuffix(&#39;.gguf&#39;)
+        model_name = None
+
+        super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
+    
+    @property
+    def model(self) -&gt; Llama:
+        &#34;&#34;&#34;LLM model.
+
+        Returns:
+            Any: LLM model.
+        &#34;&#34;&#34;
+        return self._model
+
+    def batch_generate(self,
+            prompts: List[str],
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; List[str]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Returns:
+            List[str]: A list of generated texts, one for each input prompt.
+        &#34;&#34;&#34;
+        outputs = []
+        gen_kwargs = dict(
+            max_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=1 if top_p is None else top_p,
+            min_p=0 if min_p is None else min_p,
+            top_k=100 if top_k is None else top_k,
+            stop=stop,
+            repeat_penalty=1 if repetition_penalty is None else repetition_penalty,
+            seed=seed,
+            stream=False
+        )
+        for k in gen_kwargs.keys():
+            kwargs.pop(k, None)
+        gen_kwargs.update(kwargs)
+        # Seems like llama-cpp-python does not support batch generation.
+        for prompt in prompts:
+            outputs.append(self.model.create_completion(prompt=prompt, **gen_kwargs)[&#39;choices&#39;][0][&#39;text&#39;])
+        return outputs
+
+
+    def batch_generate_stream(self,
+            prompts: List[str],
+            stop: Optional[List[str]] = None,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            **kwargs
+        ) -&gt; Iterator[List[str]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model in a streaming manner.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is yielded one token at a time.
+        Args:
+            prompts (List[str]): A list of input prompts.
+            stop (Optional[List[str]], optional): A list of stop words to end generation. Defaults to None.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+
+        Yields:
+            Iterator[List[str]]: A generator that yields a list of generated texts, one for each input prompt,
+                one token at a time.
+        &#34;&#34;&#34;
+        gen_kwargs = dict(
+            max_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=1 if top_p is None else top_p,
+            min_p=0 if min_p is None else min_p,
+            top_k=100 if top_k is None else top_k,
+            stop=stop,
+            repeat_penalty=1 if repetition_penalty is None else repetition_penalty,
+            seed=seed,
+            stream=True
+        )
+        for k in gen_kwargs.keys():
+            kwargs.pop(k, None)
+        gen_kwargs.update(kwargs)
+        num_prompt = len(prompts)
+
+        def _gen_tokens():
+            # This will result in streaming the prompts sequentially instead of asychronously, but there&#39;s no other way I can think of.
+            for i, prompt in enumerate(prompts):
+                for o in self.model.create_completion(prompt=prompt, **gen_kwargs):
+                    outs = [&#39;&#39;] * num_prompt
+                    outs[i] = o[&#39;choices&#39;][0][&#39;text&#39;]
+                    yield outs
+        return _gen_tokens()
+    
+    def batch_generate_json(self,
+            prompts: List[str],
+            json_schema: Dict[str, Any],
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, following a given JSON schema.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is formatted according to the provided JSON schema.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            json_schema (Dict[str, Any]): A JSON schema defining the structure of the generated text.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                formatted according to the JSON schema. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from llama_cpp import LogitsProcessorList
+        from .engine_utils import get_json_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_json_processor(schema=json_schema, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)
+
+    def batch_generate_choice(self,
+            prompts: List[str],
+            choices: List[str],
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, choosing from a list of options.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is chosen from a list of options.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            choices (List[str]): A list of options to choose from.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                chosen from the list of options. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from llama_cpp import LogitsProcessorList
+        from .engine_utils import get_choice_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_choice_processor(choices=choices, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)
+
+    def batch_generate_regex(self,
+            prompts: List[str],
+            regex: str,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it matches a given regular expression.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is ensured to match the provided regular expression.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            regex (str): A regular expression to match the generated text against.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                that match the provided regular expression. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from llama_cpp import LogitsProcessorList
+        from .engine_utils import get_regex_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_regex_processor(regex_str=regex, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)
+
+    def batch_generate_grammar(self,
+            prompts: List[str],
+            cfg_grammar: str,
+            temperature: float = 0.0,
+            max_new_tokens: int = 512,
+            top_p: Optional[float] = None,
+            min_p: Optional[float] = None,
+            top_k: Optional[int] = None,
+            repetition_penalty: Optional[float] = None,
+            seed: Optional[int] = None,
+            stream: bool = False,
+            **kwargs
+        ) -&gt; Union[List[str], Iterator[List[str]]]:
+        &#34;&#34;&#34;Generates text for a batch of prompts using the LLM model, ensuring it adheres to a given grammar.
+
+        This method takes a list of prompts and generates text for each prompt using the LLM model.
+        It supports various generation parameters such as temperature, max_new_tokens, top_p, min_p,
+        top_k, repetition_penalty, and seed. The generated text is ensured to adhere to the provided grammar.
+
+        Args:
+            prompts (List[str]): A list of input prompts.
+            cfg_grammar (str): A string representing the grammar to adhere to.
+            temperature (float, optional): The temperature to use for generation. Defaults to 0.0.
+            max_new_tokens (int, optional): The maximum number of new tokens to generate. Defaults to 512.
+            top_p (Optional[float], optional): The top-p parameter for generation. Defaults to None.
+            min_p (Optional[float], optional): The min-p parameter for generation. Defaults to None.
+            top_k (Optional[int], optional): The top-k parameter for generation. Defaults to None.
+            repetition_penalty (Optional[float], optional): The repetition penalty for generation. Defaults to None.
+            seed (Optional[int], optional): The seed for generation. Defaults to None.
+            stream (bool, optional): Whether to stream the generated text one token at a time. Defaults to False.
+
+        Returns:
+            Union[List[str], Iterator[List[str]]]: A list of generated texts, one for each input prompt,
+                that adhere to the provided grammar. If `stream` is True, a generator that yields the generated
+                texts one token at a time is returned instead.
+        &#34;&#34;&#34;
+        from llama_cpp import LogitsProcessorList
+        from .engine_utils import get_grammar_processor
+        arg_dict = dict(
+            prompts=prompts,
+            stop=[self.tokenizer.eos_token],
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            top_p=top_p,
+            min_p=min_p,
+            top_k=top_k,
+            repetition_penalty=repetition_penalty,
+            seed=seed,
+            logits_processor=LogitsProcessorList([get_grammar_processor(cfg_str=cfg_grammar, tokenizer=self.tokenizer)])
+        )
+        arg_dict.update(kwargs)
+        if stream:
+            return self.batch_generate_stream(**arg_dict)
+        else:
+            return self.batch_generate(**arg_dict)</code></pre>
+</details>
+<div class="desc"><p>Class for LLM engine using llama-cpp-python.</p>
+<p>Initializes the LlamaCppEngine with the given parameters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>pretrained_model_name_or_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>The HuggingFace repository name or the full path of the model file.</dd>
+<dt><strong><code>model_file</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The model filename if a HuggingFace repository name is given for tokenizer_id_or_path. Defaults to None.</dd>
+<dt><strong><code>tokenizer_name_or_path</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The Huggingface repository name or the full path to load the HuggingFace tokenizer. If not provided, structured text generation might encounter problems. Defaults to None.</dd>
+<dt><strong><code>context_size</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The size of the context window. Defaults to 8192.</dd>
+<dt><strong><code>verbose</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to print verbose output. Defaults to False.</dd>
+<dt><strong><code>download_kwargs</code></strong> :&ensp;<code>Dict[str, Any]</code>, optional</dt>
+<dd>Additional keyword arguments to pass to the download function. Defaults to None.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional keyword arguments to pass to the Llama class.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.LLM.Engine.base_engine.BaseEngine" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine">BaseEngine</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate">batch_generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_choice">batch_generate_choice</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_grammar">batch_generate_grammar</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_json">batch_generate_json</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_regex">batch_generate_regex</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.batch_generate_stream">batch_generate_stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.chat_template" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.chat_template">chat_template</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.generate" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.generate">generate</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.generate_stream">generate_stream</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.model">model</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model_id" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.model_id">model_id</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.model_name" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.model_name">model_name</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer">tokenizer</a></code></li>
+<li><code><a title="llmflex.LLM.Engine.base_engine.BaseEngine.unload" href="base_engine.html#llmflex.LLM.Engine.base_engine.BaseEngine.unload">unload</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.LLM.Engine" href="index.html">llmflex.LLM.Engine</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.LLM.Engine.llamacpp_engine.LlamaCppEngine" href="#llmflex.LLM.Engine.llamacpp_engine.LlamaCppEngine">LlamaCppEngine</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

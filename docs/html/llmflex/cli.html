@@ -2,18 +2,32 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
-<meta name="generator" content="pdoc 0.10.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
 <title>llmflex.cli API documentation</title>
-<meta name="description" content="" />
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
-<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
-<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
-<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
-<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<meta name="description" content="This script provides a set of commands to manage the package and serve embedding models …">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
-<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
 </head>
 <body>
 <main>
@@ -22,113 +36,11 @@
 <h1 class="title">Module <code>llmflex.cli</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">import click
-from .utils import PACKAGE_DISPLAY_NAME
-from typing import Optional, Tuple, Dict, Any
-
-def args_from_string(arg_string: str) -&gt; Dict[str, Any]:
-    &#34;&#34;&#34;Parsing kwargs from a string.
-
-    Args:
-        arg_string (str): String of arguments.
-
-    Returns:
-        Dict[str, Any]: kwargs.
-    &#34;&#34;&#34;
-    import ast
-    args = {}
-    buf = &#34;&#34;
-    stack = []
-    for ch in arg_string:
-        if ch in [&#39;{&#39;, &#39;[&#39;]:
-            stack.append(ch)
-        elif ch in [&#39;}&#39;, &#39;]&#39;]:
-            stack.pop()
-        elif ch == &#39;,&#39; and not stack:
-            key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
-            args[key] = ast.literal_eval(value)
-            buf = &#34;&#34;
-            continue
-        buf += ch
-
-    # Handling the last key-value pair (or the only pair if no comma is present)
-    if buf:
-        key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
-        args[key] = ast.literal_eval(value)
-
-    return args
-
-@click.group()
-def cli() -&gt; None:
-    pass
-
-@cli.command()
-def config() -&gt; None:
-    &#34;&#34;&#34;Setting paths for the package.
-    &#34;&#34;&#34;
-    from .utils import set_config, get_config
-    config = get_config()
-    new_config = dict()
-    print(&#39;Setting paths:&#39;)
-    for k, v in config.items():
-        new = input(f&#39;{k} [{v}]: &#39;)
-        new_config[k] = new.strip() if new.strip() != &#39;&#39; else v
-    
-    set_config(**new_config)
-
-@cli.command()
-@click.option(&#39;--config_dir&#39;, default=None, help=&#39;Config file to load the webapp.&#39;)
-def interface(config_dir: str) -&gt; None:
-    &#34;&#34;&#34;Launch the Streamlit Chat GUI.
-    &#34;&#34;&#34;
-    from .Frontend.streamlit_interface import DEFAULT_CONFIG, create_streamlit_script
-    import os
-    import yaml
-    script_dir = create_streamlit_script()
-    if config_dir is None:
-        config = DEFAULT_CONFIG
-    else:
-        with open(config_dir, &#39;r&#39;) as f:
-            config = yaml.safe_load(f)
-    with open(os.path.join(os.path.dirname(script_dir), &#39;chatbot_config.yaml&#39;), &#39;w&#39;) as f:
-        yaml.safe_dump(config, f, sort_keys=False)
-    os.system(f&#39;streamlit run {script_dir}&#39;)
-
-@cli.command()
-@click.option(&#39;--filename&#39;, default=&#39;chatbot_config.yaml&#39;, help=&#39;LLM model ID to use.&#39;)
-def create_app_config(filename: str = &#39;chatbot_config.yaml&#39;) -&gt; None:
-    &#34;&#34;&#34;Generate a chatbot config file template.
-    &#34;&#34;&#34;
-    from .Frontend.streamlit_interface import DEFAULT_CONFIG
-    import yaml
-    with open(filename, &#39;w&#39;) as f:
-        yaml.safe_dump(DEFAULT_CONFIG, f, sort_keys=False)
-
-@cli.command()
-@click.option(&#39;--model_id&#39;, default=&#39;TheBloke/OpenHermes-2.5-Mistral-7B-GGUF&#39;, help=&#39;LLM model ID to use.&#39;)
-@click.option(&#39;--model_file&#39;, default=None, help=&#39;Model quant file to use. Defaults to None.&#39;)
-@click.option(&#39;--context_size&#39;, default=4096, help=&#39;Context size of the model. Defaults to 4096.&#39;)
-@click.option(&#39;--port&#39;, default=5001, help=&#39;Port to use. Defaults to 5001.&#39;)
-@click.option(&#39;--kobold_dir&#39;, default=None, help=&#39;Directory of the KoboldCPP. Defaults to &#34;koboldcpp&#34; under home directory.&#39;)
-@click.option(&#39;--extras&#39;, default=&#39;&#39;, help=&#39;Extra arugments for KoblodCPP or llama-cpp-python.&#39;)
-def serve(model_id: str, model_file: Optional[str] = None, context_size: int = 4096, port: int = 5001, kobold_dir: str = &#39;&#39;, extras: str = &#39;&#39;) -&gt; None:
-    &#34;&#34;&#34;Serve a llm with GGUF format from HuggingFace.
-    &#34;&#34;&#34;
-    from .Models.Cores.llamacpp_core import get_model_dir
-    import os
-
-    model_dir = get_model_dir(model_id=model_id, model_file=model_file)
-    os.system(f&#39;python -m llama_cpp.server --model {model_dir} --n_ctx {context_size} --use_mlock True --port {port} {extras}&#39;)
-    
-    
-
-if __name__==&#39;__main__&#39;:
-    cli()</code></pre>
-</details>
+<p>This script provides a set of commands to manage the package and serve embedding models.</p>
+<p>Commands:
+- <code>config</code>: Set default directories for the package.
+- <code>serve-embedding</code>: Serve an embedding model using a HuggingFace model.</p>
+<p>For more information on each command, use the <code>--help</code> option with the command name.</p>
 </section>
 <section>
 </section>
@@ -137,57 +49,77 @@ if __name__==&#39;__main__&#39;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="llmflex.cli.args_from_string"><code class="name flex">
-<span>def <span class="ident">args_from_string</span></span>(<span>arg_string: str) ‑> Dict[str, Any]</span>
+<dt id="llmflex.cli.main"><code class="name flex">
+<span>def <span class="ident">main</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Parsing kwargs from a string.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>arg_string</code></strong> :&ensp;<code>str</code></dt>
-<dd>String of arguments.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>Dict[str, Any]</code></dt>
-<dd>kwargs.</dd>
-</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def args_from_string(arg_string: str) -&gt; Dict[str, Any]:
-    &#34;&#34;&#34;Parsing kwargs from a string.
+<pre><code class="python">def main():
+    import argparse
+    from typing import Optional
+    from .utils import PACKAGE_NAME, set_config, get_config
 
-    Args:
-        arg_string (str): String of arguments.
+    parser = argparse.ArgumentParser(prog=PACKAGE_NAME, description=f&#39;Welcome to {PACKAGE_NAME} CLI&#39;)
+    subparsers = parser.add_subparsers(dest=&#39;command&#39;)
 
-    Returns:
-        Dict[str, Any]: kwargs.
-    &#34;&#34;&#34;
-    import ast
-    args = {}
-    buf = &#34;&#34;
-    stack = []
-    for ch in arg_string:
-        if ch in [&#39;{&#39;, &#39;[&#39;]:
-            stack.append(ch)
-        elif ch in [&#39;}&#39;, &#39;]&#39;]:
-            stack.pop()
-        elif ch == &#39;,&#39; and not stack:
-            key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
-            args[key] = ast.literal_eval(value)
-            buf = &#34;&#34;
-            continue
-        buf += ch
+    # Subcommand for setting default config
+    def set_config_cli() -&gt; None:
+        config = get_config(&#39;all&#39;)
+        new_config = dict()
+        for k, v in config.items():
+            u = input(prompt=f&#39;{k} [{v}]: &#39;)
+            u = v if u.strip() == &#39;&#39; else u
+            new_config[k] = u
+        set_config(**new_config)
 
-    # Handling the last key-value pair (or the only pair if no comma is present)
-    if buf:
-        key, value = map(str.strip, buf.split(&#39;=&#39;, 1))
-        args[key] = ast.literal_eval(value)
+    parser_set_config = subparsers.add_parser(&#39;config&#39;, help=&#39;Set default directories. &#34;package_home&#34; is the default working directory, &#34;hf_home&#34; is the default HuggingFace cache directory.&#39;)
+    parser_set_config.set_defaults(func=set_config_cli)
 
-    return args</code></pre>
+    # Subcommand for serving embedding model
+    def serve_embeddings(
+            model_id: str,
+            batch_size: int = 256,
+            normalize: bool = True,
+            model_kwargs: Optional[str] = None,
+            tokenizer_kwargs: Optional[str] = None,
+            port: int = 5003,
+            host: Optional[str] = None
+    ) -&gt; None:
+        from .Embeddings.hf_embedding_server import HFEmbeddingServer
+        import json
+        app = HFEmbeddingServer(
+            pretrained_model_name_or_path=model_id,
+            batch_size=batch_size,
+            normalize=normalize,
+            model_kwargs=model_kwargs if model_kwargs is None else json.loads(model_kwargs),
+            tokenizer_kwargs=tokenizer_kwargs if tokenizer_kwargs is None else json.loads(tokenizer_kwargs)
+        )
+        run_kwargs = dict(port=port)
+        if host:
+            run_kwargs[&#39;host&#39;] = host
+        app.run(**run_kwargs)
+
+    parser_embd = subparsers.add_parser(&#39;serve-embedding&#39;, help=&#39;Serve an embedding model.&#39;)
+    parser_embd.add_argument(&#39;--model-id&#39;, type=str, help=&#39;HuggingFace repository id or local path of the embedding model.&#39;)
+    parser_embd.add_argument(&#39;--batch-size&#39;, type=int, default=256, help=&#39;Default batch size of creating embeddings from strings.&#39;)
+    parser_embd.add_argument(&#39;--normalize&#39;, type=bool, default=False, help=&#39;Default whether embedded vectors should be normalized. Defaults to True.&#39;)
+    parser_embd.add_argument(&#39;--model-kwargs&#39;, type=Optional[str], default=None, help=&#39;Arguments for loading the model in a json string.&#39;)
+    parser_embd.add_argument(&#39;--tokenizer-kwargs&#39;, type=Optional[str], default=None, help=&#39;Arguments for loading the tokenizer in a json string.&#39;)
+    parser_embd.add_argument(&#39;--port&#39;, type=int, default=5003, help=&#39;Port of the embedding server. Defaults to 5003.&#39;)
+    parser_embd.add_argument(&#39;--host&#39;, type=Optional[str], default=None, help=&#39;Host of the server. Defaults to None.&#39;)
+    parser_embd.set_defaults(func=serve_embeddings)
+
+    args = parser.parse_args()
+    if args.command:
+        args_kwargs = vars(args)
+        args.func(**{k: v for k, v in args_kwargs.items() if k not in [&#39;command&#39;, &#39;func&#39;]})
+    else:
+        parser.print_help()</code></pre>
 </details>
+<div class="desc"></div>
 </dd>
 </dl>
 </section>
@@ -195,7 +127,6 @@ if __name__==&#39;__main__&#39;:
 </section>
 </article>
 <nav id="sidebar">
-<h1>Index</h1>
 <div class="toc">
 <ul></ul>
 </div>
@@ -207,14 +138,14 @@ if __name__==&#39;__main__&#39;:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="llmflex.cli.args_from_string" href="#llmflex.cli.args_from_string">args_from_string</a></code></li>
+<li><code><a title="llmflex.cli.main" href="#llmflex.cli.main">main</a></code></li>
 </ul>
 </li>
 </ul>
 </nav>
 </main>
 <footer id="footer">
-<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
 </footer>
 </body>
 </html>

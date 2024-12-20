@@ -403,6 +403,11 @@ class BaseVectorDatabase(ABC):
         Returns:
             Union[List[int], Dict[int, Document]]: A list of document IDs that match the filter if `ids_only` is True, or a dictionary mapping document IDs to their corresponding documents otherwise.
         """
+        if self.size == 0:
+            if ids_only:
+                return []
+            else:
+                return dict()
         def bool_filter(doc: Document) -> bool:
             output = True
             if filter_fn:

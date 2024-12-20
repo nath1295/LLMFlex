@@ -6,7 +6,7 @@ from typing import List, Optional, Dict, Any, Union, Literal
 
 class ToolCallContent(BaseModel):
     name: str
-    arguments: Dict[str, Any]
+    arguments: str
 
 class ToolCall(BaseModel):
     function: ToolCallContent
@@ -14,10 +14,12 @@ class ToolCall(BaseModel):
 class ChatMessage(BaseModel):
     role: Literal['system', 'user', 'assistant', 'tool']
     content: Optional[Any] = None
-    tool_call: Optional[List[ToolCall]] = None
+    tool_calls: Optional[List[ToolCall]] = None
+
+CHAT_TEMPLATE_PRESETS = Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi']
 
 def get_chat_template(
-        chat_template: Optional[Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi']] = None, 
+        chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None, 
         tokenizer: Optional[BaseTokenizer] = None, 
         tools: Optional[List[Dict[str, Any]]] = None) -> str:
     """Retrieve the chat template based on the provided key, tokenizer, and tool availability.
@@ -25,7 +27,7 @@ def get_chat_template(
     This function returns the appropriate chat template based on the given `chat_template` key, `tokenizer`, and the existence of `tools`.
 
     Args:
-        chat_template (Optional[Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi']], optional): The key to the chat template to use. Defaults to None.
+        chat_template (Optional[CHAT_TEMPLATE_PRESETS], optional): The key to the chat template to use. Defaults to None.
         tokenizer (Optional[BaseTokenizer], optional): The tokenizer that provides information about the chat template. Defaults to None.
         tools (Optional[List[Dict[str, Any]]], optional): The list of tools to use in the template. Defaults to None.
 
@@ -53,6 +55,8 @@ def get_chat_template(
             return chat_template
         elif isinstance(template, str):
             return template
+        else:
+            return PRESETS['chatml']
     elif tokenizer.__class__.__name__ == 'LlamaCppTokenizer':
         template_key = tokenizer.llama_tokenizer.chat_format
         if template_key in PRESETS.keys():
@@ -74,13 +78,13 @@ class ChatTemplate:
     """
     def __init__(self, 
             tokenizer: BaseTokenizer, 
-            chat_template: Optional[Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi']] = None
+            chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None
         ) -> None:
         """Initialize the ChatTemplate instance with the provided tokenizer and chat template key.
         
         Args:
             tokenizer (BaseTokenizer): The tokenizer that provides information about the chat template.
-            chat_template (Optional[Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi']], optional): The key to the chat template to use. Defaults to None.
+            chat_template (Optional[CHAT_TEMPLATE_PRESETS], optional): The key to the chat template to use. Defaults to None.
         """
         self._tokenizer = tokenizer
         self._chat_template = chat_template
@@ -190,16 +194,31 @@ class ChatTemplate:
         Returns:
             List[Dict[str, Any]]: The validated list of messages.
         """
+        def format_tool_call(tc):
+            call = tc['function']
+            try:
+                args = json.loads(call['arguments'])
+            except:
+                args = call['arguments']
+            call['arguments'] = args
+            return json.dumps(call)
         if self.allow_multiple_assistant and self.support_tool_call:
-            new_messages = messages
+            new_messages = []
+            for msg in messages:
+                if msg.get('tool_calls') is not None:
+                    msg['tool_calls'] = [format_tool_call(tc) for tc in msg['tool_calls']]
+                    new_messages.append(msg)
+                else:
+                    new_messages.append(msg)
         elif self.allow_multiple_assistant and (not self.support_tool_call):
             new_messages = []
             for msg in messages:
-                if (msg['role'] == 'assistant') and msg.get('tool_call'):
-                    tool_call = '\n'.join(['<tool_call>\n' + json.dumps(tc) + '\n</tool_call>' for tc in msg['tool_call']])
-                    new_messages.append(dict(role='assistant', content=msg.get('content', '') + tool_call))
+                if (msg['role'] == 'assistant') and msg.get('tool_calls'):
+                    tool_call = '\n'.join(['<tool_call>\n' + format_tool_call(tc) + '\n</tool_call>' for tc in msg['tool_calls']])
+                    content = '' if msg.get('content') is None else msg.get('content')
+                    new_messages.append(dict(role='assistant', content=content + tool_call))
                 elif (msg['role'] == 'tool'):
-                    content = msg.get('content', '')
+                    content = '' if msg.get('content') is None else msg.get('content')
                     content = content if isinstance(content, str) else json.dumps(content)
                     content = '<tool_response>\n' + content + '\n</tool_response>'
                     new_messages.append(dict(role='user', content=content))
@@ -210,6 +229,8 @@ class ChatTemplate:
             last_role = None
             for msg in messages:
                 if (msg['role'] == 'assistant') and last_role != 'user':
+                    if msg.get('tool_calls') is not None:
+                        msg['tool_calls'] = [format_tool_call(tc) for tc in msg['tool_calls']]
                     new_messages.extend([dict(role='user', content=''), msg])
                 else:
                     new_messages.append(msg)
@@ -218,11 +239,12 @@ class ChatTemplate:
             new_messages = []
             last_role = None
             for msg in messages:
-                if (msg['role'] == 'assistant') and msg.get('tool_call'):
-                    tool_call = '\n'.join(['<tool_call>\n' + json.dumps(tc) + '\n</tool_call>' for tc in msg['tool_call']])
-                    to_append = dict(role='assistant', content=msg.get('content', '') + tool_call)
+                if (msg['role'] == 'assistant') and msg.get('tool_calls'):
+                    tool_call = '\n'.join(['<tool_call>\n' + format_tool_call(tc) + '\n</tool_call>' for tc in msg['tool_calls']])
+                    content = '' if msg.get('content') is None else msg.get('content')
+                    to_append = dict(role='assistant', content=content + tool_call)
                 elif (msg['role'] == 'tool'):
-                    content = msg.get('content', '')
+                    content = '' if msg.get('content') is None else msg.get('content')
                     content = content if isinstance(content, str) else json.dumps(content)
                     content = '<tool_response>\n' + content + '\n</tool_response>'
                     to_append = dict(role='user', content=content)
@@ -268,23 +290,27 @@ class ChatTemplate:
         from jinja2 import Environment, BaseLoader
         from copy import deepcopy
         template = Environment(loader=BaseLoader).from_string(get_chat_template(self._chat_template, tokenizer=self._tokenizer, tools=tools))
-        prompt = template.render(
-            messages=deepcopy(messages), 
-            tools=tools, 
-            add_generation_prompt=add_generation_prompt,
-            bos_token=self.tokenizer.bos_token,
-            eos_token=self.tokenizer.eos_token
-        )
         if continue_final_message:
-            final_message = messages[-1]["content"]
-            if isinstance(final_message, (list, tuple)):
-                final_message = final_message[-1]["text"]
-            try:
-                prompt = prompt[: prompt.rindex(final_message) + len(prompt)]
-            except:  # noqa: E722
-                # Some chat templates like Llama-3.1 trim messages before rendering, so we must do the same here.
-                final_message = final_message.strip()
-                prompt = prompt[: prompt.rindex(final_message) + len(prompt)]
+            if len(messages) == 0:
+                raise Exception('Message list cannot be empty.')
+            if messages[-1]['role'] != 'assistant':
+                raise Exception(f'Last message must be asssistant if continue_final_message=True.')
+            prompt = template.render(
+                messages=deepcopy(messages[:-1]), 
+                tools=tools, 
+                add_generation_prompt=True,
+                bos_token=self.tokenizer.bos_token,
+                eos_token=self.tokenizer.eos_token
+            )
+            prompt += messages[-1]['content']
+        else:
+            prompt = template.render(
+                messages=deepcopy(messages), 
+                tools=tools, 
+                add_generation_prompt=True,
+                bos_token=self.tokenizer.bos_token,
+                eos_token=self.tokenizer.eos_token
+            )
         return prompt
     
     def apply_chat_template(self, 
@@ -330,8 +356,16 @@ class ChatTemplate:
             add_generation_prompt=add_generation_prompt, 
             continue_final_message=continue_final_message)
         if tool_choice == 'required':
-            prompt += self.tool_start + '{"function": {' + '"name": "'
+            prompt += self.tool_start + '{' + '"name": "'
         elif isinstance(tool_choice, dict):
             tool_name = tool_choice['function']['name']
-            prompt += self.tool_start + '{"function": {' + f'"name": "{tool_name}", arguments": '
+            prompt += self.tool_start + '{' + f'"name": "{tool_name}", arguments": '
+
+        # Remove bos tokens
+        prompt = prompt.lstrip()
+        if self.tokenizer.bos_token is not None:
+            bos = self.tokenizer.bos_token
+            bos_len = len(bos)
+            while (len(prompt) >= bos_len) and (prompt[:bos_len] == bos):
+                prompt = prompt.removeprefix(bos)
         return prompt

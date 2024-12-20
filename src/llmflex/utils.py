@@ -3,6 +3,8 @@ import subprocess
 import json
 from typing import Literal, Union, List, Dict, Any, Optional
 
+__doc__ = """Utilities for the package."""
+
 ### Helper functions
 def os_name() -> Literal['Windows', 'Linux', 'MacOS_intel', 'MacOS_apple_silicon', 'MacOS_unknown', 'Unknown']:
     """Get the current operating system.

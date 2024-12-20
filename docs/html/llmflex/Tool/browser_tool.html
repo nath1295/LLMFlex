@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.Tool.browser_tool API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Tool.browser_tool</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Tool.browser_tool.url_to_markdown"><code class="name flex">
+<span>def <span class="ident">url_to_markdown</span></span>(<span>url: str, if_failed: Literal['raise', 'warning'] = 'warning') ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def url_to_markdown(url: str, if_failed: Literal[&#39;raise&#39;, &#39;warning&#39;] = &#39;warning&#39;) -&gt; str:
+    &#34;&#34;&#34;Converts a URL to its Markdown representation.
+
+    Args:
+        url (str): The URL to convert.
+        if_failed (Literal[&#39;raise&#39;, &#39;warning&#39;], optional): The action to take if the URL cannot be converted. Defaults to &#39;warning&#39;.
+
+    Returns:
+        str: The Markdown representation of the URL.
+    &#34;&#34;&#34;
+    try:
+        r = get(url)
+        r.raise_for_status()
+    except Exception as e:
+        if if_failed == &#39;raise&#39;:
+            raise e
+        else:
+            import warnings
+            warnings.warn(str(e))
+            return &#39;&#39;
+    html = r.text
+    md = markdownify(html)
+
+    # clean up markdown
+    lines = md.strip().split(&#39;\n&#39;)
+    prev = &#39;&#39;
+    clean_md = []
+    for line in lines:
+        if line or prev:
+            clean_md.append(line)
+            prev = line
+    return &#39;\n&#39;.join(clean_md)</code></pre>
+</details>
+<div class="desc"><p>Converts a URL to its Markdown representation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>url</code></strong> :&ensp;<code>str</code></dt>
+<dd>The URL to convert.</dd>
+</dl>
+<p>if_failed (Literal['raise', 'warning'], optional): The action to take if the URL cannot be converted. Defaults to 'warning'.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The Markdown representation of the URL.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Tool.browser_tool.BrowserTool"><code class="flex name class">
+<span>class <span class="ident">BrowserTool</span></span>
+<span>(</span><span>base_url: str,<br>embeddings: <a title="llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings" href="../Embeddings/Model/base_embeddings.html#llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings">BaseEmbeddings</a>,<br>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a> | None = None,<br>ranker: <a title="llmflex.Reranker.base_ranker.BaseRanker" href="../Reranker/base_ranker.html#llmflex.Reranker.base_ranker.BaseRanker">BaseRanker</a> | None = None,<br>chunk_size: int = 300)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BrowserTool(BaseTool):
+    &#34;&#34;&#34;A web search tool that uses a query or a list of queries provided by the user to perform web search via the SearXNG meta search engine API.
+    &#34;&#34;&#34;
+    def __init__(self, 
+        base_url: str, 
+        embeddings: BaseEmbeddings,
+        tokenizer: Optional[BaseTokenizer] = None,
+        ranker: Optional[BaseRanker] = None,
+        chunk_size: int = 300
+    ) -&gt; None:
+        &#34;&#34;&#34;Initializes the BrowserTool with the given parameters.
+
+        Args:
+            base_url (str): The base URL of the SearXNG search engine.
+            embeddings (BaseEmbeddings): The embeddings model to use for relevant content searching in the search results.
+            tokenizer (Optional[BaseTokenizer], optional): The tokenizer to use for token counting for result chunks. If None is provided, the tokenizer from the embedding model will be used. Defaults to None.
+            ranker (Optional[BaseRanker], optional): The ranker to use for reranking the search results. If None is given, it will be initialised with ms-marco-TinyBERT. Defaults to None.
+            chunk_size (int, optional): The maximum number of tokens in each chunk of the search results. Defaults to 300.
+        &#34;&#34;&#34;
+        if not md_installed:
+            raise ModuleNotFoundError(f&#39;Module &#34;markdownify&#34; not installed. Please install it with `pip`.&#39;)
+        from ..TextSplitter.sentence_splitter import SentenceTextSplitter
+        from ..VectorDatabase.numpy_vectordb import NumpyVectorDatabase
+        from ..Reranker.huggingface_ranker import HuggingFaceRanker
+        self._base_url = base_url.rstrip(&#39;/&#39;).removesuffix(&#39;search&#39;).rstrip(&#39;/&#39;)
+        text_splitter = SentenceTextSplitter(tokenizer=tokenizer if tokenizer else embeddings.tokenizer, chunk_size=chunk_size)
+        self._vdb = NumpyVectorDatabase(embeddings=embeddings, text_splitter=text_splitter)
+        self._ranker = ranker if ranker else HuggingFaceRanker()
+        super().__init__()
+
+    def __call__(self,
+        query: Union[str, List[str]],
+        top_k: int = 3,
+        category: Literal[&#39;general&#39;, &#39;news&#39;, &#39;IT&#39;] = &#39;general&#39;,
+        language: Literal[&#39;all&#39;, &#39;en&#39;, &#39;en-US&#39;, &#39;de&#39;, &#39;it&#39;, &#39;fr&#39;, &#39;es&#39;, &#39;zh&#39;, &#39;hi&#39;, &#39;ja&#39;, &#39;ko&#39;, &#39;ru&#39;] = &#39;all&#39;
+    ) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Performs a web search using the provided query or list of queries and returns the top_k results for each provided query.
+
+        Args:
+            query (Union[str, List[str]]): The query or list of queries to search for.
+            top_k (int, optional): The number of top results to return for each query. Defaults to 3.
+            category (Literal[&#39;general&#39;, &#39;news&#39;, &#39;IT&#39;], optional): The category of the search results. Defaults to &#39;general&#39;.
+            language (Literal[&#39;all&#39;, &#39;en&#39;, &#39;en-US&#39;, &#39;de&#39;, &#39;it&#39;, &#39;fr&#39;, &#39;es&#39;, &#39;zh&#39;, &#39;hi&#39;, &#39;ja&#39;, &#39;ko&#39;, &#39;ru&#39;], optional): The language of the search results. Defaults to &#39;all&#39;.
+
+        Returns:
+            List[Dict[str, Any]]: A list of dictionaries containing the search results.
+        &#34;&#34;&#34;
+        from ..Schema.document import Document
+        from threading import Thread
+        import json
+        qs = query if isinstance(query, list) else [query]
+        queries = []
+        for q in qs:
+            if q not in queries:
+                queries.append(q)
+        request_args = dict(format=&#39;json&#39;)
+        if language != &#39;all&#39;:
+            request_args[&#39;language&#39;] = language
+        if category != &#39;general&#39;:
+            request_args[&#39;categories&#39;] = [category.lower()]
+        
+        # Sending requests to API server
+        requests = [dict(q=q, **request_args) for q in queries]
+        outputs = [None] * len(requests)
+        def parse_result(result) -&gt; Dict[str, Any]:
+            source = result.get(&#39;parsed_url&#39;, [])
+            source = source[1] if len(source) &gt; 1 else None
+            final = dict(
+                title=result.get(&#39;title&#39;, None),
+                url=result[&#39;url&#39;],
+                source=source,
+                published_date=result.get(&#39;publishedDate&#39;, None),
+                category=result.get(&#39;category&#39;, None),
+                search_engine=result.get(&#39;engine&#39;, None),
+                content=result.get(&#39;content&#39;, None)
+            )
+            return final
+        def get_results(i):
+            try:
+                res = get(url=self._base_url + &#39;/search&#39;, params=requests[i])
+                res.raise_for_status()
+            except:
+                res = None
+            if res:
+                results = json.loads(res.text)[&#39;results&#39;]
+                if isinstance(results, list):
+                    results = [parse_result(r) for r in results[:top_k]]
+                else:
+                    results = []
+                outputs[i] = results
+            else:
+                outputs[i] = []
+        
+        threads = [Thread(target=get_results, args=[i]) for i in range(len(requests))]
+        [t.start() for t in threads]
+        [t.join() for t in threads]
+        outputs = [[] if o is None else o for o in outputs]
+
+        # Getting contents from the search results
+        mds = [[None] * len(i) for i in outputs]
+        def get_markdown(i, j):
+            mds[i][j] = url_to_markdown(outputs[i][j][&#39;url&#39;])
+        threads = [[Thread(target=get_markdown, args=[i, j]) for j in range(len(o))] for i, o in enumerate(outputs)] 
+        [[t.start() for t in mt] for mt in threads]
+        [[t.join() for t in mt] for mt in threads]
+        q_results = [(q, [Document(text=m, metadata=mt) for m, mt in zip(ms, mts) if m.strip() != &#39;&#39;]) for q, ms, mts  in zip(queries, mds, outputs)]
+        
+        self._vdb.clear()
+        search_results = []
+        for q, res in q_results:
+            if len(res) &gt; 0:
+                self._vdb.add_documents(res)
+                vdb_results = self._vdb.search(q, top_k=top_k + 5)
+                ranked_results = self._ranker.rerank(query=q, docs=[vres.doc for vres in vdb_results], top_k=top_k)
+                search_results.append(dict(search_query=q, search_results=[rr.doc.model_dump() for rr in ranked_results]))
+                self._vdb.clear()
+        return search_results
+    
+    def run(self, **kwargs) -&gt; ToolOutput:
+        &#34;&#34;&#34;Run the tool and structure the output into a ToolOutput object.
+
+        Returns:
+            ToolOutput: Structured tool output.
+        &#34;&#34;&#34;
+        import json
+        outputs = self.__call__(**kwargs)
+        urls = []
+        for q in outputs:
+            for res in q[&#39;search_results&#39;]:
+                if res[&#39;metadata&#39;][&#39;url&#39;] not in urls:
+                    urls.append(res[&#39;metadata&#39;][&#39;url&#39;])
+        return ToolOutput(content=json.dumps(outputs), footnotes=urls)</code></pre>
+</details>
+<div class="desc"><p>A web search tool that uses a query or a list of queries provided by the user to perform web search via the SearXNG meta search engine API.</p>
+<p>Initializes the BrowserTool with the given parameters.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>base_url</code></strong> :&ensp;<code>str</code></dt>
+<dd>The base URL of the SearXNG search engine.</dd>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embeddings model to use for relevant content searching in the search results.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Optional[BaseTokenizer]</code>, optional</dt>
+<dd>The tokenizer to use for token counting for result chunks. If None is provided, the tokenizer from the embedding model will be used. Defaults to None.</dd>
+<dt><strong><code>ranker</code></strong> :&ensp;<code>Optional[BaseRanker]</code>, optional</dt>
+<dd>The ranker to use for reranking the search results. If None is given, it will be initialised with ms-marco-TinyBERT. Defaults to None.</dd>
+<dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The maximum number of tokens in each chunk of the search results. Defaults to 300.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.Tool.base_tool.BaseTool" href="base_tool.html#llmflex.Tool.base_tool.BaseTool">BaseTool</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Tool.browser_tool.BrowserTool.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self, **kwargs) ‑> <a title="llmflex.Tool.base_tool.ToolOutput" href="base_tool.html#llmflex.Tool.base_tool.ToolOutput">ToolOutput</a></span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self, **kwargs) -&gt; ToolOutput:
+    &#34;&#34;&#34;Run the tool and structure the output into a ToolOutput object.
+
+    Returns:
+        ToolOutput: Structured tool output.
+    &#34;&#34;&#34;
+    import json
+    outputs = self.__call__(**kwargs)
+    urls = []
+    for q in outputs:
+        for res in q[&#39;search_results&#39;]:
+            if res[&#39;metadata&#39;][&#39;url&#39;] not in urls:
+                urls.append(res[&#39;metadata&#39;][&#39;url&#39;])
+    return ToolOutput(content=json.dumps(outputs), footnotes=urls)</code></pre>
+</details>
+<div class="desc"><p>Run the tool and structure the output into a ToolOutput object.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ToolOutput</code></dt>
+<dd>Structured tool output.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.Tool.base_tool.BaseTool" href="base_tool.html#llmflex.Tool.base_tool.BaseTool">BaseTool</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.Tool.base_tool.BaseTool.name" href="base_tool.html#llmflex.Tool.base_tool.BaseTool.name">name</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Tool" href="index.html">llmflex.Tool</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Tool.browser_tool.url_to_markdown" href="#llmflex.Tool.browser_tool.url_to_markdown">url_to_markdown</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Tool.browser_tool.BrowserTool" href="#llmflex.Tool.browser_tool.BrowserTool">BrowserTool</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Tool.browser_tool.BrowserTool.run" href="#llmflex.Tool.browser_tool.BrowserTool.run">run</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

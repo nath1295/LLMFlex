@@ -4,7 +4,6 @@ from ..Embeddings.Model.base_embeddings import BaseEmbeddings
 from ..TextSplitter.base_splitter import BaseTextSplitter
 from ..Schema.document import Document
 import numpy as np
-import gc
 import os
 from typing import Union, Optional, List, Tuple
 
@@ -178,6 +177,6 @@ class FaissVectorDatabase(BaseVectorDatabase):
         sorted_ref = self.doc_ids[sorted_indices]
         sorted_indices_in_doc = np.searchsorted(sorted_ref, doc_ids)
         indices = sorted_indices[sorted_indices_in_doc]
-        vectors = list(map(lambda x: self._index.reconstruct(x), indices))
+        vectors = list(map(lambda x: self._index.reconstruct(int(x)), indices))
         return np.array(vectors, dtype=np.float32)
         

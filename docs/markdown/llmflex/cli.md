@@ -1,15 +1,15 @@
 Module llmflex.cli
 ==================
+This script provides a set of commands to manage the package and serve embedding models.
+
+Commands:
+- `config`: Set default directories for the package.
+- `serve-embedding`: Serve an embedding model using a HuggingFace model.
+
+For more information on each command, use the `--help` option with the command name.
 
 Functions
 ---------
 
-    
-`args_from_string(arg_string: str) ‑> Dict[str, Any]`
-:   Parsing kwargs from a string.
-    
-    Args:
-        arg_string (str): String of arguments.
-    
-    Returns:
-        Dict[str, Any]: kwargs.
+`main()`
+:

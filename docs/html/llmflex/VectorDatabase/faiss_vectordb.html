@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.VectorDatabase.faiss_vectordb API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.VectorDatabase.faiss_vectordb</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase"><code class="flex name class">
+<span>class <span class="ident">FaissVectorDatabase</span></span>
+<span>(</span><span>embeddings: BaseEmbeddings,<br>text_splitter: Optional[BaseTextSplitter] = None,<br>split_text: bool = True,<br>vdb_dir: Optional[str] = None,<br>init_save: bool = True,<br>**kwargs)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class FaissVectorDatabase(BaseVectorDatabase):
+    &#34;&#34;&#34;Vector database class using Faiss to power. 
+    &#34;&#34;&#34;
+
+    def __init__(self, embeddings: BaseEmbeddings, 
+            text_splitter: Optional[BaseTextSplitter] = None, split_text: bool = True, vdb_dir: Optional[str] = None, init_save: bool = True, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Initializes the vector database.
+
+        Args:
+            embeddings (BaseEmbeddings): The embedding model to use for vectorization.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+            split_text (bool, optional): Whether to split the input text into chunks using the text splitter by default. Defaults to True.
+            vdb_dir (Optional[str], optional): The directory to store the vector database. Defaults to None.
+            init_save (bool, optional): Whether to save the vector database while initialising it. Defaults to True.
+        &#34;&#34;&#34;
+        try:
+            import faiss
+        except:
+            raise ModuleNotFoundError(&#39;&#34;faiss&#34; not installed. Please install with `pip install faiss-cpu`.&#39;)
+        super().__init__(embeddings, text_splitter, split_text, vdb_dir, init_save, **kwargs)
+
+
+    @property
+    def vectors(self) -&gt; np.ndarray:
+        &#34;&#34;&#34;Gets the vectors of the documents stored in the vector database.
+
+        Returns:
+            np.ndarray: A 2D NumPy array containing the vectors of the documents, where each row represents a document vector.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_index&#39;):
+            from faiss import IndexFlatL2
+            self._index = IndexFlatL2(self.embeddings.embedding_size)
+        vecs = self._index.reconstruct_n()
+        return np.array(vecs, dtype=np.float32)
+    
+    @classmethod
+    def from_exist(cls,
+            embeddings: BaseEmbeddings,
+            vdb_dir: str,
+            text_splitter: Optional[BaseTextSplitter] = None, 
+            split_text: bool = True,
+            **kwargs
+        ) -&gt; FaissVectorDatabase:
+        &#34;&#34;&#34;Creates a new vector database instance from an existing vector database.
+
+        This method is used to load a vector database that has already been saved to disk.
+
+        Args:
+            embeddings (BaseEmbeddings): The embedding model to use for vectorization.
+            vdb_dir (str): The directory path to the existing vector database.
+            text_splitter (Optional[BaseTextSplitter], optional): The text splitter to use for splitting text into chunks. Defaults to None.
+            split_text (bool, optional): Whether to split the input text into chunks using the text splitter by default. Defaults to True.
+            **kwargs: Additional keyword arguments to pass to the vector database constructor.
+            
+        Returns:
+            FaissVectorDatabase: A new vector database instance loaded from the existing vector database.
+        &#34;&#34;&#34;
+        import json
+        if not os.path.exists(vdb_dir):
+            raise FileNotFoundError(f&#39;Vector database directory does not exist.&#39;)
+        with open(os.path.join(vdb_dir, &#39;info.json&#39;), &#39;r&#39;) as f:
+            info = json.load(f)
+        if cls.__name__ != info[&#39;vdb_class&#39;]:
+            old_class = info[&#39;vdb_class&#39;]
+            raise TypeError(f&#39;The existing vector database is a class &#34;{old_class}&#34; object. It is not compatible with &#34;{cls.__name__}&#34;.&#39;)
+        if embeddings.model_id != info[&#39;embeddings&#39;]:
+            old_model_id = info[&#39;embeddings&#39;]
+            raise ValueError(f&#39;The existing vector database uses the embedding model &#34;{old_model_id}&#34;. Please use the correct model to load the vector database.&#39;)
+        if embeddings.embedding_size != info[&#39;embedding_size&#39;]:
+            esize = info[&#39;embedding_size&#39;]
+            raise ValueError(f&#39;The existing vector database uses the embedding model &#34;{old_model_id}&#34; with embedding size {esize}. Please use the correct model to load the vector database.&#39;)
+        try:
+            from faiss import read_index
+        except:
+            raise ModuleNotFoundError(&#39;&#34;faiss&#34; not installed. Please install with `pip install faiss-cpu`.&#39;)        
+
+        vdb = cls(embeddings=embeddings, vdb_dir=vdb_dir, text_splitter=text_splitter, split_text=split_text, init_save=False)
+        
+        import pickle
+        with open(os.path.join(vdb.vdb_dir, &#39;data.pkl&#39;), &#39;rb&#39;) as f:
+            data = pickle.load(f)
+            vdb._data = np.array([Document(**args) for args in data])
+        with open(os.path.join(vdb.vdb_dir, &#39;doc_ids.pkl&#39;), &#39;rb&#39;) as f:
+            vdb._doc_ids = pickle.load(f)
+        with open(os.path.join(vdb.vdb_dir, &#39;vectors.pkl&#39;), &#39;rb&#39;) as f:
+            vdb._index = read_index(os.path.join(vdb.vdb_dir, &#39;index.faiss&#39;))
+        return vdb
+
+    def _save_vectors(self) -&gt; None:
+        &#34;&#34;&#34;Save the vectors to a file.
+        &#34;&#34;&#34;
+        if self.vdb_dir:
+            from faiss import write_index
+            if not hasattr(self, &#39;_index&#39;):
+                self.vectors
+            write_index(self._index, os.path.join(self.vdb_dir, &#39;index.faiss&#39;))
+
+    def _add(self, vectors: np.ndarray, docs: List[Document], new_ids: np.ndarray) -&gt; None:
+        &#34;&#34;&#34;Adds new vectors, documents, and their corresponding unique identifiers to the vector database.
+
+        Args:
+            vectors (np.ndarray): A 2D NumPy array containing the new document vectors to add to the vector database.
+            docs (List[Document]): A list of new documents to add to the vector database.
+            new_ids (np.ndarray): A 1D NumPy array containing the unique identifiers for the new documents.
+        &#34;&#34;&#34;
+        from faiss import normalize_L2
+        if not hasattr(self, &#39;_index&#39;):
+            self.vectors
+        normalize_L2(vectors)
+        self._index.add(vectors)
+        self._data = np.concatenate([self.data, np.array(docs)], axis=0) if self.size &gt; 0 else np.array(docs)
+        self._doc_ids = np.concatenate([self.doc_ids, new_ids], axis=0) if self.size &gt; 0 else new_ids
+
+    def _drop(self, doc_ids: Union[List[int], np.array]) -&gt; None:
+        &#34;&#34;&#34;Removes the documents with the specified unique identifiers from the vector database.
+
+        Args:
+            doc_ids (Union[List[int], np.array]): A list or NumPy array containing the unique identifiers of the documents to remove.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_index&#39;):
+            self.vectors
+        mask = np.where(~np.isin(self.doc_ids, doc_ids))[0]
+        faiss_ids = np.where(np.isin(self.doc_ids, doc_ids))[0]
+        self._doc_ids = self._doc_ids[mask]
+        self._vectors = self._index.remove_ids(faiss_ids)
+        self._data = self._data[mask]
+
+    def _batch_search_by_vectors(self, vectors: np.ndarray, top_k: int = 5, scope_ids: Optional[np.ndarray] = None, **kwargs) -&gt; Tuple[np.ndarray, np.ndarray]:
+        &#34;&#34;&#34;Performs a batch search in the vector database using the provided vectors.
+
+        This method finds the top `top_k` most similar documents for each input vector in the batch.
+
+        Args:
+            vectors (np.ndarray): A 2D NumPy array containing the input vectors for which to perform the search. Each row represents a vector.
+            top_k (int, optional): The number of most similar documents to return for each input vector. Defaults to 5.
+            scope_ids (Optional[np.ndarray], optional): A 1D NumPy array containing the unique identifiers of the documents to consider for the search. If provided, only documents with these identifiers will be considered. Defaults to None.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray]: A tuple containing two 1D NumPy arrays. The first array contains the unique identifiers of the most similar documents for each input vector, and the second array contains the similarity scores for each pair of documents.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_index&#39;):
+            self.vectors
+        from faiss import normalize_L2, SearchParametersIVF, IDSelectorArray
+        normalize_L2(vectors)
+        if scope_ids is None:
+            top_k = min(top_k, self._index.ntotal)
+            scores, ids = self._index.search(vectors, k=top_k)
+        else:
+            faiss_ids = np.where(np.isin(self.doc_ids, scope_ids))[0]
+            top_k = min(top_k, len(faiss_ids))
+            id_selector = IDSelectorArray(faiss_ids)
+            scores, ids = self._index.search(vectors, k=top_k, params=SearchParametersIVF(sel=id_selector))
+        scores = 1 - scores / (2 ** 0.5)
+        ids = self.doc_ids[ids]
+        return ids, scores
+    
+    def get_vectors_by_ids(self, doc_ids: Union[List[int], np.ndarray]) -&gt; np.ndarray:
+        &#34;&#34;&#34;Retrieves the vectors of the documents with the specified unique identifiers from the vector database.
+
+        Args:
+            doc_ids (Union[List[int], np.ndarray]): A list or NumPy array containing the unique identifiers of the documents for which to retrieve the vectors.
+            
+        Returns:
+            np.ndarray: A 2D NumPy array containing the vectors of the specified documents, where each row represents a document vector.
+        &#34;&#34;&#34;
+        doc_ids = np.array(doc_ids, dtype=np.int32) if not isinstance(doc_ids, np.ndarray) else doc_ids.astype(dtype=np.int32)
+        sorted_indices = np.argsort(self.doc_ids)
+        sorted_ref = self.doc_ids[sorted_indices]
+        sorted_indices_in_doc = np.searchsorted(sorted_ref, doc_ids)
+        indices = sorted_indices[sorted_indices_in_doc]
+        vectors = list(map(lambda x: self._index.reconstruct(int(x)), indices))
+        return np.array(vectors, dtype=np.float32)</code></pre>
+</details>
+<div class="desc"><p>Vector database class using Faiss to power. </p>
+<p>Initializes the vector database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embedding model to use for vectorization.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting text into chunks. Defaults to None.</dd>
+<dt><strong><code>split_text</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to split the input text into chunks using the text splitter by default. Defaults to True.</dd>
+<dt><strong><code>vdb_dir</code></strong> :&ensp;<code>Optional[str]</code>, optional</dt>
+<dd>The directory to store the vector database. Defaults to None.</dd>
+<dt><strong><code>init_save</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to save the vector database while initialising it. Defaults to True.</dd>
+</dl></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase.from_exist"><code class="name flex">
+<span>def <span class="ident">from_exist</span></span>(<span>embeddings: BaseEmbeddings,<br>vdb_dir: str,<br>text_splitter: Optional[BaseTextSplitter] = None,<br>split_text: bool = True,<br>**kwargs) ‑> <a title="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase" href="#llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Creates a new vector database instance from an existing vector database.</p>
+<p>This method is used to load a vector database that has already been saved to disk.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embedding model to use for vectorization.</dd>
+<dt><strong><code>vdb_dir</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory path to the existing vector database.</dd>
+<dt><strong><code>text_splitter</code></strong> :&ensp;<code>Optional[BaseTextSplitter]</code>, optional</dt>
+<dd>The text splitter to use for splitting text into chunks. Defaults to None.</dd>
+<dt><strong><code>split_text</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to split the input text into chunks using the text splitter by default. Defaults to True.</dd>
+<dt><strong><code>**kwargs</code></strong></dt>
+<dd>Additional keyword arguments to pass to the vector database constructor.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase" href="#llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></code></dt>
+<dd>A new vector database instance loaded from the existing vector database.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase">BaseVectorDatabase</a></b></code>:
+<ul class="hlist">
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_documents" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_documents">add_documents</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_texts" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.add_texts">add_texts</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.batch_search" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.batch_search">batch_search</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.clear" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.clear">clear</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.data" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.data">data</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.doc_ids" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.doc_ids">doc_ids</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.drop_ids" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.drop_ids">drop_ids</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.embeddings" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.embeddings">embeddings</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.export_to_dir" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.export_to_dir">export_to_dir</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.get_vectors_by_ids" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.get_vectors_by_ids">get_vectors_by_ids</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.info" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.info">info</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.save" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.save">save</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search">search</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search_by_doc" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.search_by_doc">search_by_doc</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.size" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.size">size</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.split_text" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.split_text">split_text</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.text_splitter" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.text_splitter">text_splitter</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vdb_dir" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vdb_dir">vdb_dir</a></code></li>
+<li><code><a title="llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vectors" href="base_vectordb.html#llmflex.VectorDatabase.base_vectordb.BaseVectorDatabase.vectors">vectors</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.VectorDatabase" href="index.html">llmflex.VectorDatabase</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase" href="#llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase">FaissVectorDatabase</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase.from_exist" href="#llmflex.VectorDatabase.faiss_vectordb.FaissVectorDatabase.from_exist">from_exist</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

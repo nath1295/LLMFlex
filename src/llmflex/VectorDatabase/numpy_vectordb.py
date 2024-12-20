@@ -112,9 +112,9 @@ class NumpyVectorDatabase(BaseVectorDatabase):
             doc_ids (Union[List[int], np.array]): A list or NumPy array containing the unique identifiers of the documents to remove.
         """
         mask = np.where(~np.isin(self.doc_ids, doc_ids))[0]
-        self._doc_ids = self._doc_ids[mask]
-        self._vectors = self._vectors[mask]
-        self._data = self._data[mask]
+        self._doc_ids = self.doc_ids[mask]
+        self._vectors = self.vectors[mask]
+        self._data = self.data[mask]
 
     def _batch_search_by_vectors(self, vectors: np.ndarray, top_k: int = 5, scope_ids: Optional[np.ndarray] = None, **kwargs) -> Tuple[np.ndarray, np.ndarray]:
         """Performs a batch search in the vector database using the provided vectors.

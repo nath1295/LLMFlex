@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.Prompt.chat_template API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Prompt.chat_template</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Prompt.chat_template.get_chat_template"><code class="name flex">
+<span>def <span class="ident">get_chat_template</span></span>(<span>chat_template: Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi'] | None = None,<br>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a> | None = None,<br>tools: List[Dict[str, Any]] | None = None) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_chat_template(
+        chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None, 
+        tokenizer: Optional[BaseTokenizer] = None, 
+        tools: Optional[List[Dict[str, Any]]] = None) -&gt; str:
+    &#34;&#34;&#34;Retrieve the chat template based on the provided key, tokenizer, and tool availability.
+
+    This function returns the appropriate chat template based on the given `chat_template` key, `tokenizer`, and the existence of `tools`.
+
+    Args:
+        chat_template (Optional[CHAT_TEMPLATE_PRESETS], optional): The key to the chat template to use. Defaults to None.
+        tokenizer (Optional[BaseTokenizer], optional): The tokenizer that provides information about the chat template. Defaults to None.
+        tools (Optional[List[Dict[str, Any]]], optional): The list of tools to use in the template. Defaults to None.
+
+    Returns:
+        str: The Jinja chat template.
+    &#34;&#34;&#34;
+    if (chat_template is None) and (tokenizer is None):
+        raise ValueError(&#39;Must provide at least one of &#34;chat_template&#34; and &#34;tokenizer&#34;.&#39;)
+    if chat_template in PRESETS.keys():
+        return PRESETS[chat_template]
+    elif chat_template is not None:
+        accepted_templates = &#39;&#34;&#39; + &#39;&#34;, &#34;&#39;.join(list(PRESETS.keys())) + &#39;&#34;&#39;
+        raise ValueError(f&#39;&#34;chat_template&#34; must be one of the followings: {accepted_templates}&#39;)
+    elif tokenizer.__class__.__name__ == &#39;HuggingFaceTokenizer&#39;:
+        template = tokenizer.hf_tokenizer.chat_template
+        if isinstance(template, dict):
+            if tools is not None and &#34;tool_use&#34; in template:
+                chat_template = template[&#34;tool_use&#34;]
+            elif &#34;default&#34; in template:
+                chat_template = template[&#34;default&#34;]
+            else:
+                raise ValueError(
+                    &#34;Cannot find chat template for the tokenizer.&#34;
+                )
+            return chat_template
+        elif isinstance(template, str):
+            return template
+        else:
+            return PRESETS[&#39;chatml&#39;]
+    elif tokenizer.__class__.__name__ == &#39;LlamaCppTokenizer&#39;:
+        template_key = tokenizer.llama_tokenizer.chat_format
+        if template_key in PRESETS.keys():
+            return PRESETS[template_key]
+        elif template_key == &#39;llama2&#39;:
+            return PRESETS[&#39;mistral&#39;]
+        else:
+            return PRESETS[&#39;chatml&#39;]
+    elif tokenizer.__class__.__name__ == &#39;OpenAITokenizer&#39;:
+        return PRESETS[&#39;openchat&#39;]
+    else:
+        return PRESETS[&#39;chatml&#39;]</code></pre>
+</details>
+<div class="desc"><p>Retrieve the chat template based on the provided key, tokenizer, and tool availability.</p>
+<p>This function returns the appropriate chat template based on the given <code>chat_template</code> key, <code>tokenizer</code>, and the existence of <code>tools</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>chat_template</code></strong> :&ensp;<code>Optional[CHAT_TEMPLATE_PRESETS]</code>, optional</dt>
+<dd>The key to the chat template to use. Defaults to None.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Optional[BaseTokenizer]</code>, optional</dt>
+<dd>The tokenizer that provides information about the chat template. Defaults to None.</dd>
+<dt><strong><code>tools</code></strong> :&ensp;<code>Optional[List[Dict[str, Any]]]</code>, optional</dt>
+<dd>The list of tools to use in the template. Defaults to None.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The Jinja chat template.</dd>
+</dl></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Prompt.chat_template.ChatMessage"><code class="flex name class">
+<span>class <span class="ident">ChatMessage</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ChatMessage(BaseModel):
+    role: Literal[&#39;system&#39;, &#39;user&#39;, &#39;assistant&#39;, &#39;tool&#39;]
+    content: Optional[Any] = None
+    tool_calls: Optional[List[ToolCall]] = None</code></pre>
+</details>
+<div class="desc"><p>Usage docs: <a href="https://docs.pydantic.dev/2.7/concepts/models/">https://docs.pydantic.dev/2.7/concepts/models/</a></p>
+<p>A base class for creating Pydantic models.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>__class_vars__</code></strong></dt>
+<dd>The names of classvars defined on the model.</dd>
+<dt><strong><code>__private_attributes__</code></strong></dt>
+<dd>Metadata about the private attributes of the model.</dd>
+<dt><strong><code>__signature__</code></strong></dt>
+<dd>The signature for instantiating the model.</dd>
+<dt><strong><code>__pydantic_complete__</code></strong></dt>
+<dd>Whether model building is completed, or if there are still undefined fields.</dd>
+<dt><strong><code>__pydantic_core_schema__</code></strong></dt>
+<dd>The pydantic-core schema used to build the SchemaValidator and SchemaSerializer.</dd>
+<dt><strong><code>__pydantic_custom_init__</code></strong></dt>
+<dd>Whether the model has a custom <code>__init__</code> function.</dd>
+<dt><strong><code>__pydantic_decorators__</code></strong></dt>
+<dd>Metadata containing the decorators defined on the model.
+This replaces <code>Model.__validators__</code> and <code>Model.__root_validators__</code> from Pydantic V1.</dd>
+<dt><strong><code>__pydantic_generic_metadata__</code></strong></dt>
+<dd>Metadata for generic models; contains data used for a similar purpose to
+<strong>args</strong>, <strong>origin</strong>, <strong>parameters</strong> in typing-module generics. May eventually be replaced by these.</dd>
+<dt><strong><code>__pydantic_parent_namespace__</code></strong></dt>
+<dd>Parent namespace of the model, used for automatic rebuilding of models.</dd>
+<dt><strong><code>__pydantic_post_init__</code></strong></dt>
+<dd>The name of the post-init method for the model, if defined.</dd>
+<dt><strong><code>__pydantic_root_model__</code></strong></dt>
+<dd>Whether the model is a <code>RootModel</code>.</dd>
+<dt><strong><code>__pydantic_serializer__</code></strong></dt>
+<dd>The pydantic-core SchemaSerializer used to dump instances of the model.</dd>
+<dt><strong><code>__pydantic_validator__</code></strong></dt>
+<dd>The pydantic-core SchemaValidator used to validate instances of the model.</dd>
+<dt><strong><code>__pydantic_extra__</code></strong></dt>
+<dd>An instance attribute with the values of extra fields from validation when
+<code>model_config['extra'] == 'allow'</code>.</dd>
+<dt><strong><code>__pydantic_fields_set__</code></strong></dt>
+<dd>An instance attribute with the names of fields explicitly set.</dd>
+<dt><strong><code>__pydantic_private__</code></strong></dt>
+<dd>Instance attribute with the values of private attributes set on the model instance.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="llmflex.Prompt.chat_template.ChatMessage.content"><code class="name">var <span class="ident">content</span> : Any | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatMessage.model_computed_fields"><code class="name">var <span class="ident">model_computed_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatMessage.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatMessage.model_fields"><code class="name">var <span class="ident">model_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatMessage.role"><code class="name">var <span class="ident">role</span> : Literal['system', 'user', 'assistant', 'tool']</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatMessage.tool_calls"><code class="name">var <span class="ident">tool_calls</span> : List[<a title="llmflex.Prompt.chat_template.ToolCall" href="#llmflex.Prompt.chat_template.ToolCall">ToolCall</a>] | None</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate"><code class="flex name class">
+<span>class <span class="ident">ChatTemplate</span></span>
+<span>(</span><span>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a>,<br>chat_template: Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi'] | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ChatTemplate:
+    &#34;&#34;&#34;A class to manage chat templates for conversational AI.
+
+    This class provides a way to retrieve chat templates based on the given chat template key, tokenizer, and the existence of tools.
+    It also handles the case where the tokenizer is a Hugging Face tokenizer and extracts the appropriate chat template from its configuration.
+    &#34;&#34;&#34;
+    def __init__(self, 
+            tokenizer: BaseTokenizer, 
+            chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None
+        ) -&gt; None:
+        &#34;&#34;&#34;Initialize the ChatTemplate instance with the provided tokenizer and chat template key.
+        
+        Args:
+            tokenizer (BaseTokenizer): The tokenizer that provides information about the chat template.
+            chat_template (Optional[CHAT_TEMPLATE_PRESETS], optional): The key to the chat template to use. Defaults to None.
+        &#34;&#34;&#34;
+        self._tokenizer = tokenizer
+        self._chat_template = chat_template
+
+    @property
+    def tokenizer(self) -&gt; BaseTokenizer:
+        &#34;&#34;&#34;Gets the tokenizer associated with this chat template.
+
+        Returns:
+            BaseTokenizer: The tokenizer associated with this chat template.
+        &#34;&#34;&#34;
+        return self._tokenizer
+    
+    @property
+    def support_system(self) -&gt; bool:
+        &#34;&#34;&#34;Checks if the chat template supports system message.
+
+        Returns:
+            bool: True if the chat template supports system message, False otherwise.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_support_system&#39;):
+            try:
+                system = &#39;Test system message, see if exist.&#39;
+                messages = [dict(role=&#39;system&#39;, content=system), dict(role=&#39;user&#39;, content=&#39;Hi there&#39;)]
+                prompt = self._apply_chat_template(messages=messages)
+                self._support_system = system in prompt
+            except:
+                self._support_system = False
+        return self._support_system
+    
+    @property
+    def support_tool_call(self) -&gt; bool:
+        &#34;&#34;&#34;Checks if the chat template supports tool calls.
+
+        Returns:
+            bool: True if the chat template supports tool calls, False otherwise.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_support_tool_call&#39;):
+            try:
+                p_with_tool = self._apply_chat_template(MSG_WITH_TOOL[:1], tools=TOOL_LIST, add_generation_prompt=True)
+                p_wo_tool = self._apply_chat_template(MSG_WITH_TOOL[:1], add_generation_prompt=True)
+                self._support_tool_call = p_with_tool != p_wo_tool
+            except:
+                self._support_tool_call = False
+        return self._support_tool_call
+    
+    @property
+    def allow_multiple_assistant(self) -&gt; bool:
+        &#34;&#34;&#34;Checks if the chat template allows multiple consecutive assistant messages.
+
+        Returns:
+            bool: True if the chat template allows multiple consecutive assistant messages, False otherwise.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_allow_multiple_assistant&#39;):
+            try:
+                self._apply_chat_template(MSG_SINGLE_ASSISTANT * 2, add_generation_prompt=False, continue_final_message=True)
+                self._allow_multiple_assistant = True
+            except:
+                self._allow_multiple_assistant = False
+        return self._allow_multiple_assistant
+
+    @property
+    def tool_start(self) -&gt; str:
+        &#34;&#34;&#34;Gets the start string for tool calls in the chat template.
+
+        Returns:
+            str: The start string for tool calls in the chat template.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_tool_start&#39;):
+            if self.support_tool_call:
+                p_with_tool = self._apply_chat_template(MSG_WITH_TOOL, tools=TOOL_LIST, add_generation_prompt=True)
+                p_wo_tool = self._apply_chat_template(MSG_WITH_TOOL[:1], tools=TOOL_LIST, add_generation_prompt=False)
+                diff_str = p_with_tool.removeprefix(p_wo_tool)
+                tool_first_index = diff_str.find(&#39;{&#39;)
+                self._tool_start = diff_str[:tool_first_index]
+            else:
+                self._tool_start = &#39;&lt;tool_call&gt;\n&#39;
+        return self._tool_start
+    
+    def _validate_messages(self, messages: List[Dict[str, Any]]) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Validates the given messages to ensure they are in the correct format and contain the necessary fields.
+
+        Args:
+            messages (List[Dict[str, Any]]): The list of messages to validate.
+
+        Raises:
+            Exception: If any of the messages are not in the correct format or do not contain the necessary fields.
+
+        Returns:
+            List[Dict[str, Any]]: The validated list of messages.
+        &#34;&#34;&#34;
+        for msg in messages:
+            ChatMessage(**msg)
+        if len(messages) == 0:
+            raise Exception(f&#39;Must have at least one message.&#39;)
+        return messages
+    
+    def _validate_message_seq(self, messages: List[Dict[str, Any]]) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Validates the sequence of messages to ensure they are in the correct order and contain the necessary fields.
+
+        Args:
+            messages (List[Dict[str, Any]]): The list of messages to validate.
+
+        Raises:
+            Exception: If any of the messages are not in the correct order or do not contain the necessary fields.
+
+        Returns:
+            List[Dict[str, Any]]: The validated list of messages.
+        &#34;&#34;&#34;
+        def format_tool_call(tc):
+            call = tc[&#39;function&#39;]
+            try:
+                args = json.loads(call[&#39;arguments&#39;])
+            except:
+                args = call[&#39;arguments&#39;]
+            call[&#39;arguments&#39;] = args
+            return json.dumps(call)
+        if self.allow_multiple_assistant and self.support_tool_call:
+            new_messages = []
+            for msg in messages:
+                if msg.get(&#39;tool_calls&#39;) is not None:
+                    msg[&#39;tool_calls&#39;] = [format_tool_call(tc) for tc in msg[&#39;tool_calls&#39;]]
+                    new_messages.append(msg)
+                else:
+                    new_messages.append(msg)
+        elif self.allow_multiple_assistant and (not self.support_tool_call):
+            new_messages = []
+            for msg in messages:
+                if (msg[&#39;role&#39;] == &#39;assistant&#39;) and msg.get(&#39;tool_calls&#39;):
+                    tool_call = &#39;\n&#39;.join([&#39;&lt;tool_call&gt;\n&#39; + format_tool_call(tc) + &#39;\n&lt;/tool_call&gt;&#39; for tc in msg[&#39;tool_calls&#39;]])
+                    content = &#39;&#39; if msg.get(&#39;content&#39;) is None else msg.get(&#39;content&#39;)
+                    new_messages.append(dict(role=&#39;assistant&#39;, content=content + tool_call))
+                elif (msg[&#39;role&#39;] == &#39;tool&#39;):
+                    content = &#39;&#39; if msg.get(&#39;content&#39;) is None else msg.get(&#39;content&#39;)
+                    content = content if isinstance(content, str) else json.dumps(content)
+                    content = &#39;&lt;tool_response&gt;\n&#39; + content + &#39;\n&lt;/tool_response&gt;&#39;
+                    new_messages.append(dict(role=&#39;user&#39;, content=content))
+                else:
+                    new_messages.append(msg)
+        elif self.support_tool_call:
+            new_messages = []
+            last_role = None
+            for msg in messages:
+                if (msg[&#39;role&#39;] == &#39;assistant&#39;) and last_role != &#39;user&#39;:
+                    if msg.get(&#39;tool_calls&#39;) is not None:
+                        msg[&#39;tool_calls&#39;] = [format_tool_call(tc) for tc in msg[&#39;tool_calls&#39;]]
+                    new_messages.extend([dict(role=&#39;user&#39;, content=&#39;&#39;), msg])
+                else:
+                    new_messages.append(msg)
+                last_role = msg[&#39;role&#39;]
+        else:
+            new_messages = []
+            last_role = None
+            for msg in messages:
+                if (msg[&#39;role&#39;] == &#39;assistant&#39;) and msg.get(&#39;tool_calls&#39;):
+                    tool_call = &#39;\n&#39;.join([&#39;&lt;tool_call&gt;\n&#39; + format_tool_call(tc) + &#39;\n&lt;/tool_call&gt;&#39; for tc in msg[&#39;tool_calls&#39;]])
+                    content = &#39;&#39; if msg.get(&#39;content&#39;) is None else msg.get(&#39;content&#39;)
+                    to_append = dict(role=&#39;assistant&#39;, content=content + tool_call)
+                elif (msg[&#39;role&#39;] == &#39;tool&#39;):
+                    content = &#39;&#39; if msg.get(&#39;content&#39;) is None else msg.get(&#39;content&#39;)
+                    content = content if isinstance(content, str) else json.dumps(content)
+                    content = &#39;&lt;tool_response&gt;\n&#39; + content + &#39;\n&lt;/tool_response&gt;&#39;
+                    to_append = dict(role=&#39;user&#39;, content=content)
+                else:
+                    to_append = msg
+                if (to_append[&#39;role&#39;] == &#39;assistant&#39;) and last_role != &#39;user&#39;:
+                    new_messages.extend([dict(role=&#39;user&#39;, content=&#39;&#39;), to_append])
+                else:
+                    new_messages.append(to_append)
+                last_role = to_append[&#39;role&#39;]
+        if not self.support_system and (new_messages[0][&#39;role&#39;] == &#39;system&#39;):
+            system = new_messages[0][&#39;content&#39;]
+            new_messages = new_messages[1:]
+            if (len(new_messages) &gt; 0) and (new_messages[0][&#39;role&#39;] == &#39;user&#39;):
+                first_message = new_messages[0][&#39;content&#39;]
+                first_message = &#39;&lt;system&gt;\n&#39; + system + &#39;\n&lt;/system&gt;\n\n&#39; + first_message
+                new_messages[0][&#39;content&#39;] = first_message
+            else:
+                raise Exception(f&#39;First message after the system message is not a user message.&#39;)
+        return new_messages
+
+    def _apply_chat_template(self, 
+            messages: List[Dict[str, Any]], 
+            tools: Optional[List[Dict[str, Any]]] = None, 
+            add_generation_prompt: bool = True,
+            continue_final_message: bool = False
+        ) -&gt; str:
+        &#34;&#34;&#34;Applies the chat template to the given messages and tools.
+
+        This method takes a list of messages and an optional list of tools, and applies the chat template to generate a string
+        representing the conversation. If tools are provided, the method will include the information about the tools in the system prompt.
+        If `add_generation_prompt` is set to True, the method will add a generation prompt to the end of the conversation string.
+
+        Args:
+            messages (List[Dict[str, Any]]): The list of messages to apply the chat template to.
+            tools (Optional[List[Dict[str, Any]]], optional): The list of tools to include in the conversation. Defaults to None.
+            add_generation_prompt (bool, optional): Whether to add a generation prompt to the end of the conversation string. Defaults to True.
+            continue_final_message (bool, optional): Whether to continue the final message in the conversation string. Defaults to False.
+
+        Returns:
+            str: The conversation string generated by applying the chat template to the given messages and tools.
+        &#34;&#34;&#34;
+        from jinja2 import Environment, BaseLoader
+        from copy import deepcopy
+        template = Environment(loader=BaseLoader).from_string(get_chat_template(self._chat_template, tokenizer=self._tokenizer, tools=tools))
+        if continue_final_message:
+            if len(messages) == 0:
+                raise Exception(&#39;Message list cannot be empty.&#39;)
+            if messages[-1][&#39;role&#39;] != &#39;assistant&#39;:
+                raise Exception(f&#39;Last message must be asssistant if continue_final_message=True.&#39;)
+            prompt = template.render(
+                messages=deepcopy(messages[:-1]), 
+                tools=tools, 
+                add_generation_prompt=True,
+                bos_token=self.tokenizer.bos_token,
+                eos_token=self.tokenizer.eos_token
+            )
+            prompt += messages[-1][&#39;content&#39;]
+        else:
+            prompt = template.render(
+                messages=deepcopy(messages), 
+                tools=tools, 
+                add_generation_prompt=True,
+                bos_token=self.tokenizer.bos_token,
+                eos_token=self.tokenizer.eos_token
+            )
+        return prompt
+    
+    def apply_chat_template(self, 
+            messages: List[Dict[str, Any]], 
+            tools: Optional[List[Dict[str, Any]]] = None, 
+            tool_choice: Union[Literal[&#39;none&#39;, &#39;auto&#39;, &#39;required&#39;], Dict[str, Union[str, Dict[str, str]]]] = &#39;auto&#39;,
+            add_generation_prompt: bool = True,
+            continue_final_message: bool = False
+            ) -&gt; str:
+        &#34;&#34;&#34;Applies the chat template to the given messages and tools, considering tool choice.
+
+        This method takes a list of messages, an optional list of tools, and a tool choice parameter, and applies the chat template to generate a string
+        representing the conversation. If tools are provided, the method will include the information about the tools in the system prompt.
+        The `tool_choice` parameter determines how tools are used in the conversation. If set to &#39;none&#39;, no tools will be used. If set to &#39;auto&#39;,
+        tools will be used if the assistant&#39;s response includes a tool call. If set to &#39;required&#39;, at least one tool must be used in the conversation.
+        If `add_generation_prompt` is set to True, the method will add a generation prompt to the end of the conversation string.
+
+        Args:
+            messages (List[Dict[str, Any]]): The list of messages to apply the chat template to.
+            tools (Optional[List[Dict[str, Any]]], optional): The list of tools to include in the conversation. Defaults to None.
+            tool_choice (Union[Literal[&#39;none&#39;, &#39;auto&#39;, &#39;required&#39;], Dict[str, Union[str, Dict[str, str]]]], optional): The tool choice parameter. Defaults to &#39;auto&#39;.
+            add_generation_prompt (bool, optional): Whether to add a generation prompt to the end of the conversation string. Defaults to True.
+            continue_final_message (bool, optional): Whether to continue the final message in the conversation string. Defaults to False.
+
+        Returns:
+            str: The conversation string generated by applying the chat template to the given messages and tools, considering tool choice.
+        &#34;&#34;&#34;
+        from copy import deepcopy
+        messages = self._validate_messages(messages=deepcopy(messages))
+        messages = self._validate_message_seq(messages=messages)
+        tools = tools if tool_choice != &#39;none&#39; else None
+        if tools and (not self.support_tool_call):
+            tool_json = &#39;\n&#39;.join([json.dumps(tool) for tool in tools])
+            if messages[0][&#39;role&#39;] == &#39;system&#39;:
+                content = messages[0].get(&#39;content&#39;, &#39;&#39;) + DEFAULT_TOOL_SYSTEM.replace(&#39;$$tool_list$$&#39;, tool_json)
+                messages[0][&#39;content&#39;] = content.strip()
+            else:
+                messages = [dict(role=&#39;system&#39;, content=DEFAULT_TOOL_SYSTEM.replace(&#39;$$tool_list$$&#39;, tool_json).strip())] + messages
+        if (messages[-1][&#39;role&#39;] == &#39;assistant&#39;) and (messages[-1][&#39;content&#39;]) and continue_final_message:
+            add_generation_prompt = False
+        prompt = self._apply_chat_template(messages=messages, 
+            tools=tools if self.support_tool_call else None, 
+            add_generation_prompt=add_generation_prompt, 
+            continue_final_message=continue_final_message)
+        if tool_choice == &#39;required&#39;:
+            prompt += self.tool_start + &#39;{&#39; + &#39;&#34;name&#34;: &#34;&#39;
+        elif isinstance(tool_choice, dict):
+            tool_name = tool_choice[&#39;function&#39;][&#39;name&#39;]
+            prompt += self.tool_start + &#39;{&#39; + f&#39;&#34;name&#34;: &#34;{tool_name}&#34;, arguments&#34;: &#39;
+
+        # Remove bos tokens
+        prompt = prompt.lstrip()
+        if self.tokenizer.bos_token is not None:
+            bos = self.tokenizer.bos_token
+            bos_len = len(bos)
+            while (len(prompt) &gt;= bos_len) and (prompt[:bos_len] == bos):
+                prompt = prompt.removeprefix(bos)
+        return prompt</code></pre>
+</details>
+<div class="desc"><p>A class to manage chat templates for conversational AI.</p>
+<p>This class provides a way to retrieve chat templates based on the given chat template key, tokenizer, and the existence of tools.
+It also handles the case where the tokenizer is a Hugging Face tokenizer and extracts the appropriate chat template from its configuration.</p>
+<p>Initialize the ChatTemplate instance with the provided tokenizer and chat template key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>BaseTokenizer</code></dt>
+<dd>The tokenizer that provides information about the chat template.</dd>
+<dt><strong><code>chat_template</code></strong> :&ensp;<code>Optional[CHAT_TEMPLATE_PRESETS]</code>, optional</dt>
+<dd>The key to the chat template to use. Defaults to None.</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate.allow_multiple_assistant"><code class="name">prop <span class="ident">allow_multiple_assistant</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def allow_multiple_assistant(self) -&gt; bool:
+    &#34;&#34;&#34;Checks if the chat template allows multiple consecutive assistant messages.
+
+    Returns:
+        bool: True if the chat template allows multiple consecutive assistant messages, False otherwise.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_allow_multiple_assistant&#39;):
+        try:
+            self._apply_chat_template(MSG_SINGLE_ASSISTANT * 2, add_generation_prompt=False, continue_final_message=True)
+            self._allow_multiple_assistant = True
+        except:
+            self._allow_multiple_assistant = False
+    return self._allow_multiple_assistant</code></pre>
+</details>
+<div class="desc"><p>Checks if the chat template allows multiple consecutive assistant messages.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the chat template allows multiple consecutive assistant messages, False otherwise.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate.support_system"><code class="name">prop <span class="ident">support_system</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def support_system(self) -&gt; bool:
+    &#34;&#34;&#34;Checks if the chat template supports system message.
+
+    Returns:
+        bool: True if the chat template supports system message, False otherwise.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_support_system&#39;):
+        try:
+            system = &#39;Test system message, see if exist.&#39;
+            messages = [dict(role=&#39;system&#39;, content=system), dict(role=&#39;user&#39;, content=&#39;Hi there&#39;)]
+            prompt = self._apply_chat_template(messages=messages)
+            self._support_system = system in prompt
+        except:
+            self._support_system = False
+    return self._support_system</code></pre>
+</details>
+<div class="desc"><p>Checks if the chat template supports system message.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the chat template supports system message, False otherwise.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate.support_tool_call"><code class="name">prop <span class="ident">support_tool_call</span> : bool</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def support_tool_call(self) -&gt; bool:
+    &#34;&#34;&#34;Checks if the chat template supports tool calls.
+
+    Returns:
+        bool: True if the chat template supports tool calls, False otherwise.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_support_tool_call&#39;):
+        try:
+            p_with_tool = self._apply_chat_template(MSG_WITH_TOOL[:1], tools=TOOL_LIST, add_generation_prompt=True)
+            p_wo_tool = self._apply_chat_template(MSG_WITH_TOOL[:1], add_generation_prompt=True)
+            self._support_tool_call = p_with_tool != p_wo_tool
+        except:
+            self._support_tool_call = False
+    return self._support_tool_call</code></pre>
+</details>
+<div class="desc"><p>Checks if the chat template supports tool calls.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>True if the chat template supports tool calls, False otherwise.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tokenizer(self) -&gt; BaseTokenizer:
+    &#34;&#34;&#34;Gets the tokenizer associated with this chat template.
+
+    Returns:
+        BaseTokenizer: The tokenizer associated with this chat template.
+    &#34;&#34;&#34;
+    return self._tokenizer</code></pre>
+</details>
+<div class="desc"><p>Gets the tokenizer associated with this chat template.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseTokenizer</code></dt>
+<dd>The tokenizer associated with this chat template.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate.tool_start"><code class="name">prop <span class="ident">tool_start</span> : str</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tool_start(self) -&gt; str:
+    &#34;&#34;&#34;Gets the start string for tool calls in the chat template.
+
+    Returns:
+        str: The start string for tool calls in the chat template.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_tool_start&#39;):
+        if self.support_tool_call:
+            p_with_tool = self._apply_chat_template(MSG_WITH_TOOL, tools=TOOL_LIST, add_generation_prompt=True)
+            p_wo_tool = self._apply_chat_template(MSG_WITH_TOOL[:1], tools=TOOL_LIST, add_generation_prompt=False)
+            diff_str = p_with_tool.removeprefix(p_wo_tool)
+            tool_first_index = diff_str.find(&#39;{&#39;)
+            self._tool_start = diff_str[:tool_first_index]
+        else:
+            self._tool_start = &#39;&lt;tool_call&gt;\n&#39;
+    return self._tool_start</code></pre>
+</details>
+<div class="desc"><p>Gets the start string for tool calls in the chat template.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The start string for tool calls in the chat template.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Prompt.chat_template.ChatTemplate.apply_chat_template"><code class="name flex">
+<span>def <span class="ident">apply_chat_template</span></span>(<span>self,<br>messages: List[Dict[str, Any]],<br>tools: List[Dict[str, Any]] | None = None,<br>tool_choice: Literal['none', 'auto', 'required'] | Dict[str, str | Dict[str, str]] = 'auto',<br>add_generation_prompt: bool = True,<br>continue_final_message: bool = False) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def apply_chat_template(self, 
+        messages: List[Dict[str, Any]], 
+        tools: Optional[List[Dict[str, Any]]] = None, 
+        tool_choice: Union[Literal[&#39;none&#39;, &#39;auto&#39;, &#39;required&#39;], Dict[str, Union[str, Dict[str, str]]]] = &#39;auto&#39;,
+        add_generation_prompt: bool = True,
+        continue_final_message: bool = False
+        ) -&gt; str:
+    &#34;&#34;&#34;Applies the chat template to the given messages and tools, considering tool choice.
+
+    This method takes a list of messages, an optional list of tools, and a tool choice parameter, and applies the chat template to generate a string
+    representing the conversation. If tools are provided, the method will include the information about the tools in the system prompt.
+    The `tool_choice` parameter determines how tools are used in the conversation. If set to &#39;none&#39;, no tools will be used. If set to &#39;auto&#39;,
+    tools will be used if the assistant&#39;s response includes a tool call. If set to &#39;required&#39;, at least one tool must be used in the conversation.
+    If `add_generation_prompt` is set to True, the method will add a generation prompt to the end of the conversation string.
+
+    Args:
+        messages (List[Dict[str, Any]]): The list of messages to apply the chat template to.
+        tools (Optional[List[Dict[str, Any]]], optional): The list of tools to include in the conversation. Defaults to None.
+        tool_choice (Union[Literal[&#39;none&#39;, &#39;auto&#39;, &#39;required&#39;], Dict[str, Union[str, Dict[str, str]]]], optional): The tool choice parameter. Defaults to &#39;auto&#39;.
+        add_generation_prompt (bool, optional): Whether to add a generation prompt to the end of the conversation string. Defaults to True.
+        continue_final_message (bool, optional): Whether to continue the final message in the conversation string. Defaults to False.
+
+    Returns:
+        str: The conversation string generated by applying the chat template to the given messages and tools, considering tool choice.
+    &#34;&#34;&#34;
+    from copy import deepcopy
+    messages = self._validate_messages(messages=deepcopy(messages))
+    messages = self._validate_message_seq(messages=messages)
+    tools = tools if tool_choice != &#39;none&#39; else None
+    if tools and (not self.support_tool_call):
+        tool_json = &#39;\n&#39;.join([json.dumps(tool) for tool in tools])
+        if messages[0][&#39;role&#39;] == &#39;system&#39;:
+            content = messages[0].get(&#39;content&#39;, &#39;&#39;) + DEFAULT_TOOL_SYSTEM.replace(&#39;$$tool_list$$&#39;, tool_json)
+            messages[0][&#39;content&#39;] = content.strip()
+        else:
+            messages = [dict(role=&#39;system&#39;, content=DEFAULT_TOOL_SYSTEM.replace(&#39;$$tool_list$$&#39;, tool_json).strip())] + messages
+    if (messages[-1][&#39;role&#39;] == &#39;assistant&#39;) and (messages[-1][&#39;content&#39;]) and continue_final_message:
+        add_generation_prompt = False
+    prompt = self._apply_chat_template(messages=messages, 
+        tools=tools if self.support_tool_call else None, 
+        add_generation_prompt=add_generation_prompt, 
+        continue_final_message=continue_final_message)
+    if tool_choice == &#39;required&#39;:
+        prompt += self.tool_start + &#39;{&#39; + &#39;&#34;name&#34;: &#34;&#39;
+    elif isinstance(tool_choice, dict):
+        tool_name = tool_choice[&#39;function&#39;][&#39;name&#39;]
+        prompt += self.tool_start + &#39;{&#39; + f&#39;&#34;name&#34;: &#34;{tool_name}&#34;, arguments&#34;: &#39;
+
+    # Remove bos tokens
+    prompt = prompt.lstrip()
+    if self.tokenizer.bos_token is not None:
+        bos = self.tokenizer.bos_token
+        bos_len = len(bos)
+        while (len(prompt) &gt;= bos_len) and (prompt[:bos_len] == bos):
+            prompt = prompt.removeprefix(bos)
+    return prompt</code></pre>
+</details>
+<div class="desc"><p>Applies the chat template to the given messages and tools, considering tool choice.</p>
+<p>This method takes a list of messages, an optional list of tools, and a tool choice parameter, and applies the chat template to generate a string
+representing the conversation. If tools are provided, the method will include the information about the tools in the system prompt.
+The <code>tool_choice</code> parameter determines how tools are used in the conversation. If set to 'none', no tools will be used. If set to 'auto',
+tools will be used if the assistant's response includes a tool call. If set to 'required', at least one tool must be used in the conversation.
+If <code>add_generation_prompt</code> is set to True, the method will add a generation prompt to the end of the conversation string.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>messages</code></strong> :&ensp;<code>List[Dict[str, Any]]</code></dt>
+<dd>The list of messages to apply the chat template to.</dd>
+<dt><strong><code>tools</code></strong> :&ensp;<code>Optional[List[Dict[str, Any]]]</code>, optional</dt>
+<dd>The list of tools to include in the conversation. Defaults to None.</dd>
+<dt>tool_choice (Union[Literal['none', 'auto', 'required'], Dict[str, Union[str, Dict[str, str]]]], optional): The tool choice parameter. Defaults to 'auto'.</dt>
+<dt><strong><code>add_generation_prompt</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to add a generation prompt to the end of the conversation string. Defaults to True.</dd>
+<dt><strong><code>continue_final_message</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to continue the final message in the conversation string. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The conversation string generated by applying the chat template to the given messages and tools, considering tool choice.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCall"><code class="flex name class">
+<span>class <span class="ident">ToolCall</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ToolCall(BaseModel):
+    function: ToolCallContent</code></pre>
+</details>
+<div class="desc"><p>Usage docs: <a href="https://docs.pydantic.dev/2.7/concepts/models/">https://docs.pydantic.dev/2.7/concepts/models/</a></p>
+<p>A base class for creating Pydantic models.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>__class_vars__</code></strong></dt>
+<dd>The names of classvars defined on the model.</dd>
+<dt><strong><code>__private_attributes__</code></strong></dt>
+<dd>Metadata about the private attributes of the model.</dd>
+<dt><strong><code>__signature__</code></strong></dt>
+<dd>The signature for instantiating the model.</dd>
+<dt><strong><code>__pydantic_complete__</code></strong></dt>
+<dd>Whether model building is completed, or if there are still undefined fields.</dd>
+<dt><strong><code>__pydantic_core_schema__</code></strong></dt>
+<dd>The pydantic-core schema used to build the SchemaValidator and SchemaSerializer.</dd>
+<dt><strong><code>__pydantic_custom_init__</code></strong></dt>
+<dd>Whether the model has a custom <code>__init__</code> function.</dd>
+<dt><strong><code>__pydantic_decorators__</code></strong></dt>
+<dd>Metadata containing the decorators defined on the model.
+This replaces <code>Model.__validators__</code> and <code>Model.__root_validators__</code> from Pydantic V1.</dd>
+<dt><strong><code>__pydantic_generic_metadata__</code></strong></dt>
+<dd>Metadata for generic models; contains data used for a similar purpose to
+<strong>args</strong>, <strong>origin</strong>, <strong>parameters</strong> in typing-module generics. May eventually be replaced by these.</dd>
+<dt><strong><code>__pydantic_parent_namespace__</code></strong></dt>
+<dd>Parent namespace of the model, used for automatic rebuilding of models.</dd>
+<dt><strong><code>__pydantic_post_init__</code></strong></dt>
+<dd>The name of the post-init method for the model, if defined.</dd>
+<dt><strong><code>__pydantic_root_model__</code></strong></dt>
+<dd>Whether the model is a <code>RootModel</code>.</dd>
+<dt><strong><code>__pydantic_serializer__</code></strong></dt>
+<dd>The pydantic-core SchemaSerializer used to dump instances of the model.</dd>
+<dt><strong><code>__pydantic_validator__</code></strong></dt>
+<dd>The pydantic-core SchemaValidator used to validate instances of the model.</dd>
+<dt><strong><code>__pydantic_extra__</code></strong></dt>
+<dd>An instance attribute with the values of extra fields from validation when
+<code>model_config['extra'] == 'allow'</code>.</dd>
+<dt><strong><code>__pydantic_fields_set__</code></strong></dt>
+<dd>An instance attribute with the names of fields explicitly set.</dd>
+<dt><strong><code>__pydantic_private__</code></strong></dt>
+<dd>Instance attribute with the values of private attributes set on the model instance.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="llmflex.Prompt.chat_template.ToolCall.function"><code class="name">var <span class="ident">function</span> : <a title="llmflex.Prompt.chat_template.ToolCallContent" href="#llmflex.Prompt.chat_template.ToolCallContent">ToolCallContent</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCall.model_computed_fields"><code class="name">var <span class="ident">model_computed_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCall.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCall.model_fields"><code class="name">var <span class="ident">model_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCallContent"><code class="flex name class">
+<span>class <span class="ident">ToolCallContent</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ToolCallContent(BaseModel):
+    name: str
+    arguments: str</code></pre>
+</details>
+<div class="desc"><p>Usage docs: <a href="https://docs.pydantic.dev/2.7/concepts/models/">https://docs.pydantic.dev/2.7/concepts/models/</a></p>
+<p>A base class for creating Pydantic models.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>__class_vars__</code></strong></dt>
+<dd>The names of classvars defined on the model.</dd>
+<dt><strong><code>__private_attributes__</code></strong></dt>
+<dd>Metadata about the private attributes of the model.</dd>
+<dt><strong><code>__signature__</code></strong></dt>
+<dd>The signature for instantiating the model.</dd>
+<dt><strong><code>__pydantic_complete__</code></strong></dt>
+<dd>Whether model building is completed, or if there are still undefined fields.</dd>
+<dt><strong><code>__pydantic_core_schema__</code></strong></dt>
+<dd>The pydantic-core schema used to build the SchemaValidator and SchemaSerializer.</dd>
+<dt><strong><code>__pydantic_custom_init__</code></strong></dt>
+<dd>Whether the model has a custom <code>__init__</code> function.</dd>
+<dt><strong><code>__pydantic_decorators__</code></strong></dt>
+<dd>Metadata containing the decorators defined on the model.
+This replaces <code>Model.__validators__</code> and <code>Model.__root_validators__</code> from Pydantic V1.</dd>
+<dt><strong><code>__pydantic_generic_metadata__</code></strong></dt>
+<dd>Metadata for generic models; contains data used for a similar purpose to
+<strong>args</strong>, <strong>origin</strong>, <strong>parameters</strong> in typing-module generics. May eventually be replaced by these.</dd>
+<dt><strong><code>__pydantic_parent_namespace__</code></strong></dt>
+<dd>Parent namespace of the model, used for automatic rebuilding of models.</dd>
+<dt><strong><code>__pydantic_post_init__</code></strong></dt>
+<dd>The name of the post-init method for the model, if defined.</dd>
+<dt><strong><code>__pydantic_root_model__</code></strong></dt>
+<dd>Whether the model is a <code>RootModel</code>.</dd>
+<dt><strong><code>__pydantic_serializer__</code></strong></dt>
+<dd>The pydantic-core SchemaSerializer used to dump instances of the model.</dd>
+<dt><strong><code>__pydantic_validator__</code></strong></dt>
+<dd>The pydantic-core SchemaValidator used to validate instances of the model.</dd>
+<dt><strong><code>__pydantic_extra__</code></strong></dt>
+<dd>An instance attribute with the values of extra fields from validation when
+<code>model_config['extra'] == 'allow'</code>.</dd>
+<dt><strong><code>__pydantic_fields_set__</code></strong></dt>
+<dd>An instance attribute with the names of fields explicitly set.</dd>
+<dt><strong><code>__pydantic_private__</code></strong></dt>
+<dd>Instance attribute with the values of private attributes set on the model instance.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="llmflex.Prompt.chat_template.ToolCallContent.arguments"><code class="name">var <span class="ident">arguments</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCallContent.model_computed_fields"><code class="name">var <span class="ident">model_computed_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCallContent.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCallContent.model_fields"><code class="name">var <span class="ident">model_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Prompt.chat_template.ToolCallContent.name"><code class="name">var <span class="ident">name</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Prompt" href="index.html">llmflex.Prompt</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Prompt.chat_template.get_chat_template" href="#llmflex.Prompt.chat_template.get_chat_template">get_chat_template</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Prompt.chat_template.ChatMessage" href="#llmflex.Prompt.chat_template.ChatMessage">ChatMessage</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Prompt.chat_template.ChatMessage.content" href="#llmflex.Prompt.chat_template.ChatMessage.content">content</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatMessage.model_computed_fields" href="#llmflex.Prompt.chat_template.ChatMessage.model_computed_fields">model_computed_fields</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatMessage.model_config" href="#llmflex.Prompt.chat_template.ChatMessage.model_config">model_config</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatMessage.model_fields" href="#llmflex.Prompt.chat_template.ChatMessage.model_fields">model_fields</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatMessage.role" href="#llmflex.Prompt.chat_template.ChatMessage.role">role</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatMessage.tool_calls" href="#llmflex.Prompt.chat_template.ChatMessage.tool_calls">tool_calls</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Prompt.chat_template.ChatTemplate" href="#llmflex.Prompt.chat_template.ChatTemplate">ChatTemplate</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Prompt.chat_template.ChatTemplate.allow_multiple_assistant" href="#llmflex.Prompt.chat_template.ChatTemplate.allow_multiple_assistant">allow_multiple_assistant</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatTemplate.apply_chat_template" href="#llmflex.Prompt.chat_template.ChatTemplate.apply_chat_template">apply_chat_template</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatTemplate.support_system" href="#llmflex.Prompt.chat_template.ChatTemplate.support_system">support_system</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatTemplate.support_tool_call" href="#llmflex.Prompt.chat_template.ChatTemplate.support_tool_call">support_tool_call</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatTemplate.tokenizer" href="#llmflex.Prompt.chat_template.ChatTemplate.tokenizer">tokenizer</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ChatTemplate.tool_start" href="#llmflex.Prompt.chat_template.ChatTemplate.tool_start">tool_start</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Prompt.chat_template.ToolCall" href="#llmflex.Prompt.chat_template.ToolCall">ToolCall</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Prompt.chat_template.ToolCall.function" href="#llmflex.Prompt.chat_template.ToolCall.function">function</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCall.model_computed_fields" href="#llmflex.Prompt.chat_template.ToolCall.model_computed_fields">model_computed_fields</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCall.model_config" href="#llmflex.Prompt.chat_template.ToolCall.model_config">model_config</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCall.model_fields" href="#llmflex.Prompt.chat_template.ToolCall.model_fields">model_fields</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Prompt.chat_template.ToolCallContent" href="#llmflex.Prompt.chat_template.ToolCallContent">ToolCallContent</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Prompt.chat_template.ToolCallContent.arguments" href="#llmflex.Prompt.chat_template.ToolCallContent.arguments">arguments</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCallContent.model_computed_fields" href="#llmflex.Prompt.chat_template.ToolCallContent.model_computed_fields">model_computed_fields</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCallContent.model_config" href="#llmflex.Prompt.chat_template.ToolCallContent.model_config">model_config</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCallContent.model_fields" href="#llmflex.Prompt.chat_template.ToolCallContent.model_fields">model_fields</a></code></li>
+<li><code><a title="llmflex.Prompt.chat_template.ToolCallContent.name" href="#llmflex.Prompt.chat_template.ToolCallContent.name">name</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>
