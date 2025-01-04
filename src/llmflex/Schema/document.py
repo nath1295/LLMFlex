@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 class Document(BaseModel):
     """Class for texts with metadata.

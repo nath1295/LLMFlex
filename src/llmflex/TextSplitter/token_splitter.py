@@ -1,12 +1,13 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 from .base_splitter import BaseTextSplitter
-from ..Tokenizer.base_tokenizer import BaseTokenizer
+if TYPE_CHECKING:
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
 
 class TokenCountTextSplitter(BaseTextSplitter):
     """Text splitter that count tokens and split texts.
     """
 
-    def __init__(self, tokenizer: BaseTokenizer,
+    def __init__(self, tokenizer: "BaseTokenizer",
                  chunk_size: int = 400, chunk_overlap: int = 40) -> None:
         """Initialize the TextSplitter.
 

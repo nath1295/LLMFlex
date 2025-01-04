@@ -83,6 +83,7 @@ el.replaceWith(d);
             tokenizer_kwargs (Optional[Dict[str, Any]], optional): Additional keyword arguments to pass to the Hugging Face tokenizer. Defaults to None.
         &#34;&#34;&#34;
         from transformers import AutoConfig, AutoModel, AutoTokenizer
+        from ...Tokenizer.huggingface_tokenizer import HuggingFaceTokenizer
         from ...utils import get_config
         model_kwargs = dict() if model_kwargs is None else model_kwargs
         tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs

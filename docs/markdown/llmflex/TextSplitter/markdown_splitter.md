@@ -4,7 +4,7 @@ Module llmflex.TextSplitter.markdown_splitter
 Classes
 -------
 
-`MarkdownTextSplitter(tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer, chunk_size: int = 400, config: Dict[str, bool] | None = None)`
+`MarkdownTextSplitter(tokenizer: BaseTokenizer, chunk_size: int = 400, config: Dict[str, bool] | None = None)`
 :   MarkdownTextSplitter is a text splitter that recursively splits text into smaller chunks of markdown sections.
         
     

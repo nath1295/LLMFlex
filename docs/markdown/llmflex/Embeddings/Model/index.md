@@ -1,5 +1,6 @@
 Module llmflex.Embeddings.Model
 ===============================
+All the embedding model classes.
 
 Sub-modules
 -----------

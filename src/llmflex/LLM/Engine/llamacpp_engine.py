@@ -1,11 +1,11 @@
 from .base_engine import BaseEngine
 import os
-from typing import Optional, List, Iterator, Dict, Any, Union
-try:
-    from llama_cpp import Llama
-    lcpp_installed = True
-except:
-    lcpp_installed = False
+from typing import Optional, List, Iterator, Dict, Any, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    try:
+        from llama_cpp import Llama
+    except:
+        pass
 
 class LlamaCppEngine(BaseEngine):
     """Class for LLM engine using llama-cpp-python.
@@ -30,7 +30,9 @@ class LlamaCppEngine(BaseEngine):
             download_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the download function. Defaults to None.
             **kwargs: Additional keyword arguments to pass to the Llama class.
         """
-        if not lcpp_installed:
+        try:
+            from llama_cpp import Llama
+        except:
             raise ModuleNotFoundError('"llama-cpp-python" not installed. To use LlamaCppEngine, please install "llama-cpp-python" by running "pip install llama-cpp-python".')
         from ...utils import get_config, download_file_from_repo
         from ...Tokenizer.llamacpp_tokenizer import LlamaCppTokenizer
@@ -69,7 +71,7 @@ class LlamaCppEngine(BaseEngine):
         super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
     
     @property
-    def model(self) -> Llama:
+    def model(self) -> "Llama":
         """LLM model.
 
         Returns:

@@ -1,13 +1,14 @@
 from .base_engine import BaseEngine
 import os
-from typing import Optional, List, Iterator, Dict, Any, Union, NamedTuple, Tuple
-from transformers import PreTrainedModel, PreTrainedTokenizer
+from typing import Optional, List, Iterator, Dict, Any, Union, NamedTuple, Tuple, TYPE_CHECKING
 from transformers.generation.streamers import BaseStreamer
+if TYPE_CHECKING:
+    from transformers import PreTrainedModel, PreTrainedTokenizer
 
 class TokenStreamer(BaseStreamer):
     """Class for streaming text tokens.
     """
-    def __init__(self, pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) -> None:
+    def __init__(self, pretrained_model_name_or_path: str, tokenizer: "PreTrainedTokenizer") -> None:
         from queue import Queue
         from ...Tokenizer.hf_detokenizer import get_detokenizer
         self._detokenizer = get_detokenizer(pretrained_model_name_or_path, tokenizer)
@@ -123,7 +124,7 @@ class HuggingFaceEngine(BaseEngine):
         super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
     
     @property
-    def model(self) -> PreTrainedModel:
+    def model(self) -> "PreTrainedModel":
         """LLM model.
 
         Returns:

@@ -106,10 +106,10 @@ el.replaceWith(d);
     parser_embd.add_argument(&#39;--model-id&#39;, type=str, help=&#39;HuggingFace repository id or local path of the embedding model.&#39;)
     parser_embd.add_argument(&#39;--batch-size&#39;, type=int, default=256, help=&#39;Default batch size of creating embeddings from strings.&#39;)
     parser_embd.add_argument(&#39;--normalize&#39;, type=bool, default=False, help=&#39;Default whether embedded vectors should be normalized. Defaults to True.&#39;)
-    parser_embd.add_argument(&#39;--model-kwargs&#39;, type=Optional[str], default=None, help=&#39;Arguments for loading the model in a json string.&#39;)
-    parser_embd.add_argument(&#39;--tokenizer-kwargs&#39;, type=Optional[str], default=None, help=&#39;Arguments for loading the tokenizer in a json string.&#39;)
+    parser_embd.add_argument(&#39;--model-kwargs&#39;, type=str, default=None, help=&#39;Arguments for loading the model in a json string.&#39;)
+    parser_embd.add_argument(&#39;--tokenizer-kwargs&#39;, type=str, default=None, help=&#39;Arguments for loading the tokenizer in a json string.&#39;)
     parser_embd.add_argument(&#39;--port&#39;, type=int, default=5003, help=&#39;Port of the embedding server. Defaults to 5003.&#39;)
-    parser_embd.add_argument(&#39;--host&#39;, type=Optional[str], default=None, help=&#39;Host of the server. Defaults to None.&#39;)
+    parser_embd.add_argument(&#39;--host&#39;, type=str, default=None, help=&#39;Host of the server. Defaults to None.&#39;)
     parser_embd.set_defaults(func=serve_embeddings)
 
     args = parser.parse_args()

@@ -65,7 +65,9 @@ el.replaceWith(d);
             pretrained_model_name_or_path (str): Huggingface repository name or full path of the model of the model file.
             model_file (str, optional): Model filename if a HuggingFace repository name is given for tokenizer_id_or_path. Defaults to None.
         &#34;&#34;&#34;
-        if not lcpp_installed:
+        try:
+            from llama_cpp import Llama
+        except:
             raise ModuleNotFoundError(&#39;&#34;llama-cpp-python&#34; not installed. To use LlamaCppTokenizer, please install &#34;llama-cpp-python&#34; by running &#34;pip install llama-cpp-python&#34;.&#39;)
         from ..utils import get_config, download_file_from_repo
         self._llama_tokenizer = kwargs.pop(&#39;llama_model&#39;, None)
@@ -100,7 +102,7 @@ el.replaceWith(d);
             pad_token_id=bos_token_id)
 
     @classmethod
-    def from_llama_model(cls, llama_model: Llama) -&gt; LlamaCppTokenizer:
+    def from_llama_model(cls, llama_model: &#34;Llama&#34;) -&gt; LlamaCppTokenizer:
         &#34;&#34;&#34;Initialise the tokenizer from a Llama CPP model directly.
 
         Args:
@@ -112,7 +114,7 @@ el.replaceWith(d);
         return cls(pretrained_model_name_or_path=&#39;&#39;, llama_model=llama_model)
     
     @property
-    def llama_tokenizer(self) -&gt; Llama:
+    def llama_tokenizer(self) -&gt; &#34;Llama&#34;:
         &#34;&#34;&#34;Get the underlying Llama tokenizer.
         
         Returns:
@@ -159,7 +161,7 @@ el.replaceWith(d);
 <h3>Static methods</h3>
 <dl>
 <dt id="llmflex.Tokenizer.llamacpp_tokenizer.LlamaCppTokenizer.from_llama_model"><code class="name flex">
-<span>def <span class="ident">from_llama_model</span></span>(<span>llama_model: Llama) ‑> <a title="llmflex.Tokenizer.llamacpp_tokenizer.LlamaCppTokenizer" href="#llmflex.Tokenizer.llamacpp_tokenizer.LlamaCppTokenizer">LlamaCppTokenizer</a></span>
+<span>def <span class="ident">from_llama_model</span></span>(<span>llama_model: "'Llama'")</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the tokenizer from a Llama CPP model directly.</p>
@@ -177,14 +179,14 @@ el.replaceWith(d);
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.Tokenizer.llamacpp_tokenizer.LlamaCppTokenizer.llama_tokenizer"><code class="name">prop <span class="ident">llama_tokenizer</span> : Llama</code></dt>
+<dt id="llmflex.Tokenizer.llamacpp_tokenizer.LlamaCppTokenizer.llama_tokenizer"><code class="name">prop <span class="ident">llama_tokenizer</span> : 'Llama'</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def llama_tokenizer(self) -&gt; Llama:
+def llama_tokenizer(self) -&gt; &#34;Llama&#34;:
     &#34;&#34;&#34;Get the underlying Llama tokenizer.
     
     Returns:

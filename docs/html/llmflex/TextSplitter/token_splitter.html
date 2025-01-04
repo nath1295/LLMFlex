@@ -48,7 +48,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.TextSplitter.token_splitter.TokenCountTextSplitter"><code class="flex name class">
 <span>class <span class="ident">TokenCountTextSplitter</span></span>
-<span>(</span><span>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a>,<br>chunk_size: int = 400,<br>chunk_overlap: int = 40)</span>
+<span>(</span><span>tokenizer: BaseTokenizer, chunk_size: int = 400, chunk_overlap: int = 40)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -59,7 +59,7 @@ el.replaceWith(d);
     &#34;&#34;&#34;Text splitter that count tokens and split texts.
     &#34;&#34;&#34;
 
-    def __init__(self, tokenizer: BaseTokenizer,
+    def __init__(self, tokenizer: &#34;BaseTokenizer&#34;,
                  chunk_size: int = 400, chunk_overlap: int = 40) -&gt; None:
         &#34;&#34;&#34;Initialize the TextSplitter.
 

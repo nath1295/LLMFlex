@@ -4,7 +4,7 @@ Module llmflex.Embeddings.Model.base_embeddings
 Classes
 -------
 
-`BaseEmbeddings(model: Any, model_id: str, tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer, max_seq_len: int, embedding_size: int)`
+`BaseEmbeddings(model: Any, model_id: str, tokenizer: BaseTokenizer, max_seq_len: int, embedding_size: int)`
 :   Base class for embedding models.
         
     
@@ -47,7 +47,7 @@ Classes
         Returns:
             str: The ID of the embeddings model.
 
-    `tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer`
+    `tokenizer: BaseTokenizer`
     :   Gets the tokenizer used to convert text into tokens.
         
         Returns:

@@ -4,7 +4,7 @@ Module llmflex.TextSplitter.token_splitter
 Classes
 -------
 
-`TokenCountTextSplitter(tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer, chunk_size: int = 400, chunk_overlap: int = 40)`
+`TokenCountTextSplitter(tokenizer: BaseTokenizer, chunk_size: int = 400, chunk_overlap: int = 40)`
 :   Text splitter that count tokens and split texts.
         
     

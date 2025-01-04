@@ -63,7 +63,7 @@ Classes
     `trim_length: int`
     :   Alias for field number 1
 
-`TokenStreamer(pretrained_model_name_or_path: str, tokenizer: transformers.tokenization_utils.PreTrainedTokenizer)`
+`TokenStreamer(pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer)`
 :   Class for streaming text tokens.
 
     ### Ancestors (in MRO)

@@ -1,7 +1,8 @@
-from typing import List
+from typing import List, TYPE_CHECKING
 import re
 from .base_splitter import BaseTextSplitter
-from ..Tokenizer.base_tokenizer import BaseTokenizer
+if TYPE_CHECKING:
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
 
 def split_sentences(text: str) -> List[str]:
     # Adapted from https://stackoverflow.com/questions/4576077/how-can-i-split-a-text-into-sentences
@@ -63,7 +64,7 @@ class SentenceTextSplitter(BaseTextSplitter):
     """Text splitter that split texts into sentences.
     """
 
-    def __init__(self, tokenizer: BaseTokenizer,
+    def __init__(self, tokenizer: "BaseTokenizer",
                  chunk_size: int = 400, chunk_overlap: int = 40) -> None:
         """Initialize the TextSplitter.
 

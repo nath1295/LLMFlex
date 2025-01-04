@@ -73,6 +73,7 @@ el.replaceWith(d);
             from flask import Flask
         except:
             raise ModuleNotFoundError(f&#39;&#34;flask&#34; not installed. Install with `pip install flask`.&#39;)
+        from .Model.huggingface_embeddings import HuggingFaceEmbeddings
         self.embeddings = HuggingFaceEmbeddings(
             pretrained_model_name_or_path=pretrained_model_name_or_path,
             batch_size=batch_size,

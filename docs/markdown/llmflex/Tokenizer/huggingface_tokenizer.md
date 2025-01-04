@@ -20,7 +20,7 @@ Classes
 
     ### Static methods
 
-    `from_hf_tokenizer(tokenizer: PreTrainedTokenizerBase) ‑> llmflex.Tokenizer.huggingface_tokenizer.HuggingFaceTokenizer`
+    `from_hf_tokenizer(tokenizer: "'PreTrainedTokenizerBase'")`
     :   Initialise the tokenizer from a huggingface transformers tokenizer directly.
         
         Args:

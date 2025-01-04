@@ -4,7 +4,7 @@ Module llmflex.LLM.Engine.base_engine
 Classes
 -------
 
-`BaseEngine(model: Any, model_id: str, tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer, model_name: str | None = None, default_chat_template: Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi'] | None = None)`
+`BaseEngine(model: Any, model_id: str, tokenizer: BaseTokenizer, model_name: str | None = None, default_chat_template: ForwardRef('CHAT_TEMPLATE_PRESETS') | None = None)`
 :   Base class for LLM engine.
 
     ### Ancestors (in MRO)
@@ -20,7 +20,7 @@ Classes
 
     ### Instance variables
 
-    `chat_template: llmflex.Prompt.chat_template.ChatTemplate`
+    `chat_template: ChatTemplate`
     :   Chat template for the LLM engine.
         
         This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.
@@ -46,7 +46,7 @@ Classes
         Returns:
             str: Prettified version of model ID.
 
-    `tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer`
+    `tokenizer: BaseTokenizer`
     :   Tokenizer.
         
         Returns:
@@ -256,7 +256,7 @@ Classes
 
     ### Instance variables
 
-    `chat_template: llmflex.Prompt.chat_template.ChatTemplate`
+    `chat_template: ChatTemplate`
     :   Returns the default chat template for the LLM.
         
         Returns:
@@ -290,7 +290,7 @@ Classes
         Returns:
             str: The name of the LLM model.
 
-    `tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer`
+    `tokenizer: BaseTokenizer`
     :   Returns the tokenizer used in the LLM.
         
         Returns:

@@ -21,7 +21,7 @@ Classes
 
     ### Static methods
 
-    `from_llama_model(llama_model: Llama) ‑> llmflex.Tokenizer.llamacpp_tokenizer.LlamaCppTokenizer`
+    `from_llama_model(llama_model: "'Llama'")`
     :   Initialise the tokenizer from a Llama CPP model directly.
         
         Args:
@@ -32,7 +32,7 @@ Classes
 
     ### Instance variables
 
-    `llama_tokenizer: Llama`
+    `llama_tokenizer: 'Llama'`
     :   Get the underlying Llama tokenizer.
         
         Returns:

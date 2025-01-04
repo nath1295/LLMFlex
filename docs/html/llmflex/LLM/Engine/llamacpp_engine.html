@@ -78,7 +78,9 @@ el.replaceWith(d);
             download_kwargs (Dict[str, Any], optional): Additional keyword arguments to pass to the download function. Defaults to None.
             **kwargs: Additional keyword arguments to pass to the Llama class.
         &#34;&#34;&#34;
-        if not lcpp_installed:
+        try:
+            from llama_cpp import Llama
+        except:
             raise ModuleNotFoundError(&#39;&#34;llama-cpp-python&#34; not installed. To use LlamaCppEngine, please install &#34;llama-cpp-python&#34; by running &#34;pip install llama-cpp-python&#34;.&#39;)
         from ...utils import get_config, download_file_from_repo
         from ...Tokenizer.llamacpp_tokenizer import LlamaCppTokenizer
@@ -117,7 +119,7 @@ el.replaceWith(d);
         super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
     
     @property
-    def model(self) -&gt; Llama:
+    def model(self) -&gt; &#34;Llama&#34;:
         &#34;&#34;&#34;LLM model.
 
         Returns:

@@ -1,11 +1,12 @@
 from .base_splitter import BaseTextSplitter
-from ..Tokenizer.base_tokenizer import BaseTokenizer
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
 
 class MarkdownTextSplitter(BaseTextSplitter):
     """MarkdownTextSplitter is a text splitter that recursively splits text into smaller chunks of markdown sections.
     """
-    def __init__(self, tokenizer: BaseTokenizer, chunk_size: int = 400, config: Optional[Dict[str, bool]] = None) -> None:
+    def __init__(self, tokenizer: "BaseTokenizer", chunk_size: int = 400, config: Optional[Dict[str, bool]] = None) -> None:
         """Initializes the MarkdownTextSplitter with a tokenizer, split strings, and chunk size.
 
         Args:

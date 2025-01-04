@@ -4,6 +4,7 @@ LLMFlex is a python package that allows python developers to work with different
 
 Sub-modules
 -----------
+* llmflex.Chatbot
 * llmflex.Embeddings
 * llmflex.LLM
 * llmflex.Memory

@@ -1,10 +1,11 @@
 # adapted from mlx-lm
 import json
 from functools import partial
-from typing import List, Optional, Union
+from typing import List, Optional, Union, TYPE_CHECKING
 import os
-from transformers import PreTrainedTokenizer
-from huggingface_hub import hf_hub_download
+if TYPE_CHECKING:
+    from transformers import PreTrainedTokenizer
+
 
 REPLACEMENT_CHAR = "\ufffd"
 SPECIAL_SPACE = "\u2581"
@@ -16,7 +17,7 @@ def _remove_space(x):
 
 class NaiveDetokenizer:
 
-    def __init__(self, tokenizer: PreTrainedTokenizer) -> None:
+    def __init__(self, tokenizer: "PreTrainedTokenizer") -> None:
         self._tokenizer = tokenizer
         self.reset()
 
@@ -63,7 +64,7 @@ class SPMDetokenizer:
     underscore which results in linear complexity.
     """
 
-    def __init__(self, tokenizer: PreTrainedTokenizer, trim_space=True):
+    def __init__(self, tokenizer: "PreTrainedTokenizer", trim_space=True):
         self.trim_space = trim_space
         self.eos_token = tokenizer.eos_token
 
@@ -154,13 +155,14 @@ def _is_spm_decoder_no_space(decoder):
     }
     return _match(_target_description, decoder)
 
-def get_detokenizer(pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) -> Union[NaiveDetokenizer, SPMDetokenizer]:
+def get_detokenizer(pretrained_model_name_or_path: str, tokenizer: "PreTrainedTokenizer") -> Union[NaiveDetokenizer, SPMDetokenizer]:
     """Get the detokenizer.
 
     Note, to use a fast streaming tokenizer, pass a local file path rather than
     a Hugging Face repo ID.
     """
     from ..utils import get_config
+    from huggingface_hub import hf_hub_download
     detokenizer_class = NaiveDetokenizer
 
     tokenizer_file = os.path.join("tokenizer.json")

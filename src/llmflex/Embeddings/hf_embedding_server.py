@@ -1,4 +1,3 @@
-from .Model.huggingface_embeddings import HuggingFaceEmbeddings
 from typing import Dict, Any, Optional
 
 class HFEmbeddingServer:
@@ -19,6 +18,7 @@ class HFEmbeddingServer:
             from flask import Flask
         except:
             raise ModuleNotFoundError(f'"flask" not installed. Install with `pip install flask`.')
+        from .Model.huggingface_embeddings import HuggingFaceEmbeddings
         self.embeddings = HuggingFaceEmbeddings(
             pretrained_model_name_or_path=pretrained_model_name_or_path,
             batch_size=batch_size,

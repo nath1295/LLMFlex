@@ -45,20 +45,21 @@ el.replaceWith(d);
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="llmflex.Tokenizer.hf_detokenizer.get_detokenizer"><code class="name flex">
-<span>def <span class="ident">get_detokenizer</span></span>(<span>pretrained_model_name_or_path: str,<br>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer) ‑> <a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer">NaiveDetokenizer</a> | <a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer">SPMDetokenizer</a></span>
+<span>def <span class="ident">get_detokenizer</span></span>(<span>pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) ‑> <a title="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer">NaiveDetokenizer</a> | <a title="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer" href="#llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer">SPMDetokenizer</a></span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_detokenizer(pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) -&gt; Union[NaiveDetokenizer, SPMDetokenizer]:
+<pre><code class="python">def get_detokenizer(pretrained_model_name_or_path: str, tokenizer: &#34;PreTrainedTokenizer&#34;) -&gt; Union[NaiveDetokenizer, SPMDetokenizer]:
     &#34;&#34;&#34;Get the detokenizer.
 
     Note, to use a fast streaming tokenizer, pass a local file path rather than
     a Hugging Face repo ID.
     &#34;&#34;&#34;
     from ..utils import get_config
+    from huggingface_hub import hf_hub_download
     detokenizer_class = NaiveDetokenizer
 
     tokenizer_file = os.path.join(&#34;tokenizer.json&#34;)
@@ -84,7 +85,7 @@ a Hugging Face repo ID.</p></div>
 <dl>
 <dt id="llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer"><code class="flex name class">
 <span>class <span class="ident">NaiveDetokenizer</span></span>
-<span>(</span><span>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer)</span>
+<span>(</span><span>tokenizer: PreTrainedTokenizer)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -93,7 +94,7 @@ a Hugging Face repo ID.</p></div>
 </summary>
 <pre><code class="python">class NaiveDetokenizer:
 
-    def __init__(self, tokenizer: PreTrainedTokenizer) -&gt; None:
+    def __init__(self, tokenizer: &#34;PreTrainedTokenizer&#34;) -&gt; None:
         self._tokenizer = tokenizer
         self.reset()
 
@@ -217,7 +218,7 @@ def last_segments(self) -&gt; List[str]:
 </dd>
 <dt id="llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer"><code class="flex name class">
 <span>class <span class="ident">SPMDetokenizer</span></span>
-<span>(</span><span>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer,<br>trim_space=True)</span>
+<span>(</span><span>tokenizer: PreTrainedTokenizer, trim_space=True)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -231,7 +232,7 @@ def last_segments(self) -&gt; List[str]:
     underscore which results in linear complexity.
     &#34;&#34;&#34;
 
-    def __init__(self, tokenizer: PreTrainedTokenizer, trim_space=True):
+    def __init__(self, tokenizer: &#34;PreTrainedTokenizer&#34;, trim_space=True):
         self.trim_space = trim_space
         self.eos_token = tokenizer.eos_token
 

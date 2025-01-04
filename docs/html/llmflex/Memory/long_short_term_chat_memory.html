@@ -48,7 +48,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory"><code class="flex name class">
 <span>class <span class="ident">LongShortTermChatMemory</span></span>
-<span>(</span><span>embeddings: BaseEmbeddings,<br>ranker: Optional[BaseRanker] = None,<br>text_splitter: Optional[BaseTextSplitter] = None,<br>vdb_type: VDB_TYPE = 'numpy',<br>title: Optional[str] = None,<br>memory_dir: Optional[str] = None,<br>**kwargs)</span>
+<span>(</span><span>embeddings: "'BaseEmbeddings'",<br>ranker: "Optional['BaseRanker']" = None,<br>text_splitter: "Optional['BaseTextSplitter']" = None,<br>vdb_type: VDB_TYPE = 'numpy',<br>title: Optional[str] = None,<br>memory_dir: Optional[str] = None,<br>**kwargs)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -58,9 +58,9 @@ el.replaceWith(d);
 <pre><code class="python">class LongShortTermChatMemory(BaseMemory):
     &#34;&#34;&#34;Long short term chat memory class.&#34;&#34;&#34;
     def __init__(self,
-            embeddings: BaseEmbeddings,
-            ranker: Optional[BaseRanker] = None,
-            text_splitter: Optional[BaseTextSplitter] = None,
+            embeddings: &#34;BaseEmbeddings&#34;,
+            ranker: Optional[&#34;BaseRanker&#34;] = None,
+            text_splitter: Optional[&#34;BaseTextSplitter&#34;] = None,
             vdb_type: VDB_TYPE = &#39;numpy&#39;,
             title: Optional[str] = None, 
             memory_dir: Optional[str] = None,
@@ -98,9 +98,9 @@ el.replaceWith(d);
                 self._vdb = FaissVectorDatabase(embeddings=embeddings, text_splitter=self._text_splitter, vdb_dir=self._vdb_dir)
 
     @classmethod
-    def from_exist(cls, embeddings: BaseEmbeddings, memory_dir: str,
-            ranker: Optional[BaseRanker] = None,
-            text_splitter: Optional[BaseTextSplitter] = None) -&gt; LongShortTermChatMemory:
+    def from_exist(cls, embeddings: &#34;BaseEmbeddings&#34;, memory_dir: str,
+            ranker: Optional[&#34;BaseRanker&#34;] = None,
+            text_splitter: Optional[&#34;BaseTextSplitter&#34;] = None) -&gt; LongShortTermChatMemory:
         &#34;&#34;&#34;Initializes the LongShortTermChatMemory class from an existing memory directory.
 
         Args:
@@ -267,7 +267,7 @@ el.replaceWith(d);
 <h3>Static methods</h3>
 <dl>
 <dt id="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory.from_exist"><code class="name flex">
-<span>def <span class="ident">from_exist</span></span>(<span>embeddings: BaseEmbeddings,<br>memory_dir: str,<br>ranker: Optional[BaseRanker] = None,<br>text_splitter: Optional[BaseTextSplitter] = None) ‑> <a title="llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory" href="#llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory">LongShortTermChatMemory</a></span>
+<span>def <span class="ident">from_exist</span></span>(<span>embeddings: "'BaseEmbeddings'",<br>memory_dir: str,<br>ranker: "Optional['BaseRanker']" = None,<br>text_splitter: "Optional['BaseTextSplitter']" = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initializes the LongShortTermChatMemory class from an existing memory directory.</p>

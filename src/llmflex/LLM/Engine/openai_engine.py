@@ -1,7 +1,8 @@
 from .base_engine import BaseEngine
-from openai import Client
 import os
-from typing import Optional, Any, List, Dict, Iterator, Literal, Union
+from typing import Optional, Any, List, Dict, Iterator, Literal, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    from openai import Client
 
 KNOWN_BACKEND = Literal['openai', 'mlx-textgen', 'vllm', 'llama.cpp', 'llama-cpp-python']
 
@@ -28,6 +29,7 @@ class OpenAIEngine(BaseEngine):
             api_key (Optional[str], optional): The API key for the OpenAI API. Defaults to None.
             **kwargs: Additional keyword arguments to pass to the BaseEngine initializer.
         """
+        from openai import Client
         tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
         base_url = os.environ.get('OPENAI_BASE_URL') if base_url is None else base_url
         api_key = os.environ.get('OPENAI_API_KEY') if api_key is None else api_key
@@ -60,7 +62,7 @@ class OpenAIEngine(BaseEngine):
         super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
     
     @property
-    def model(self) -> Client:
+    def model(self) -> "Client":
         """LLM model.
 
         Returns:

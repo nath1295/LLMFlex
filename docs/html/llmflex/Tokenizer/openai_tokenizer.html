@@ -64,7 +64,9 @@ el.replaceWith(d);
         Args:
             model_id (str): The ID of the OpenAI model to use for tokenization.
         &#34;&#34;&#34;
-        if not tt_installed:
+        try:
+            import tiktoken
+        except:
             raise ModuleNotFoundError(f&#39;&#34;tiktoken&#34; not installed. Please install with `pip install tiktoken`.&#39;)
         import tiktoken
         self._openai_tokenizer = kwargs.pop(&#39;tokenizer&#39;, None)
@@ -95,7 +97,7 @@ el.replaceWith(d);
         return cls(model_id=&#39;&#39;, tokenizer=tokenizer)
     
     @property
-    def openai_tokenizer(self) -&gt; Encoding:
+    def openai_tokenizer(self) -&gt; &#34;Encoding&#34;:
         &#34;&#34;&#34;Returns the underlying tiktoken tokenizer instance.
 
         Returns:
@@ -140,7 +142,7 @@ el.replaceWith(d);
 <h3>Static methods</h3>
 <dl>
 <dt id="llmflex.Tokenizer.openai_tokenizer.OpenAITokenizer.from_hf_tokenizer"><code class="name flex">
-<span>def <span class="ident">from_hf_tokenizer</span></span>(<span>tokenizer: Encoding) ‑> <a title="llmflex.Tokenizer.openai_tokenizer.OpenAITokenizer" href="#llmflex.Tokenizer.openai_tokenizer.OpenAITokenizer">OpenAITokenizer</a></span>
+<span>def <span class="ident">from_hf_tokenizer</span></span>(<span>tokenizer: Encoding)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the tokenizer from a tiktoken tokenizer directly.</p>
@@ -158,14 +160,14 @@ el.replaceWith(d);
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.Tokenizer.openai_tokenizer.OpenAITokenizer.openai_tokenizer"><code class="name">prop <span class="ident">openai_tokenizer</span> : Encoding</code></dt>
+<dt id="llmflex.Tokenizer.openai_tokenizer.OpenAITokenizer.openai_tokenizer"><code class="name">prop <span class="ident">openai_tokenizer</span> : 'Encoding'</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def openai_tokenizer(self) -&gt; Encoding:
+def openai_tokenizer(self) -&gt; &#34;Encoding&#34;:
     &#34;&#34;&#34;Returns the underlying tiktoken tokenizer instance.
 
     Returns:

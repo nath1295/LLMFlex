@@ -1,12 +1,8 @@
 from __future__ import annotations
 from .base_tokenizer import BaseTokenizer
-from typing import List, Literal
-try:
-    from transformers import PreTrainedTokenizerBase, AutoTokenizer
-    hf_installed = True
-except:
-    hf_installed = False
-    import warnings
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from transformers import PreTrainedTokenizerBase
 
 class HuggingFaceTokenizer(BaseTokenizer):
     """Huggingface tokenizer class.
@@ -17,8 +13,7 @@ class HuggingFaceTokenizer(BaseTokenizer):
         Args:
             pretrained_model_name_or_path (str): Huggingface repository name or path to the model.
         """
-        if not hf_installed:
-            warnings.warn(message='"transformers" not installed. To use HuggingFaceTokenizer, please install "transformers" by running "pip install transformers".')
+        from transformers import AutoTokenizer
         from ..utils import get_config
         self._hf_tokenizer = kwargs.pop('tokenizer', None)
         if not self._hf_tokenizer:
@@ -40,7 +35,7 @@ class HuggingFaceTokenizer(BaseTokenizer):
             self.hf_tokenizer.pad_token_id = self.pad_token_id
 
     @classmethod
-    def from_hf_tokenizer(cls, tokenizer: PreTrainedTokenizerBase) -> HuggingFaceTokenizer:
+    def from_hf_tokenizer(cls, tokenizer: "PreTrainedTokenizerBase") -> HuggingFaceTokenizer:
         """Initialise the tokenizer from a huggingface transformers tokenizer directly.
 
         Args:

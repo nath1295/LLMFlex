@@ -4,7 +4,7 @@ Module llmflex.Tokenizer.hf_detokenizer
 Functions
 ---------
 
-`get_detokenizer(pretrained_model_name_or_path: str, tokenizer: transformers.tokenization_utils.PreTrainedTokenizer) ‑> llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer | llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer`
+`get_detokenizer(pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) ‑> llmflex.Tokenizer.hf_detokenizer.NaiveDetokenizer | llmflex.Tokenizer.hf_detokenizer.SPMDetokenizer`
 :   Get the detokenizer.
     
     Note, to use a fast streaming tokenizer, pass a local file path rather than
@@ -13,7 +13,7 @@ Functions
 Classes
 -------
 
-`NaiveDetokenizer(tokenizer: transformers.tokenization_utils.PreTrainedTokenizer)`
+`NaiveDetokenizer(tokenizer: PreTrainedTokenizer)`
 :   
 
     ### Instance variables
@@ -32,7 +32,7 @@ Classes
     `reset(self, num_seqs: int | None = None) ‑> None`
     :
 
-`SPMDetokenizer(tokenizer: transformers.tokenization_utils.PreTrainedTokenizer, trim_space=True)`
+`SPMDetokenizer(tokenizer: PreTrainedTokenizer, trim_space=True)`
 :   A streaming detokenizer for SPM models.
     
     It adds tokens to the text if the next token starts with the special SPM

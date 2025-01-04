@@ -1,5 +1,4 @@
 from .base_embeddings import BaseEmbeddings
-from ...Tokenizer.huggingface_tokenizer import HuggingFaceTokenizer
 import numpy as np
 from typing import Optional, Dict, Any, List
 try:
@@ -7,7 +6,6 @@ try:
     import torch.nn.functional as F
     torch_installed = True
 except:
-    import warnings
     torch_installed = False
 
 class HuggingFaceEmbeddings(BaseEmbeddings):
@@ -38,6 +36,7 @@ class HuggingFaceEmbeddings(BaseEmbeddings):
             tokenizer_kwargs (Optional[Dict[str, Any]], optional): Additional keyword arguments to pass to the Hugging Face tokenizer. Defaults to None.
         """
         from transformers import AutoConfig, AutoModel, AutoTokenizer
+        from ...Tokenizer.huggingface_tokenizer import HuggingFaceTokenizer
         from ...utils import get_config
         model_kwargs = dict() if model_kwargs is None else model_kwargs
         tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs

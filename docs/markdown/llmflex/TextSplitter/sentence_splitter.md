@@ -10,7 +10,7 @@ Functions
 Classes
 -------
 
-`SentenceTextSplitter(tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer, chunk_size: int = 400, chunk_overlap: int = 40)`
+`SentenceTextSplitter(tokenizer: BaseTokenizer, chunk_size: int = 400, chunk_overlap: int = 40)`
 :   Text splitter that split texts into sentences.
         
     

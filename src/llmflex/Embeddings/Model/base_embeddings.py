@@ -1,12 +1,13 @@
 from abc import ABC, abstractmethod
-from ...Tokenizer.base_tokenizer import BaseTokenizer
 import numpy as np
-from typing import Any, List
+from typing import Any, List, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ...Tokenizer.base_tokenizer import BaseTokenizer
 
 class BaseEmbeddings(ABC):
     """Base class for embedding models.
     """
-    def __init__(self, model: Any, model_id: str, tokenizer: BaseTokenizer, max_seq_len: int, embedding_size: int) -> None:
+    def __init__(self, model: Any, model_id: str, tokenizer: "BaseTokenizer", max_seq_len: int, embedding_size: int) -> None:
         """Initializes the base embedding model.
 
         This method sets up the base embedding model with the given parameters.
@@ -51,7 +52,7 @@ class BaseEmbeddings(ABC):
         return self._embedding_size
     
     @property
-    def tokenizer(self) -> BaseTokenizer:
+    def tokenizer(self) -> "BaseTokenizer":
         """Gets the tokenizer used to convert text into tokens.
 
         Returns:

@@ -20,7 +20,7 @@ Classes
 
     ### Static methods
 
-    `from_hf_tokenizer(tokenizer: Encoding) ‑> llmflex.Tokenizer.openai_tokenizer.OpenAITokenizer`
+    `from_hf_tokenizer(tokenizer: Encoding)`
     :   Initialise the tokenizer from a tiktoken tokenizer directly.
         
         Args:
@@ -31,7 +31,7 @@ Classes
 
     ### Instance variables
 
-    `openai_tokenizer: Encoding`
+    `openai_tokenizer: 'Encoding'`
     :   Returns the underlying tiktoken tokenizer instance.
         
         Returns:

@@ -1,12 +1,13 @@
 from __future__ import annotations
 from .base_tokenizer import BaseTokenizer
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
 import os
-try:
-    from llama_cpp import Llama
-    lcpp_installed = True
-except:
-    lcpp_installed = False
+if TYPE_CHECKING:
+    try:
+        from llama_cpp import Llama
+    except:
+        pass
+
 
 class LlamaCppTokenizer(BaseTokenizer):
     """Llama CPP tokenizer class.
@@ -18,7 +19,9 @@ class LlamaCppTokenizer(BaseTokenizer):
             pretrained_model_name_or_path (str): Huggingface repository name or full path of the model of the model file.
             model_file (str, optional): Model filename if a HuggingFace repository name is given for tokenizer_id_or_path. Defaults to None.
         """
-        if not lcpp_installed:
+        try:
+            from llama_cpp import Llama
+        except:
             raise ModuleNotFoundError('"llama-cpp-python" not installed. To use LlamaCppTokenizer, please install "llama-cpp-python" by running "pip install llama-cpp-python".')
         from ..utils import get_config, download_file_from_repo
         self._llama_tokenizer = kwargs.pop('llama_model', None)
@@ -53,7 +56,7 @@ class LlamaCppTokenizer(BaseTokenizer):
             pad_token_id=bos_token_id)
 
     @classmethod
-    def from_llama_model(cls, llama_model: Llama) -> LlamaCppTokenizer:
+    def from_llama_model(cls, llama_model: "Llama") -> LlamaCppTokenizer:
         """Initialise the tokenizer from a Llama CPP model directly.
 
         Args:
@@ -65,7 +68,7 @@ class LlamaCppTokenizer(BaseTokenizer):
         return cls(pretrained_model_name_or_path='', llama_model=llama_model)
     
     @property
-    def llama_tokenizer(self) -> Llama:
+    def llama_tokenizer(self) -> "Llama":
         """Get the underlying Llama tokenizer.
         
         Returns:

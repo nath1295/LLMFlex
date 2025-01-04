@@ -1,12 +1,13 @@
-from ...Tokenizer.base_tokenizer import BaseTokenizer
-from ...Prompt.chat_template import ChatTemplate, CHAT_TEMPLATE_PRESETS
-from typing import List, Optional, Any, Iterator, Dict, Union
+from typing import List, Optional, Any, Iterator, Dict, Union, TYPE_CHECKING
 from abc import ABC, abstractmethod
+if TYPE_CHECKING:
+    from ...Tokenizer.base_tokenizer import BaseTokenizer
+    from ...Prompt.chat_template import ChatTemplate, CHAT_TEMPLATE_PRESETS
 
 class BaseEngine(ABC):
     """Base class for LLM engine.
     """
-    def __init__(self, model: Any, model_id: str, tokenizer: BaseTokenizer, model_name: Optional[str] = None, default_chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None) -> None:
+    def __init__(self, model: Any, model_id: str, tokenizer: "BaseTokenizer", model_name: Optional[str] = None, default_chat_template: Optional["CHAT_TEMPLATE_PRESETS"] = None) -> None:
         self._model = model
         self._model_id = model_id
         self._tokenizer = tokenizer
@@ -45,7 +46,7 @@ class BaseEngine(ABC):
         return self._model_name
     
     @property
-    def tokenizer(self) -> BaseTokenizer:
+    def tokenizer(self) -> "BaseTokenizer":
         """Tokenizer.
 
         Returns:
@@ -54,7 +55,7 @@ class BaseEngine(ABC):
         return self._tokenizer
     
     @property
-    def chat_template(self) -> ChatTemplate:
+    def chat_template(self) -> "ChatTemplate":
         """Chat template for the LLM engine.
 
         This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.
@@ -64,6 +65,7 @@ class BaseEngine(ABC):
         """
         if not hasattr(self, '_chat_template'):
             from ...Prompt.presets import PRESETS
+            from ...Prompt.chat_template import ChatTemplate
             chat_template = self._default_chat_template
             chat_template = None if chat_template not in PRESETS.keys() else chat_template
             self._chat_template = ChatTemplate(tokenizer=self.tokenizer, chat_template=chat_template)
@@ -446,7 +448,7 @@ class BaseLLM:
         return self._engine
 
     @property
-    def tokenizer(self) -> BaseTokenizer:
+    def tokenizer(self) -> "BaseTokenizer":
         """Returns the tokenizer used in the LLM.
 
         Returns:
@@ -455,7 +457,7 @@ class BaseLLM:
         return self.engine.tokenizer
     
     @property
-    def chat_template(self) -> ChatTemplate:
+    def chat_template(self) -> "ChatTemplate":
         """Returns the default chat template for the LLM.
 
         Returns:

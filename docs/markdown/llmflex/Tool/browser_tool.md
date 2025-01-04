@@ -17,7 +17,7 @@ Functions
 Classes
 -------
 
-`BrowserTool(base_url: str, embeddings: llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings, tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer | None = None, ranker: llmflex.Reranker.base_ranker.BaseRanker | None = None, chunk_size: int = 300)`
+`BrowserTool(base_url: str, embeddings: BaseEmbeddings, tokenizer: ForwardRef('BaseTokenizer') | None = None, ranker: ForwardRef('BaseRanker') | None = None, chunk_size: int = 300)`
 :   A web search tool that uses a query or a list of queries provided by the user to perform web search via the SearXNG meta search engine API.
         
     

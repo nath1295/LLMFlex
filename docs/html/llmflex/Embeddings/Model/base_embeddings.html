@@ -48,7 +48,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings"><code class="flex name class">
 <span>class <span class="ident">BaseEmbeddings</span></span>
-<span>(</span><span>model: Any,<br>model_id: str,<br>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a>,<br>max_seq_len: int,<br>embedding_size: int)</span>
+<span>(</span><span>model: Any,<br>model_id: str,<br>tokenizer: BaseTokenizer,<br>max_seq_len: int,<br>embedding_size: int)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -58,7 +58,7 @@ el.replaceWith(d);
 <pre><code class="python">class BaseEmbeddings(ABC):
     &#34;&#34;&#34;Base class for embedding models.
     &#34;&#34;&#34;
-    def __init__(self, model: Any, model_id: str, tokenizer: BaseTokenizer, max_seq_len: int, embedding_size: int) -&gt; None:
+    def __init__(self, model: Any, model_id: str, tokenizer: &#34;BaseTokenizer&#34;, max_seq_len: int, embedding_size: int) -&gt; None:
         &#34;&#34;&#34;Initializes the base embedding model.
 
         This method sets up the base embedding model with the given parameters.
@@ -103,7 +103,7 @@ el.replaceWith(d);
         return self._embedding_size
     
     @property
-    def tokenizer(self) -&gt; BaseTokenizer:
+    def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
         &#34;&#34;&#34;Gets the tokenizer used to convert text into tokens.
 
         Returns:
@@ -229,14 +229,14 @@ def model_id(self) -&gt; str:
 <dd>The ID of the embeddings model.</dd>
 </dl></div>
 </dd>
-<dt id="llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a></code></dt>
+<dt id="llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : BaseTokenizer</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def tokenizer(self) -&gt; BaseTokenizer:
+def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
     &#34;&#34;&#34;Gets the tokenizer used to convert text into tokens.
 
     Returns:

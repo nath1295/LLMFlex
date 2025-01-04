@@ -1,13 +1,14 @@
 from __future__ import annotations
-from .Engine.base_engine import BaseEngine, BaseLLM
-from ..Tokenizer.base_tokenizer import BaseTokenizer
-from ..Prompt.chat_template import ChatTemplate
-from typing import Optional, List, Dict, Any, Literal
+from typing import Optional, List, Dict, Any, Literal, TYPE_CHECKING
+if TYPE_CHECKING:
+    from .Engine.base_engine import BaseEngine, BaseLLM
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
+    from ..Prompt.chat_template import ChatTemplate
 
 class LLMFactory:
     """Class for creating LLMs with different default generation settings from the same LLM engine.
     """
-    def __init__(self, engine: BaseEngine) -> None:
+    def __init__(self, engine: "BaseEngine") -> None:
         """Initialises the class with the underlying LLM engine.
 
         Args:
@@ -16,7 +17,7 @@ class LLMFactory:
         self._engine = engine
 
     @property
-    def engine(self) -> BaseEngine:
+    def engine(self) -> "BaseEngine":
         """Engine used in the LLMs.
 
         Returns:
@@ -34,7 +35,7 @@ class LLMFactory:
         return self.engine.__class__.__name__
     
     @property
-    def tokenizer(self) -> BaseTokenizer:
+    def tokenizer(self) -> "BaseTokenizer":
         """Returns the tokenizer used in the LLM.
 
         Returns:
@@ -43,7 +44,7 @@ class LLMFactory:
         return self.engine.tokenizer
     
     @property
-    def chat_template(self) -> ChatTemplate:
+    def chat_template(self) -> "ChatTemplate":
         """Returns the default chat template for the LLM.
 
         Returns:
@@ -79,7 +80,7 @@ class LLMFactory:
             stop: Optional[List[str]] = None,
             seed: Optional[int] = None,
             **kwargs
-        ) -> BaseLLM:
+        ) -> "BaseLLM":
         """Get a new LLM with the given generation arguments as default arguments.
 
         Args:
@@ -93,6 +94,7 @@ class LLMFactory:
             seed (Optional[int], optional): The seed for generation. Defaults to None.
             kwargs: Other extra keywowrd arguments.
         """
+        from .Engine.base_engine import BaseLLM
         llm = BaseLLM(
             engine=self.engine,
             temperature=temperature,
@@ -230,6 +232,7 @@ class LLMFactory:
             pretrained_model_name_or_path=pretrained_model_name_or_path,
             tokenizer_name_or_path=tokenizer_name_or_path,
             model_kwargs=model_kwargs,
-            tokenizer_kwargs=tokenizer_kwargs
+            tokenizer_kwargs=tokenizer_kwargs,
+            **kwargs
         )
         return cls(engine)

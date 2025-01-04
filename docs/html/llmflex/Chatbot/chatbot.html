@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+<meta name="generator" content="pdoc3 0.11.5">
+<title>llmflex.Chatbot.chatbot API documentation</title>
+<meta name="description" content="">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:1.5em;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:2em 0 .50em 0}h3{font-size:1.4em;margin:1.6em 0 .7em 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .2s ease-in-out}a:visited{color:#503}a:hover{color:#b62}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900;font-weight:bold}pre code{font-size:.8em;line-height:1.4em;padding:1em;display:block}code{background:#f3f3f3;font-family:"DejaVu Sans Mono",monospace;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source > summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible;min-width:max-content}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em 1em;margin:1em 0}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul ul{padding-left:1em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha512-D9gUyxqja7hBtkWpPWGt9wfbfaMGVt9gnyCvYa+jojwwPHLCzUm5i8rpk7vD7wNee9bA35eYIjobYPaQuKS1MQ==" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => {
+hljs.configure({languages: ['bash', 'css', 'diff', 'graphql', 'ini', 'javascript', 'json', 'plaintext', 'python', 'python-repl', 'rust', 'shell', 'sql', 'typescript', 'xml', 'yaml']});
+hljs.highlightAll();
+/* Collapse source docstrings */
+setTimeout(() => {
+[...document.querySelectorAll('.hljs.language-python > .hljs-string')]
+.filter(el => el.innerHTML.length > 200 && ['"""', "'''"].includes(el.innerHTML.substring(0, 3)))
+.forEach(el => {
+let d = document.createElement('details');
+d.classList.add('hljs-string');
+d.innerHTML = '<summary>"""</summary>' + el.innerHTML.substring(3);
+el.replaceWith(d);
+});
+}, 100);
+})</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>llmflex.Chatbot.chatbot</code></h1>
+</header>
+<section id="section-intro">
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="llmflex.Chatbot.chatbot.direct_response"><code class="name flex">
+<span>def <span class="ident">direct_response</span></span>(<span>) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def direct_response() -&gt; None:
+    &#34;&#34;&#34;If no tool is required to respond to the user, use this tool to respond directly.
+    &#34;&#34;&#34;</code></pre>
+</details>
+<div class="desc"><p>If no tool is required to respond to the user, use this tool to respond directly.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="llmflex.Chatbot.chatbot.Chatbot"><code class="flex name class">
+<span>class <span class="ident">Chatbot</span></span>
+<span>(</span><span>llm: BaseLLM,<br>memory: ForwardRef('BaseMemory') | None = None,<br>tools: List[ForwardRef('BaseTool') | Callable] | None = None,<br>chat_template: ForwardRef('ChatTemplate') | None = None)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Chatbot:
+    &#34;&#34;&#34;Class providing chatbot functionalities with an LLM.
+    &#34;&#34;&#34;
+    def __init__(self,
+            llm: &#34;BaseLLM&#34;,
+            memory: Optional[&#34;BaseMemory&#34;] = None,
+            tools: Optional[List[Union[&#34;BaseTool&#34;, Callable]]] = None,
+            chat_template: Optional[&#34;ChatTemplate&#34;] = None,
+        ) -&gt; None:
+        &#34;&#34;&#34;Initializes the chatbot with the provided LLM, memory, tools, and chat template.
+
+        Args:
+            llm (BaseLLM): The language model engine to use for generating responses.
+            memory (Optional[BaseMemory], optional): The memory system to use for storing and retrieving conversation history. If not provided, a `ChatMemory` instance will be initiated. Defaults to None.
+            tools (Optional[List[Union[BaseTool, Callable]]], optional): A list of tools that the chatbot can use to assist with responses. All turned off by default. Defaults to None.
+            chat_template (Optional[ChatTemplate], optional): The chat template to use for formatting the conversation. If not provided, the default LLM chat template will be used. Defaults to None.
+        &#34;&#34;&#34;
+        from ..Memory.chat_memory import ChatMemory
+        from ..Tool.base_tool import FunctionTool, BaseTool
+        self._llm = llm
+        self._memory = memory if memory else ChatMemory()
+        self._tools = [FunctionTool(tool) if not isinstance(tool, BaseTool) else tool for tool in tools] if tools else []
+        tool_names = [tool.name for tool in self.tools]
+        if len(set(tool_names)) != len(tool_names):
+            raise ValueError(f&#39;Multiple tools with the same tool name.&#39;)
+        self._chat_template = chat_template if chat_template else self._llm.chat_template
+
+    @property
+    def llm(self) -&gt; &#34;BaseLLM&#34;:
+        &#34;&#34;&#34;LLM for the chatbot.
+
+        Returns:
+            BaseLLM: LLM for the chatbot.
+        &#34;&#34;&#34;
+        return self._llm
+    
+    @property
+    def memory(self) -&gt; &#34;BaseMemory&#34;:
+        &#34;&#34;&#34;Conversation memory.
+
+        Returns:
+            BaseMemory: Conversation memory.
+        &#34;&#34;&#34;
+        return self._memory
+    
+    @property
+    def tools(self) -&gt; List[&#34;BaseTool&#34;]:
+        &#34;&#34;&#34;List of available tools.
+
+        Returns:
+            List[BaseTool]: List of available tools.
+        &#34;&#34;&#34;
+        return self._tools
+    
+    @property
+    def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
+        &#34;&#34;&#34;Chat template for formatting conversation.
+
+        Returns:
+            ChatTemplate: Chat template for formatting conversation.
+        &#34;&#34;&#34;
+        return self._chat_template
+    
+    @property
+    def title(self) -&gt; Optional[str]:
+        &#34;&#34;&#34;Title of the conversation if set.
+
+        Returns:
+            Optional[str]: Title of the conversation if set.
+        &#34;&#34;&#34;
+        return self.memory.title
+    
+    @property
+    def history(self) -&gt; List[Dict[str, Any]]:
+        &#34;&#34;&#34;Conversation history.
+
+        Returns:
+            List[Dict[str, Any]]: Conversation history.
+        &#34;&#34;&#34;
+        return self.memory.history
+    
+    @property
+    def tool_dict(self) -&gt; Dict[str, bool]:
+        &#34;&#34;&#34;Dictionary of tools with keys as the tool names and values as whether the tool is turned on or not.
+
+        Returns:
+            Dict[str, bool]: Dictionary of tools with keys as the tool names and values as whether the tool is turned on or not.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_tool_dict&#39;):
+            self._tool_dict = {tool.name: False for tool in self.tools}
+        return self._tool_dict
+    
+    @property
+    def generation_kwargs(self) -&gt; Dict[str, Any]:
+        &#34;&#34;&#34;Generation configuration of the LLM.
+
+        Returns:
+            Dict[str, Any]: Generation configuration of the LLM.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_generation_kwargs&#39;):
+            self._generation_kwargs = dict(
+                temperature=0.0,
+                min_p=0.05,
+                repetition_penalty=1.1,
+                max_new_tokens=2048,
+                stop=[self.llm.tokenizer.eos_token]
+            )
+        return self._generation_kwargs
+    
+    @property
+    def memory_config(self) -&gt; MemoryConfig:
+        &#34;&#34;&#34;Memory configuration.
+
+        Returns:
+            MemoryConfig: Memory configuration.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_memory_config&#39;):
+            self._memory_config = MemoryConfig()
+        return self._memory_config
+    
+    @property
+    def system_message(self) -&gt; Optional[str]:
+        &#34;&#34;&#34;System message of the conversation.
+
+        Returns:
+            Optional[str]: System message of the conversation.
+        &#34;&#34;&#34;
+        if not hasattr(self, &#39;_system_message&#39;):
+            self._system_message = None
+        return self._system_message
+    
+    
+    def set_title(self, title: Optional[str]) -&gt; None:
+        &#34;&#34;&#34;Set the title of the conversation.
+
+        Args:
+            title (Optional[str]): The new title of the conversation.
+        &#34;&#34;&#34;
+        self.memory.set_title(title)
+
+    def set_system_message(self, system_message: str) -&gt; None:
+        &#34;&#34;&#34;Set the system message of the conversation.
+
+        Args:
+            system_message (str): The new system message of the conversation.
+        &#34;&#34;&#34;
+        if system_message.strip() == &#39;&#39;:
+            self._system_message = None
+        else:
+            self._system_message = system_message.strip()
+    
+    def set_generation_kwargs(self, **kwargs) -&gt; None:
+        &#34;&#34;&#34;Set the generation configuration of the LLM by passing keyword arguments.
+        &#34;&#34;&#34;
+        if kwargs:
+            self.generation_kwargs.update(kwargs)
+
+    def set_memory_config(self, 
+            recent_token_limit: Optional[int] = None,
+            relevant_token_limit: Optional[int] = None,
+            relevance_score_threshold: Optional[float] = None,
+        ) -&gt; None:
+        &#34;&#34;&#34;Set the memory configuration.
+
+        Args:
+            recent_token_limit (Optional[int], optional): The maximum number of tokens to retrieve from the latest conversation turns of the memory. Defaults to None.
+            relevant_token_limit (Optional[int], optional): The maximum number of tokens to retrieve from the older but relevant conversation turns of the memory.. Defaults to None.
+            relevance_score_threshold (Optional[float], optional): The threshold for relevance score. Defaults to None.
+        &#34;&#34;&#34;
+        if recent_token_limit is not None:
+            self.memory_config.recent_token_limit = recent_token_limit
+        if relevant_token_limit is not None:
+            self.memory_config.relevant_token_limit = relevant_token_limit
+        if relevance_score_threshold is not None:
+            self.memory_config.relevance_score_threshold = relevance_score_threshold
+        config = self.memory_config.model_dump()
+        new_config = dict(
+            recent_token_limit=recent_token_limit,
+            relevant_token_limit=relevant_token_limit,
+            relevance_score_threshold=relevance_score_threshold
+        )
+        for k, v in new_config.items():
+            if v is not None:
+                config[k] = v
+        self._memory_config = MemoryConfig(**config)
+
+    def toggle_tool(self, tools: Union[str, List[str]]) -&gt; None:
+        &#34;&#34;&#34;Toggle the given tool(s) for their availability of the chatbot.
+
+        Args:
+            tools (Union[str, List[str]]): List of tools to toggle.
+        &#34;&#34;&#34;
+        ts = [tools] if isinstance(tools, str) else tools
+        ts = list(set(ts))
+        if any(t not in self.tool_dict.keys() for t in ts):
+            raise ValueError(&#39;Non-exist tool name given.&#39;)
+        for t in ts:
+            self.tool_dict[t] = not self.tool_dict[t]
+
+    def prepare_prompt(self, user_message: str, tool_call: Optional[Dict[str, Any]] = None) -&gt; str:
+        &#34;&#34;&#34;Prepare the prompt for generation.
+
+            user_message (str): The user&#39;s message to be processed.
+            tool_call (Optional[Dict[str, Any]], optional): A dictionary containing information about a tool call. Defaults to None.
+
+        Returns:
+            str: The prompt to be passed to the LLM.
+        &#34;&#34;&#34;
+        system = self.system_message
+        if any(v for v in self.tool_dict.values()):
+            from ..Tool.tool_utils import create_openai_function
+            tools = []
+            for k, v in self.tool_dict.items():
+                if v:
+                    tool = list(filter(lambda x: x.name == k, self. tools))[0]
+                    tools.append(create_openai_function(tool))
+            tools.append(create_openai_function(direct_response))
+        else:
+            tools = None
+        system = self.system_message.strip() if self.system_message else None
+        messages = [dict(role=&#39;system&#39;, content=system)] if system else []
+        recent = self.memory.get_messages_by_token_limit(token_limit=self.memory_config.recent_token_limit, tokenizer=self.llm.tokenizer)
+        messages += recent
+        if self.memory.__class__.__name__ == &#39;LongShortTermChatMemory&#39;:
+            relevant = self.memory.get_related_messages(
+                query=user_message,
+                token_limit=self.memory_config.relevant_token_limit,
+                score_threshold=self.memory_config.relevance_score_threshold,
+                exclude_messages=recent
+            )
+            if len(relevant) &gt; 0:
+                import json
+                msg = f&#39;&lt;relevant_content&gt;\n{LONG_TERM_MEMORY_SYSTEM_RPOMPT.strip()}\n\n{json.dumps(relevant)}\n&lt;/relevant_content&gt;\n\n&#39; + user_message.strip()
+            else:
+                msg = user_message.strip()
+        else:
+            msg = user_message.strip()
+        messages.append(dict(role=&#39;user&#39;, content=msg))
+        if tool_call:
+            assistant_tool_calls = dict(role=&#39;assistant&#39;, tool_calls=tool_call[&#39;tool_calls&#39;])
+            tool_output = dict(role=&#39;tool&#39;, content=tool_call[&#39;output&#39;])
+            messages.extend([assistant_tool_calls, tool_output])
+        prompt = self.chat_template.apply_chat_template(messages=messages, tools=tools)
+        return prompt
+    
+    def chat(self, user_message: str, stream: bool = False) -&gt; Union[str, Tuple[str, Dict[str, Any]], Iterator[Union[Dict[str, Any], str]]]:
+        &#34;&#34;&#34;Generate a response to the user&#39;s message.
+
+        Args:
+            user_message (str): The user&#39;s message to be processed.
+            stream (bool, optional): Whether to stream the response. Defaults to False.
+
+        Returns:
+            Union[str, Tuple[str, Dict[str, Any]], Iterator[Union[Dict[str, Any], str]]]: The response to the user&#39;s message. A dictionary will be yielded for tool calls.
+        &#34;&#34;&#34;
+        prompt = self.prepare_prompt(user_message)
+        has_tool = any(v for v in self.tool_dict.values())
+        if has_tool:
+            tool_prompt = prompt + self.chat_template.tool_start + &#39;{&#34;name&#34;: &#34;&#39;
+            tool_names = [k for k, v in self.tool_dict.items() if v] + [&#39;direct_response&#39;]
+            tool_name = self.llm.generate_choice(prompt=tool_prompt, choices=tool_names, **self.generation_kwargs)
+            if tool_name == &#39;direct_response&#39;:
+                if stream:
+                    output = self.llm.stream(prompt=prompt, **self.generation_kwargs)
+                    def gen_tokens():
+                        response = &#39;&#39;
+                        for t in output:
+                            response += t
+                            yield t
+                        self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=response.strip())])
+                    return gen_tokens()
+                else:
+                    output = self.llm.generate(prompt=prompt, **self.generation_kwargs)
+                    self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=output.strip())])
+                    return output.strip()
+            else:
+                from ..Tool.tool_utils import create_function_schema
+                import json
+                tool_prompt += tool_name + &#39;&#34;&#39; + &#39;, &#34;arguments&#34;: &#39;
+                tool = list(filter(lambda x: x.name == tool_name, self.tools))[0]
+                tool_schema = create_function_schema(tool)
+                tool_arguments_str = self.llm.generate_json(tool_prompt, json_schema=tool_schema)
+                tool_arguments = json.loads(tool_arguments_str)
+                if stream:
+                    def gen_output():
+                        tool_call_dict = dict(function=dict(name=tool_name, arguments=tool_arguments_str))
+                        yield tool_call_dict
+                        tool_output = tool.run(**tool_arguments)
+                        tool_call_dict[&#39;output&#39;] = tool_output.model_dump()
+                        yield tool_call_dict
+                        prompt_dict = dict(tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])], output=tool_output.content)
+                        tool_prompt = self.prepare_prompt(user_message=user_message, tool_call=prompt_dict)
+                        output = &#39;&#39;
+                        for t in self.llm.stream(tool_prompt, **self.generation_kwargs):
+                            output += t
+                            yield t
+                        save_msgs = [
+                            dict(role=&#39;user&#39;, content=user_message.strip()),
+                            dict(role=&#39;assistant&#39;, tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])]),
+                            dict(role=&#39;tool&#39;, content=tool_output.content, metadata=tool_output.model_dump()),
+                            dict(role=&#39;assistant&#39;, content=output.strip())
+                        ]
+                        self.memory.save_messages(save_msgs)
+                    return gen_output()
+                else:
+                    tool_call_dict = dict(function=dict(name=tool_name, arguments=tool_arguments_str))
+                    tool_output = tool.run(**tool_arguments)
+                    tool_call_dict[&#39;output&#39;] = tool_output.model_dump()
+                    prompt_dict = dict(tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])], output=tool_output.content)
+                    tool_prompt = self.prepare_prompt(user_message=user_message, tool_call=prompt_dict)
+                    output = self.llm.generate(tool_prompt, **self.generation_kwargs)
+                    save_msgs = [
+                        dict(role=&#39;user&#39;, content=user_message.strip()),
+                        dict(role=&#39;assistant&#39;, tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])]),
+                        dict(role=&#39;tool&#39;, content=tool_output.content, metadata=tool_output.model_dump()),
+                        dict(role=&#39;assistant&#39;, content=output.strip())
+                    ]
+                    self.memory.save_messages(save_msgs)
+                    return output.strip(), tool_call_dict
+        
+        elif stream:
+            output = self.llm.stream(prompt=prompt, **self.generation_kwargs)
+            def gen_tokens():
+                response = &#39;&#39;
+                for t in output:
+                    response += t
+                    yield t
+                self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=response.strip())])
+            return gen_tokens()
+        else:
+            output = self.llm.generate(prompt=prompt, **self.generation_kwargs)
+            self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=output.strip())])
+            return output.strip()
+
+    def remove_last_interaction(self, keep_last_user: bool = False) -&gt; None:
+        &#34;&#34;&#34;Remove the last interaction from the memory.
+
+        Args:
+            keep_last_user (bool, optional): Whether to keep the last user message. Defaults to False.
+        &#34;&#34;&#34;
+        reversed_history = self.memory.history[::-1]
+        del_next = True
+        for msg in reversed_history:
+            if del_next:
+                if msg[&#39;role&#39;] == &#39;user&#39;:
+                    del_next = False
+                    if keep_last_user:
+                        break
+                self.memory.remove_last_message()
+            else:
+                break
+
+    def notebook_chat(self, user_message: str) -&gt; None:
+        &#34;&#34;&#34;Chating with the bot in a Jupyter notebook, with conversation history formatted and displayed as markdown. 
+
+        Args:
+            user_message (str): The new user message.
+        &#34;&#34;&#34;
+        from IPython.display import display, Markdown, clear_output
+        import json
+        md = &#39;&#39;
+        footnotes = None
+        ast_added = False
+        for msg in self.history:
+            if msg[&#39;role&#39;] == &#39;user&#39;:
+                md += &#39;**USER:** &#39; + msg[&#39;content&#39;].strip() + &#39;  \n___\n&#39;
+            elif msg[&#39;role&#39;] == &#39;assistant&#39;:
+                if not ast_added:
+                    md += &#39;**ASSISTANT:** &#39;
+                    ast_added = True
+                if msg.get(&#39;content&#39;, None):
+                    md += msg[&#39;content&#39;].strip()
+                    if footnotes:
+                        fn_str = &#39;  \n&#39;.join([f&#39;* {fn}&#39; for fn in footnotes])
+                        md += &#39;\n___\n&#39; + fn_str
+                        footnotes = None
+                    md += &#39;  \n___\n&#39;
+                    ast_added = False
+                else:
+                    tool_name = msg[&#39;tool_calls&#39;][0][&#39;function&#39;][&#39;name&#39;]
+                    md += f&#39;  \n&lt;details&gt;\n&lt;summary&gt;{tool_name.replace(&#34;_&#34;, &#34; &#34;).title()}&lt;/summary&gt;\n\n&#39;
+            else:
+                md += json.dumps(msg[&#39;metadata&#39;]) + &#39;\n&lt;/details&gt;\n  \n&#39;
+                images = msg[&#39;metadata&#39;][&#39;images&#39;]
+                footnotes = msg[&#39;metadata&#39;][&#39;footnotes&#39;]
+                if images:
+                    for image in images:
+                        md += f&#39;  \n![image]({image})&#39;
+                    md += &#39;  \n&#39;
+
+        md += f&#39;**USER:** {user_message.strip()}&#39; + &#39;  \n___\n&#39;
+        md += f&#39;**ASSISTANT:** &#39;
+        display(Markdown(md))
+        output = self.chat(user_message=user_message, stream=True)
+        res = &#39;&#39;
+        images = None
+        footnotes = None
+        for i in output:
+            if isinstance(i, dict):
+                if i.get(&#39;output&#39;):
+                    expandable = f&#34;  \n&lt;details&gt;\n&lt;summary&gt;{i[&#39;function&#39;][&#39;name&#39;]}&lt;/summary&gt;\n\n{json.dumps(i[&#39;output&#39;], indent=2)}\n&lt;/details&gt;\n  \n&#34;
+                    res += expandable
+                    images = i[&#39;output&#39;][&#39;images&#39;]
+                    footnotes = i[&#39;output&#39;][&#39;footnotes&#39;]
+                    clear_output()
+                    display(Markdown(md + res))
+                else:
+                    expandable = f&#34;  \n&lt;details&gt;\n&lt;summary&gt;{i[&#39;function&#39;][&#39;name&#39;]}&lt;/summary&gt;\n&lt;/details&gt;\n  \n&#34;
+                    clear_output()
+                    display(Markdown(md + expandable.strip()))
+            else:
+                if images:
+                    for image in images:
+                        res += f&#39;  \n![image]({image})&#39;
+                    res += &#39;&#39;
+                    images = None
+                res += i
+                clear_output()
+                display(Markdown(md + res))
+        md += res
+        if footnotes:
+            fn_str = &#39;  \n&#39;.join([f&#39;* {fn}&#39; for fn in footnotes])
+            md += &#39;\n___\n&#39; + fn_str
+        clear_output()
+        display(Markdown(md))</code></pre>
+</details>
+<div class="desc"><p>Class providing chatbot functionalities with an LLM.</p>
+<p>Initializes the chatbot with the provided LLM, memory, tools, and chat template.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>llm</code></strong> :&ensp;<code>BaseLLM</code></dt>
+<dd>The language model engine to use for generating responses.</dd>
+<dt><strong><code>memory</code></strong> :&ensp;<code>Optional[BaseMemory]</code>, optional</dt>
+<dd>The memory system to use for storing and retrieving conversation history. If not provided, a <code>ChatMemory</code> instance will be initiated. Defaults to None.</dd>
+<dt><strong><code>tools</code></strong> :&ensp;<code>Optional[List[Union[BaseTool, Callable]]]</code>, optional</dt>
+<dd>A list of tools that the chatbot can use to assist with responses. All turned off by default. Defaults to None.</dd>
+<dt><strong><code>chat_template</code></strong> :&ensp;<code>Optional[ChatTemplate]</code>, optional</dt>
+<dd>The chat template to use for formatting the conversation. If not provided, the default LLM chat template will be used. Defaults to None.</dd>
+</dl></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.chat_template"><code class="name">prop <span class="ident">chat_template</span> : ChatTemplate</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
+    &#34;&#34;&#34;Chat template for formatting conversation.
+
+    Returns:
+        ChatTemplate: Chat template for formatting conversation.
+    &#34;&#34;&#34;
+    return self._chat_template</code></pre>
+</details>
+<div class="desc"><p>Chat template for formatting conversation.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>ChatTemplate</code></dt>
+<dd>Chat template for formatting conversation.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.generation_kwargs"><code class="name">prop <span class="ident">generation_kwargs</span> : Dict[str, Any]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def generation_kwargs(self) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Generation configuration of the LLM.
+
+    Returns:
+        Dict[str, Any]: Generation configuration of the LLM.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_generation_kwargs&#39;):
+        self._generation_kwargs = dict(
+            temperature=0.0,
+            min_p=0.05,
+            repetition_penalty=1.1,
+            max_new_tokens=2048,
+            stop=[self.llm.tokenizer.eos_token]
+        )
+    return self._generation_kwargs</code></pre>
+</details>
+<div class="desc"><p>Generation configuration of the LLM.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>Generation configuration of the LLM.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.history"><code class="name">prop <span class="ident">history</span> : List[Dict[str, Any]]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def history(self) -&gt; List[Dict[str, Any]]:
+    &#34;&#34;&#34;Conversation history.
+
+    Returns:
+        List[Dict[str, Any]]: Conversation history.
+    &#34;&#34;&#34;
+    return self.memory.history</code></pre>
+</details>
+<div class="desc"><p>Conversation history.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[Dict[str, Any]]</code></dt>
+<dd>Conversation history.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.llm"><code class="name">prop <span class="ident">llm</span> : BaseLLM</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def llm(self) -&gt; &#34;BaseLLM&#34;:
+    &#34;&#34;&#34;LLM for the chatbot.
+
+    Returns:
+        BaseLLM: LLM for the chatbot.
+    &#34;&#34;&#34;
+    return self._llm</code></pre>
+</details>
+<div class="desc"><p>LLM for the chatbot.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseLLM</code></dt>
+<dd>LLM for the chatbot.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.memory"><code class="name">prop <span class="ident">memory</span> : BaseMemory</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def memory(self) -&gt; &#34;BaseMemory&#34;:
+    &#34;&#34;&#34;Conversation memory.
+
+    Returns:
+        BaseMemory: Conversation memory.
+    &#34;&#34;&#34;
+    return self._memory</code></pre>
+</details>
+<div class="desc"><p>Conversation memory.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>BaseMemory</code></dt>
+<dd>Conversation memory.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.memory_config"><code class="name">prop <span class="ident">memory_config</span> : <a title="llmflex.Chatbot.chatbot.MemoryConfig" href="#llmflex.Chatbot.chatbot.MemoryConfig">MemoryConfig</a></code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def memory_config(self) -&gt; MemoryConfig:
+    &#34;&#34;&#34;Memory configuration.
+
+    Returns:
+        MemoryConfig: Memory configuration.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_memory_config&#39;):
+        self._memory_config = MemoryConfig()
+    return self._memory_config</code></pre>
+</details>
+<div class="desc"><p>Memory configuration.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="llmflex.Chatbot.chatbot.MemoryConfig" href="#llmflex.Chatbot.chatbot.MemoryConfig">MemoryConfig</a></code></dt>
+<dd>Memory configuration.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.system_message"><code class="name">prop <span class="ident">system_message</span> : str | None</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def system_message(self) -&gt; Optional[str]:
+    &#34;&#34;&#34;System message of the conversation.
+
+    Returns:
+        Optional[str]: System message of the conversation.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_system_message&#39;):
+        self._system_message = None
+    return self._system_message</code></pre>
+</details>
+<div class="desc"><p>System message of the conversation.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>System message of the conversation.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.title"><code class="name">prop <span class="ident">title</span> : str | None</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def title(self) -&gt; Optional[str]:
+    &#34;&#34;&#34;Title of the conversation if set.
+
+    Returns:
+        Optional[str]: Title of the conversation if set.
+    &#34;&#34;&#34;
+    return self.memory.title</code></pre>
+</details>
+<div class="desc"><p>Title of the conversation if set.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[str]</code></dt>
+<dd>Title of the conversation if set.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.tool_dict"><code class="name">prop <span class="ident">tool_dict</span> : Dict[str, bool]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tool_dict(self) -&gt; Dict[str, bool]:
+    &#34;&#34;&#34;Dictionary of tools with keys as the tool names and values as whether the tool is turned on or not.
+
+    Returns:
+        Dict[str, bool]: Dictionary of tools with keys as the tool names and values as whether the tool is turned on or not.
+    &#34;&#34;&#34;
+    if not hasattr(self, &#39;_tool_dict&#39;):
+        self._tool_dict = {tool.name: False for tool in self.tools}
+    return self._tool_dict</code></pre>
+</details>
+<div class="desc"><p>Dictionary of tools with keys as the tool names and values as whether the tool is turned on or not.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, bool]</code></dt>
+<dd>Dictionary of tools with keys as the tool names and values as whether the tool is turned on or not.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.tools"><code class="name">prop <span class="ident">tools</span> : List[BaseTool]</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def tools(self) -&gt; List[&#34;BaseTool&#34;]:
+    &#34;&#34;&#34;List of available tools.
+
+    Returns:
+        List[BaseTool]: List of available tools.
+    &#34;&#34;&#34;
+    return self._tools</code></pre>
+</details>
+<div class="desc"><p>List of available tools.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>List[BaseTool]</code></dt>
+<dd>List of available tools.</dd>
+</dl></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.chat"><code class="name flex">
+<span>def <span class="ident">chat</span></span>(<span>self, user_message: str, stream: bool = False) ‑> str | Tuple[str, Dict[str, Any]] | Iterator[Dict[str, Any] | str]</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def chat(self, user_message: str, stream: bool = False) -&gt; Union[str, Tuple[str, Dict[str, Any]], Iterator[Union[Dict[str, Any], str]]]:
+    &#34;&#34;&#34;Generate a response to the user&#39;s message.
+
+    Args:
+        user_message (str): The user&#39;s message to be processed.
+        stream (bool, optional): Whether to stream the response. Defaults to False.
+
+    Returns:
+        Union[str, Tuple[str, Dict[str, Any]], Iterator[Union[Dict[str, Any], str]]]: The response to the user&#39;s message. A dictionary will be yielded for tool calls.
+    &#34;&#34;&#34;
+    prompt = self.prepare_prompt(user_message)
+    has_tool = any(v for v in self.tool_dict.values())
+    if has_tool:
+        tool_prompt = prompt + self.chat_template.tool_start + &#39;{&#34;name&#34;: &#34;&#39;
+        tool_names = [k for k, v in self.tool_dict.items() if v] + [&#39;direct_response&#39;]
+        tool_name = self.llm.generate_choice(prompt=tool_prompt, choices=tool_names, **self.generation_kwargs)
+        if tool_name == &#39;direct_response&#39;:
+            if stream:
+                output = self.llm.stream(prompt=prompt, **self.generation_kwargs)
+                def gen_tokens():
+                    response = &#39;&#39;
+                    for t in output:
+                        response += t
+                        yield t
+                    self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=response.strip())])
+                return gen_tokens()
+            else:
+                output = self.llm.generate(prompt=prompt, **self.generation_kwargs)
+                self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=output.strip())])
+                return output.strip()
+        else:
+            from ..Tool.tool_utils import create_function_schema
+            import json
+            tool_prompt += tool_name + &#39;&#34;&#39; + &#39;, &#34;arguments&#34;: &#39;
+            tool = list(filter(lambda x: x.name == tool_name, self.tools))[0]
+            tool_schema = create_function_schema(tool)
+            tool_arguments_str = self.llm.generate_json(tool_prompt, json_schema=tool_schema)
+            tool_arguments = json.loads(tool_arguments_str)
+            if stream:
+                def gen_output():
+                    tool_call_dict = dict(function=dict(name=tool_name, arguments=tool_arguments_str))
+                    yield tool_call_dict
+                    tool_output = tool.run(**tool_arguments)
+                    tool_call_dict[&#39;output&#39;] = tool_output.model_dump()
+                    yield tool_call_dict
+                    prompt_dict = dict(tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])], output=tool_output.content)
+                    tool_prompt = self.prepare_prompt(user_message=user_message, tool_call=prompt_dict)
+                    output = &#39;&#39;
+                    for t in self.llm.stream(tool_prompt, **self.generation_kwargs):
+                        output += t
+                        yield t
+                    save_msgs = [
+                        dict(role=&#39;user&#39;, content=user_message.strip()),
+                        dict(role=&#39;assistant&#39;, tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])]),
+                        dict(role=&#39;tool&#39;, content=tool_output.content, metadata=tool_output.model_dump()),
+                        dict(role=&#39;assistant&#39;, content=output.strip())
+                    ]
+                    self.memory.save_messages(save_msgs)
+                return gen_output()
+            else:
+                tool_call_dict = dict(function=dict(name=tool_name, arguments=tool_arguments_str))
+                tool_output = tool.run(**tool_arguments)
+                tool_call_dict[&#39;output&#39;] = tool_output.model_dump()
+                prompt_dict = dict(tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])], output=tool_output.content)
+                tool_prompt = self.prepare_prompt(user_message=user_message, tool_call=prompt_dict)
+                output = self.llm.generate(tool_prompt, **self.generation_kwargs)
+                save_msgs = [
+                    dict(role=&#39;user&#39;, content=user_message.strip()),
+                    dict(role=&#39;assistant&#39;, tool_calls=[dict(function=tool_call_dict[&#39;function&#39;])]),
+                    dict(role=&#39;tool&#39;, content=tool_output.content, metadata=tool_output.model_dump()),
+                    dict(role=&#39;assistant&#39;, content=output.strip())
+                ]
+                self.memory.save_messages(save_msgs)
+                return output.strip(), tool_call_dict
+    
+    elif stream:
+        output = self.llm.stream(prompt=prompt, **self.generation_kwargs)
+        def gen_tokens():
+            response = &#39;&#39;
+            for t in output:
+                response += t
+                yield t
+            self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=response.strip())])
+        return gen_tokens()
+    else:
+        output = self.llm.generate(prompt=prompt, **self.generation_kwargs)
+        self.memory.save_messages(messages=[dict(role=&#39;user&#39;, content=user_message.strip()), dict(role=&#39;assistant&#39;, content=output.strip())])
+        return output.strip()</code></pre>
+</details>
+<div class="desc"><p>Generate a response to the user's message.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_message</code></strong> :&ensp;<code>str</code></dt>
+<dd>The user's message to be processed.</dd>
+<dt><strong><code>stream</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to stream the response. Defaults to False.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Union[str, Tuple[str, Dict[str, Any]], Iterator[Union[Dict[str, Any], str]]]</code></dt>
+<dd>The response to the user's message. A dictionary will be yielded for tool calls.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.notebook_chat"><code class="name flex">
+<span>def <span class="ident">notebook_chat</span></span>(<span>self, user_message: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def notebook_chat(self, user_message: str) -&gt; None:
+    &#34;&#34;&#34;Chating with the bot in a Jupyter notebook, with conversation history formatted and displayed as markdown. 
+
+    Args:
+        user_message (str): The new user message.
+    &#34;&#34;&#34;
+    from IPython.display import display, Markdown, clear_output
+    import json
+    md = &#39;&#39;
+    footnotes = None
+    ast_added = False
+    for msg in self.history:
+        if msg[&#39;role&#39;] == &#39;user&#39;:
+            md += &#39;**USER:** &#39; + msg[&#39;content&#39;].strip() + &#39;  \n___\n&#39;
+        elif msg[&#39;role&#39;] == &#39;assistant&#39;:
+            if not ast_added:
+                md += &#39;**ASSISTANT:** &#39;
+                ast_added = True
+            if msg.get(&#39;content&#39;, None):
+                md += msg[&#39;content&#39;].strip()
+                if footnotes:
+                    fn_str = &#39;  \n&#39;.join([f&#39;* {fn}&#39; for fn in footnotes])
+                    md += &#39;\n___\n&#39; + fn_str
+                    footnotes = None
+                md += &#39;  \n___\n&#39;
+                ast_added = False
+            else:
+                tool_name = msg[&#39;tool_calls&#39;][0][&#39;function&#39;][&#39;name&#39;]
+                md += f&#39;  \n&lt;details&gt;\n&lt;summary&gt;{tool_name.replace(&#34;_&#34;, &#34; &#34;).title()}&lt;/summary&gt;\n\n&#39;
+        else:
+            md += json.dumps(msg[&#39;metadata&#39;]) + &#39;\n&lt;/details&gt;\n  \n&#39;
+            images = msg[&#39;metadata&#39;][&#39;images&#39;]
+            footnotes = msg[&#39;metadata&#39;][&#39;footnotes&#39;]
+            if images:
+                for image in images:
+                    md += f&#39;  \n![image]({image})&#39;
+                md += &#39;  \n&#39;
+
+    md += f&#39;**USER:** {user_message.strip()}&#39; + &#39;  \n___\n&#39;
+    md += f&#39;**ASSISTANT:** &#39;
+    display(Markdown(md))
+    output = self.chat(user_message=user_message, stream=True)
+    res = &#39;&#39;
+    images = None
+    footnotes = None
+    for i in output:
+        if isinstance(i, dict):
+            if i.get(&#39;output&#39;):
+                expandable = f&#34;  \n&lt;details&gt;\n&lt;summary&gt;{i[&#39;function&#39;][&#39;name&#39;]}&lt;/summary&gt;\n\n{json.dumps(i[&#39;output&#39;], indent=2)}\n&lt;/details&gt;\n  \n&#34;
+                res += expandable
+                images = i[&#39;output&#39;][&#39;images&#39;]
+                footnotes = i[&#39;output&#39;][&#39;footnotes&#39;]
+                clear_output()
+                display(Markdown(md + res))
+            else:
+                expandable = f&#34;  \n&lt;details&gt;\n&lt;summary&gt;{i[&#39;function&#39;][&#39;name&#39;]}&lt;/summary&gt;\n&lt;/details&gt;\n  \n&#34;
+                clear_output()
+                display(Markdown(md + expandable.strip()))
+        else:
+            if images:
+                for image in images:
+                    res += f&#39;  \n![image]({image})&#39;
+                res += &#39;&#39;
+                images = None
+            res += i
+            clear_output()
+            display(Markdown(md + res))
+    md += res
+    if footnotes:
+        fn_str = &#39;  \n&#39;.join([f&#39;* {fn}&#39; for fn in footnotes])
+        md += &#39;\n___\n&#39; + fn_str
+    clear_output()
+    display(Markdown(md))</code></pre>
+</details>
+<div class="desc"><p>Chating with the bot in a Jupyter notebook, with conversation history formatted and displayed as markdown. </p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>user_message</code></strong> :&ensp;<code>str</code></dt>
+<dd>The new user message.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.prepare_prompt"><code class="name flex">
+<span>def <span class="ident">prepare_prompt</span></span>(<span>self, user_message: str, tool_call: Dict[str, Any] | None = None) ‑> str</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def prepare_prompt(self, user_message: str, tool_call: Optional[Dict[str, Any]] = None) -&gt; str:
+    &#34;&#34;&#34;Prepare the prompt for generation.
+
+        user_message (str): The user&#39;s message to be processed.
+        tool_call (Optional[Dict[str, Any]], optional): A dictionary containing information about a tool call. Defaults to None.
+
+    Returns:
+        str: The prompt to be passed to the LLM.
+    &#34;&#34;&#34;
+    system = self.system_message
+    if any(v for v in self.tool_dict.values()):
+        from ..Tool.tool_utils import create_openai_function
+        tools = []
+        for k, v in self.tool_dict.items():
+            if v:
+                tool = list(filter(lambda x: x.name == k, self. tools))[0]
+                tools.append(create_openai_function(tool))
+        tools.append(create_openai_function(direct_response))
+    else:
+        tools = None
+    system = self.system_message.strip() if self.system_message else None
+    messages = [dict(role=&#39;system&#39;, content=system)] if system else []
+    recent = self.memory.get_messages_by_token_limit(token_limit=self.memory_config.recent_token_limit, tokenizer=self.llm.tokenizer)
+    messages += recent
+    if self.memory.__class__.__name__ == &#39;LongShortTermChatMemory&#39;:
+        relevant = self.memory.get_related_messages(
+            query=user_message,
+            token_limit=self.memory_config.relevant_token_limit,
+            score_threshold=self.memory_config.relevance_score_threshold,
+            exclude_messages=recent
+        )
+        if len(relevant) &gt; 0:
+            import json
+            msg = f&#39;&lt;relevant_content&gt;\n{LONG_TERM_MEMORY_SYSTEM_RPOMPT.strip()}\n\n{json.dumps(relevant)}\n&lt;/relevant_content&gt;\n\n&#39; + user_message.strip()
+        else:
+            msg = user_message.strip()
+    else:
+        msg = user_message.strip()
+    messages.append(dict(role=&#39;user&#39;, content=msg))
+    if tool_call:
+        assistant_tool_calls = dict(role=&#39;assistant&#39;, tool_calls=tool_call[&#39;tool_calls&#39;])
+        tool_output = dict(role=&#39;tool&#39;, content=tool_call[&#39;output&#39;])
+        messages.extend([assistant_tool_calls, tool_output])
+    prompt = self.chat_template.apply_chat_template(messages=messages, tools=tools)
+    return prompt</code></pre>
+</details>
+<div class="desc"><p>Prepare the prompt for generation.</p>
+<pre><code>user_message (str): The user's message to be processed.
+tool_call (Optional[Dict[str, Any]], optional): A dictionary containing information about a tool call. Defaults to None.
+</code></pre>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The prompt to be passed to the LLM.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.remove_last_interaction"><code class="name flex">
+<span>def <span class="ident">remove_last_interaction</span></span>(<span>self, keep_last_user: bool = False) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_last_interaction(self, keep_last_user: bool = False) -&gt; None:
+    &#34;&#34;&#34;Remove the last interaction from the memory.
+
+    Args:
+        keep_last_user (bool, optional): Whether to keep the last user message. Defaults to False.
+    &#34;&#34;&#34;
+    reversed_history = self.memory.history[::-1]
+    del_next = True
+    for msg in reversed_history:
+        if del_next:
+            if msg[&#39;role&#39;] == &#39;user&#39;:
+                del_next = False
+                if keep_last_user:
+                    break
+            self.memory.remove_last_message()
+        else:
+            break</code></pre>
+</details>
+<div class="desc"><p>Remove the last interaction from the memory.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>keep_last_user</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Whether to keep the last user message. Defaults to False.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.set_generation_kwargs"><code class="name flex">
+<span>def <span class="ident">set_generation_kwargs</span></span>(<span>self, **kwargs) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_generation_kwargs(self, **kwargs) -&gt; None:
+    &#34;&#34;&#34;Set the generation configuration of the LLM by passing keyword arguments.
+    &#34;&#34;&#34;
+    if kwargs:
+        self.generation_kwargs.update(kwargs)</code></pre>
+</details>
+<div class="desc"><p>Set the generation configuration of the LLM by passing keyword arguments.</p></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.set_memory_config"><code class="name flex">
+<span>def <span class="ident">set_memory_config</span></span>(<span>self,<br>recent_token_limit: int | None = None,<br>relevant_token_limit: int | None = None,<br>relevance_score_threshold: float | None = None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_memory_config(self, 
+        recent_token_limit: Optional[int] = None,
+        relevant_token_limit: Optional[int] = None,
+        relevance_score_threshold: Optional[float] = None,
+    ) -&gt; None:
+    &#34;&#34;&#34;Set the memory configuration.
+
+    Args:
+        recent_token_limit (Optional[int], optional): The maximum number of tokens to retrieve from the latest conversation turns of the memory. Defaults to None.
+        relevant_token_limit (Optional[int], optional): The maximum number of tokens to retrieve from the older but relevant conversation turns of the memory.. Defaults to None.
+        relevance_score_threshold (Optional[float], optional): The threshold for relevance score. Defaults to None.
+    &#34;&#34;&#34;
+    if recent_token_limit is not None:
+        self.memory_config.recent_token_limit = recent_token_limit
+    if relevant_token_limit is not None:
+        self.memory_config.relevant_token_limit = relevant_token_limit
+    if relevance_score_threshold is not None:
+        self.memory_config.relevance_score_threshold = relevance_score_threshold
+    config = self.memory_config.model_dump()
+    new_config = dict(
+        recent_token_limit=recent_token_limit,
+        relevant_token_limit=relevant_token_limit,
+        relevance_score_threshold=relevance_score_threshold
+    )
+    for k, v in new_config.items():
+        if v is not None:
+            config[k] = v
+    self._memory_config = MemoryConfig(**config)</code></pre>
+</details>
+<div class="desc"><p>Set the memory configuration.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>recent_token_limit</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The maximum number of tokens to retrieve from the latest conversation turns of the memory. Defaults to None.</dd>
+<dt><strong><code>relevant_token_limit</code></strong> :&ensp;<code>Optional[int]</code>, optional</dt>
+<dd>The maximum number of tokens to retrieve from the older but relevant conversation turns of the memory.. Defaults to None.</dd>
+<dt><strong><code>relevance_score_threshold</code></strong> :&ensp;<code>Optional[float]</code>, optional</dt>
+<dd>The threshold for relevance score. Defaults to None.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.set_system_message"><code class="name flex">
+<span>def <span class="ident">set_system_message</span></span>(<span>self, system_message: str) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_system_message(self, system_message: str) -&gt; None:
+    &#34;&#34;&#34;Set the system message of the conversation.
+
+    Args:
+        system_message (str): The new system message of the conversation.
+    &#34;&#34;&#34;
+    if system_message.strip() == &#39;&#39;:
+        self._system_message = None
+    else:
+        self._system_message = system_message.strip()</code></pre>
+</details>
+<div class="desc"><p>Set the system message of the conversation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>system_message</code></strong> :&ensp;<code>str</code></dt>
+<dd>The new system message of the conversation.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.set_title"><code class="name flex">
+<span>def <span class="ident">set_title</span></span>(<span>self, title: str | None) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_title(self, title: Optional[str]) -&gt; None:
+    &#34;&#34;&#34;Set the title of the conversation.
+
+    Args:
+        title (Optional[str]): The new title of the conversation.
+    &#34;&#34;&#34;
+    self.memory.set_title(title)</code></pre>
+</details>
+<div class="desc"><p>Set the title of the conversation.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>title</code></strong> :&ensp;<code>Optional[str]</code></dt>
+<dd>The new title of the conversation.</dd>
+</dl></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.Chatbot.toggle_tool"><code class="name flex">
+<span>def <span class="ident">toggle_tool</span></span>(<span>self, tools: str | List[str]) ‑> None</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def toggle_tool(self, tools: Union[str, List[str]]) -&gt; None:
+    &#34;&#34;&#34;Toggle the given tool(s) for their availability of the chatbot.
+
+    Args:
+        tools (Union[str, List[str]]): List of tools to toggle.
+    &#34;&#34;&#34;
+    ts = [tools] if isinstance(tools, str) else tools
+    ts = list(set(ts))
+    if any(t not in self.tool_dict.keys() for t in ts):
+        raise ValueError(&#39;Non-exist tool name given.&#39;)
+    for t in ts:
+        self.tool_dict[t] = not self.tool_dict[t]</code></pre>
+</details>
+<div class="desc"><p>Toggle the given tool(s) for their availability of the chatbot.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>tools</code></strong> :&ensp;<code>Union[str, List[str]]</code></dt>
+<dd>List of tools to toggle.</dd>
+</dl></div>
+</dd>
+</dl>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig"><code class="flex name class">
+<span>class <span class="ident">MemoryConfig</span></span>
+<span>(</span><span>**data: Any)</span>
+</code></dt>
+<dd>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MemoryConfig(BaseModel):
+    recent_token_limit: int = 1000
+    relevant_token_limit: int = 500
+    relevance_score_threshold: float = 0.0</code></pre>
+</details>
+<div class="desc"><p>Usage docs: <a href="https://docs.pydantic.dev/2.7/concepts/models/">https://docs.pydantic.dev/2.7/concepts/models/</a></p>
+<p>A base class for creating Pydantic models.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>__class_vars__</code></strong></dt>
+<dd>The names of classvars defined on the model.</dd>
+<dt><strong><code>__private_attributes__</code></strong></dt>
+<dd>Metadata about the private attributes of the model.</dd>
+<dt><strong><code>__signature__</code></strong></dt>
+<dd>The signature for instantiating the model.</dd>
+<dt><strong><code>__pydantic_complete__</code></strong></dt>
+<dd>Whether model building is completed, or if there are still undefined fields.</dd>
+<dt><strong><code>__pydantic_core_schema__</code></strong></dt>
+<dd>The pydantic-core schema used to build the SchemaValidator and SchemaSerializer.</dd>
+<dt><strong><code>__pydantic_custom_init__</code></strong></dt>
+<dd>Whether the model has a custom <code>__init__</code> function.</dd>
+<dt><strong><code>__pydantic_decorators__</code></strong></dt>
+<dd>Metadata containing the decorators defined on the model.
+This replaces <code>Model.__validators__</code> and <code>Model.__root_validators__</code> from Pydantic V1.</dd>
+<dt><strong><code>__pydantic_generic_metadata__</code></strong></dt>
+<dd>Metadata for generic models; contains data used for a similar purpose to
+<strong>args</strong>, <strong>origin</strong>, <strong>parameters</strong> in typing-module generics. May eventually be replaced by these.</dd>
+<dt><strong><code>__pydantic_parent_namespace__</code></strong></dt>
+<dd>Parent namespace of the model, used for automatic rebuilding of models.</dd>
+<dt><strong><code>__pydantic_post_init__</code></strong></dt>
+<dd>The name of the post-init method for the model, if defined.</dd>
+<dt><strong><code>__pydantic_root_model__</code></strong></dt>
+<dd>Whether the model is a <code>RootModel</code>.</dd>
+<dt><strong><code>__pydantic_serializer__</code></strong></dt>
+<dd>The pydantic-core SchemaSerializer used to dump instances of the model.</dd>
+<dt><strong><code>__pydantic_validator__</code></strong></dt>
+<dd>The pydantic-core SchemaValidator used to validate instances of the model.</dd>
+<dt><strong><code>__pydantic_extra__</code></strong></dt>
+<dd>An instance attribute with the values of extra fields from validation when
+<code>model_config['extra'] == 'allow'</code>.</dd>
+<dt><strong><code>__pydantic_fields_set__</code></strong></dt>
+<dd>An instance attribute with the names of fields explicitly set.</dd>
+<dt><strong><code>__pydantic_private__</code></strong></dt>
+<dd>Instance attribute with the values of private attributes set on the model instance.</dd>
+</dl>
+<p>Create a new model by parsing and validating input data from keyword arguments.</p>
+<p>Raises [<code>ValidationError</code>][pydantic_core.ValidationError] if the input data cannot be
+validated to form a valid model.</p>
+<p><code>self</code> is explicitly positional-only to allow <code>self</code> as a field name.</p></div>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>pydantic.main.BaseModel</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig.model_computed_fields"><code class="name">var <span class="ident">model_computed_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig.model_config"><code class="name">var <span class="ident">model_config</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig.model_fields"><code class="name">var <span class="ident">model_fields</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig.recent_token_limit"><code class="name">var <span class="ident">recent_token_limit</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig.relevance_score_threshold"><code class="name">var <span class="ident">relevance_score_threshold</span> : float</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="llmflex.Chatbot.chatbot.MemoryConfig.relevant_token_limit"><code class="name">var <span class="ident">relevant_token_limit</span> : int</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="llmflex.Chatbot" href="index.html">llmflex.Chatbot</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="llmflex.Chatbot.chatbot.direct_response" href="#llmflex.Chatbot.chatbot.direct_response">direct_response</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="llmflex.Chatbot.chatbot.Chatbot" href="#llmflex.Chatbot.chatbot.Chatbot">Chatbot</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.chat" href="#llmflex.Chatbot.chatbot.Chatbot.chat">chat</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.chat_template" href="#llmflex.Chatbot.chatbot.Chatbot.chat_template">chat_template</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.generation_kwargs" href="#llmflex.Chatbot.chatbot.Chatbot.generation_kwargs">generation_kwargs</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.history" href="#llmflex.Chatbot.chatbot.Chatbot.history">history</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.llm" href="#llmflex.Chatbot.chatbot.Chatbot.llm">llm</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.memory" href="#llmflex.Chatbot.chatbot.Chatbot.memory">memory</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.memory_config" href="#llmflex.Chatbot.chatbot.Chatbot.memory_config">memory_config</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.notebook_chat" href="#llmflex.Chatbot.chatbot.Chatbot.notebook_chat">notebook_chat</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.prepare_prompt" href="#llmflex.Chatbot.chatbot.Chatbot.prepare_prompt">prepare_prompt</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.remove_last_interaction" href="#llmflex.Chatbot.chatbot.Chatbot.remove_last_interaction">remove_last_interaction</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.set_generation_kwargs" href="#llmflex.Chatbot.chatbot.Chatbot.set_generation_kwargs">set_generation_kwargs</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.set_memory_config" href="#llmflex.Chatbot.chatbot.Chatbot.set_memory_config">set_memory_config</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.set_system_message" href="#llmflex.Chatbot.chatbot.Chatbot.set_system_message">set_system_message</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.set_title" href="#llmflex.Chatbot.chatbot.Chatbot.set_title">set_title</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.system_message" href="#llmflex.Chatbot.chatbot.Chatbot.system_message">system_message</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.title" href="#llmflex.Chatbot.chatbot.Chatbot.title">title</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.toggle_tool" href="#llmflex.Chatbot.chatbot.Chatbot.toggle_tool">toggle_tool</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.tool_dict" href="#llmflex.Chatbot.chatbot.Chatbot.tool_dict">tool_dict</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.Chatbot.tools" href="#llmflex.Chatbot.chatbot.Chatbot.tools">tools</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="llmflex.Chatbot.chatbot.MemoryConfig" href="#llmflex.Chatbot.chatbot.MemoryConfig">MemoryConfig</a></code></h4>
+<ul class="">
+<li><code><a title="llmflex.Chatbot.chatbot.MemoryConfig.model_computed_fields" href="#llmflex.Chatbot.chatbot.MemoryConfig.model_computed_fields">model_computed_fields</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.MemoryConfig.model_config" href="#llmflex.Chatbot.chatbot.MemoryConfig.model_config">model_config</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.MemoryConfig.model_fields" href="#llmflex.Chatbot.chatbot.MemoryConfig.model_fields">model_fields</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.MemoryConfig.recent_token_limit" href="#llmflex.Chatbot.chatbot.MemoryConfig.recent_token_limit">recent_token_limit</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.MemoryConfig.relevance_score_threshold" href="#llmflex.Chatbot.chatbot.MemoryConfig.relevance_score_threshold">relevance_score_threshold</a></code></li>
+<li><code><a title="llmflex.Chatbot.chatbot.MemoryConfig.relevant_token_limit" href="#llmflex.Chatbot.chatbot.MemoryConfig.relevant_token_limit">relevant_token_limit</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.11.5</a>.</p>
+</footer>
+</body>
+</html>

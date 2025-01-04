@@ -1,9 +1,10 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from ..Tokenizer.base_tokenizer import BaseTokenizer
 import os
 from datetime import datetime as dt
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
 
 class BaseMemory(ABC):
     """Base chat memory class."""
@@ -149,7 +150,7 @@ class BaseMemory(ABC):
             history = self.history[-(last_n + 1):]
         return history
     
-    def get_messages_by_token_limit(self, tokenizer: BaseTokenizer, token_limit: int) -> List[Dict[str, Any]]:
+    def get_messages_by_token_limit(self, tokenizer: "BaseTokenizer", token_limit: int) -> List[Dict[str, Any]]:
         """Returns messages from the conversation history that do not exceed the given token limit.
 
         Args:

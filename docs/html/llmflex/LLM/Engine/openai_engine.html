@@ -78,6 +78,7 @@ el.replaceWith(d);
             api_key (Optional[str], optional): The API key for the OpenAI API. Defaults to None.
             **kwargs: Additional keyword arguments to pass to the BaseEngine initializer.
         &#34;&#34;&#34;
+        from openai import Client
         tokenizer_kwargs = dict() if tokenizer_kwargs is None else tokenizer_kwargs
         base_url = os.environ.get(&#39;OPENAI_BASE_URL&#39;) if base_url is None else base_url
         api_key = os.environ.get(&#39;OPENAI_API_KEY&#39;) if api_key is None else api_key
@@ -110,7 +111,7 @@ el.replaceWith(d);
         super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
     
     @property
-    def model(self) -&gt; Client:
+    def model(self) -&gt; &#34;Client&#34;:
         &#34;&#34;&#34;LLM model.
 
         Returns:

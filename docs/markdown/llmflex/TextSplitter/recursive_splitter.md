@@ -4,7 +4,7 @@ Module llmflex.TextSplitter.recursive_splitter
 Classes
 -------
 
-`RecursiveTextSplitter(tokenizer: llmflex.Tokenizer.base_tokenizer.BaseTokenizer, split_strings: List[str] | None = None, chunk_size: int = 400)`
+`RecursiveTextSplitter(tokenizer: BaseTokenizer, split_strings: List[str] | None = None, chunk_size: int = 400)`
 :   RecursiveTextSplitter is a text splitter that recursively splits text into smaller chunks until each chunk is below a specified maximum token length.
         
     

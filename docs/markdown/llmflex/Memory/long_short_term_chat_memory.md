@@ -4,7 +4,7 @@ Module llmflex.Memory.long_short_term_chat_memory
 Classes
 -------
 
-`LongShortTermChatMemory(embeddings: BaseEmbeddings, ranker: Optional[BaseRanker] = None, text_splitter: Optional[BaseTextSplitter] = None, vdb_type: VDB_TYPE = 'numpy', title: Optional[str] = None, memory_dir: Optional[str] = None, **kwargs)`
+`LongShortTermChatMemory(embeddings: "'BaseEmbeddings'", ranker: "Optional['BaseRanker']" = None, text_splitter: "Optional['BaseTextSplitter']" = None, vdb_type: VDB_TYPE = 'numpy', title: Optional[str] = None, memory_dir: Optional[str] = None, **kwargs)`
 :   Long short term chat memory class.
     
     Initializes the LongShortTermChatMemory class.
@@ -24,7 +24,7 @@ Classes
 
     ### Static methods
 
-    `from_exist(embeddings: BaseEmbeddings, memory_dir: str, ranker: Optional[BaseRanker] = None, text_splitter: Optional[BaseTextSplitter] = None) ‑> llmflex.Memory.long_short_term_chat_memory.LongShortTermChatMemory`
+    `from_exist(embeddings: "'BaseEmbeddings'", memory_dir: str, ranker: "Optional['BaseRanker']" = None, text_splitter: "Optional['BaseTextSplitter']" = None)`
     :   Initializes the LongShortTermChatMemory class from an existing memory directory.
         
         Args:

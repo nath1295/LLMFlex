@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="generator" content="pdoc3 0.11.5">
-<title>llmflex.TextSplitter.markdown_splitter API documentation</title>
+<title>llmflex.TextSplitter.semantic_splitter API documentation</title>
 <meta name="description" content="">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/sanitize.min.css" integrity="sha512-y1dtMcuvtTMJc1yPgEqF0ZjQbhnc/bFhyvIyVNb9Zk5mIGtqVaAB1Ttl28su8AvFMOY0EwRbAe+HCLqj6W7/KA==" crossorigin>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/13.0.0/typography.min.css" integrity="sha512-Y1DYSb995BAfxobCkKepB1BqJJTPrOp3zPL74AWFugHHmmdcvO+C48WLrUOlhGMc0QG7AE3f7gmvvcrmX2fDoA==" crossorigin>
@@ -33,7 +33,7 @@ el.replaceWith(d);
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>llmflex.TextSplitter.markdown_splitter</code></h1>
+<h1 class="title">Module <code>llmflex.TextSplitter.semantic_splitter</code></h1>
 </header>
 <section id="section-intro">
 </section>
@@ -46,52 +46,77 @@ el.replaceWith(d);
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="llmflex.TextSplitter.markdown_splitter.MarkdownTextSplitter"><code class="flex name class">
-<span>class <span class="ident">MarkdownTextSplitter</span></span>
-<span>(</span><span>tokenizer: BaseTokenizer,<br>chunk_size: int = 400,<br>config: Dict[str, bool] | None = None)</span>
+<dt id="llmflex.TextSplitter.semantic_splitter.SemanticTextSplitter"><code class="flex name class">
+<span>class <span class="ident">SemanticTextSplitter</span></span>
+<span>(</span><span>embeddings: BaseEmbeddings,<br>tokenizer: ForwardRef('BaseTokenizer') | None = None,<br>chunk_size: int = 400,<br>split_fn: Callable[[str], List[str]] | None = None)</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class MarkdownTextSplitter(BaseTextSplitter):
-    &#34;&#34;&#34;MarkdownTextSplitter is a text splitter that recursively splits text into smaller chunks of markdown sections.
+<pre><code class="python">class SemanticTextSplitter(BaseTextSplitter):
+    &#34;&#34;&#34;A text splitter that splits text into chunks based on semantic similarity.
+    
+    This splitter uses embeddings to determine the semantic similarity between chunks of text.
+    It splits the text into chunks such that each chunk is as semantically similar as possible to the others.
     &#34;&#34;&#34;
-    def __init__(self, tokenizer: &#34;BaseTokenizer&#34;, chunk_size: int = 400, config: Optional[Dict[str, bool]] = None) -&gt; None:
-        &#34;&#34;&#34;Initializes the MarkdownTextSplitter with a tokenizer, split strings, and chunk size.
+    def __init__(self, 
+                 embeddings: &#34;BaseEmbeddings&#34;, 
+                 tokenizer: Optional[&#34;BaseTokenizer&#34;] = None, 
+                 chunk_size: int = 400, 
+                 split_fn: Optional[Callable[[str], List[str]]] = None
+            ) -&gt; None:
+        &#34;&#34;&#34;Initializes the SemanticTextSplitter.
 
         Args:
-            tokenizer (BaseTokenizer): The tokenizer to use for counting tokens.
-            chunk_size (int, optional): The maximum number of tokens allowed in each chunk. Defaults to 400.
-            config (config: Optional[Dict[str, bool]], optional): The split tokens and if they should be prefix of chunks or not. If None is given, it will be split by headers. Defaults to None.
+            embeddings (BaseEmbeddings): The embeddings model to use for semantic similarity.
+            tokenizer (Optional[BaseTokenizer], optional): The tokenizer to use for counting tokens. If None is given, the tokenizer of the embedding model will be used. Defaults to None.
+            chunk_size (int, optional): The maximum size of each chunk. Defaults to 400.
+            split_fn (Optional[Callable[[str], List[str]]], optional): A custom function to split the text, If None is given, a sentence text splitter will be used with chunk size being one third of the SemanticTextSplitter chunk size. Defaults to None.
         &#34;&#34;&#34;
-        default_config = {
-            &#39;\n# &#39;: True,
-            &#39;\n## &#39;: True,
-            &#39;\n### &#39;: True,
-            &#39;\n#### &#39;: True,
-            &#39;\n##### &#39;: True,
-            &#39;\n###### &#39;: True,
-        }
-        self._config = default_config if config is None else config
-        if len(self._config) == 0:
-            raise ValueError(&#39;Cannot provide an empty config.&#39;)
-        self._tokenizer = tokenizer
+        super().__init__()
+        self._embeddings = embeddings
+        self._tokenizer = tokenizer if tokenizer else self._embeddings.tokenizer
         self._chunk_size = chunk_size
+        self._split_fn = split_fn
+        if chunk_size &lt; 40:
+            raise ValueError(&#39;&#34;chunk_size&#34; must be larger than 40.&#39;)
+        if not self._split_fn:
+            from .sentence_splitter import SentenceTextSplitter
+            st_chunk_size = chunk_size // 3
+            self._split_fn = SentenceTextSplitter(tokenizer=self._tokenizer, chunk_size=st_chunk_size, chunk_overlap=0).split_text
 
-    def _split_with_token(self, text: str, token: str, prefix: bool) -&gt; List[str]:
-        import re
-        split_token = token if &#39; &#39; not in token else token.replace(&#39; &#39;, &#39;\s&#39;)
-        strings = re.split(f&#39;({split_token})&#39;, text)
-        real_token = token.removeprefix(&#39;\\&#39;)
-        strings = [string for string in strings if ((string != &#39;&#39;) and (string != real_token))]
-        if len(strings) &gt; 0:
-            if prefix:
-                strings = [strings[0]] + [real_token + string for string in strings[1:]]
+    def _split_semantic_chunks(self, sentences: List[str], sizes: List[int], vectors: &#34;np.ndarray&#34;) -&gt; List[str]:
+        &#34;&#34;&#34;Splits the given sentences into chunks based on semantic similarity.
+        
+        Args:
+            sentences (List[str]): The list of sentences to split.
+            sizes (List[int]): The sizes of each sentence.
+            vectors (np.ndarray): The embeddings of each sentence.
+
+        Returns:
+            List[str]: The list of split sentences.
+        &#34;&#34;&#34;
+        import numpy as np
+        scores = (vectors[:-1] * vectors[1:]).sum(axis=1)
+        min_score = scores.min()
+        bps = np.where(scores&lt;=min_score)[0] + 1
+        batches = [(bps[i - 1] if i != 0 else 0, bp) for i, bp in enumerate(bps)] + [(bps[-1], len(sentences))]
+        chunks = [sentences[i:j] for i, j in batches]
+        chunk_size_arr = [sizes[i:j] for i, j in batches]
+        chunk_sizes = [sum(csa) for csa in chunk_size_arr]
+        chunk_vectors = [vectors[i:j] for i, j in batches]
+        outputs = []
+        for chunk, size_arr, total_size, vecs in zip(chunks, chunk_size_arr, chunk_sizes, chunk_vectors):
+            if total_size &lt;= self._chunk_size:
+                outputs.append(&#39;&#39;.join(chunk))
+            elif len(chunk) &lt;= 1:
+                outputs.extend(chunk)
             else:
-                strings = [string + real_token for string in strings[:-1]] + [strings[-1]]
-        return strings
+                outputs.extend(self._split_semantic_chunks(chunk, size_arr, vecs))
+        return outputs
+
 
     def split_text(self, text: str) -&gt; List[str]:
         &#34;&#34;&#34;
@@ -103,26 +128,30 @@ el.replaceWith(d);
         Returns:
             List[str]: A list of strings resulting from the split.
         &#34;&#34;&#34;
-        chunks = [text]
-        for token, prefix in self._config.items():
-            sizes = [self._tokenizer.get_num_tokens(chunk, add_special_tokens=False) for chunk in chunks]
-            if all([s &lt;= self._chunk_size for s in sizes]):
-                return chunks
-            else:
-                chunks = [[c] if s &lt;= self._chunk_size else self._split_with_token(c, token, prefix) for c, s in zip(chunks, sizes)]
-                chunks = sum(chunks, [])
-        return chunks</code></pre>
+        sentences = self._split_fn(text)
+        sizes = [self._tokenizer.get_num_tokens(c, add_special_tokens=False) for c in sentences]
+        if all(size &gt;= self._chunk_size for size in sizes):
+            return sentences
+        elif len(sentences) &lt;= 1:
+            return sentences
+        vectors = self._embeddings.batch_embed(sentences)
+        return self._split_semantic_chunks(sentences, sizes, vectors)</code></pre>
 </details>
-<div class="desc"><p>MarkdownTextSplitter is a text splitter that recursively splits text into smaller chunks of markdown sections.</p>
-<p>Initializes the MarkdownTextSplitter with a tokenizer, split strings, and chunk size.</p>
+<div class="desc"><p>A text splitter that splits text into chunks based on semantic similarity.</p>
+<p>This splitter uses embeddings to determine the semantic similarity between chunks of text.
+It splits the text into chunks such that each chunk is as semantically similar as possible to the others.</p>
+<p>Initializes the SemanticTextSplitter.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>tokenizer</code></strong> :&ensp;<code>BaseTokenizer</code></dt>
-<dd>The tokenizer to use for counting tokens.</dd>
+<dt><strong><code>embeddings</code></strong> :&ensp;<code>BaseEmbeddings</code></dt>
+<dd>The embeddings model to use for semantic similarity.</dd>
+<dt><strong><code>tokenizer</code></strong> :&ensp;<code>Optional[BaseTokenizer]</code>, optional</dt>
+<dd>The tokenizer to use for counting tokens. If None is given, the tokenizer of the embedding model will be used. Defaults to None.</dd>
 <dt><strong><code>chunk_size</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>The maximum number of tokens allowed in each chunk. Defaults to 400.</dd>
-</dl>
-<p>config (config: Optional[Dict[str, bool]], optional): The split tokens and if they should be prefix of chunks or not. If None is given, it will be split by headers. Defaults to None.</p></div>
+<dd>The maximum size of each chunk. Defaults to 400.</dd>
+<dt><strong><code>split_fn</code></strong> :&ensp;<code>Optional[Callable[[str], List[str]]]</code>, optional</dt>
+<dd>A custom function to split the text, If None is given, a sentence text splitter will be used with chunk size being one third of the SemanticTextSplitter chunk size. Defaults to None.</dd>
+</dl></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="llmflex.TextSplitter.base_splitter.BaseTextSplitter" href="base_splitter.html#llmflex.TextSplitter.base_splitter.BaseTextSplitter">BaseTextSplitter</a></li>
@@ -154,7 +183,7 @@ el.replaceWith(d);
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="llmflex.TextSplitter.markdown_splitter.MarkdownTextSplitter" href="#llmflex.TextSplitter.markdown_splitter.MarkdownTextSplitter">MarkdownTextSplitter</a></code></h4>
+<h4><code><a title="llmflex.TextSplitter.semantic_splitter.SemanticTextSplitter" href="#llmflex.TextSplitter.semantic_splitter.SemanticTextSplitter">SemanticTextSplitter</a></code></h4>
 </li>
 </ul>
 </li>

@@ -63,6 +63,10 @@ el.replaceWith(d);
         str: The Markdown representation of the URL.
     &#34;&#34;&#34;
     try:
+        from markdownify import markdownify
+    except:
+        raise ModuleNotFoundError(f&#39;Module &#34;markdownify&#34; not installed. Please install it with `pip`.&#39;)
+    try:
         r = get(url)
         r.raise_for_status()
     except Exception as e:
@@ -105,7 +109,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.Tool.browser_tool.BrowserTool"><code class="flex name class">
 <span>class <span class="ident">BrowserTool</span></span>
-<span>(</span><span>base_url: str,<br>embeddings: <a title="llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings" href="../Embeddings/Model/base_embeddings.html#llmflex.Embeddings.Model.base_embeddings.BaseEmbeddings">BaseEmbeddings</a>,<br>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a> | None = None,<br>ranker: <a title="llmflex.Reranker.base_ranker.BaseRanker" href="../Reranker/base_ranker.html#llmflex.Reranker.base_ranker.BaseRanker">BaseRanker</a> | None = None,<br>chunk_size: int = 300)</span>
+<span>(</span><span>base_url: str,<br>embeddings: BaseEmbeddings,<br>tokenizer: ForwardRef('BaseTokenizer') | None = None,<br>ranker: ForwardRef('BaseRanker') | None = None,<br>chunk_size: int = 300)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -117,9 +121,9 @@ el.replaceWith(d);
     &#34;&#34;&#34;
     def __init__(self, 
         base_url: str, 
-        embeddings: BaseEmbeddings,
-        tokenizer: Optional[BaseTokenizer] = None,
-        ranker: Optional[BaseRanker] = None,
+        embeddings: &#34;BaseEmbeddings&#34;,
+        tokenizer: Optional[&#34;BaseTokenizer&#34;] = None,
+        ranker: Optional[&#34;BaseRanker&#34;] = None,
         chunk_size: int = 300
     ) -&gt; None:
         &#34;&#34;&#34;Initializes the BrowserTool with the given parameters.
@@ -131,7 +135,9 @@ el.replaceWith(d);
             ranker (Optional[BaseRanker], optional): The ranker to use for reranking the search results. If None is given, it will be initialised with ms-marco-TinyBERT. Defaults to None.
             chunk_size (int, optional): The maximum number of tokens in each chunk of the search results. Defaults to 300.
         &#34;&#34;&#34;
-        if not md_installed:
+        try:
+            from markdownify import markdownify
+        except:
             raise ModuleNotFoundError(f&#39;Module &#34;markdownify&#34; not installed. Please install it with `pip`.&#39;)
         from ..TextSplitter.sentence_splitter import SentenceTextSplitter
         from ..VectorDatabase.numpy_vectordb import NumpyVectorDatabase

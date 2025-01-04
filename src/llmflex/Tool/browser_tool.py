@@ -1,14 +1,10 @@
 from .base_tool import BaseTool, ToolOutput
-from ..Embeddings.Model.base_embeddings import BaseEmbeddings
-from ..Tokenizer.base_tokenizer import BaseTokenizer
-from ..Reranker.base_ranker import BaseRanker
 from requests import get
-from typing import Any, Literal, Optional, List, Dict, Union
-try:
-    from markdownify import markdownify
-    md_installed = True
-except:
-    md_installed = False
+from typing import Any, Literal, Optional, List, Dict, Union, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..Embeddings.Model.base_embeddings import BaseEmbeddings
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
+    from ..Reranker.base_ranker import BaseRanker
 
 def url_to_markdown(url: str, if_failed: Literal['raise', 'warning'] = 'warning') -> str:
     """Converts a URL to its Markdown representation.
@@ -20,6 +16,10 @@ def url_to_markdown(url: str, if_failed: Literal['raise', 'warning'] = 'warning'
     Returns:
         str: The Markdown representation of the URL.
     """
+    try:
+        from markdownify import markdownify
+    except:
+        raise ModuleNotFoundError(f'Module "markdownify" not installed. Please install it with `pip`.')
     try:
         r = get(url)
         r.raise_for_status()
@@ -48,9 +48,9 @@ class BrowserTool(BaseTool):
     """
     def __init__(self, 
         base_url: str, 
-        embeddings: BaseEmbeddings,
-        tokenizer: Optional[BaseTokenizer] = None,
-        ranker: Optional[BaseRanker] = None,
+        embeddings: "BaseEmbeddings",
+        tokenizer: Optional["BaseTokenizer"] = None,
+        ranker: Optional["BaseRanker"] = None,
         chunk_size: int = 300
     ) -> None:
         """Initializes the BrowserTool with the given parameters.
@@ -62,7 +62,9 @@ class BrowserTool(BaseTool):
             ranker (Optional[BaseRanker], optional): The ranker to use for reranking the search results. If None is given, it will be initialised with ms-marco-TinyBERT. Defaults to None.
             chunk_size (int, optional): The maximum number of tokens in each chunk of the search results. Defaults to 300.
         """
-        if not md_installed:
+        try:
+            from markdownify import markdownify
+        except:
             raise ModuleNotFoundError(f'Module "markdownify" not installed. Please install it with `pip`.')
         from ..TextSplitter.sentence_splitter import SentenceTextSplitter
         from ..VectorDatabase.numpy_vectordb import NumpyVectorDatabase

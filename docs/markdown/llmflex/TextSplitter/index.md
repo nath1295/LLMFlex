@@ -7,5 +7,6 @@ Sub-modules
 * llmflex.TextSplitter.base_splitter
 * llmflex.TextSplitter.markdown_splitter
 * llmflex.TextSplitter.recursive_splitter
+* llmflex.TextSplitter.semantic_splitter
 * llmflex.TextSplitter.sentence_splitter
 * llmflex.TextSplitter.token_splitter

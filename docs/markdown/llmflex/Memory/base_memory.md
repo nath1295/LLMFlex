@@ -73,7 +73,7 @@ Classes
         Returns:
             List[Dict[str, Any]]: A list of the last n messages.
 
-    `get_messages_by_token_limit(self, tokenizer: BaseTokenizer, token_limit: int) ‑> List[Dict[str, Any]]`
+    `get_messages_by_token_limit(self, tokenizer: "'BaseTokenizer'", token_limit: int) ‑> List[Dict[str, Any]]`
     :   Returns messages from the conversation history that do not exceed the given token limit.
         
         Args:

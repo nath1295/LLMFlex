@@ -48,7 +48,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.TextSplitter.recursive_splitter.RecursiveTextSplitter"><code class="flex name class">
 <span>class <span class="ident">RecursiveTextSplitter</span></span>
-<span>(</span><span>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a>,<br>split_strings: List[str] | None = None,<br>chunk_size: int = 400)</span>
+<span>(</span><span>tokenizer: BaseTokenizer,<br>split_strings: List[str] | None = None,<br>chunk_size: int = 400)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -58,7 +58,7 @@ el.replaceWith(d);
 <pre><code class="python">class RecursiveTextSplitter(BaseTextSplitter):
     &#34;&#34;&#34;RecursiveTextSplitter is a text splitter that recursively splits text into smaller chunks until each chunk is below a specified maximum token length.
     &#34;&#34;&#34;
-    def __init__(self, tokenizer: BaseTokenizer, split_strings: Optional[List[str]] = None, chunk_size: int = 400) -&gt; None:
+    def __init__(self, tokenizer: &#34;BaseTokenizer&#34;, split_strings: Optional[List[str]] = None, chunk_size: int = 400) -&gt; None:
         &#34;&#34;&#34;Initializes the RecursiveTextSplitter with a tokenizer, split strings, and chunk size.
 
         Args:

@@ -48,7 +48,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.LLM.Engine.base_engine.BaseEngine"><code class="flex name class">
 <span>class <span class="ident">BaseEngine</span></span>
-<span>(</span><span>model: Any,<br>model_id: str,<br>tokenizer: <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a>,<br>model_name: str | None = None,<br>default_chat_template: Literal['chatml', 'llama3', 'mistral', 'gemma', 'deepseek', 'openchat', 'phi'] | None = None)</span>
+<span>(</span><span>model: Any,<br>model_id: str,<br>tokenizer: BaseTokenizer,<br>model_name: str | None = None,<br>default_chat_template: ForwardRef('CHAT_TEMPLATE_PRESETS') | None = None)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -58,7 +58,7 @@ el.replaceWith(d);
 <pre><code class="python">class BaseEngine(ABC):
     &#34;&#34;&#34;Base class for LLM engine.
     &#34;&#34;&#34;
-    def __init__(self, model: Any, model_id: str, tokenizer: BaseTokenizer, model_name: Optional[str] = None, default_chat_template: Optional[CHAT_TEMPLATE_PRESETS] = None) -&gt; None:
+    def __init__(self, model: Any, model_id: str, tokenizer: &#34;BaseTokenizer&#34;, model_name: Optional[str] = None, default_chat_template: Optional[&#34;CHAT_TEMPLATE_PRESETS&#34;] = None) -&gt; None:
         self._model = model
         self._model_id = model_id
         self._tokenizer = tokenizer
@@ -97,7 +97,7 @@ el.replaceWith(d);
         return self._model_name
     
     @property
-    def tokenizer(self) -&gt; BaseTokenizer:
+    def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
         &#34;&#34;&#34;Tokenizer.
 
         Returns:
@@ -106,7 +106,7 @@ el.replaceWith(d);
         return self._tokenizer
     
     @property
-    def chat_template(self) -&gt; ChatTemplate:
+    def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
         &#34;&#34;&#34;Chat template for the LLM engine.
 
         This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.
@@ -116,6 +116,7 @@ el.replaceWith(d);
         &#34;&#34;&#34;
         if not hasattr(self, &#39;_chat_template&#39;):
             from ...Prompt.presets import PRESETS
+            from ...Prompt.chat_template import ChatTemplate
             chat_template = self._default_chat_template
             chat_template = None if chat_template not in PRESETS.keys() else chat_template
             self._chat_template = ChatTemplate(tokenizer=self.tokenizer, chat_template=chat_template)
@@ -457,14 +458,14 @@ el.replaceWith(d);
 </ul>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.chat_template"><code class="name">prop <span class="ident">chat_template</span> : <a title="llmflex.Prompt.chat_template.ChatTemplate" href="../../Prompt/chat_template.html#llmflex.Prompt.chat_template.ChatTemplate">ChatTemplate</a></code></dt>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.chat_template"><code class="name">prop <span class="ident">chat_template</span> : ChatTemplate</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def chat_template(self) -&gt; ChatTemplate:
+def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
     &#34;&#34;&#34;Chat template for the LLM engine.
 
     This property returns a ChatTemplate object that can be used to format input prompts for the LLM engine.
@@ -474,6 +475,7 @@ def chat_template(self) -&gt; ChatTemplate:
     &#34;&#34;&#34;
     if not hasattr(self, &#39;_chat_template&#39;):
         from ...Prompt.presets import PRESETS
+        from ...Prompt.chat_template import ChatTemplate
         chat_template = self._default_chat_template
         chat_template = None if chat_template not in PRESETS.keys() else chat_template
         self._chat_template = ChatTemplate(tokenizer=self.tokenizer, chat_template=chat_template)
@@ -557,14 +559,14 @@ def model_name(self) -&gt; str:
 <dd>Prettified version of model ID.</dd>
 </dl></div>
 </dd>
-<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a></code></dt>
+<dt id="llmflex.LLM.Engine.base_engine.BaseEngine.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : BaseTokenizer</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def tokenizer(self) -&gt; BaseTokenizer:
+def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
     &#34;&#34;&#34;Tokenizer.
 
     Returns:
@@ -1309,7 +1311,7 @@ top_k, repetition_penalty, and seed. The generated text is yielded one token at 
         return self._engine
 
     @property
-    def tokenizer(self) -&gt; BaseTokenizer:
+    def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
         &#34;&#34;&#34;Returns the tokenizer used in the LLM.
 
         Returns:
@@ -1318,7 +1320,7 @@ top_k, repetition_penalty, and seed. The generated text is yielded one token at 
         return self.engine.tokenizer
     
     @property
-    def chat_template(self) -&gt; ChatTemplate:
+    def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
         &#34;&#34;&#34;Returns the default chat template for the LLM.
 
         Returns:
@@ -1668,14 +1670,14 @@ top_k, repetition_penalty, and seed. The generated text is yielded one token at 
 </dl></div>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.chat_template"><code class="name">prop <span class="ident">chat_template</span> : <a title="llmflex.Prompt.chat_template.ChatTemplate" href="../../Prompt/chat_template.html#llmflex.Prompt.chat_template.ChatTemplate">ChatTemplate</a></code></dt>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.chat_template"><code class="name">prop <span class="ident">chat_template</span> : ChatTemplate</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def chat_template(self) -&gt; ChatTemplate:
+def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
     &#34;&#34;&#34;Returns the default chat template for the LLM.
 
     Returns:
@@ -1785,14 +1787,14 @@ def model_name(self) -&gt; str:
 <dd>The name of the LLM model.</dd>
 </dl></div>
 </dd>
-<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : <a title="llmflex.Tokenizer.base_tokenizer.BaseTokenizer" href="../../Tokenizer/base_tokenizer.html#llmflex.Tokenizer.base_tokenizer.BaseTokenizer">BaseTokenizer</a></code></dt>
+<dt id="llmflex.LLM.Engine.base_engine.BaseLLM.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : BaseTokenizer</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def tokenizer(self) -&gt; BaseTokenizer:
+def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
     &#34;&#34;&#34;Returns the tokenizer used in the LLM.
 
     Returns:

@@ -1,11 +1,12 @@
 from .base_splitter import BaseTextSplitter
-from ..Tokenizer.base_tokenizer import BaseTokenizer
-from typing import List, Optional
+from typing import List, Optional, TYPE_CHECKING
+if TYPE_CHECKING:
+    from ..Tokenizer.base_tokenizer import BaseTokenizer
 
 class RecursiveTextSplitter(BaseTextSplitter):
     """RecursiveTextSplitter is a text splitter that recursively splits text into smaller chunks until each chunk is below a specified maximum token length.
     """
-    def __init__(self, tokenizer: BaseTokenizer, split_strings: Optional[List[str]] = None, chunk_size: int = 400) -> None:
+    def __init__(self, tokenizer: "BaseTokenizer", split_strings: Optional[List[str]] = None, chunk_size: int = 400) -> None:
         """Initializes the RecursiveTextSplitter with a tokenizer, split strings, and chunk size.
 
         Args:

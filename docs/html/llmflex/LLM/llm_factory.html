@@ -48,7 +48,7 @@ el.replaceWith(d);
 <dl>
 <dt id="llmflex.LLM.llm_factory.LLMFactory"><code class="flex name class">
 <span>class <span class="ident">LLMFactory</span></span>
-<span>(</span><span>engine: BaseEngine)</span>
+<span>(</span><span>engine: "'BaseEngine'")</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -58,7 +58,7 @@ el.replaceWith(d);
 <pre><code class="python">class LLMFactory:
     &#34;&#34;&#34;Class for creating LLMs with different default generation settings from the same LLM engine.
     &#34;&#34;&#34;
-    def __init__(self, engine: BaseEngine) -&gt; None:
+    def __init__(self, engine: &#34;BaseEngine&#34;) -&gt; None:
         &#34;&#34;&#34;Initialises the class with the underlying LLM engine.
 
         Args:
@@ -67,7 +67,7 @@ el.replaceWith(d);
         self._engine = engine
 
     @property
-    def engine(self) -&gt; BaseEngine:
+    def engine(self) -&gt; &#34;BaseEngine&#34;:
         &#34;&#34;&#34;Engine used in the LLMs.
 
         Returns:
@@ -85,7 +85,7 @@ el.replaceWith(d);
         return self.engine.__class__.__name__
     
     @property
-    def tokenizer(self) -&gt; BaseTokenizer:
+    def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
         &#34;&#34;&#34;Returns the tokenizer used in the LLM.
 
         Returns:
@@ -94,7 +94,7 @@ el.replaceWith(d);
         return self.engine.tokenizer
     
     @property
-    def chat_template(self) -&gt; ChatTemplate:
+    def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
         &#34;&#34;&#34;Returns the default chat template for the LLM.
 
         Returns:
@@ -130,7 +130,7 @@ el.replaceWith(d);
             stop: Optional[List[str]] = None,
             seed: Optional[int] = None,
             **kwargs
-        ) -&gt; BaseLLM:
+        ) -&gt; &#34;BaseLLM&#34;:
         &#34;&#34;&#34;Get a new LLM with the given generation arguments as default arguments.
 
         Args:
@@ -144,6 +144,7 @@ el.replaceWith(d);
             seed (Optional[int], optional): The seed for generation. Defaults to None.
             kwargs: Other extra keywowrd arguments.
         &#34;&#34;&#34;
+        from .Engine.base_engine import BaseLLM
         llm = BaseLLM(
             engine=self.engine,
             temperature=temperature,
@@ -281,7 +282,8 @@ el.replaceWith(d);
             pretrained_model_name_or_path=pretrained_model_name_or_path,
             tokenizer_name_or_path=tokenizer_name_or_path,
             model_kwargs=model_kwargs,
-            tokenizer_kwargs=tokenizer_kwargs
+            tokenizer_kwargs=tokenizer_kwargs,
+            **kwargs
         )
         return cls(engine)</code></pre>
 </details>
@@ -384,14 +386,14 @@ el.replaceWith(d);
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="llmflex.LLM.llm_factory.LLMFactory.chat_template"><code class="name">prop <span class="ident">chat_template</span> : ChatTemplate</code></dt>
+<dt id="llmflex.LLM.llm_factory.LLMFactory.chat_template"><code class="name">prop <span class="ident">chat_template</span> : 'ChatTemplate'</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def chat_template(self) -&gt; ChatTemplate:
+def chat_template(self) -&gt; &#34;ChatTemplate&#34;:
     &#34;&#34;&#34;Returns the default chat template for the LLM.
 
     Returns:
@@ -406,14 +408,14 @@ def chat_template(self) -&gt; ChatTemplate:
 <dd>The default chat template for the LLM.</dd>
 </dl></div>
 </dd>
-<dt id="llmflex.LLM.llm_factory.LLMFactory.engine"><code class="name">prop <span class="ident">engine</span> : BaseEngine</code></dt>
+<dt id="llmflex.LLM.llm_factory.LLMFactory.engine"><code class="name">prop <span class="ident">engine</span> : 'BaseEngine'</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def engine(self) -&gt; BaseEngine:
+def engine(self) -&gt; &#34;BaseEngine&#34;:
     &#34;&#34;&#34;Engine used in the LLMs.
 
     Returns:
@@ -494,14 +496,14 @@ def model_name(self) -&gt; str:
 <dd>The name of the LLM model.</dd>
 </dl></div>
 </dd>
-<dt id="llmflex.LLM.llm_factory.LLMFactory.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : BaseTokenizer</code></dt>
+<dt id="llmflex.LLM.llm_factory.LLMFactory.tokenizer"><code class="name">prop <span class="ident">tokenizer</span> : 'BaseTokenizer'</code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@property
-def tokenizer(self) -&gt; BaseTokenizer:
+def tokenizer(self) -&gt; &#34;BaseTokenizer&#34;:
     &#34;&#34;&#34;Returns the tokenizer used in the LLM.
 
     Returns:

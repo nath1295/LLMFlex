@@ -4,7 +4,7 @@ Module llmflex.LLM.llm_factory
 Classes
 -------
 
-`LLMFactory(engine: BaseEngine)`
+`LLMFactory(engine: "'BaseEngine'")`
 :   Class for creating LLMs with different default generation settings from the same LLM engine.
         
     
@@ -63,13 +63,13 @@ Classes
 
     ### Instance variables
 
-    `chat_template: ChatTemplate`
+    `chat_template: 'ChatTemplate'`
     :   Returns the default chat template for the LLM.
         
         Returns:
             ChatTemplate: The default chat template for the LLM.
 
-    `engine: BaseEngine`
+    `engine: 'BaseEngine'`
     :   Engine used in the LLMs.
         
         Returns:
@@ -93,7 +93,7 @@ Classes
         Returns:
             str: The name of the LLM model.
 
-    `tokenizer: BaseTokenizer`
+    `tokenizer: 'BaseTokenizer'`
     :   Returns the tokenizer used in the LLM.
         
         Returns:

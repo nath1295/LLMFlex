@@ -199,7 +199,7 @@ el.replaceWith(d);
             history = self.history[-(last_n + 1):]
         return history
     
-    def get_messages_by_token_limit(self, tokenizer: BaseTokenizer, token_limit: int) -&gt; List[Dict[str, Any]]:
+    def get_messages_by_token_limit(self, tokenizer: &#34;BaseTokenizer&#34;, token_limit: int) -&gt; List[Dict[str, Any]]:
         &#34;&#34;&#34;Returns messages from the conversation history that do not exceed the given token limit.
 
         Args:
@@ -430,14 +430,14 @@ def title(self) -&gt; Optional[str]:
 </dl></div>
 </dd>
 <dt id="llmflex.Memory.base_memory.BaseMemory.get_messages_by_token_limit"><code class="name flex">
-<span>def <span class="ident">get_messages_by_token_limit</span></span>(<span>self, tokenizer: BaseTokenizer, token_limit: int) ‑> List[Dict[str, Any]]</span>
+<span>def <span class="ident">get_messages_by_token_limit</span></span>(<span>self, tokenizer: "'BaseTokenizer'", token_limit: int) ‑> List[Dict[str, Any]]</span>
 </code></dt>
 <dd>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_messages_by_token_limit(self, tokenizer: BaseTokenizer, token_limit: int) -&gt; List[Dict[str, Any]]:
+<pre><code class="python">def get_messages_by_token_limit(self, tokenizer: &#34;BaseTokenizer&#34;, token_limit: int) -&gt; List[Dict[str, Any]]:
     &#34;&#34;&#34;Returns messages from the conversation history that do not exceed the given token limit.
 
     Args:

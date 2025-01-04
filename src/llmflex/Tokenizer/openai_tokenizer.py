@@ -1,11 +1,8 @@
 from __future__ import annotations
 from .base_tokenizer import BaseTokenizer
-from typing import List, Literal
-try:
+from typing import List, TYPE_CHECKING
+if TYPE_CHECKING:
     from tiktoken.core import Encoding
-    tt_installed = True
-except:
-    tt_installed = False
 
 class OpenAITokenizer(BaseTokenizer):
     """OpenAI tokenizer class.
@@ -16,7 +13,9 @@ class OpenAITokenizer(BaseTokenizer):
         Args:
             model_id (str): The ID of the OpenAI model to use for tokenization.
         """
-        if not tt_installed:
+        try:
+            import tiktoken
+        except:
             raise ModuleNotFoundError(f'"tiktoken" not installed. Please install with `pip install tiktoken`.')
         import tiktoken
         self._openai_tokenizer = kwargs.pop('tokenizer', None)
@@ -47,7 +46,7 @@ class OpenAITokenizer(BaseTokenizer):
         return cls(model_id='', tokenizer=tokenizer)
     
     @property
-    def openai_tokenizer(self) -> Encoding:
+    def openai_tokenizer(self) -> "Encoding":
         """Returns the underlying tiktoken tokenizer instance.
 
         Returns:

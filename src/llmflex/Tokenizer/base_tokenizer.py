@@ -1,4 +1,4 @@
-from typing import List, Optional, Literal
+from typing import List, Optional
 from abc import ABC, abstractmethod
 
 class BaseTokenizer(ABC):

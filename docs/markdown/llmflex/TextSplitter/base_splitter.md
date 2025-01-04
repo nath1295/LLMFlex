@@ -15,6 +15,7 @@ Classes
 
     * llmflex.TextSplitter.markdown_splitter.MarkdownTextSplitter
     * llmflex.TextSplitter.recursive_splitter.RecursiveTextSplitter
+    * llmflex.TextSplitter.semantic_splitter.SemanticTextSplitter
     * llmflex.TextSplitter.sentence_splitter.SentenceTextSplitter
     * llmflex.TextSplitter.token_splitter.TokenCountTextSplitter
 

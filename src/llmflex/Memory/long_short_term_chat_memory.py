@@ -1,19 +1,20 @@
 from __future__ import annotations
 from .base_memory import BaseMemory
-from ..TextSplitter.base_splitter import BaseTextSplitter
-from ..Reranker.base_ranker import BaseRanker
-from ..Embeddings.Model.base_embeddings import BaseEmbeddings
-from typing import Optional, List, Dict, Any, Literal
+from typing import Optional, List, Dict, Any, Literal, TYPE_CHECKING
 import os
+if TYPE_CHECKING:
+    from ..TextSplitter.base_splitter import BaseTextSplitter
+    from ..Reranker.base_ranker import BaseRanker
+    from ..Embeddings.Model.base_embeddings import BaseEmbeddings
 
 VDB_TYPE = Literal['numpy', 'faiss']
 
 class LongShortTermChatMemory(BaseMemory):
     """Long short term chat memory class."""
     def __init__(self,
-            embeddings: BaseEmbeddings,
-            ranker: Optional[BaseRanker] = None,
-            text_splitter: Optional[BaseTextSplitter] = None,
+            embeddings: "BaseEmbeddings",
+            ranker: Optional["BaseRanker"] = None,
+            text_splitter: Optional["BaseTextSplitter"] = None,
             vdb_type: VDB_TYPE = 'numpy',
             title: Optional[str] = None, 
             memory_dir: Optional[str] = None,
@@ -51,9 +52,9 @@ class LongShortTermChatMemory(BaseMemory):
                 self._vdb = FaissVectorDatabase(embeddings=embeddings, text_splitter=self._text_splitter, vdb_dir=self._vdb_dir)
 
     @classmethod
-    def from_exist(cls, embeddings: BaseEmbeddings, memory_dir: str,
-            ranker: Optional[BaseRanker] = None,
-            text_splitter: Optional[BaseTextSplitter] = None) -> LongShortTermChatMemory:
+    def from_exist(cls, embeddings: "BaseEmbeddings", memory_dir: str,
+            ranker: Optional["BaseRanker"] = None,
+            text_splitter: Optional["BaseTextSplitter"] = None) -> LongShortTermChatMemory:
         """Initializes the LongShortTermChatMemory class from an existing memory directory.
 
         Args:

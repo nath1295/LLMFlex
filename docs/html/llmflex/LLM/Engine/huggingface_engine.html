@@ -179,7 +179,7 @@ el.replaceWith(d);
         super().__init__(model, model_id, tokenizer, model_name, default_chat_template)
     
     @property
-    def model(self) -&gt; PreTrainedModel:
+    def model(self) -&gt; &#34;PreTrainedModel&#34;:
         &#34;&#34;&#34;LLM model.
 
         Returns:
@@ -685,7 +685,7 @@ el.replaceWith(d);
 </dd>
 <dt id="llmflex.LLM.Engine.huggingface_engine.TokenStreamer"><code class="flex name class">
 <span>class <span class="ident">TokenStreamer</span></span>
-<span>(</span><span>pretrained_model_name_or_path: str,<br>tokenizer: transformers.tokenization_utils.PreTrainedTokenizer)</span>
+<span>(</span><span>pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer)</span>
 </code></dt>
 <dd>
 <details class="source">
@@ -695,7 +695,7 @@ el.replaceWith(d);
 <pre><code class="python">class TokenStreamer(BaseStreamer):
     &#34;&#34;&#34;Class for streaming text tokens.
     &#34;&#34;&#34;
-    def __init__(self, pretrained_model_name_or_path: str, tokenizer: PreTrainedTokenizer) -&gt; None:
+    def __init__(self, pretrained_model_name_or_path: str, tokenizer: &#34;PreTrainedTokenizer&#34;) -&gt; None:
         from queue import Queue
         from ...Tokenizer.hf_detokenizer import get_detokenizer
         self._detokenizer = get_detokenizer(pretrained_model_name_or_path, tokenizer)

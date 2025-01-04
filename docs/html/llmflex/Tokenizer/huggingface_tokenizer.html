@@ -64,8 +64,7 @@ el.replaceWith(d);
         Args:
             pretrained_model_name_or_path (str): Huggingface repository name or path to the model.
         &#34;&#34;&#34;
-        if not hf_installed:
-            warnings.warn(message=&#39;&#34;transformers&#34; not installed. To use HuggingFaceTokenizer, please install &#34;transformers&#34; by running &#34;pip install transformers&#34;.&#39;)
+        from transformers import AutoTokenizer
         from ..utils import get_config
         self._hf_tokenizer = kwargs.pop(&#39;tokenizer&#39;, None)
         if not self._hf_tokenizer:
@@ -87,7 +86,7 @@ el.replaceWith(d);
             self.hf_tokenizer.pad_token_id = self.pad_token_id
 
     @classmethod
-    def from_hf_tokenizer(cls, tokenizer: PreTrainedTokenizerBase) -&gt; HuggingFaceTokenizer:
+    def from_hf_tokenizer(cls, tokenizer: &#34;PreTrainedTokenizerBase&#34;) -&gt; HuggingFaceTokenizer:
         &#34;&#34;&#34;Initialise the tokenizer from a huggingface transformers tokenizer directly.
 
         Args:
@@ -144,7 +143,7 @@ el.replaceWith(d);
 <h3>Static methods</h3>
 <dl>
 <dt id="llmflex.Tokenizer.huggingface_tokenizer.HuggingFaceTokenizer.from_hf_tokenizer"><code class="name flex">
-<span>def <span class="ident">from_hf_tokenizer</span></span>(<span>tokenizer: PreTrainedTokenizerBase) ‑> <a title="llmflex.Tokenizer.huggingface_tokenizer.HuggingFaceTokenizer" href="#llmflex.Tokenizer.huggingface_tokenizer.HuggingFaceTokenizer">HuggingFaceTokenizer</a></span>
+<span>def <span class="ident">from_hf_tokenizer</span></span>(<span>tokenizer: "'PreTrainedTokenizerBase'")</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Initialise the tokenizer from a huggingface transformers tokenizer directly.</p>
